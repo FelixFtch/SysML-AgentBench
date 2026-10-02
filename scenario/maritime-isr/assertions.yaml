@@ -1,0 +1,42 @@
+# Ground truth for the synthetic maritime ISR reference model.
+# Status: single author, 2026-10-02. A second reviewer has not signed this yet.
+# Official Pilot run 20261002T231323-aea6edfc: PASS, 50 named elements.
+# Engineering acceptance is UNKNOWN. These numbers are synthetic, not RTX specifications.
+task_id: maritime-isr-baseline
+package: MaritimeISR
+official_validation: PASS
+engineering_status: UNKNOWN
+must_exist:
+  parts:
+    - MaritimeISR::usv
+    - MaritimeISR::uav
+    - MaritimeISR::commandShip
+    - MaritimeISR::shore
+    - MaritimeISR::UnmannedSurfaceVessel::eoCamera
+    - MaritimeISR::UnmannedSurfaceVessel::irCamera
+    - MaritimeISR::UnmannedSurfaceVessel::ais
+    - MaritimeISR::FixedWingUav::searchRadar
+    - MaritimeISR::FixedWingUav::eoCamera
+  attributes:
+    - {name: MaritimeISR::UnmannedSurfaceVessel::powerLimitW, value: 60.0}
+    - {name: MaritimeISR::UnmannedSurfaceVessel::uplinkMbps, value: 8.0}
+    - {name: MaritimeISR::UnmannedSurfaceVessel::storageGB, value: 128.0}
+    - {name: MaritimeISR::FixedWingUav::powerLimitW, value: 120.0}
+    - {name: MaritimeISR::FixedWingUav::downlinkMbps, value: 20.0}
+    - {name: MaritimeISR::CommandShip::fusionLatencyS, value: 2.0}
+    - {name: MaritimeISR::ShoreStation::backhaulMbps, value: 50.0}
+  requirements:
+    - MaritimeISR::LocalRawRetention
+    - MaritimeISR::PowerLimitUnchanged
+    - MaritimeISR::TrackSharing
+must_connect:
+  - [MaritimeISR::usv::eoCamera::imagery, MaritimeISR::usv::processor::imageryIn]
+  - [MaritimeISR::usv::irCamera::imagery, MaritimeISR::usv::processor::imageryIn]
+  - [MaritimeISR::usv::ais::tracks, MaritimeISR::usv::processor::trackIn]
+  - [MaritimeISR::usv::radio::toShore, MaritimeISR::commandShip::fromUsv]
+  - [MaritimeISR::uav::searchRadar::tracks, MaritimeISR::uav::processor::trackIn]
+  - [MaritimeISR::uav::radio::toShore, MaritimeISR::commandShip::fromUav]
+  - [MaritimeISR::commandShip::toShore, MaritimeISR::shore::fromCommand]
+must_not_change:
+  - MaritimeISR::UnmannedSurfaceVessel::powerLimitW
+  - MaritimeISR::UnmannedSurfaceVessel::uplinkMbps

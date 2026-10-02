@@ -1,0 +1,28 @@
+# GEN-01 gold. Written before scoring. Match on parsed element types and qualified names.
+# A different legal spelling still fails until the scorer learns aliases; this list is the
+# reference model's own names, which the task statement requires.
+task_id: GEN-01
+package: HarborLink
+status: draft-single-author
+second_reviewer: pending
+must_exist:
+  - {kind: PortDefinition, qualified_name: HarborLink::ImageryPort}
+  - {kind: PortDefinition, qualified_name: HarborLink::LinkPort}
+  - {kind: PartDefinition, qualified_name: HarborLink::Camera}
+  - {kind: PartDefinition, qualified_name: HarborLink::Processor}
+  - {kind: PartDefinition, qualified_name: HarborLink::Radio}
+  - {kind: PartDefinition, qualified_name: HarborLink::ShoreStation}
+  - {kind: PartUsage, qualified_name: HarborLink::vessel}
+  - {kind: PartUsage, qualified_name: HarborLink::vessel::camera}
+  - {kind: PartUsage, qualified_name: HarborLink::vessel::processor}
+  - {kind: PartUsage, qualified_name: HarborLink::vessel::radio}
+  - {kind: PartUsage, qualified_name: HarborLink::shoreStation}
+  - {kind: RequirementDefinition, qualified_name: HarborLink::RawRetention}
+must_connect:
+  - [HarborLink::vessel::camera::imagery, HarborLink::vessel::processor::imageryIn]
+  - [HarborLink::vessel::processor::uplink, HarborLink::vessel::radio::fromProcessor]
+  - [HarborLink::vessel::radio::toShore, HarborLink::shoreStation::fromVessel]
+must_not_add:
+  - numeric power, bandwidth, or storage limits
+official_validation: PASS
+engineering_status: UNKNOWN

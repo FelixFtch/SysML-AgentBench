@@ -17,3 +17,4 @@ The first nine decisions (2026-10-02) are recorded in the execution plan, sectio
 | 009 | Project statement wording corrected: evaluations exist; ours is "first" only for the stated intersection |
 | 010 | Repository root moved to `/data/robotics/RTRC`; original folder kept as read-only archive; `vendor/` symlinked |
 | 011 | Primary model: existing Qwen cloud API (qwen3.8-flash dev / qwen3.8-max experiments); local Ollama optional |
+| 012 | Model visualization: Cameo SysML v2 Community Edition (free) primary, SysON fallback; second checker: Syside CLI (trial/academic) primary, Cameo fallback; official Pilot remains the adjudicator |

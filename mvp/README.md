@@ -1,5 +1,7 @@
 # Engineering Change Workbench
 
+> **Role since 2026-10-02 (plan v2.0, decision 002):** this directory is no longer the project's product. Its pinned official SysML v2 toolchain, independent engineering checks, evidence packs, and viewer are retained as the **scorer and single-run inspector** of the SysML-AgentBench evaluation described in `../plans/SysML_AgentBench_完整执行计划.md`. The "next integration step" paragraph at the end of this file reflects the earlier direction and is superseded. The 2026-10-02 first real LLM run through `agent.py` is recorded under `agent-runs/20261002T204611-agent-d0a63097/`.
+
 A local, working SysML v2 engineering slice for evaluating legacy-system reuse and controlled design changes. The application, model descriptions, fixtures and demonstration are in English.
 
 ## Start the workbench

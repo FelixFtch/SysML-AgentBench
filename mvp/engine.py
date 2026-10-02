@@ -433,13 +433,102 @@ def run_reference(reference_name: str) -> dict:
     return result
 
 
+def run_submitted_model(model_files, package_name: str, *, label: str = "submitted") -> dict:
+    """Validate agent- or human-written .sysml files with the official toolchain.
+
+    Unlike run_case, nothing is rendered from a fixture template and no marine budget
+    contract is applied. A language PASS therefore stays engineering UNKNOWN: there is
+    no domain contract to satisfy. Files are copied into the run directory so the
+    evidence pack does not depend on the caller's temporary paths.
+    """
+    from mvp.toolchain.validate import validate_package
+
+    if not isinstance(package_name, str) or not package_name.strip():
+        raise ValueError("package_name is required")
+    sources = [Path(path).resolve() for path in model_files]
+    if not sources:
+        raise ValueError("At least one .sysml file is required")
+    RUNS.mkdir(parents=True, exist_ok=True)
+    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:8]
+    run_dir = RUNS / run_id
+    model_dir = run_dir / "model"
+    model_dir.mkdir(parents=True)
+    copied = []
+    seen = set()
+    for source in sources:
+        if not source.is_file() or source.suffix not in {".sysml", ".kerml"}:
+            raise ValueError(f"Missing or unsupported model input: {source}")
+        name = source.name
+        if name in seen:
+            raise ValueError(f"Duplicate file name in one submission: {name}")
+        seen.add(name)
+        dest = model_dir / name
+        shutil.copy2(source, dest)
+        copied.append(dest)
+    result = {"run_id": run_id, "run_dir": str(run_dir), "case_name": label,
+              "source_kind": "submitted-model", "synthetic": True,
+              "execution_mode": "real-official-sysml-toolchain",
+              "analysis_code_sha256": ENGINE_SOURCE_SHA256,
+              "created_at": datetime.now(timezone.utc).isoformat(),
+              "package_name": package_name, "checks": [], "model_elements": [],
+              "budget_status": "NOT_APPLICABLE", "config": {}}
+    try:
+        files = [{"path": str(path.relative_to(run_dir)), "original_path": str(src),
+                  "sha256": sha(path), "bytes": path.stat().st_size}
+                 for src, path in zip(sources, copied)]
+        result["source_manifest"] = {"kind": "submitted-model", "files": files,
+                                      "snapshot_sha256": hashlib.sha256(json.dumps(files, sort_keys=True).encode()).hexdigest()}
+        dump(run_dir / "source-manifest.json", result["source_manifest"])
+        result["model_files"] = [str(path) for path in copied]
+        result["model_path"] = str(copied[0])
+        result["model_text"] = copied[0].read_text(encoding="utf-8")
+        result["model_revision"] = hashlib.sha256("".join(item["sha256"] for item in files).encode()).hexdigest()
+        dump(run_dir / "model-manifest.json", {"sha256": result["model_revision"], "files": files})
+        result["sysml"] = validate_package(result["model_files"], package_name, str(run_dir / "sysml"))
+        if result["sysml"]["status"] == "PASS":
+            elements = exported_elements(json.loads(Path(result["sysml"]["model_json_path"]).read_text(encoding="utf-8")))
+            ast = json.loads(Path(result["sysml"]["ast_json_path"]).read_text(encoding="utf-8"))
+            result["model_elements"] = ModelView(elements, ast).named_elements(package_name)
+            result["parsed_element_count"] = len(elements)
+            # No domain contract was supplied, so language success cannot become engineering acceptance.
+            result["status"] = "UNKNOWN"
+            result["checks"] = [{"id": "NO-DOMAIN-CONTRACT", "label": "Engineering checks",
+                                 "status": "NOT_APPLICABLE",
+                                 "detail": "Submitted model passed official language checks. No budget, topology or requirement contract was supplied, so engineering acceptance is not inferred."}]
+        else:
+            result["status"] = result["sysml"]["status"]
+            result["checks"] = [{"id": "BLOCKED-BY-SYSML", "status": "UNKNOWN",
+                                 "label": "Engineering checks not executed",
+                                 "detail": "The submitted model did not pass official validation."}]
+        dump(run_dir / "checks.json", result["checks"])
+    except Exception as exc:
+        result["status"] = "ERROR"
+        result["error"] = f"{type(exc).__name__}: {exc}"
+        result.setdefault("sysml", {"status": "ERROR", "diagnostics": []})
+    dump(run_dir / "result.json", result)
+    seal_evidence(run_dir)
+    return result
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("case_name", choices=["baseline", "upgraded_legacy", "candidate_a", "candidate_b", "degraded_link"])
+    parser.add_argument("case_name", nargs="?", choices=["baseline", "upgraded_legacy", "candidate_a", "candidate_b", "degraded_link"])
+    parser.add_argument("--files", nargs="+", help="Validate these .sysml files instead of rendering a fixture case")
+    parser.add_argument("--package", help="Root package name, required with --files")
     parser.add_argument("--data-rate", type=float)
     parser.add_argument("--link", type=float)
     parser.add_argument("--approve-preview", action="store_true")
     args = parser.parse_args()
-    output = run_case(args.case_name, args.data_rate, args.link, preview_approved=args.approve_preview)
-    print(json.dumps({k: output.get(k) for k in ["run_id", "run_dir", "status", "budget_status", "error", "checks", "sysml"]}, ensure_ascii=False, indent=2))
+    if args.files:
+        if not args.package:
+            parser.error("--package is required with --files")
+        output = run_submitted_model(args.files, args.package)
+    elif args.case_name:
+        output = run_case(args.case_name, args.data_rate, args.link, preview_approved=args.approve_preview)
+    else:
+        parser.error("provide a fixture case name or --files")
+    summary = {k: output.get(k) for k in ["run_id", "run_dir", "status", "budget_status", "error", "checks"]}
+    summary["sysml_status"] = (output.get("sysml") or {}).get("status")
+    summary["diagnostics"] = [d.get("message") for d in (output.get("sysml") or {}).get("diagnostics", [])][:8]
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
     raise SystemExit(2 if output["status"] == "ERROR" else 0)

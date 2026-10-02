@@ -1,0 +1,39 @@
+{
+  "task_id": "GEN-01",
+  "ground_truth": "bench/tasks/t4_maritime_isr/dev/GEN-01/gold/assertions.yaml",
+  "reviewer": "single author, no second human review, as requested",
+  "gold_self_check": {
+    "run_dir": "mvp/runs/20261002T231319-3a6912dc",
+    "sysml_status": "PASS",
+    "engineering_status": "UNKNOWN",
+    "must_exist": {
+      "hit": 12,
+      "expected": 12,
+      "missing": []
+    },
+    "must_connect": {
+      "hit": 3,
+      "expected": 3,
+      "missing": []
+    },
+    "invented_numbers": [],
+    "pass": true
+  },
+  "p0": {
+    "run_dir": "mvp/runs/20261002T224948-5ae96b64",
+    "sysml_status": "PASS",
+    "engineering_status": "UNKNOWN",
+    "must_exist": {
+      "hit": 12,
+      "expected": 12,
+      "missing": []
+    },
+    "must_connect": {
+      "hit": 3,
+      "expected": 3,
+      "missing": []
+    },
+    "invented_numbers": [],
+    "pass": true
+  }
+}

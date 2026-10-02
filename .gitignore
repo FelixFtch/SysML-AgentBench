@@ -26,6 +26,9 @@ __pycache__/
 /research/mvp-development-runs/
 /research/mvp-development-records/
 
+# SysON local database
+/tools/syson/data/
+
 # local model / checkpoint state
 *.sqlite-wal
 *.sqlite-shm

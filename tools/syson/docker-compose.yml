@@ -1,0 +1,29 @@
+# Local SysON for looking at SysML v2 diagrams. Official single-user compose,
+# pinned to v2026.9.2. Database files stay in ./data and are not committed.
+services:
+  database:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - syson
+  app:
+    image: eclipsesyson/syson:v2026.9.2
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database/postgres
+      SPRING_DATASOURCE_USERNAME: username
+      SPRING_DATASOURCE_PASSWORD: password
+      SIRIUS_COMPONENTS_CORS_ALLOWEDORIGINPATTERNS: "*"
+      SERVER_PORT: 8080
+    depends_on:
+      - database
+    networks:
+      - syson
+networks:
+  syson:

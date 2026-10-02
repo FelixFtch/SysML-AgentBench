@@ -435,6 +435,7 @@ RTX agent/
 5. 评测结果由谁签认？
 
 **Bollas**：
+6a. Cameo 许可的**产品名与版本**：是否为 Magic Cyber Systems Engineer / SoS Architect **2026x**（这两者含**内置 AI Assistant**，可从 stakeholder needs 生成候选架构）？是否有 Teamwork Cloud（Dassault 的 SysML v2 MCP 基于其 REST API）？许可条款是否允许把 AI Assistant 的输出作为被测对象并发表结果？若允许 → 新增可选配置 **P-VENDOR**（详见 `research/notes/vendor-ai-mcp-landscape-2026-10.md`）。
 6. Cameo 许可版本是否含 SysML v2 插件？——补充（2026-10-02 核实）：Dassault 已发布**免费的 CATIA Magic/Cameo SysML v2 Community Edition**（2026x），含文本编辑器 + 评估插件 + 图形/文本双向同步；无论学校许可如何，第 2 周先装 CE 做图形查看与人工校验对照；无头批量校验未见官方文档（TWC REST API 需服务器），自动化路径待验证（社区 `cameo-mcp-bridge`，MIT，162 工具，需 Cameo 运行中）。
 7. 评分导师最终确认（Prof. Kubita）。
 

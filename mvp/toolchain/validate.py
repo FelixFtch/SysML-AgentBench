@@ -92,7 +92,10 @@ def validate_package(model_files: Sequence[str], package_name: str, output_dir: 
                "output_dir": str(output), "library_path": str(LIBRARY)}
     request_path = output / "request.json"
     request_path.write_text(json.dumps(request, indent=2) + "\n")
-    command = [str(JDK / "bin/java"), "-Xmx1536m", "-Dfile.encoding=UTF-8", "-cp",
+    # Heap is configurable: the default was sized for the ~155-line fixture; a real SoS model
+    # (Airbus Apollo 11, 28 files / 7k lines) exhausted 1536m on 2026-10-02.
+    heap = os.environ.get("SYSML_JAVA_XMX", "1536m")
+    command = [str(JDK / "bin/java"), f"-Xmx{heap}", "-Dfile.encoding=UTF-8", "-cp",
                str(BUILD) + os.pathsep + str(JAR), "SysMLHeadless", str(request_path)]
     started = time.monotonic()
     stdout_path, stderr_path = output / "stdout.log", output / "stderr.log"

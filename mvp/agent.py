@@ -38,6 +38,8 @@ def schema(name: str, description: str, properties: dict, required: list[str]) -
         "parameters": {"type": "object", "properties": properties, "required": required, "additionalProperties": False}}}
 
 
+MAX_PARALLEL_TOOL_CALLS = 12
+
 TOOLS = [
     schema("query_legacy", "Read actual configuration and component rows from the synthetic legacy SQLite fixture, with source IDs.",
            {"case_name": {"type": "string", "enum": CASES}}, ["case_name"]),
@@ -141,8 +143,10 @@ def run_agent(message: str, case_name: str = "candidate_a", preview_approved: bo
                 dump(folder / "trace.json", {"messages": messages, "steps": trace})
                 dump(folder / "result.json", result)
                 return result
-            if len(calls) > 4:
-                raise RuntimeError("Exceeded the limit of four tool calls in one step")
+            # Upper bound on parallel tool calls per step. The fixture exposes 5 cases + 4 sources (9 read-only
+            # calls); current models legitimately issue them all at once, so the cap is sized above that.
+            if len(calls) > MAX_PARALLEL_TOOL_CALLS:
+                raise RuntimeError(f"Exceeded the limit of {MAX_PARALLEL_TOOL_CALLS} tool calls in one step")
             for call in calls:
                 name = call["function"]["name"]
                 try:

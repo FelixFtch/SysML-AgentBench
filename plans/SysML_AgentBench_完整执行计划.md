@@ -240,10 +240,11 @@ decision_required: true  # 是否触发审批门
 
 | 模型 | 用途 | 说明 |
 |---|---|---|
-| Qwen3.5-27B（dense）或 Qwen3.5-35B-A3B（MoE，显存不足时） | 开发 + 主力被测（全题 ×3） | Ollama，Modelfile `num_ctx 65536`；`ollama show` 确认 `tools` 能力 |
+| **Qwen 云 API**（阿里云百炼 OpenAI 兼容端点，机器上 claude-code-router 已配置：`qwen3.8-flash` / `qwen3.8-max`） | `flash` 做开发与调试；`max` 做主力被测（全题 ×3） | 便宜、无需本地显存；自建工作流与 OpenCode 直接接 OpenAI 兼容端点，Claude Code 经现有 CCR。**在 run manifest 里记录完整模型名**，实验期间不换版本。端点在中国区（cn-beijing）：本项目数据全部合成/公开，可用；若赞助方要求数据驻留，正式实验改用 RTRC 提供的端点 |
 | 1 个前沿模型（RTRC Copilot/Bedrock 或 OpenAI/Anthropic API） | 全题 ×1，验证结论不随模型变 | 预算封顶（估 $50–150） |
+| 本地 Ollama（Qwen3.5-27B / 35B-A3B） | **可选**：只在要测"本地 vs 云"差距时安装 | 机器 RTX 4090 24 GB，当前已被其他进程占 15.7 GB；27B dense + 64k 上下文很紧 |
 
-**待确认：团队 GPU 显存**。27B dense Q4 + 64k KV 需 ≥24 GB。
+配置：复制仓库根 `.env.example` 为 `.env`（git 忽略），填入密钥。预算护栏 `BENCH_RUN_TOKEN_CAP` / `BENCH_DAILY_TOKEN_CAP` 由 harness 强制。
 
 ---
 
@@ -438,7 +439,7 @@ RTX agent/
 7. 评分导师最终确认（Prof. Kubita）。
 
 **团队内部**：
-8. GPU 显存。
+8. ~~GPU 显存~~ → 已查：RTX 4090 24 GB；主力改用 Qwen 云 API，本地模型降为可选（决策 011）。
 9. LangGraph vs 纯 Python（第 2 周演示后定）。
 
 ---
@@ -456,6 +457,8 @@ RTX agent/
 | 007 | 评测框架用 Inspect AI | 任务/评分/日志/外部 agent 支持最成熟；MIT | 2026-10-02 |
 | 008 | 不采用 AutoGen / CrewAI / Swarm / AutoGPT | AutoGen 已停更；CrewAI 多角色无证据优势且难控；其余不相关 | 2026-10-02 |
 | 009 | 项目书"no evidence-based evaluation exists"改为限定表述 | SysMBench 2025、CMU 2026、RADIANT 2026 已存在 | 2026-10-02 |
+| 010 | 仓库根迁至 `/data/robotics/RTRC`；原目录只读归档；`vendor/` 符号链接 | 沙盒可写、空间大、git 从 0 次提交开始 | 2026-10-02 |
+| 011 | 主力模型用已配置的 Qwen 云 API（qwen3.8-flash 开发 / qwen3.8-max 实验），本地 Ollama 降为可选 | 便宜、无显存压力、4090 已被占用；数据合成/公开可出站；manifest 记录模型名保证可复现 | 2026-10-02 |
 
 ---
 

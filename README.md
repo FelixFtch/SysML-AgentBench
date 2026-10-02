@@ -8,11 +8,12 @@ Sponsor: RTX Technology Research Center (RTRC). Faculty advisor: Prof. George Bo
 
 | Document | Purpose |
 |---|---|
-| [`plans/SysML_AgentBench_完整执行计划.md`](plans/SysML_AgentBench_完整执行计划.md) | **Authoritative execution plan** (Chinese): questions, architecture, task suite, agents, scoring, 12-week schedule, decisions |
-| [`plans/project-statement.md`](plans/project-statement.md) | Project statement for sponsor signature (English) |
+| [`plans/SysML_AgentBench_完整执行计划.md`](plans/SysML_AgentBench_完整执行计划.md) | **Authoritative execution plan v2.0** (Chinese): what we deliver, ground-truth method, architecture, task suite, agents, scoring, 12-week schedule, decisions |
+| [`plans/project-statement.md`](plans/project-statement.md) | Project statement v1.1 for sponsor signature (English) |
 | [`research/source-extracts/rtx-brief.txt`](research/source-extracts/rtx-brief.txt) | Sponsor brief (verbatim) |
-| [`mvp/README.md`](mvp/README.md) | The retained toolchain + engine + evidence layer (now the scorer) |
-| [`README-legacy-2026-09.md`](README-legacy-2026-09.md) | Previous README (Workbench-as-product phase), kept for history |
+| [`research/notes/vendor-ai-mcp-landscape-2026-10.md`](research/notes/vendor-ai-mcp-landscape-2026-10.md) | What SysML v2 tool vendors actually ship for AI/MCP (verified 2026-10-02) |
+| [`mvp/README.md`](mvp/README.md) | The retained toolchain + engine + evidence layer (now the scorer and single-run viewer) |
+| [`research/archive/plans-2026-09/`](research/archive/plans-2026-09/) | Superseded plans from the workbench-as-product phase (history only) |
 
 ## Repository layout (target state; see plan §11)
 

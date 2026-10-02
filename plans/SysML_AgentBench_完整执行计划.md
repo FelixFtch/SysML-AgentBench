@@ -385,7 +385,7 @@ RTX agent/
 | **2** | 写 MVP-0 的 5 道题 + 断言；STPA 库试加载 | Inspect Task 骨架；toolchain_scorer + assertion_scorer；MCP server | P1（修复环）；OpenCode pin + AGENTS.md + MCP 接通；5 题各跑一次 | **给 Bollas 演示**：Inspect View 看 P0 vs P1 vs OpenCode 在 5 题上的差异 |
 | **3** | 完整 4 平台场景；GEN/MOD 各 5 题草稿；与 Francesca 会议后调整边界 | check_scorer、regression_scorer；STATUS 脚本 | LangGraph 版状态图（若需要）；P2 outline_json；预算护栏 | 10 题在 P0/P1/P2 跑通 |
 | **4** | QRY/AMB/RT 题；24 题全部断言；双人评审 | ambiguity/roundtrip/validator_agreement scorer | AI 校验器 + 反向翻译器；T0 校准 15 题 | **冻结**：FREEZE.md + git tag；预注册目标值 |
-| **5** | T5：PURE 2 份文档选段 + 需求抽取 gold | 官方 pilot vs Syside（+Cameo 若可）交叉判定脚本 | P3 文本检索；前沿模型接入与预算配置 | 开发集全配置跑通 |
+| **5** | T5：PURE 2 份文档选段 + 需求抽取 gold | 官方 pilot vs 第二检查器交叉判定脚本。候选：Syside `syside check`（**CLI 在付费 Modeler 内，免费版仅 VS Code 编辑器**；用 30 天试用窗口覆盖第 5–8 周，或申请学术许可）；Cameo SysML v2 CE（免费，GUI 校验，自动化待验证） | P3 文本检索；前沿模型接入与预算配置 | 开发集全配置跑通 |
 | **6** | STPA 2 条 hazard 入场景；SysEngBench 附录脚本 | 人工评审表单与盲评流程 | P3 图检索（论文 2 方法重实现）；Claude Code 适配（可选） | 全配置在开发集完成 |
 | **7** | 人工评审第一轮（与 C 交叉） | 运行监控与失败落盘 | **全量实验**：本地模型 24 题 × 6 配置 × 3 次 | 本地模型数据齐 |
 | **8** | 人工评审第二轮；κ 计算 | 现成 agent 运行桥稳定性 | 前沿模型 ×1；OpenCode/Claude Code 全题 | **主实验完成**；数据冻结 |
@@ -435,7 +435,7 @@ RTX agent/
 5. 评测结果由谁签认？
 
 **Bollas**：
-6. Cameo 许可版本是否含 SysML v2 插件（决定能否做第三个检查器）？
+6. Cameo 许可版本是否含 SysML v2 插件？——补充（2026-10-02 核实）：Dassault 已发布**免费的 CATIA Magic/Cameo SysML v2 Community Edition**（2026x），含文本编辑器 + 评估插件 + 图形/文本双向同步；无论学校许可如何，第 2 周先装 CE 做图形查看与人工校验对照；无头批量校验未见官方文档（TWC REST API 需服务器），自动化路径待验证（社区 `cameo-mcp-bridge`，MIT，162 工具，需 Cameo 运行中）。
 7. 评分导师最终确认（Prof. Kubita）。
 
 **团队内部**：
@@ -459,6 +459,7 @@ RTX agent/
 | 009 | 项目书"no evidence-based evaluation exists"改为限定表述 | SysMBench 2025、CMU 2026、RADIANT 2026 已存在 | 2026-10-02 |
 | 010 | 仓库根迁至 `/data/robotics/RTRC`；原目录只读归档；`vendor/` 符号链接 | 沙盒可写、空间大、git 从 0 次提交开始 | 2026-10-02 |
 | 011 | 主力模型用已配置的 Qwen 云 API（qwen3.8-flash 开发 / qwen3.8-max 实验），本地 Ollama 降为可选 | 便宜、无显存压力、4090 已被占用；数据合成/公开可出站；manifest 记录模型名保证可复现 | 2026-10-02 |
+| 012 | 模型可视化用 Cameo SysML v2 Community Edition（免费）为主、SysON 为备；第二检查器优先 Syside CLI（试用/学术许可），Cameo 为备 | Cameo CE 免费且图形/文本双向同步，导师熟悉；Syside 是唯一有 CI 级 CLI 的第二检查器；两者都不替代官方 Pilot 的主裁地位 | 2026-10-02 |
 
 ---
 

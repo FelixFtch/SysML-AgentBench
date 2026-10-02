@@ -1,0 +1,69 @@
+Senior Desing Project Title: Agentic AI for Systems Engineering Discovery and Design
+
+Company Name: RTX Technology Research Center (RTRC)
+Faculty Advisors: George Bollas
+Industry Advisors: Francesca Stramandinoli, Kunal Srivastava, Andrew Radlbeck
+
+Background Information
+Systems Engineering Discovery and Design is essential when launching new research initiatives, redesigning existing systems, or exploring emerging technologies - especially when the solution space is uncertain. Today, early‑stage systems engineering activities, such as architecture discovery, requirements development, and concept exploration, remain highly manual, time‑consuming, and expertise‑intensive. As system functionality and stakeholder expectations continue to expand, driven by autonomy, societal needs, and sustainability, the burden associated with systems engineering and requirements development grows significantly. To address this challenge, we seek the development of decisionsupport tools that automate and accelerate key earlystage activities, with an initial focus on automatically generating system requirements and corresponding design concepts.
+
+Statement of Need
+Earlystage systems engineering is still largely manual, slow, and expertiseintensive. Emerging technologies in agentic AI, AI-assisted model‑based systems engineering (AI-MBSE), and automated reasoning offer feasible approaches to improving this situation. Autonomous AI agents capable of interpreting system models, generating system requirements, and proposing feasible design concepts could significantly accelerate early‑stage decision‑making. Technologies such as AI‑based requirement generation models, SysML v2 model parsers, and AI agents for structured reasoning represent promising directions. 
+From this project, we hope to learn how agentic AI can be reliably applied to early‑stage system concept exploration, what workflows or architectures are most effective, and how requirements can be automatically translated into SysML v2 models. Specifically, we aim for students to explore and benchmark AI agents that can translate requirements into SysML v2 models, ultimately producing the first evidence‑based evaluation of feasibility, performance, limitations, and recommended next steps. To support this activity, the project will use a maritime ISR scenario as a representative mission context involving multiple platforms, varied sensing modalities, and coordinated information sharing. In such missions, autonomous systems must combine different sensing inputs and work together to understand a complex environment, making effective coordination essential. This scenario provides a practical operational backdrop for developing SysML v2 models, generating requirements, and exploring system architectures.
+
+Evaluation Metrics, Recommended Tasks, and Deliverables
+Students may investigate these solutions through several complementary activities: (1) researching existing technologies, AI agents, MBSE tools, and process methodologies; (2) developing conceptual system‑level approaches for AI‑assisted requirement discovery; (3) designing initial system architectures for an AI‑powered decision support tool; (4) analyzing trade‑offs, constraints, and integration considerations; (5) optimizing agent workflows, prompting strategies, or model architectures; (6) testing and assessing alternative AI agents or pipelines using benchmark SysML models; (7) developing new design or test methodologies for AI‑driven systems engineering; (8) creating prototype implementations of agentic workflows; (9) running simulations to evaluate requirement consistency, completeness, and design‑model alignment; and (10) synthesizing findings into a coherent process and knowledge base for future systems engineering efforts.
+
+
+
+
+Will students assess their system for any of the following system capabilities? (suggested, but not required or limited to these)
+
+
+☐  Security and privacy.
+☒  Interoperability.
+☒  Reliability and dependability.
+☐  Power and energy management.
+☒  Safety.
+☐  Stability and performance.
+☐  Human factors and usability.
+
+
+
+Will students include any of topics and methods of interest to the UTC-IASE? (suggested, but not required or limited to these)
+
+
+☒  Modeling & simulation
+☒  Requirements and systems engineering
+☐  Control and automation
+☐  Prognostics and diagnostics
+☒  Verification or validation of a system
+
+☐  Identification and optimization
+☐  Embedded systems 
+☐  Communications systems
+☐  Code generation 
+☐  Data analytics
+
+
+Additional Requirements:
+
+Is there a specific software package required for the projects?  Yes
+Which package (name/version): 
+[2508.16181] LLM-Assisted Semantic Alignment and Integration in Collaborative Model-Based Systems Engineering Using SysML v2__
+(PDF) Integrating SysML v2 into a GRAG LLM Pipeline: Design, Implementation and Evaluation
+dair.nps.edu/bitstream/123456789/5237/1/SYM-AM-24-138.pdf
+The students will validate selected approaches on natural language requirements datasets as in "nlreqdataset.isti.cnr.it". Further open-source benchmarks related to natural language and systems engineering are available at rabell/SysEngBench· Datasets at Hugging Face.
+
+U.S. Citizen/Person (green card) Required?  No
+                           
+Will Export Controlled data be used in project (EAR/ITAR)? No
+
+NDA/IP Agreements required? No
+
+Other considerations: None
+
+
+
+
+

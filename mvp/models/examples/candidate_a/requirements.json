@@ -1,0 +1,131 @@
+{
+  "synthetic": true,
+  "notice": "Synthetic requirement baseline. Approval records must come from an explicit runtime user decision; this fixture does not invent approval evidence.",
+  "baseline_id": "MARINE-01-REQ-R1",
+  "preview_policy": {
+    "approval_required": true,
+    "profile": "P2",
+    "application_rate_mbps": 2.0,
+    "supersedes": "R-UPLOAD-001",
+    "replacement_id": "R-UPLOAD-P2",
+    "approval_default": false,
+    "requires_quality_and_latency_verification": true
+  },
+  "requirements": [
+    {
+      "id": "R-SOURCE-001",
+      "text": "The two payloads have an aggregate raw application data rate of 6 Mbit/s in the legacy baseline.",
+      "source_id": "SRC-REQ-R1",
+      "status": "baseline"
+    },
+    {
+      "id": "R-CHANGE-001",
+      "text": "The upgraded payloads have an aggregate data rate of 18 Mbit/s. A runtime override may set another positive rate for an independently computed demonstration.",
+      "source_id": "SRC-CHANGE-001",
+      "status": "change_request"
+    },
+    {
+      "id": "R-STORE-001",
+      "text": "Retain all original raw data locally for 8 hours.",
+      "source_id": "SRC-REQ-R1",
+      "status": "active"
+    },
+    {
+      "id": "R-STORE-002",
+      "text": "GB uses decimal units. Exactly 80% of nominal storage is the net quota for original raw payload data.",
+      "source_id": "SRC-REQ-R1",
+      "status": "assumption"
+    },
+    {
+      "id": "R-STORE-003",
+      "text": "Preview data is not additionally persisted. The remaining 20% covers the file system, indexes, logs, and reserve.",
+      "source_id": "SRC-REQ-R1",
+      "status": "assumption"
+    },
+    {
+      "id": "R-UPLOAD-001",
+      "text": "Upload all original raw data in real time. R-UPLOAD-P2 may replace this requirement only after explicit approval.",
+      "source_id": "SRC-REQ-R1",
+      "status": "superseded_for_selected_configuration"
+    },
+    {
+      "id": "R-UPLOAD-P2",
+      "text": "Continue retaining all original raw data locally while providing the shore operator with a real-time P2 preview at a fixed application data rate of 2 Mbit/s.",
+      "source_id": "SRC-CHANGE-001",
+      "status": "selected_by_explicit_caller_approval",
+      "supersedes": "R-UPLOAD-001"
+    },
+    {
+      "id": "R-NET-001",
+      "text": "The application upload rate multiplied by 1.2 must not exceed the currently available link budget.",
+      "source_id": "SRC-LINK-ICD-R1",
+      "status": "active"
+    },
+    {
+      "id": "R-NET-002",
+      "text": "The legacy link budget is 8 Mbit/s; the degraded-link event reduces it to 1.5 Mbit/s.",
+      "source_id": "SRC-LINK-ICD-R1",
+      "status": "configuration_dependent"
+    },
+    {
+      "id": "R-POWER-001",
+      "text": "Total node input power must not exceed 60 W under the declared operating condition.",
+      "source_id": "SRC-REQ-R1",
+      "status": "active"
+    },
+    {
+      "id": "R-POWER-002",
+      "text": "The node power budget includes payloads, processing, storage, communications, and conversion losses. It does not establish startup or fault-condition power, or hardware measurements.",
+      "source_id": "SRC-LEGACY-DB-R1",
+      "status": "assumption"
+    },
+    {
+      "id": "R-IF-001",
+      "text": "Payload messages preserve sequence, timestamp_ms, and payload fields. The timestamp_ms field is measured in milliseconds.",
+      "source_id": "SRC-PAYLOAD-ICD-R1",
+      "status": "active"
+    },
+    {
+      "id": "R-IF-002",
+      "text": "The two payloads enter separate acquisition inputs. Adding P2 must preserve the original raw-recording path.",
+      "source_id": "SRC-PAYLOAD-ICD-R1",
+      "status": "active"
+    },
+    {
+      "id": "R-TOPO-001",
+      "text": "Count the platform-to-shore uplink once. The shore relay distributes the same data to two subscribers.",
+      "source_id": "SRC-LINK-ICD-R1",
+      "status": "active"
+    },
+    {
+      "id": "R-QUALITY-P2",
+      "text": "The task-specific quality acceptance criteria for P2 remain undefined. Passing a resource budget does not verify this requirement.",
+      "source_id": "SRC-CHANGE-001",
+      "status": "unknown"
+    },
+    {
+      "id": "R-LATENCY-P2",
+      "text": "The maximum permitted latency for the real-time P2 view remains undefined.",
+      "source_id": "SRC-CHANGE-001",
+      "status": "unknown"
+    },
+    {
+      "id": "R-VERIFY-001",
+      "text": "A short software replay demonstrates software interfaces and recording only for that replay interval. It does not establish eight-hour data integrity.",
+      "source_id": "SRC-REQ-R1",
+      "status": "active"
+    },
+    {
+      "id": "R-TRACE-001",
+      "text": "Each result must identify its sources, model revision, tool version, timestamp, and configuration. Results from an earlier revision must not be presented as current verification after a change.",
+      "source_id": "SRC-REQ-R1",
+      "status": "active"
+    }
+  ],
+  "selected_configuration": "MARINE-01-A",
+  "runtime_selection": {
+    "preview_approved": true,
+    "active_upload_requirement": "R-UPLOAD-P2",
+    "requires_external_decision_record": true
+  }
+}

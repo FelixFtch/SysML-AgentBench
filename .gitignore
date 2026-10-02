@@ -1,0 +1,39 @@
+# upstream clones (recreate with: python3 -m mvp.bootstrap --all-references)
+/vendor
+/vendor/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.env
+/mvp/.env
+
+# pinned toolchain binaries (recreated by mvp/toolchain/bootstrap_*.py from lock files)
+/mvp/toolchain/java21/
+/mvp/toolchain/kernel/
+/mvp/toolchain/downloads/
+/mvp/toolchain/build/
+/mvp/toolchain/smoke-results/
+
+# run evidence (kept on disk, archived separately, not in git)
+/mvp/runs/
+/mvp/app/data/
+/mvp/agent-runs/
+/mvp/verification/*/
+/runs/*
+!/runs/.gitkeep
+/research/mvp-development-runs/
+/research/mvp-development-records/
+
+# local model / checkpoint state
+*.sqlite-wal
+*.sqlite-shm
+checkpoints.db
+.langgraph_api/
+.opencode/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

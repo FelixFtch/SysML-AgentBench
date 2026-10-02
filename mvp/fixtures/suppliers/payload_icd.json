@@ -1,0 +1,10 @@
+{
+  "synthetic": true,
+  "source_id": "SRC-PAYLOAD-ICD-R1",
+  "revision": "PAYLOAD-ICD-R1",
+  "supplier": "Synthetic Observation Supplier",
+  "aggregate_rate_semantics": "sum of two payload streams, not per-payload rate",
+  "fields": [{"name": "source", "type": "string"}, {"name": "sequence", "type": "integer", "minimum": 0}, {"name": "timestamp_ms", "type": "integer", "unit": "ms"}, {"name": "payload", "type": "base64", "semantic": "opaque original payload bytes"}],
+  "sysml_package": "PayloadSupplier",
+  "model": "PayloadSupplier.sysml"
+}

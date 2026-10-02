@@ -1,0 +1,22 @@
+{
+  "build_idempotent": true,
+  "json_files_parseable": 32,
+  "browser_checks": {
+    "passed": 74,
+    "total": 74
+  },
+  "fixed_hardware_rules": {
+    "passed": 28,
+    "total": 28,
+    "included_in_browser_checks": true
+  },
+  "rotation_cases": {
+    "count": 144,
+    "included_in_browser_checks": true,
+    "runtime": "ANGLE SwiftShader/WebGL, not RTX4090"
+  },
+  "source_base": "ROVER_WebGL_Rotation_Fixed.html",
+  "model_validation": "NOT_RUN",
+  "LLM": "NOT_CONNECTED",
+  "sensor_data": "NOT_CONNECTED"
+}

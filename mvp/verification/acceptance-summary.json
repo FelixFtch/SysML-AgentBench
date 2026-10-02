@@ -1,0 +1,79 @@
+{
+  "date": "2026-09-22",
+  "scope": "Working local engineering MVP; model provider and RTX-internal integration remain pending.",
+  "full_git_clones": 9,
+  "actual_runtime": "Official SysML Pilot 2026-08 / 0.62.0 + locked Release library + project-local Java 21",
+  "application_boundary_tests": {
+    "passed": 9,
+    "mode": "unit/HTTP boundary tests; mocks only at the API boundary"
+  },
+  "engineering_http_cases": "../app/verification-results.json",
+  "post_review_http_cases": "../app/reviewed-verification-results.json",
+  "public_reference_http_cases": "../app/reference-verification-results.json",
+  "adversarial_cases": [
+    {
+      "case": "control",
+      "official_language_status": "PASS",
+      "expected_behavior_verified": true
+    },
+    {
+      "case": "missing-supplier",
+      "official_language_status": "FAIL",
+      "expected_behavior_verified": true
+    },
+    {
+      "case": "deleted-recording-connection",
+      "official_language_status": "PASS",
+      "expected_behavior_verified": true
+    },
+    {
+      "case": "wrong-power-unit",
+      "official_language_status": "PASS",
+      "expected_behavior_verified": true
+    },
+    {
+      "case": "wrong-power-factor",
+      "official_language_status": "PASS",
+      "expected_behavior_verified": true
+    },
+    {
+      "case": "unauthorized-upload-reduction",
+      "official_language_status": "PASS",
+      "expected_behavior_verified": true
+    },
+    {
+      "case": "miswired-recording-connection",
+      "official_language_status": "PASS",
+      "expected_behavior_verified": true
+    }
+  ],
+  "adversarial_evidence": "negative-1f82a3ff/summary.json",
+  "relocation_and_integrity": {
+    "original_run_id": "20260922T074240-96ff73ec",
+    "source_and_model_hashes": "PASS",
+    "same_check_results": true,
+    "check_ids_match": true,
+    "toolchain_matches": true,
+    "analysis_code_matches": true,
+    "language_status": "PASS",
+    "path": "/home/felix/Documents/ChatGPT/RTX agent/mvp/verification/relocated-final-candidate-a",
+    "tamper_checks": [
+      {
+        "file": "model/source_mapping.json",
+        "blocked": true,
+        "message": "Evidence inventory mismatch: model/source_mapping.json"
+      },
+      {
+        "file": "decision.json",
+        "blocked": true,
+        "message": "Evidence inventory mismatch: decision.json"
+      }
+    ]
+  },
+  "limits": [
+    "Synthetic marine parameters are not RTX specifications.",
+    "NASA text import does not establish formal requirement semantics.",
+    "No configured model provider; no successful LLM session claimed.",
+    "No live RTX connector or hardware/preview-quality testing."
+  ]
+}

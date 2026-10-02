@@ -1,0 +1,315 @@
+{
+  "sourceKind": "PUBLISHED_HARDWARE_FACTS_PLUS_AUTHORED_MODELS",
+  "models": {
+    "RoverLibrary.sysml": "// TEACHING DRAFT. Parser NOT RUN. File is a supported-subset proposal, not validated code.\npackage RoverLibrary {\n    private import ScalarValues::*;\n    item def Scan2D;\n    item def ImuSample;\n    item def BodyVelocity { attribute v_mps : Real; attribute yaw_rps : Real; }\n    item def WheelRPM { attribute left_rpm : Real; attribute right_rpm : Real; }\n    item def RGBDFrame;\n    item def LocalObservation;\n    port def ScanPort { out item sample : Scan2D; }\n    port def ImuPort { out item sample : ImuSample; }\n    port def BodyCommandPort { out item command : BodyVelocity; }\n    port def WheelCommandPort { out item command : WheelRPM; }\n    port def ImagePort { out item frame : RGBDFrame; }\n    port def LocalObservationPort { out item observation : LocalObservation; }\n    part def Imu { port output : ImuPort; }\n    part def Motor;\n    part def MotorController { port input : ~WheelCommandPort; }\n    part def LidarModule { port output : ScanPort; part imu : Imu; }\n    part def DriveBase {\n        part motorLeft : Motor; part motorRight : Motor;\n        part controller : MotorController;\n        port input : ~WheelCommandPort;\n        connect input to controller.input;\n        attribute wheelRadius_m : Real;\n        attribute track_m : Real;\n    }\n    part def Navigation {\n        port scanIn : ~ScanPort;\n        port imuIn : ~ImuPort;\n        port commandOut : BodyCommandPort;\n        attribute requiresInternet : Boolean;\n    }\n    part def DiffDriveAdapter {\n        port bodyIn : ~BodyCommandPort;\n        port wheelOut : WheelCommandPort;\n        attribute wheelRadius_m : Real;\n        attribute track_m : Real;\n        doc /* R-01 adapter obligation: declared planar kinematics and signs.\n               A model connector does not implement a running motor driver. */\n    }\n    part def Battery { attribute energy_Wh : Real; attribute length_mm : Real; attribute width_mm : Real; attribute height_mm : Real; }\n    part def Tray { attribute insideLength_mm : Real; attribute insideWidth_mm : Real; attribute insideHeight_mm : Real; }\n    part def Camera { port frameOut : ImagePort; }\n    part def VisionProcessor { port frameIn : ~ImagePort; port resultOut : LocalObservationPort; }\n    part def Recorder { port frameIn : ~ImagePort; port observationIn : ~LocalObservationPort; }\n}",
+    "PerceptionOffer.sysml": "// READ ONLY: named product facts. No hardware or parser test claimed.\npackage PerceptionOffer {\n private import HardwareOffers::*;\n part def OfferedLidar :> Mid360S;\n part def OfferedDepthCamera :> D435i;\n}\n",
+    "MechatronicsOffer.sysml": "// SYNTHETIC OFFER M-01. Fixed source catalog. Parser NOT RUN.\npackage MechatronicsOffer {\n    private import ScalarValues::*;\n    private import RoverLibrary::*;\n    part def OfferedChassis :> DriveBase {\n        :>> wheelRadius_m = 0.05;\n        :>> track_m = 0.28;\n        doc /* CH-01 includes MOTOR-L, MOTOR-R, MOTOR-CTRL. Do not purchase/count twice. */\n    }\n    part def Battery96 :> Battery {\n        :>> energy_Wh = 96.0;\n        :>> length_mm = 120.0; :>> width_mm = 80.0; :>> height_mm = 45.0;\n    }\n    part def Battery160 :> Battery {\n        :>> energy_Wh = 160.0;\n        :>> length_mm = 140.0; :>> width_mm = 80.0; :>> height_mm = 45.0;\n    }\n    part def OriginalTray :> Tray {\n        :>> insideLength_mm = 130.0; :>> insideWidth_mm = 90.0; :>> insideHeight_mm = 50.0;\n    }\n    part def ExpandedTray :> Tray {\n        :>> insideLength_mm = 150.0; :>> insideWidth_mm = 90.0; :>> insideHeight_mm = 50.0;\n        doc /* CNC candidate envelope only; strength, tolerances and manufacturing NOT CHECKED. */\n    }\n}",
+    "SoftwareOffer.sysml": "// SYNTHETIC OFFER S-01. Application proposals, not operational software.\npackage SoftwareOffer {\n    private import RoverLibrary::*;\n    part def LocalNavigation :> Navigation {\n        :>> requiresInternet = false;\n        doc /* Consumes Scan2D and declared IMU input; emits BodyVelocity.\n               Controller behavior and physical stopping are not tested. */\n    }\n    part def LocalVision :> VisionProcessor;\n    part def LocalRecorder :> Recorder;\n}",
+    "HardwareOffers.sysml": "// REAL PRODUCT NAMES / PUBLISHED FACTS + EXPLICIT DESIGN ABSTRACTIONS.\n// Authored draft. Parser NOT RUN. See hardware_catalog.json for per-field sources.\npackage HardwareOffers {\n    private import ScalarValues::*;\n    private import RoverLibrary::*;\n    item def LivoxEthernetPackets;\n    item def PointCloud2Data;\n    item def USBDeviceStream;\n    port def LivoxPacketPort { out item packet : LivoxEthernetPackets; }\n    port def PointCloudPort { out item cloud : PointCloud2Data; }\n    port def USBDevicePort { out item stream : USBDeviceStream; }\n    part def ComputeHost { attribute memory_GB : Integer; attribute cudaHardware : Boolean; }\n    part def JetsonOrinNX16Module {\n        attribute memory_GB : Integer = 16;\n        attribute length_mm : Real = 69.6;\n        attribute width_mm : Real = 45.0;\n        doc /* HW-NX: MODULE, not carrier. External supply & USB budget depend on carrier. */\n    }\n    part def UnselectedCarrier { doc /* UNKNOWN: part number, external input, USB current, SSD, cooling. */ }\n    part def JetsonAssembly :> ComputeHost {\n        attribute :>> memory_GB = 16;\n        attribute :>> cudaHardware = true;\n        part module : JetsonOrinNX16Module;\n        part carrier : UnselectedCarrier;\n    }\n    part def RaspberryPi5_8 :> ComputeHost {\n        attribute :>> memory_GB = 8;\n        attribute :>> cudaHardware = false;\n        attribute boardLength_mm : Real = 85.0;\n        attribute boardWidth_mm : Real = 56.0;\n        doc /* HW-PI: BCM2712, 4xA76 2.4GHz, two USB3, Gigabit Ethernet. */\n    }\n    part def RaspberryPi5_16 :> RaspberryPi5_8 { attribute :>> memory_GB = 16; }\n    part def Mid360S {\n        attribute minSupply_V : Real = 9.0;\n        attribute maxSupply_V : Real = 27.0;\n        attribute referencePower_W : Real = 6.5;\n        attribute coldSelfHeatPeak_W : Real = 14.0;\n        attribute nominalPointRate_per_s : Real = 200000.0;\n        attribute typicalFrame_Hz : Real = 10.0;\n        attribute length_mm : Real = 65.0;\n        attribute width_mm : Real = 65.0;\n        attribute height_mm : Real = 60.0;\n        port packets : LivoxPacketPort;\n        part imu : Imu;\n        doc /* HW-LIVOX: ICM40609 inside; raw data is not LaserScan. */\n    }\n    part def LivoxDriver {\n        port packetIn : ~LivoxPacketPort;\n        port cloudOut : PointCloudPort;\n        port imuOut : ImuPort;\n        doc /* SDK/firmware and S-capable driver revision must be verified. */\n    }\n    part def CloudProjection {\n        port cloudIn : ~PointCloudPort;\n        port scanOut : ScanPort;\n        doc /* pointcloud_to_laserscan obligation; frame and height slice NOT calibrated. */\n    }\n    part def StateEstimator { port imuIn : ~ImuPort; doc /* Wheel odom and TF configuration pending. */ }\n    part def D435i {\n        attribute length_mm : Real = 90.0;\n        attribute depth_mm : Real = 25.0;\n        attribute height_mm : Real = 25.0;\n        attribute depthFovHorizontal_deg : Real = 87.0;\n        attribute depthFovVertical_deg : Real = 58.0;\n        port usbStream : USBDevicePort;\n        part imu : Imu;\n        doc /* HW-D435: depth global shutter; RGB rolling. Host required. */\n    }\n    part def RealSenseDriver {\n        port usbIn : ~USBDevicePort;\n        port frameOut : ImagePort;\n        port imuOut : ImuPort;\n        doc /* Driver interpretation of USB streams; no physical USB wire is modeled here. */\n    }\n}"
+  },
+  "catalog": {
+    "version": "rover-hardware-catalog/1",
+    "reviewedOn": "2026-09-15",
+    "sources": [
+      {
+        "id": "HW-NX",
+        "title": "NVIDIA · Jetson Orin NX Series Modules datasheet",
+        "url": "https://developer.nvidia.com/downloads/jetson-orin-nx-module-series-data-sheet",
+        "location": "Overview pp.1–3; Module drawing",
+        "scope": "16GB module CPU/GPU/memory, 69.6×45mm, external storage, module power modes. Carrier and whole-system input are NOT specified by these facts."
+      },
+      {
+        "id": "HW-PI",
+        "title": "Raspberry Pi · Raspberry Pi 5 product specification",
+        "url": "https://www.raspberrypi.com/products/raspberry-pi-5/",
+        "location": "Specification",
+        "scope": "BCM2712, A76 2.4GHz, RAM variants, USB/Ethernet/PCIe. PSU capacity is not average load."
+      },
+      {
+        "id": "HW-PI-MECH",
+        "title": "Raspberry Pi 5 · official mechanical drawing",
+        "url": "https://pip.raspberrypi.com/documents/RP-008347-DS-1-raspberry-pi-5-mechanical-drawing.pdf",
+        "location": "single sheet",
+        "scope": "85×56mm reference board outline. Drawing explicitly excludes production data/tolerances and some components."
+      },
+      {
+        "id": "HW-PI-USB",
+        "title": "Raspberry Pi documentation · USB current and fan budget",
+        "url": "https://www.raspberrypi.com/documentation/computers/raspberry-pi.html",
+        "location": "Universal Serial Bus → Raspberry Pi 5",
+        "scope": "600mA peripheral limit with ordinary 3A supply, 1.6A with detected 5V5A supply; budget shared with fan."
+      },
+      {
+        "id": "HW-D435",
+        "title": "RealSense · D435i technical specification",
+        "url": "https://www.realsenseai.com/cn/products/d435i/",
+        "location": "深度参数 / RGB / 物理参数",
+        "scope": "Stereo depth, 87×58° depth FOV, ideal .3–3m, depth up to1280×720, up to90fps in supported modes (not necessarily together), RGB1920×1080@30, USB-C3.1Gen1,90×25×25mm, IMU."
+      },
+      {
+        "id": "HW-RS-ROS",
+        "title": "RealSense · ROS wrapper",
+        "url": "https://github.com/realsenseai/realsense-ros",
+        "location": "README and device/stream configuration",
+        "scope": "Driver/stream integration reference; actual target OS, firmware, stream combinations and throughput remain untested."
+      },
+      {
+        "id": "HW-LIVOX",
+        "title": "Livox · Mid-360S specifications",
+        "url": "https://www.livoxtech.com/mid-360s/specs",
+        "location": "Basic specs / notes 2,4,5,8",
+        "scope": "360° by -7..52°,200kpoints/s,10Hztypical,100BASE-TX,ICM40609,9–27V,6.5W; selfheating peak14W;65×65×60mm265g.40m@10%100klx;100m is cutoff not guaranteed detection."
+      },
+      {
+        "id": "HW-LIVOX-SUPPORT",
+        "title": "Livox · Mid-360S support & downloads",
+        "url": "https://www.livoxtech.com/support/mid-360s",
+        "location": "downloads",
+        "scope": "Use exact S variant, protocol, SDK/driver release and firmware. User spelling LIVO360s is only an unconfirmed alias."
+      },
+      {
+        "id": "HW-LIVOX-ROS",
+        "title": "Livox · livox_ros_driver2",
+        "url": "https://github.com/Livox-SDK/livox_ros_driver2",
+        "location": "Supported lidar list; transfer formats",
+        "scope": "Public repository includes Mid360s material in indexed documentation; retrieved README snapshots differed. Pin/verify a Mid360s-capable version before deployment; no live driver tested here."
+      },
+      {
+        "id": "HW-PC2SCAN",
+        "title": "ROS perception · pointcloud_to_laserscan",
+        "url": "https://github.com/ros-perception/pointcloud_to_laserscan",
+        "location": "PointCloudToLaserScanNode",
+        "scope": "Converts PointCloud2 to LaserScan under configured height/frame/angle conditions; not universally interchangeable with a native scanner."
+      },
+      {
+        "id": "HW-SLAM",
+        "title": "SLAM Toolbox · 2D mapping and localization",
+        "url": "https://github.com/SteveMacenski/slam_toolbox",
+        "location": "API / subscriptions / transforms",
+        "scope": "LaserScan and transforms for chosen 2D route; motion estimation and TF must be provided and validated separately."
+      }
+    ],
+    "compute": {
+      "nx16": {
+        "name": "Jetson Orin NX 16GB",
+        "short": "Orin NX 16GB",
+        "form": "module_plus_unselected_carrier",
+        "ram_GB": 16,
+        "cpu": "8× Arm Cortex-A78AE",
+        "gpu": "1024 CUDA cores / 32 Tensor cores",
+        "memory": "16GB 128-bit LPDDR5",
+        "boardFootprint_mm": [
+          69.6,
+          45
+        ],
+        "cudaHardware": true,
+        "modulePowerModes_W": [
+          10,
+          15,
+          25,
+          40
+        ],
+        "storage": "External NVMe; carrier/SSD not selected",
+        "source": [
+          "HW-NX"
+        ],
+        "defaults": {
+          "computeA_W": 12,
+          "computeB_W": 24
+        }
+      },
+      "pi5_8": {
+        "name": "Raspberry Pi 5 · 8GB",
+        "short": "Pi 5 · 8GB",
+        "form": "single_board",
+        "ram_GB": 8,
+        "cpu": "4× Cortex-A76 @2.4GHz",
+        "gpu": "VideoCore VII; no NVIDIA CUDA GPU",
+        "memory": "LPDDR4X-4267",
+        "boardFootprint_mm": [
+          85,
+          56
+        ],
+        "cudaHardware": false,
+        "usb3HostPorts": 2,
+        "ethernet": "Gigabit Ethernet",
+        "storage": "microSD; PCIe2.0×1 NVMe requires HAT/adapter",
+        "source": [
+          "HW-PI",
+          "HW-PI-MECH",
+          "HW-PI-USB"
+        ],
+        "defaults": {
+          "computeA_W": 7,
+          "computeB_W": 11
+        }
+      },
+      "pi5_16": {
+        "name": "Raspberry Pi 5 · 16GB",
+        "short": "Pi 5 · 16GB",
+        "form": "single_board",
+        "ram_GB": 16,
+        "cpu": "4× Cortex-A76 @2.4GHz",
+        "gpu": "VideoCore VII; no NVIDIA CUDA GPU",
+        "memory": "LPDDR4X-4267",
+        "boardFootprint_mm": [
+          85,
+          56
+        ],
+        "cudaHardware": false,
+        "usb3HostPorts": 2,
+        "ethernet": "Gigabit Ethernet",
+        "storage": "microSD; PCIe2.0×1 NVMe requires HAT/adapter",
+        "source": [
+          "HW-PI",
+          "HW-PI-MECH",
+          "HW-PI-USB"
+        ],
+        "defaults": {
+          "computeA_W": 7,
+          "computeB_W": 11
+        }
+      }
+    },
+    "camera": {
+      "id": "D435I",
+      "name": "RealSense D435i",
+      "physicalId": "RS-D435I-01",
+      "body_mm": [
+        90,
+        25,
+        25
+      ],
+      "depthFov_deg": [
+        87,
+        58
+      ],
+      "idealDepthRange_m": [
+        0.3,
+        3
+      ],
+      "depthMaxResolution": [
+        1280,
+        720
+      ],
+      "depthMaxFps": 90,
+      "rgbPublishedMode": [
+        1920,
+        1080,
+        30
+      ],
+      "depthShutter": "global",
+      "rgbShutter": "rolling",
+      "usb": "USB-C 3.1 Gen1",
+      "imu": "built-in accelerometer + gyroscope",
+      "source": [
+        "HW-D435",
+        "HW-RS-ROS"
+      ],
+      "notes": "Maximum depth resolution and maximum frame rate are separate limits. Stream combination must be enumerated on real device. 4W is an editable power reservation, not a vendor rating."
+    },
+    "lidar": {
+      "id": "MID360S",
+      "name": "Livox Mid-360S",
+      "requestedAlias": "LIVO360s",
+      "aliasIdentity": "UNCONFIRMED_USER_SPELLING; this demo explicitly selects official Mid-360S",
+      "body_mm": [
+        65,
+        65,
+        60
+      ],
+      "mass_g": 265,
+      "horizontalFov_deg": 360,
+      "verticalFov_deg": [
+        -7,
+        52
+      ],
+      "pointRate_per_s": 200000,
+      "typicalFrame_Hz": 10,
+      "link": "100BASE-TX Ethernet",
+      "imu": "ICM40609",
+      "supply_V": [
+        9,
+        27
+      ],
+      "publishedPower_W": 6.5,
+      "coldSelfHeatPeak_W": 14,
+      "rangeTypical_m": 40,
+      "rangeConditions": "10% reflectivity at100klx",
+      "cutoff_m": 100,
+      "source": [
+        "HW-LIVOX",
+        "HW-LIVOX-SUPPORT",
+        "HW-LIVOX-ROS"
+      ]
+    }
+  },
+  "syntheticMechanical": {
+    "provenance": "ALL_SYNTHETIC_NOT_VENDOR_SPECS",
+    "energyUsableFraction": 0.8,
+    "baseBatterySideAverage_W": 32,
+    "visionIncrementDefault_W": 16,
+    "batteries": {
+      "small": {
+        "id": "BAT-96",
+        "Wh": 96,
+        "size_mm": [
+          120,
+          80,
+          45
+        ]
+      },
+      "large": {
+        "id": "BAT-160",
+        "Wh": 160,
+        "size_mm": [
+          140,
+          80,
+          45
+        ]
+      }
+    },
+    "trays": {
+      "original": {
+        "id": "TRAY-A",
+        "inside_mm": [
+          130,
+          90,
+          50
+        ],
+        "installedRoverWidth_mm": 330
+      },
+      "expanded": {
+        "id": "TRAY-B",
+        "inside_mm": [
+          150,
+          90,
+          50
+        ],
+        "installedRoverWidth_mm": 340
+      }
+    },
+    "chassis": {
+      "id": "CH-01",
+      "wheelRadius_m": 0.05,
+      "track_m": 0.28,
+      "included": [
+        "MOTOR-L",
+        "MOTOR-R",
+        "MOTOR-CTRL"
+      ]
+    },
+    "lidar": {
+      "id": "LID-01",
+      "includes": [
+        "IMU-L1"
+      ],
+      "outputType": "Scan2D"
+    },
+    "nav": {
+      "id": "NAV-LOCAL",
+      "requiresInternet": false,
+      "commandType": "BodyVelocity"
+    }
+  }
+}

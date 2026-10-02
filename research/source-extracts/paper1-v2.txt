@@ -1,0 +1,505 @@
+arXiv:2508.16181v2 [cs.SE] 6 Jul 2026
+
+
+
+
+                                         © 2025 IEEE. Personal use of this material is permitted. Permission from IEEE must be
+                                        obtained for all other uses, in any current or future media, including reprinting/republishing
+                                         this material for advertising or promotional purposes, creating new collective works, for
+                                          resale or redistribution to servers or lists, or reuse of any copyrighted component of this
+                                                                              work in other works.
+                                          This is the author’s version of the article that has been accepted for publication in IEEE
+                                                          ISSE 2025. The final version is available at IEEE Xplore.
+                                                           DOI: https://doi.org/10.1109/ISSE65546.2025.11369983
+LLM-Assisted Semantic Alignment and Integration
+in Collaborative Model-Based Systems Engineering
+                 Using SysML v2
+               1st Zirui Li                           2nd Stephan Husung                             3rd Haoze Wang
+Product and Systems Engineering Group Product and Systems Engineering Group Product and Systems Engineering Group
+     Technische Universität Ilmenau        Technische Universität Ilmenau        Technische Universität Ilmenau
+            Ilmenau, Germany                      Ilmenau, Germany                      Ilmenau, Germany
+ https://orcid.org/0009-0007-7983-7901 https://orcid.org/0000-0003-0131-5664 https://orcid.org/0009-0009-9826-9027
+
+
+
+
+   Abstract—Cross-organizational collaboration in Model-Based       (Top-down) with as-is specifications of subsystems (Bottom-
+Systems Engineering (MBSE) faces many challenges in achiev-         up) remains highly dependent on manual processing [12].
+ing semantic alignment across independently developed system        SysML v2, as a new generation of system modeling language,
+models. SysML v2 introduces enhanced structural modularity
+and formal semantics, offering a stronger foundation for in-        provides formalized semantics, stronger text modeling support,
+teroperable modeling. Meanwhile, GPT-based Large Language           and structural extension capabilities [3], [13] and thus provides
+Models (LLMs) provide new capabilities for assisting model          a good basis for improving collaborative MBSE.
+understanding and integration. This paper proposes a structured,        Recently, with the development of Large Language Models
+prompt-driven approach for LLM-assisted semantic alignment          (LLMs) such as ChatGPT, Artificial Intelligence (AI) has
+of SysML v2 models. The core contribution lies in the iterative
+development of an alignment approach and interaction prompts,       gradually been applied to the field of engineering modeling
+incorporating model extraction, semantic matching, and verifi-      to support e.g. understanding, transformation, and generation
+cation. The approach leverages SysML v2 constructs such as          of model information [14]–[16]. Nevertheless, LLM still faces
+alias, import, and metadata extensions to support traceable, soft   challenges such as insufficient understanding, uncertainty in
+alignment integration. It is demonstrated with a GPT-based LLM      output, and a lack of verification and tracking mechanisms for
+through an example of a measurement system. Benefits and
+limitations are discussed.                                          the engineering modeling [15], [17]–[20].
+   Index Terms—MBSE, Model-Based Collaboration, Systems                 Therefore, the core research question addressed in this paper
+Engineering, AI, LLM, SysML v2, Prompt Engineering                  is:
+                                                                        • How can LLM technology and SysML v2 constructs be
+
+                      I. I NTRODUCTION                                    combined to enable semantic alignment and integration
+                                                                          of cross-organizational MBSE models?
+   In the development of modern complex systems, Model-                 • How can a structured alignment approach be developed to
+Based Systems Engineering (MBSE) approach has become                      support company-specific semantic extensions, enabling
+increasingly important [1]. It emphasizes the use of formal               LLM to perform more context-aware model understand-
+or semi-formal modeling throughout the system lifecycle to                ing and integration?
+model elements of systems, analyze them, and use them                   This paper bases on previous research work [21] and
+for different tasks [2]. This approach not only improves the        focuses on exploring a LLM-assisted approach related to the
+systematic engineering process but also provides a structured       research question and the introduction of modeling extensions
+manner [3], [4], which has the potential to simplify cross-         to achieve model alignment and integration.
+company collaboration.
+                                                                                       II. S TATE OF T HE A RT
+   In a typical collaboration scenario where Original Equip-
+ment Manufacturer (OEM) and suppliers develop systems col-          A. Collaboration in MBSE
+laboratively, subsystem models are often created independently         Towards 2035, INCOSE states that the future of Systems
+by different partners and then integrated by OEM to enable          Engineering (SE) will increasingly rely on model-driven ways
+holistic analysis and assessment [5]–[7]. Different methods         of working to meet the development requirements of com-
+can be used for modeling (see e.g. [8], [9]). The differences       plex systems across domains and organizations [22]. In this
+in modeling methods and understanding of the engineers              context, SE focuses on issues such as modeling languages
+exacerbate inconsistencies in model structure and semantics,        semantic interoperability, tool chains and standardization of
+particularly in the early stages of system development when         methodologies [23].
+system maturity is low and design iterations are frequent [1],         In current collaborative development practices, there are
+[10], [11]. Aligning the intended subsystems requirements           structural heterogeneity and semantic misalignment among
+models because different teams usually use different model-       C. LLM-assisted Engineering
+ing method (see e.g. [8], [9]), modeling tools, and domain           In recent years, research into the application of LLMs
+abstraction approaches. This problem is especially apparent       in the field of MBSE has gradually emerged, demonstrating
+in cross-organizational scenarios such as OEM-supplier co-        significant potential in areas such as model generation, se-
+design. Studies have shown that even the same artifacts for the   mantic understanding, and system integration. The INCOSE-
+same product may be given different structural and semantic       published ‘Systems Engineering Vision 2035’ emphasizes that
+representations in the modeling process of different companies    future SE environments will be more uncertain, dynamic,
+[24].                                                             and interdisciplinary, and that SE can leverage technologies
+   Consistency management is another essential aspect of          such as AI to enhance its adaptability and sustainability [22],
+collaborative modeling. Feldmann et al. [11] proposed a dedi-     [23], [32]. This paper reviews the current state of art and
+cated graphical modeling language to define dependencies and      future directions for LLMs in SE from three perspectives:
+consistency rules between models, enabling automated checks       prompt engineering, AI and domain knowledge integration,
+throughout the model lifecycle. Lu et al. [25] transformed        and challenges in the engineering context.
+SysML models into OWL ontologies and used semantic rea-              Recent studies have investigated how LLMs can be guided
+soning to detect logical conflicts, achieving semantic-level      through prompt engineering to perform structured engineer-
+consistency checking. Harder et al. [26] combined SysML           ing tasks. Researchers have found that, with well-designed
+diagrams with OWL reasoning to create a unified modeling          prompts, LLMs are capable of generating system architecture
+and inference framework, broadening the use of ontology           elements without requiring specialized domain fine-tuning
+reasoning in engineering modeling. However, these solutions       [16]. Instead of relying on unstructured dialogue, model-driven
+typically require extensive upfront modeling discipline and       prompt engineering introduces formalization through domain-
+lack flexibility when scaling across heterogeneous domains        specific languages (DSLs), allowing for greater consistency,
+and companies.                                                    reuse, and version control across tools and environments [19].
+                                                                  Complementary efforts, such as the development of prompt
+                                                                  pattern catalogs, provide reusable templates for interacting
+B. Application of SysML v2                                        with LLMs in tasks like requirements classification and ar-
+                                                                  chitecture design in the early phase [20].
+   With the growing complexity of SE, traditional SysML v1           To improve semantic precision and contextual alignment,
+shows many limitations: limited expressiveness, challenges        recent studies have investigated integrating LLMs with struc-
+in automating graphical models, and semantic ambiguities          tured engineering knowledge bases. Gauthier et al. [33] pro-
+resulting from implementation as a UML profile. These chal-       posed a hybrid approach that combined engineering ontolo-
+lenges have driven the development and optimization of a new      gies and Retrieval Augmented Generation (RAG) to produce
+generation of modeling languages to meet the demands in           domain-specific content. In other practical applications, LLMs
+MBSE [27]. The introduction of SysML v2 aims to enhance           have been tested for their ability to extract modeling elements
+its capabilities in terms of modeling expressiveness, tool        directly from normative standards, reducing the manual mod-
+interoperability, and automated verification through semantic     eling effort and supporting the generation of SysML models
+restructuring and language architecture, features such as text-   for integration into MBSE [14].
+based modeling, modular structure, and a unified semantic core       Despite these advances, several limitations hinder the prac-
+to enhance its overall capabilities in terms of expressiveness,   tical adoption of LLMs in engineering contexts. First, the
+tool interoperability, and model validation support [27], [28].   lack of domain-specific training data and limited contextual
+   Previous studies have investigated SysML v2 from multiple      understanding make it difficult for LLMs to interpret domain-
+perspectives. Meanwhile, the formal semantics emphasized by       specific semantics, especially in SE modeling scenarios [16],
+SysML v2 support integration with verification tools, enabling    [34], [35]. Second, LLMs outputs can be unreliable, with risks
+model translation for contract checking and reachability anal-    of hallucination or semantic inconsistency, which compromise
+ysis using frameworks like Gamma and Imandra [29]. From           their utility in the engineering process [14], [20], [35]. Third,
+a language engineering view, research has addressed syntax        current implementations typically lack mechanisms for trace-
+consistency and maintainability, noting that SysML v2 still       ability, validation, and version control, making them difficult
+requires improvements in grammatical clarity and semantic         to integrate into rigorous engineering processes [19], [22].
+documentation [28]. Furthermore, research targeting industrial       These limitations highlight the demand for more structured
+scenarios includes proposed standardization guidelines for        and verifiable integration approaches that align LLM capabil-
+modeling in mechanical systems [3] and the exploration of         ities with the demands of MBSE.
+new modeling meta-models for product line variability man-
+agement [30]. Friedenthal et al. [31] summarized the potential     III. S CIENTIFIC A PPROACH TO LLM-A SSISTED M ODEL
+of SysML v2 to support the ‘single source of truth’ practice                             A LIGNMENT
+from the perspective of MBSE system evolution, and pointed          This paper proposes a systematic approach that combines
+out that lifecycle modeling, semantic consistency control, and    LLM and SysML v2 constructs to assist in model alignment
+model reuse will be key directions for future research.           and integration in collaborative MBSE. The proposed approach
+is organized into multiple structured stages, with alternating       early stages and requires further investigation, limiting LLMs’
+AI support and human verification. It emphasizes process ori-        potential contributions in this context.
+entation, semantic control, and structured prompt interaction           "Transformation-based integration" focuses on converting
+to support traceability and model consistency.                       models across modeling methodologies (e.g., SPES [9] to
+   Compared to traditional manual alignment process, this ap-        MagicGrid [8]). Although partially automatable, the absence
+proach aims not only to improve efficiency but also to enhance       of standardized SysML v2 methodologies and models restricts
+the semantic accuracy, structural stability, and traceability of     LLM learning and execution. Current tools and methods focus
+aligned model outputs from LLM.                                      on syntax-level migration from SysML v1 to v2 [31], [37],
+                                                                     while semantic alignment remains underdeveloped.
+A. Challenges in LLM-Assisted Model Alignment                           "Soft alignment" creates new alignment packages that map
+   Before developing an AI-assisted model alignment ap-              elements between OEM and supplier models, while retaining
+proach, it is necessary first to clarify the requirements that the   the original structure of both. Instead of enforcing a unified
+approach must meet. These requirements not only determine            structure, this approach supports independent development
+the verification criteria for approach design but also reflect the   by mapping relevant elements through lightweight extension
+current engineering practices and technical challenges faced in      libraries of existing SysML constructs (e.g. allocations). Al-
+LLM applications.                                                    though it requires initial manual configuration of semantic
+                                                                     libraries, it leverages LLM strengths in natural language pro-
+   • Efficient model alignment capability: Existing manual
+                                                                     cessing and semantic reasoning. LLMs can support traceable,
+     or rule-based alignment approaches often encounter is-
+                                                                     collaborative alignment through suggestion and refinement.
+     sues such as model complexity and semantic ambiguity
+                                                                        In summary, "soft alignment" currently offers the most
+     [11]. LLM can assist in extracting semantically similar
+                                                                     feasible and LLM-compatible concept. Its focus on semantic
+     items from natural language documents and part of exist-
+                                                                     mapping rather than structural modification, which aligns well
+     ing models [14], [15], but should address challenges such
+                                                                     with iterative, cross-organizational integration scenarios.
+     as semantic ambiguity and the difficulty of mapping on
+     model hierarchy level.                                          C. Iterative Refinement of the Integration Approach
+   • Output validity, repeatability, and semantic consis-
+                                                                        Developing an LLM-assisted approach for semantic align-
+     tency: LLM often produces non-deterministic results
+                                                                     ment and integration of SysML v2 models faces challenges.
+     (e.g., different outcomes from the same prompt run mul-
+                                                                     The non-deterministic nature of LLM makes their behavior in
+     tiple times) and may generate hallucinated or inconsistent
+                                                                     engineering contexts inherently difficult to predict and con-
+     outputs [17]–[19]. Consequently, output verification pro-
+                                                                     trol [16], [17], [19]. Furthermore, the complex and evolving
+     cedures and structural control mechanisms are required
+                                                                     semantics of collaborative MBSE models require a process
+     to ensure that the alignment process does not alter or
+                                                                     that is not only accurate but also traceable, verifiable, and
+     compromise the original model’s structural integrity and
+                                                                     acceptable within the engineering process.
+     semantic correctness.
+                                                                        To address these challenges, this work adopts an iterative
+   • Output traceability: In engineering environments, all
+                                                                     design approach based on agile test process development [38]
+     outputs must be traceable and verifiable. LLM outputs
+                                                                     and Design Research Methodology (DRM) [39]. The process
+     are often black boxes [16], [20], so mechanisms must
+                                                                     was developed and refined using an OEM and supplier SysML
+     be designed to support input-output mapping records,
+                                                                     v2 model example, supported by a domain-specific extension
+     confidence annotations, and user interaction traces to
+                                                                     library for soft alignment. Structured prompts and staged
+     enable human verification and subsequent maintenance.
+                                                                     user interactions were used to coordinate the ChatGPT-based
+In response to these requirements and challenges, a prompt-          assistant (GPT-4o) during the alignment process.
+driven approach was proposed to bridge the gap between the              Initial experiments with direct LLM prompting quickly ex-
+limitations of LLMs and the demands of collaborative MBSE.           posed critical limitations, including inconsistent outputs, lack
+                                                                     of traceability, and limited user control. This motivated the
+B. Model Integration Concepts                                        iterative refinement toward a structured, stage-based process
+   To formulate effective LLM-supported approaches, it is nec-       that introduced clear phases for syntax verification, model
+essary to briefly revisit possible integration concepts discussed    summarization, match generation, and result export.
+in previous work [21] —"unified modeling", "transformation-             In line with agile testing principles, each iteration incorpo-
+based integration", and "soft alignment" – with particular           rated early and continuous verification activities. Intermediate
+attention to their suitability for LLM application.                  results were manually reviewed and assessed for semantic
+   "Unified modeling" aims to define a unified methodology           accuracy, structural consistency, and alignment confidence.
+and model structure during collaboration. While beneficial           Issues observed in the output were systematically analyzed,
+in theory, this is rarely feasible in practice due to organiza-      and corresponding prompt modifications were made.
+tional company-specific modeling requirements. Additionally,            Through multiple refinement cycles, the process was en-
+research on the semantic layer of unified models (such as            hanced to improve semantic depth, consistency, and trans-
+ontology-driven approaches like CASCaDE [36]) is still in its        parency. Completeness checks were added to the model ex-
+traction phase; unmatched elements were explicitly reported in       •  Mapping Verification: All suggested mappings undergo
+the matching phase; and verifications included rationale, confi-        a secondary verification based on the SysML syntax and
+dence scores, and compliance with SysML semantics. Additive             semantic documentation;
+model packages were generated using proper alias/import              • Coverage Check: LLM must perform and report a cov-
+structures to preserve the original model structure, and results        erage check to confirm that all model elements and prior
+were exported in both machine-readable (JSON) and human-                stage outputs have been fully and correctly processed,
+readable formats. Structured annotations were also embedded             ensuring traceability and preventing silent omissions.
+to convey alignment rationale.                                       • Standardized Output Format: It is particularly suit-
+   The result of these iterations showed improved stability,            able for the semantic pre-processing stage before model
+traceability, and output consistency across repeated runs. How-         understanding. If formats are not standardized, LLM
+ever, the test result was limited to a small set of models and          may produce unstable output structures and semantic
+semantics. Broader verification remains necessary to confirm            confusion during model element extraction and semantic
+the approach’s ability. Building on these insights, a structured        classification, increasing the cost of manual verification.
+LLM-assisted model integration approach is summarized in                Adopting a unified structure such as JSON or specific
+the following section.                                                  syntax markup ensures that LLM outputs have structural
+                                                                        consistency, facilitating subsequent processing and veri-
+                         IV. R ESULT                                    fication.
+A. LLM-assisted Integration Approach                                 • Structured Comment Support: The generated SysML
+
+   Building upon the insights of the iterative refinement of            v2 model includes structured comment elements attached
+the integration approach (see subsection III-C), the following          to relevant model items, providing the rationale and
+section summarizes the staged process for the alignment and             intended meaning of alignment decisions. These comment
+key mechanisms designed to support reliable and traceable               elements are designed to enhance user understanding of
+semantic alignment of SysML v2 models.                                  the alignment context directly within the model.
+   The approach builds on the concept of soft alignment,             The approach described above can be realized with a system
+which avoids unified modeling and instead promotes a loosely       prompt, inspired by the structured prompt pattern proposed
+mapped integration mechanism (see subsection III-C). This          in [20]. The prompt emphasizes a staged process to drive
+approach is extended through the structural and semantic           model semantic understanding and structural generation, while
+constructs of SysML v2 and the interactive potential of LLMs.      incorporating user interaction confirmation throughout.
+Specifically, the process combines:                                B. Process Overview
+   • Structural reference and element reuse via SysML v2 con-         Figure 1 illustrates the LLM-assisted SysML v2 model
+     structs such as alias, public/private import, and package     alignment process, emphasizing structural stability and seman-
+     structures;                                                   tic clarity. The process is divided into seven stages. Each stage
+   • Semantic extensibility through a user-defined extension       requires explicit user confirmation to proceed; otherwise, the
+     library for identifying and differentiating alignment op-     system will iteratively optimize within the current stage. The
+     tions;                                                        stages are as follows:
+   • Prompt-driven generation by structuring the LLM in-
+                                                                      • Stage 0 - Preparation and Syntax Confirmation: Users
+     teraction into staged tasks with user checkpoints and               must provide textual model description (.txt), optional
+     verification steps.                                                 Unique Identifier (UID) for model information, and
+   Based on the investigation, the following integration ap-             optional semantic extension content (SysML v2 exten-
+proach is proposed:                                                      sion library). The LLM verifies the format, parses the
+   • Additive Modeling: Rather than directly modifying the               contextual structure, and generates preliminary analysis
+     original model content, LLM generates extended content              feedback. Additionally, to validate whether the LLM can
+     in an additionally created package and references the               correctly identify and utilize the user-uploaded semantic
+     original model elements via the SysML v2 ’import’                   extensions, the LLM should automatically generate a
+     mechanism. This approach prevents the destruction of                model alignment example based on the extension library;
+     the model structure and supports multiple rounds of              • Stage 1 - Model Element Summarization: The LLM
+     incremental alignment.                                              extracts structural definitions, usage, interfaces, require-
+   • Staged Process: The process involves structured se-                 ments, and semantic annotations, and outputs them uni-
+     quences and incorporates LLM interactive guidance, hu-              formly in JSON format or an intermediate representation
+     man verification and intervention at each stage to ensure           structure;
+     the accuracy and engineering acceptability of the output.        • Stage 2 - Match Candidate Suggestion: Based on
+   • Confidence-Scored Mapping Suggestions: Each model                   information such as naming similarity, interface match-
+     mapping recommendation is accompanied by an LLM-                    ing, extended semantics, or contextual tags, candidate
+     assigned confidence score to aid engineers in interpreta-           matching pairs are proposed. If the user intends to apply
+     tion;                                                               specific SysML v2 constructs (e.g., using allocation to
+                                         Fig. 1. LLM-assisted SysML v2 Model Alignment Process
+
+
+
+    assign subsystem behavior to an overall system use case),        These constructs allow LLMs to suggest semantic alignments
+    this intent should be explicitly specified in the prompt.        without modifying original model structures.
+    Without such guidance, the LLM may generate results                 In this context, alias and import are used to support
+    that lack semantic focus, thereby reducing consistency           lightweight referencing and reuse of elements between models.
+    and controllability of the outputs.                              In SysML v2, the alias construct provides a lightweight name
+  • Stage 3 - Mapping Verification: The LLM performs                 binding mechanism, allowing semantic equivalence mappings
+    semantic consistency analysis on the matching pairs,             between model elements without modifying the original struc-
+    identifies structural conflicts or inconsistencies in abstrac-   ture [40]. This supports naming consistency, offering a feasible
+    tion levels, followed by user verification of their semantic     approach for additive model alignment in cross-companies
+    appropriateness;                                                 modeling. The SysML import construct enables visibility
+  • Stage 4 - Aligned Package Generation: Create an align-           of elements via public or private import, enabling external
+    ment result package using references (e.g., private/public       reuse while preserving encapsulation, which is useful for
+    import), semantic relationships (e.g., specialize, connec-       maintaining structural independence in collaborative modeling
+    tion, allocation) and extension library to maintain the          and alignment. However, as SysML v2 and its supporting
+    independence of the original model structure;                    tools are still evolving, the practical implementation and
+  • Stage 5 - Consistency Check: Verify model structure,             effectiveness of these constructs require further evaluation and
+    reference scope, semantic relationships, and extended            research [27], [30]. To further support alignment, a semantic
+    semantic consistency;                                            extension library based on the SemanticMetadata package was
+  • Stage 6 - Export and Documentation: Export the                   developed. It extends AllocationUsage with metadata to label
+    integrated model, matching logs, and a list of potential         match result—such as ‘FullyMatched’, ‘RequireComplement’,
+    issue diagnoses.                                                 ‘RequireModification’, and ‘FullyUnmatched’, as shown in
+   This process is designed to support semantic alignment and        Figure 2, thereby improving the interpretability and traceabil-
+abstract mapping in SysML v2 through semantics such as               ity of LLM-generated alignment outputs.
+specialization, subset, redefine, extended metadata, semantic
+                                                                     D. Prompt-driven Realization and Verification
+annotations, and allocation. These semantics suggest potential
+for scalability, but further investigations are needed to confirm      To implement the process execution logic, a systematic
+its effectiveness in complex or large-scale industrial integration   template of the prompt was designed based on alias and
+scenarios.                                                           extension alignment, which includes the following points:
+                                                                       • only alias and extension are used for model alignment,
+
+C. Semantic alignment instance                                            without rewriting the original model structure,
+                                                                       • all alignment suggestions are provided in JSON format,
+   To achieve semantic alignment between independently de-                including confidence score and explanation,
+veloped SysML v2 models, this subsection illustrate an in-             • during the stages (see subsection IV-B), the LLM should
+stance of soft alignment concepts that preserves the structural           perform self-checks for structural and semantic consis-
+independence of original models. Rather than enforcing struc-             tency, and validate format and references using SysML
+tural unification, the alignment leverages existing SysML v2              v2 syntax rules and
+constructs—such as alias and import, combined with metadata-           • user confirmation points are set at each phase to control
+based extensions to enhance interpretability and traceability.            process transparency and accuracy.
+                                             Fig. 2. Excerpt of Alignment Extension Library
+
+
+
+In Stage 0 Preparation and Syntax Confirmation, the LLM                 Firstly, the current method primarily focuses on identifying
+initially misinterpreted the user-provided semantic extension        structural consistency at the naming level, effectively handling
+library. It incorrectly introduced #FullyMatched with semantic       structural alignment and alias mapping. However, it has not
+wrong structures in stage summary outputs. This behavior indi-       yet fully addressed deeper semantic discrepancies such as
+cated that the LLM had misunderstood the correct application         inconsistencies at the abstraction level, differences in inter-
+format of the extension.                                             face granularity, or mismatches in design intent. Therefore,
+   To address this, the user intervened and provided the fol-        future research should introduce alignment approaches target-
+lowing prompt to clarify the semantic rule:                          ing interface structure and behavioral semantics to enhance
+     allocation extension is wrong. right form: #Fully-              adaptability to complex heterogeneous models.
+     Matched allocation element1 to element2. element                   Second, the system prompt structure currently requires man-
+     cannot be definitions.                                          ual configuration each time. How to construct stable, reusable
+                                                                     prompt modules or persistent fine-tuned models to achieve sta-
+   After receiving this clarification, the LLM corrected its
+                                                                     ble output with prompts is a key direction for improving usage
+behavior and consistently applied the correct usage pattern in
+                                                                     efficiency and consistency. Moreover, LLMs’ understanding of
+subsequent stages without requiring further instructions. Its
+                                                                     complex semantic extensions remains unstable. During initial
+outputs became stable, context-aware, and syntactically valid,
+                                                                     use, inconsistencies in applying custom extension libraries
+with user interaction limited to confirmation.
+                                                                     can negatively affect the reliability of alignment outputs. To
+   This experiment illustrates how minimal human intervention
+                                                                     address this, one potential enhancement is the incorporation of
+can rectify early-stage semantic deviations in a structured
+                                                                     ontologies as structured semantic references. These ontological
+prompt-driven workflow. Figure 3 illustrates alignment results,
+                                                                     structures could complement prompt design or act as consis-
+which demonstrate process completeness, output traceability,
+                                                                     tency constraints, helping LLMs generate more grounded and
+and alignment transparency across test scenarios derived from
+                                                                     verifiable outputs [15], [33], [36]. How to introduce auxiliary
+OEM and Supplier SysML v2 example model in .txt file.
+                                                                     prompt generation, semantic constraint prompts, or semi-
+These results highlight the LLM’s ability to generalize from
+                                                                     automatic model integration while maintaining user control,
+minimal human correction, supporting effective alignment
+                                                                     will be one of the research directions for deepening semantic
+under structured prompting. Limitations and observations from
+                                                                     alignment and improving user operability.
+these evaluations are discussed in section V to inform future
+                                                                        Additionally, the current system lacks a transparent and
+refinements and broader validation efforts.
+                                                                     systematic feedback mechanism for explaining why certain
+   The complete prompt structure is available in the GitHub
+                                                                     mappings are suggested or rejected. This limits user oversight
+project repository under the file prompts/sysmlv2_
+                                                                     and interpretability of the alignment process. Introducing
+alignment_process.md [41].
+                                                                     structured reasoning elements or justification logs would im-
+   To illustrate the practical application of the proposed ap-
+                                                                     prove user trust, controllability and traceability of model.
+proach, example model alignment results are provided in
+                                                                        To extend applicability in industrial scenarios, improve-
+Figure 3 and GitHub prompts/examples/results/
+                                                                     ments are needed in model version control, toolchain inte-
+IntegratedModel_Alignment.txt [41]. The verifica-
+                                                                     gration, and automation. In the future, it may be possible
+tion focuses on demonstrating process completeness, output
+                                                                     to further integrate official SysML v2 API to achieve au-
+traceability, and alignment transparency across test scenarios
+                                                                     tomated processes. Additionally, REST API interfaces could
+derived from OEM and supplier SysML v2 models.
+                                                                     be introduced to enable data interoperability between front-
+                                                                     end and back-end systems, thereby supporting model version
+                       V. D ISCUSSION
+                                                                     management, prompt module reuse, and state preservation
+   Although the prompt-driven model alignment process pro-           within an enterprise-level tool chain.
+posed in this contribution demonstrates certain advantages in           In practice, balancing the level of prompt completeness with
+terms of structural and semantic transparency, there are still       the limitations of LLM context handling and generalization ca-
+limitations in deep integration, interoperability, and maintain-     pabilities remains an open challenge. Highly detailed prompts
+ability.                                                             with extensive stage-specific rules can improve structural
+                                                Fig. 3. Example Model Alignment Results
+
+
+
+consistency, but can increase processing latency, cognitive            •   Support for multi-round matching suggestion generation
+overload on the LLM, and output instability due to attention               and feedback iteration results in a stable, structure-
+degradation and token limits [42]. In contrast, too-simple                 independent alignment package structure.
+prompts tend to result in hallucinations, incomplete outputs,           Preliminary tests in a typical measurement system col-
+and lower repeatability [14], [20], [35]. Our current process        laboration scenario indicates potential feasibility in terms
+applies structured prompts selectively, with high completeness       of model structural consistency, semantic clarity, and user
+for extraction, candidate matching, and model generation             interaction efficiency. However, the current approach does
+stages, while allowing more interactive flexibility in validation    not yet cover all semantic-level alignment requirements, the
+and reporting phases. Nevertheless, further research is needed       prompt mechanism still relies on the user’s experience and
+to systematically optimize prompt engineering for industrial-        guidance in prompt construction, and the understanding of
+grade robustness.                                                    complex extension libraries still needs to be improved.
+   Overall, the method demonstrates the potential of combining          In summary, this work provides an initial process design for
+prompt-driven control, semantic extensions, and human-in-the-        LLM-assisted SysML v2 multi-source model collaboration and
+loop interaction for SysML v2 model integration, but still           semantic alignment. Through a measurement system example,
+requires advancements in deep semantic alignment, version            it demonstrates its operational feasibility and process stability,
+control, and API-level integration.                                  laying a replicable technical foundation for future research.
+
+           VI. C ONCLUSION AND F UTURE W ORK                                                      R EFERENCES
+                                                                      [1] J. A. Estefan et al., “Survey of model-based systems engineering (mbse)
+  This paper focuses on the task of integration of SysML                  methodologies,” Incose MBSE Focus Group, vol. 25, no. 8, pp. 1–12,
+v2 models with LLM assistance, proposing a prompt-driven                  2007.
+                                                                      [2] H. Hick, M. Bajzek, and C. Faustmann, “Definition of a system model
+semantic alignment system method for cross-company collab-                for model-based development,” SN Applied Sciences, vol. 1, no. 9, pp.
+orative MBSE. By combining the use of alias, import, and                  1–15, 2019.
+extended semantic library, the method supports incremental            [3] K. Boelsen, M. May, G. Jacobs, M. Mennicken, F. Moers, T. Zerwas,
+                                                                          and G. Höpfner, “Sysml v2 based modelling guidelines for mechanical
+modeling and semantic alignment between models without                    system elements,” Forschung im Ingenieurwesen, vol. 89, no. 1, 2025.
+compromising the original model structure.                            [4] C. Zhou, B. An, B. Yu, and S. Li, “Data exchange for sysml: A review,”
+  The core advantages of this approach are:                               in Mechanical Design and Simulation: Exploring Innovations for the
+                                                                          Future, ser. Lecture Notes in Mechanical Engineering, D. T. Pham,
+  • By employing a clear system prompt template design,                   Y. Lei, and Y. Lou, Eds. Singapore: Springer Nature Singapore, 2025,
+    the alignment process is divided into distinct phases,                pp. 835–846.
+                                                                      [5] Z. Li, F. Faheem, and S. Husung, “Collaborative model-based systems
+    enhancing user control and process transparency;                      engineering using dataspaces and sysml v2,” Systems, vol. 12, no. 1,
+  • The introduction of a semantic extension library provides             p. 18, 2024.
+    a relative general semantic mapping intermediary for              [6] S.-Y. Lu, W. Elmaraghy, G. Schuh, and R. Wilhelm, “A scientific
+                                                                          foundation of collaborative engineering,” CIRP Annals, vol. 56, no. 2,
+    multi-companies’ collaboration scenarios, enabling col-               pp. 605–634, 2007. [Online]. Available: https://www.sciencedirect.com/
+    laborative partners to share domain knowledge and build               science/article/pii/s0007850607001606
+    common semantics without unifying modeling method-                [7] K. Duehr, J. Heimicke, J. Breitschuh, M. Spadinger, D. Kopp,
+                                                                          L. Haertenstein, and A. Albers, “Understanding distributed product
+    ologies, while also providing a sustainably extendable                engineering: Dealing with complexity for situation- and demand-oriented
+    semantic basis for the model alignment process.                       process design,” Procedia CIRP, vol. 84, pp. 136–142, 2019.
+ [8] A. Morkevicius, A. Aleksandraviciene, and Z. Strolia, “System verifica-           287–289, 2021. [Online]. Available: https://link.springer.com/article/10.
+     tion and validation approach using the magicgrid framework,” INSIGHT,             1007/s10270-021-00881-2
+     vol. 26, no. 1, pp. 51–59, 2023.                                             [28] N. Jansen, J. Pfeiffe, B. Rumpe, D. Schmalzing, and A. Wortmann,
+ [9] W. Böhm, Model-Based Engineering of Collaborative Embedded Sys-                   “The language of sysml v2 under the magnifying glass,” The Journal of
+     tems: Extensions of the SPES Methodology. Springer, 2021.                         Object Technology, vol. 21, no. 3, p. 3:1, 2022.
+[10] M. El Hamlaoui, S. Ebersold, S. Bennani, A. Anwar, T. Dkaki,                 [29] V. Molnár, B. Graics, A. Vörös, S. Tonetta, L. Cristoforetti, G. Kimberly,
+     M. Nassar, and B. Coulette, “A model-driven approach to align                     P. Dyer, K. Giammarco, M. Koethe, J. Hester, J. Smith, and C. Grimm,
+     heterogeneous models of a complex system,” The Journal of Object                  “Towards the formal verification of sysml v2 models,” in Proceedings
+     Technology, vol. 20, no. 2, p. 2:1, 2021. [Online]. Available:                    of the ACM/IEEE 27th International Conference on Model Driven
+     https://hal.science/hal-03781930/                                                 Engineering Languages and Systems. New York, NY, USA: ACM,
+[11] S. Feldmann, K. Kernschmidt, M. Wimmer, and B. Vogel-Heuser, “Man-                2024, pp. 1086–1095.
+     aging inter-model inconsistencies in model-based systems engineering:        [30] J. Epp, T. Robert, O. Ruch, and A. Olechowski, “Transitioning towards
+     Application in automated production systems engineering,” Journal of              sysml v2 as a variability modeling language,” in 2023 ACM/IEEE
+     Systems and Software, vol. 153, pp. 105–134, 2019.                                International Conference on Model Driven Engineering Languages and
+[12] Z. Li, F. Faheem, and S. Husung, “Systematic use of model-based                   Systems Companion (MODELS-C). IEEE, 2023, pp. 251–256.
+     solution patterns using the example of a load cell.”                         [31] S. Friedenthal, “Future directions for mbse with sysml v2,” in Proceed-
+[13] M. Bajaj, S. Friedenthal, and E. Seidewitz, “Systems modeling language            ings of the 11th International Conference on Model-Based Software
+     (sysml v2) support for digital engineering,” INSIGHT, vol. 25, no. 1, pp.         and Systems Engineering. SCITEPRESS - Science and Technology
+     19–24, 2022.                                                                      Publications, 2023, pp. 5–9.
+[14] I. Ghanawi, M. W. Chami, M. Chami, M. Coric, and N. Abdoun,                  [32] Z. Lipšinić, N. Pavković, and S. Husung, “A review on the application
+     “Integrating ai with mbse for data extraction from medical standards,”            of model-based systems engineering in the development of safe circular
+     INCOSE International Symposium, vol. 34, no. 1, pp. 1354–1366, 2024.              systems,” IEEE Access, 2025.
+                                                                                  [33] J.-M. Gauthier, E. Jenn, and R. Conejo, “Ontology-driven llm assistance
+[15] J. Zhang and S. Yang, “Recommendations for the model-based systems
+                                                                                       for task-oriented systems engineering,” in Proceedings of the 13th Inter-
+     engineering modeling process based on the sysml model and domain
+                                                                                       national Conference on Model-Based Software and Systems Engineering
+     knowledge,” Applied Sciences, vol. 14, no. 10, p. 4010, 2024. [Online].
+                                                                                       - Volume 1: MBSE-AI Integration, INSTICC. SciTePress, 2025, pp.
+     Available: https://www.mdpi.com/2076-3417/14/10/4010
+                                                                                       383–394.
+[16] P. J. Kulkarni, D. Tissen, R. Bernijazov, and R. Dumitrescu, “Towards        [34] T. G. Topcu, M. Husain, M. Ofsa, and P. Wach, “Trust at your own peril:
+     automated design: Automatically generating modeling elements with                 A mixed methods exploration of the ability of large language models to
+     prompt engineering and generative artificial intelligence,” in DS 130:            generate expert–like systems engineering artifacts and a characterization
+     Proceedings of NordDesign 2024, Reykjavik, Iceland, 12th - 14th August            of failure modes,” Systems Engineering, 2025.
+     2024, 2024, pp. 617–625.                                                     [35] M. Hollender, C. Xu, and R. Tan, “Engineering challenges in industrial
+[17] M. U. Hadi, q. a. tashi, R. Qureshi, A. Shah, a. muneer, M. Irfan,                ai,” in Proceedings of the IEEE/ACM 3rd International Conference on
+     A. Zafar, M. B. Shaikh, N. Akhtar, J. Wu, and S. Mirjalili,                       AI Engineering - Software Engineering for AI. New York, NY, USA:
+     “Large language models: A comprehensive survey of its applications,               ACM, 2024, pp. 41–42.
+     challenges, limitations, and future prospects,” Authorea Preprints,          [36] CASCaDE Homepage, “Home,” 6/3/2025. [Online]. Available: https:
+     2023. [Online]. Available: https://www.authorea.com/doi/full/10.36227/            //cascade.gfse.org/
+     techrxiv.23589741.v3                                                         [37] C. Zhou, L. Li, Q. Ren, Z. Mu, B. Yu, and B. An, “Qvt-based sysml
+[18] M. Hollender, C. Xu, and R. Tan, “Engineering challenges in industrial            v2 model version difference transformation,” in 2024 China Automation
+     ai,” in Proceedings of the IEEE/ACM 3rd International Conference on               Congress (CAC). IEEE, 2024, pp. 6313–6318.
+     AI Engineering - Software Engineering for AI. New York, NY, USA:             [38] M. Baumgartner, M. Klonk, C. Mastnak, and R. Seidl, Agile Testing:
+     ACM, 2024, pp. 41–42.                                                             Der agile Weg zur Qualität. Carl Hanser Verlag GmbH Co KG, 2023.
+[19] R. Clarisó and J. Cabot, “Model-driven prompt engineering,” in 2023          [39] L. T. M. Blessing and A. Chakrabarti, DRM, a Design Research
+     ACM/IEEE 26th International Conference on Model Driven Engineering                Methodology. Springer, 2009.
+     Languages and Systems (MODELS). IEEE, 2023.                                  [40] “Sysml-v2-release/doc/2a-omg_systems_modeling_language.pdf at mas-
+[20] J. White, S. Hays, Q. Fu, J. Spencer-Smith, and D. C. Schmidt, “Chatgpt           ter · systems-modeling/sysml-v2-release,” 6/4/2025. [Online].
+     prompt patterns for improving code quality, refactoring, requirements             Available:     https://github.com/Systems-Modeling/SysML-v2-Release/
+     elicitation, and software design,” in Generative AI for Effective Software        blob/master/doc/2a-OMG_Systems_Modeling_Language.pdf
+     Development. Springer, Cham, 2024, pp. 71–108. [Online]. Available:          [41] GitHub, “ziruili-tu-ilmenau/cmbse: Repository for the model used
+     https://link.springer.com/chapter/10.1007/978-3-031-55642-5_4                     in the paper "collaborative model-based systems engineering using
+[21] Stephan Husung, Zirui Li, Faizan Faheem, “Kollaboratives model-based              dataspaces and sysml v2&quot,” 6/20/2025. [Online]. Available:
+     systems engineering unterverwendung von sysml v2 und dataspaces,” in              https://github.com/ziruili-tu-ilmenau/CMBSE
+     Tag des Systems Engineering 2024, D. Wilke, W. Koch, R. Kaffenberger,        [42] N. F. Liu, K. Lin, J. Hewitt, A. Paranjape, M. Bevilacqua, F. Petroni, and
+     and S. Dreiseitel, Eds. BoD – Books on Demand, 2024, pp. 119–127.                 P. Liang, “Lost in the middle: How language models use long contexts,”
+[22] Systems Engineering Vision 2035, “Systems engineering vision 2035,”               arXiv preprint arXiv:2307.03172, 2023.
+     6/17/2025. [Online]. Available: https://sevisionweb.incose.org/
+[23] W. D. Miller, “The future of systems engineering: Realizing the
+     systems engineering vision 2035,” in Transdisciplinarity and the Future
+     of Engineering. IOS Press, 2022, pp. 739–747. [Online]. Available:
+     https://ebooks.iospress.nl/doi/10.3233/atde220707
+[24] M. E. Hamlaoui, S. Bennani, M. Nassar, S. Ebersold, and B. Coulette,
+     “Heterogeneous design models alignment,” in Proceedings of the 33rd
+     Annual ACM Symposium on Applied Computing, H. M. Haddad, R. L.
+     Wainwright, and R. Chbeir, Eds. New York, NY, USA: ACM, 2018,
+     pp. 1695–1697.
+[25] S. Lu, A. Tazin, Y. Chen, M. M. Kokar, and J. Smith, “Detection of
+     inconsistencies in sysml/ocl models using owl reasoning,” SN Computer
+     Science, vol. 4, no. 2, p. 175, 2023.
+[26] B. Harder, S. Esser, and A. Borrmann, “Interpreting sysml diagrams in
+     conjunction with owl ontologies for semantic reasoning and inference,”
+     in Proc. of the 32nd EG-ICE International Workshop on Intelligent
+     Computing in Engineering, 2025.
+[27] J. Gray and B. Rumpe, “Reflections on the standardization of
+     sysml 2,” Software and Systems Modeling, vol. 20, no. 2, pp.
+

@@ -1,0 +1,39 @@
+{
+  "source_sha256": "a882610cd282660c1dc457ee8b4d128f567811767d100812987833a1e1089017",
+  "csv_data_records": 596,
+  "identified_requirements": 414,
+  "continuation_records": 182,
+  "software_bus_requirements": 82,
+  "demo_requirement_ids": [
+    "cSB4301",
+    "cSB4303",
+    "cSB4305",
+    "cSB4305.3",
+    "cSB4305.6",
+    "cSB4307",
+    "cSB4332",
+    "cSB4328"
+  ],
+  "continuation_policy": "Append blank-ID records to the immediately preceding identified record; retain original fields and line positions for review",
+  "gold_model_available": false,
+  "new_project_applicability_reviewed": false,
+  "sysml_import": "Eight requirement usages and one definition; original text and provenance only; semantic mapping pending",
+  "derived_files": [
+    {
+      "path": "derived/NASA_CFE_Imported.sysml",
+      "sha256": "dd8115c8b78c0fb56db9006112edc3564a764e2eed85c976fda473b20a6d5457"
+    },
+    {
+      "path": "derived/demo-bus-requirements.json",
+      "sha256": "a3a651872a5e95f00b1e1af5aad2729c9468cf50dcd396326efdd57914660d16"
+    },
+    {
+      "path": "derived/demo-requirements.md",
+      "sha256": "c9f7785ad8cf6bda4280a10d388a32fbc1252a52cfc93cb6ab8dd24dadea4a5f"
+    },
+    {
+      "path": "derived/requirements.jsonl",
+      "sha256": "ba38b2fba8679685a72e746a358e7e85bc93c98c4844b33895ae165ca6c688ce"
+    }
+  ]
+}

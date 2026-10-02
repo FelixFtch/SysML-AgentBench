@@ -1,0 +1,230 @@
+[
+  {
+    "requirement_id": "cSB4301",
+    "summary": "SB: Create Pipe",
+    "description": "Upon receipt of a Request to create a Pipe, the cFE shall create a Pipe with the Request-specified Pipe Depth and the Request-specified name.",
+    "rationale": "Run time creation of Pipes supports the cFE goals of easy Application integration and system reconfiguration.",
+    "source_records": [
+      {
+        "csv_record": 425,
+        "line_start": 510,
+        "line_end": 510,
+        "fields": {
+          "Summary": "SB: Create Pipe",
+          "Requirement ID": "cSB4301",
+          "Description": "Upon receipt of a Request to create a Pipe, the cFE shall create a Pipe with the Request-specified Pipe Depth and the Request-specified name.",
+          "Requirement Rationale": "Run time creation of Pipes supports the cFE goals of easy Application integration and system reconfiguration."
+        }
+      }
+    ],
+    "state": "imported_candidate",
+    "source_sha256": "a882610cd282660c1dc457ee8b4d128f567811767d100812987833a1e1089017",
+    "source_commit": "7d283938c9af5bd6e439f3fc307e61b0c7799640",
+    "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
+    "source_owner": "NASA cFE public repository",
+    "license": "Apache-2.0",
+    "is_rtx_requirement": false,
+    "configuration_placeholders": [],
+    "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
+  },
+  {
+    "requirement_id": "cSB4303",
+    "summary": "SB: Subscribe To Message",
+    "description": "Upon receipt of a Request to Subscribe to an SB message, the cFE shall establish a route using the Request-specified Message ID, the Request-specified Pipe ID, the Request-specified MsgId-to-Pipe limit and the Request-specified QoS.",
+    "rationale": "Run time subscription supports the cFE goals of easy system integration and run time reconfigurations.",
+    "source_records": [
+      {
+        "csv_record": 429,
+        "line_start": 514,
+        "line_end": 514,
+        "fields": {
+          "Summary": "SB: Subscribe To Message",
+          "Requirement ID": "cSB4303",
+          "Description": "Upon receipt of a Request to Subscribe to an SB message, the cFE shall establish a route using the Request-specified Message ID, the Request-specified Pipe ID, the Request-specified MsgId-to-Pipe limit and the Request-specified QoS.",
+          "Requirement Rationale": "Run time subscription supports the cFE goals of easy system integration and run time reconfigurations."
+        }
+      }
+    ],
+    "state": "imported_candidate",
+    "source_sha256": "a882610cd282660c1dc457ee8b4d128f567811767d100812987833a1e1089017",
+    "source_commit": "7d283938c9af5bd6e439f3fc307e61b0c7799640",
+    "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
+    "source_owner": "NASA cFE public repository",
+    "license": "Apache-2.0",
+    "is_rtx_requirement": false,
+    "configuration_placeholders": [],
+    "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
+  },
+  {
+    "requirement_id": "cSB4305",
+    "summary": "SB: Send Message",
+    "description": "Upon receipt of a Request to send an SB Message, the cFE shall route the SB Message to the Pipes of all Applications that have Subscribed to the SB Message.",
+    "rationale": "This form of message passing, supports one-to-one, one-to-many, and many-to-one (all desired by branch members) in a flexible, low overhead manner.  It has been common for telemetry packets to be sent to many destinations, such as a real-time telemetry.",
+    "source_records": [
+      {
+        "csv_record": 433,
+        "line_start": 518,
+        "line_end": 518,
+        "fields": {
+          "Summary": "SB: Send Message",
+          "Requirement ID": "cSB4305",
+          "Description": "Upon receipt of a Request to send an SB Message, the cFE shall route the SB Message to the Pipes of all Applications that have Subscribed to the SB Message.",
+          "Requirement Rationale": "This form of message passing, supports one-to-one, one-to-many, and many-to-one (all desired by branch members) in a flexible, low overhead manner.  It has been common for telemetry packets to be sent to many destinations, such as a real-time telemetry."
+        }
+      }
+    ],
+    "state": "imported_candidate",
+    "source_sha256": "a882610cd282660c1dc457ee8b4d128f567811767d100812987833a1e1089017",
+    "source_commit": "7d283938c9af5bd6e439f3fc307e61b0c7799640",
+    "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
+    "source_owner": "NASA cFE public repository",
+    "license": "Apache-2.0",
+    "is_rtx_requirement": false,
+    "configuration_placeholders": [],
+    "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
+  },
+  {
+    "requirement_id": "cSB4305.3",
+    "summary": "SB: Send Message - Pipe Overflow",
+    "description": "If routing a Message to an Application's Pipe results in a Pipe Overflow, the cFE shall abort the send to that pipe, issue an event, increment the Pipe Overflow error counter, and continue sending to the remaining pipes.",
+    "rationale": "The ground needs to know if a message cannot be routed to its destination. A Pipe Overflow occurs when the SB attempts to write to a Pipe that is completely full of SB messages. The number of messages a Pipe is capable of storing is defined by a platform configuration parameter.",
+    "source_records": [
+      {
+        "csv_record": 436,
+        "line_start": 522,
+        "line_end": 522,
+        "fields": {
+          "Summary": "SB: Send Message - Pipe Overflow",
+          "Requirement ID": "cSB4305.3",
+          "Description": "If routing a Message to an Application's Pipe results in a Pipe Overflow, the cFE shall abort the send to that pipe, issue an event, increment the Pipe Overflow error counter, and continue sending to the remaining pipes.",
+          "Requirement Rationale": "The ground needs to know if a message cannot be routed to its destination. A Pipe Overflow occurs when the SB attempts to write to a Pipe that is completely full of SB messages. The number of messages a Pipe is capable of storing is defined by a platform configuration parameter."
+        }
+      }
+    ],
+    "state": "imported_candidate",
+    "source_sha256": "a882610cd282660c1dc457ee8b4d128f567811767d100812987833a1e1089017",
+    "source_commit": "7d283938c9af5bd6e439f3fc307e61b0c7799640",
+    "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
+    "source_owner": "NASA cFE public repository",
+    "license": "Apache-2.0",
+    "is_rtx_requirement": false,
+    "configuration_placeholders": [],
+    "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
+  },
+  {
+    "requirement_id": "cSB4305.6",
+    "summary": "SB: Send Message - Max Size",
+    "description": "If the SB Message is greater than the `<MISSION_DEFINED>` maximum message size then the cFE shall not send the message, issue an event message and increment the message send error counter.",
+    "rationale": "The cFE should not make any assumptions about why the message was too big and just not send it.",
+    "source_records": [
+      {
+        "csv_record": 439,
+        "line_start": 526,
+        "line_end": 526,
+        "fields": {
+          "Summary": "SB: Send Message - Max Size",
+          "Requirement ID": "cSB4305.6",
+          "Description": "If the SB Message is greater than the `<MISSION_DEFINED>` maximum message size then the cFE shall not send the message, issue an event message and increment the message send error counter.",
+          "Requirement Rationale": "The cFE should not make any assumptions about why the message was too big and just not send it."
+        }
+      }
+    ],
+    "state": "imported_candidate",
+    "source_sha256": "a882610cd282660c1dc457ee8b4d128f567811767d100812987833a1e1089017",
+    "source_commit": "7d283938c9af5bd6e439f3fc307e61b0c7799640",
+    "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
+    "source_owner": "NASA cFE public repository",
+    "license": "Apache-2.0",
+    "is_rtx_requirement": false,
+    "configuration_placeholders": [
+      "MISSION_DEFINED"
+    ],
+    "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
+  },
+  {
+    "requirement_id": "cSB4307",
+    "summary": "SB: Receive Message With Timeout",
+    "description": "Upon receipt of a Request to receive a SB Message from a Pipe with a pending timeout, the cFE shall suspend execution of the Application until a SB Message is present on the Pipe or the timeout has expired.",
+    "rationale": "A receive Request with a suspension timeout provides a blocking method of retrieving SB messages. This is useful for data driven Applications and has been used on all heritage missions with a SB. The timeout is useful for fault recovery for Applications that always expect data to arrive or to allow periodic processing for Applications that are not purely data driven. If a SB Message is queued on the Pipe then the SB Message will be provided to the Application and the Application’s execution will not be suspended. Tasks that process telemetry packets often receive many types of packets from different sources.  There should be a mechanism that allows a task to wait for many different types of messages simultaneously.  Heritage implementations of SB do this by directing the messages into one queue (or several queues, to implement priority levels).\n",
+    "source_records": [
+      {
+        "csv_record": 443,
+        "line_start": 530,
+        "line_end": 531,
+        "fields": {
+          "Summary": "SB: Receive Message With Timeout",
+          "Requirement ID": "cSB4307",
+          "Description": "Upon receipt of a Request to receive a SB Message from a Pipe with a pending timeout, the cFE shall suspend execution of the Application until a SB Message is present on the Pipe or the timeout has expired.",
+          "Requirement Rationale": "A receive Request with a suspension timeout provides a blocking method of retrieving SB messages. This is useful for data driven Applications and has been used on all heritage missions with a SB. The timeout is useful for fault recovery for Applications that always expect data to arrive or to allow periodic processing for Applications that are not purely data driven. If a SB Message is queued on the Pipe then the SB Message will be provided to the Application and the Application’s execution will not be suspended. Tasks that process telemetry packets often receive many types of packets from different sources.  There should be a mechanism that allows a task to wait for many different types of messages simultaneously.  Heritage implementations of SB do this by directing the messages into one queue (or several queues, to implement priority levels).\n"
+        }
+      }
+    ],
+    "state": "imported_candidate",
+    "source_sha256": "a882610cd282660c1dc457ee8b4d128f567811767d100812987833a1e1089017",
+    "source_commit": "7d283938c9af5bd6e439f3fc307e61b0c7799640",
+    "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
+    "source_owner": "NASA cFE public repository",
+    "license": "Apache-2.0",
+    "is_rtx_requirement": false,
+    "configuration_placeholders": [],
+    "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
+  },
+  {
+    "requirement_id": "cSB4332",
+    "summary": "SB: Subscribe to Message With Defaults",
+    "description": "Upon receipt of a Request, the cFE shall establish a route for the requested message ID on the requested pipe, using the '<MISSION_DEFINED>' default quality of service and message limit.",
+    "rationale": "Subscription management.",
+    "source_records": [
+      {
+        "csv_record": 467,
+        "line_start": 555,
+        "line_end": 555,
+        "fields": {
+          "Summary": "SB: Subscribe to Message With Defaults",
+          "Requirement ID": "cSB4332",
+          "Description": "Upon receipt of a Request, the cFE shall establish a route for the requested message ID on the requested pipe, using the '<MISSION_DEFINED>' default quality of service and message limit.",
+          "Requirement Rationale": "Subscription management."
+        }
+      }
+    ],
+    "state": "imported_candidate",
+    "source_sha256": "a882610cd282660c1dc457ee8b4d128f567811767d100812987833a1e1089017",
+    "source_commit": "7d283938c9af5bd6e439f3fc307e61b0c7799640",
+    "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
+    "source_owner": "NASA cFE public repository",
+    "license": "Apache-2.0",
+    "is_rtx_requirement": false,
+    "configuration_placeholders": [
+      "MISSION_DEFINED"
+    ],
+    "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
+  },
+  {
+    "requirement_id": "cSB4328",
+    "summary": "SB: Validate Checksum",
+    "description": "Upon receipt of a Request, the cFE shall provide the checksum validation result of the requested message.",
+    "rationale": "Message management utility.",
+    "source_records": [
+      {
+        "csv_record": 461,
+        "line_start": 549,
+        "line_end": 549,
+        "fields": {
+          "Summary": "SB: Validate Checksum",
+          "Requirement ID": "cSB4328",
+          "Description": "Upon receipt of a Request, the cFE shall provide the checksum validation result of the requested message.",
+          "Requirement Rationale": "Message management utility."
+        }
+      }
+    ],
+    "state": "imported_candidate",
+    "source_sha256": "a882610cd282660c1dc457ee8b4d128f567811767d100812987833a1e1089017",
+    "source_commit": "7d283938c9af5bd6e439f3fc307e61b0c7799640",
+    "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
+    "source_owner": "NASA cFE public repository",
+    "license": "Apache-2.0",
+    "is_rtx_requirement": false,
+    "configuration_placeholders": [],
+    "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
+  }
+]

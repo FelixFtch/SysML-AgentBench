@@ -1,0 +1,1092 @@
+{
+  "schema": "rover.hardware.graph/1",
+  "revision": "B2",
+  "source_kind": "AUTHORED_BROWSER_FIXTURE_NOT_SYSML_AST",
+  "config": {
+    "id": "B2",
+    "requirementRevision": "REQ-B",
+    "vision": true,
+    "battery": {
+      "id": "BAT-160",
+      "Wh": 160,
+      "size_mm": [
+        140,
+        80,
+        45
+      ]
+    },
+    "tray": {
+      "id": "TRAY-B",
+      "inside_mm": [
+        150,
+        90,
+        50
+      ],
+      "installedRoverWidth_mm": 340
+    },
+    "basePower_W": 27.222222,
+    "visionIncrement_W": 8.888889,
+    "power_W": 36.111111,
+    "usableFraction": 0.8,
+    "minRuntime_h": 2,
+    "maxWidth_mm": 350,
+    "requiresInternet": false,
+    "hardware": {
+      "computeId": "pi5_16",
+      "computeA_W": 7,
+      "computeB_W": 11,
+      "drive_W": 10,
+      "other_W": 1,
+      "cameraReservation_W": 4,
+      "conversionEfficiency": 0.9,
+      "lidarSupply_V": 12,
+      "pointcloudAdapter": true,
+      "usbMode": "usb3",
+      "piSupply": "5a",
+      "usbOther_A": 0.15,
+      "fan_A": 0.15,
+      "visionRuntime": "portable",
+      "depthProfile": [
+        1280,
+        720,
+        30
+      ],
+      "depthUseMax_m": 3,
+      "jetsonCarrier": "NOT_SELECTED",
+      "firmware": "NOT_PINNED",
+      "osImage": "TO_BE_VALIDATED"
+    },
+    "hardwareFacts": {
+      "compute": {
+        "name": "Raspberry Pi 5 · 16GB",
+        "short": "Pi 5 · 16GB",
+        "form": "single_board",
+        "ram_GB": 16,
+        "cpu": "4× Cortex-A76 @2.4GHz",
+        "gpu": "VideoCore VII; no NVIDIA CUDA GPU",
+        "memory": "LPDDR4X-4267",
+        "boardFootprint_mm": [
+          85,
+          56
+        ],
+        "cudaHardware": false,
+        "usb3HostPorts": 2,
+        "ethernet": "Gigabit Ethernet",
+        "storage": "microSD; PCIe2.0×1 NVMe requires HAT/adapter",
+        "source": [
+          "HW-PI",
+          "HW-PI-MECH",
+          "HW-PI-USB"
+        ],
+        "defaults": {
+          "computeA_W": 7,
+          "computeB_W": 11
+        }
+      },
+      "camera": {
+        "id": "D435I",
+        "name": "RealSense D435i",
+        "physicalId": "RS-D435I-01",
+        "body_mm": [
+          90,
+          25,
+          25
+        ],
+        "depthFov_deg": [
+          87,
+          58
+        ],
+        "idealDepthRange_m": [
+          0.3,
+          3
+        ],
+        "depthMaxResolution": [
+          1280,
+          720
+        ],
+        "depthMaxFps": 90,
+        "rgbPublishedMode": [
+          1920,
+          1080,
+          30
+        ],
+        "depthShutter": "global",
+        "rgbShutter": "rolling",
+        "usb": "USB-C 3.1 Gen1",
+        "imu": "built-in accelerometer + gyroscope",
+        "source": [
+          "HW-D435",
+          "HW-RS-ROS"
+        ],
+        "notes": "Maximum depth resolution and maximum frame rate are separate limits. Stream combination must be enumerated on real device. 4W is an editable power reservation, not a vendor rating."
+      },
+      "lidar": {
+        "id": "MID360S",
+        "name": "Livox Mid-360S",
+        "requestedAlias": "LIVO360s",
+        "aliasIdentity": "UNCONFIRMED_USER_SPELLING; this demo explicitly selects official Mid-360S",
+        "body_mm": [
+          65,
+          65,
+          60
+        ],
+        "mass_g": 265,
+        "horizontalFov_deg": 360,
+        "verticalFov_deg": [
+          -7,
+          52
+        ],
+        "pointRate_per_s": 200000,
+        "typicalFrame_Hz": 10,
+        "link": "100BASE-TX Ethernet",
+        "imu": "ICM40609",
+        "supply_V": [
+          9,
+          27
+        ],
+        "publishedPower_W": 6.5,
+        "coldSelfHeatPeak_W": 14,
+        "rangeTypical_m": 40,
+        "rangeConditions": "10% reflectivity at100klx",
+        "cutoff_m": 100,
+        "source": [
+          "HW-LIVOX",
+          "HW-LIVOX-SUPPORT",
+          "HW-LIVOX-ROS"
+        ]
+      }
+    },
+    "powerPlan": {
+      "baseDevice_W": 24.5,
+      "baseBattery_W": 27.222222,
+      "defaultIncrementBattery_W": 8.888889,
+      "cameraUsbReservation_A": 0.8,
+      "sources": {
+        "lidar": "HW-LIVOX published reference power, not actual average",
+        "allOtherPower": "AUTHOR_EDITABLE_DESIGN_ALLOWANCES",
+        "efficiency": "AUTHOR_ASSUMPTION"
+      },
+      "scope": "Device-side loads excluding downstream camera in host allowance; divide by aggregate DC efficiency ONCE. Base/tray/battery remain synthetic. No added mass/temperature model.",
+      "effectiveIncrementBattery_W": 8.888889,
+      "overrideIncrement": false,
+      "computeDeviceAllowance_W": 11
+    }
+  },
+  "nodes": [
+    {
+      "id": "rover",
+      "label": "小车系统",
+      "kind": "part",
+      "path": "Rover_B2::rover",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {},
+      "tags": [
+        "system"
+      ]
+    },
+    {
+      "id": "rover.battery",
+      "label": "电池",
+      "kind": "part",
+      "path": "Rover_B2::rover.battery",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "selection": "BAT-160",
+        "energy_Wh": 160,
+        "size_mm": [
+          140,
+          80,
+          45
+        ]
+      },
+      "tags": [
+        "电池",
+        "battery",
+        "续航",
+        "能源"
+      ]
+    },
+    {
+      "id": "rover.tray",
+      "label": "CNC电池托盘",
+      "kind": "part",
+      "path": "Rover_B2::rover.tray",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "selection": "TRAY-B",
+        "inside_mm": [
+          150,
+          90,
+          50
+        ]
+      },
+      "tags": [
+        "托盘",
+        "安装",
+        "尺寸",
+        "CNC"
+      ]
+    },
+    {
+      "id": "rover.lidar",
+      "label": "Livox Mid-360S",
+      "kind": "part",
+      "path": "Rover_B2::rover.lidar",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "model": "Mid-360S",
+        "physicalId": "LIVOX-S-01",
+        "output": "Ethernet/UDP point packets",
+        "pointRate_per_s": 200000,
+        "typicalFrame_Hz": 10,
+        "supply_V": [
+          9,
+          27
+        ],
+        "publishedPower_W": 6.5,
+        "body_mm": [
+          65,
+          65,
+          60
+        ],
+        "sourceRefs": [
+          "HW-LIVOX"
+        ],
+        "sourceStatus": "PUBLISHED_FACT"
+      },
+      "tags": [
+        "雷达",
+        "感知",
+        "MID-360S",
+        "点云",
+        "PointCloud2",
+        "以太网"
+      ]
+    },
+    {
+      "id": "rover.lidar.imu",
+      "label": "ICM40609 · 雷达内含",
+      "kind": "part",
+      "path": "Rover_B2::rover.lidar.imu",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "physicalId": "LIVOX-S-01/IMU",
+        "chip": "ICM40609",
+        "includedIn": "LIVOX-S-01",
+        "use": "driver output for estimator, not direct SLAM Toolbox input",
+        "calibration": "UNKNOWN",
+        "sourceRefs": [
+          "HW-LIVOX"
+        ]
+      },
+      "tags": [
+        "IMU",
+        "imu",
+        "内置",
+        "独立",
+        "ICM40609"
+      ]
+    },
+    {
+      "id": "rover.navigation",
+      "label": "本地二维导航",
+      "kind": "part",
+      "path": "Rover_B2::rover.navigation",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "route": "LaserScan-based mapping/localization + local navigation",
+        "input": "LaserScan + odometry/TF",
+        "output": "BodyVelocity",
+        "requiresInternet": false,
+        "deployedOn": "rover.compute",
+        "execution": "NOT_RUN",
+        "sourceRefs": [
+          "HW-SLAM"
+        ]
+      },
+      "tags": [
+        "导航",
+        "离线",
+        "软件"
+      ]
+    },
+    {
+      "id": "rover.chassis",
+      "label": "差速底盘",
+      "kind": "part",
+      "path": "Rover_B2::rover.chassis",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "physicalId": "CH-01",
+        "includes": [
+          "MOTOR-L",
+          "MOTOR-R",
+          "MOTOR-CTRL"
+        ],
+        "input": "WheelRPM",
+        "wheelRadius_m": 0.05,
+        "track_m": 0.28
+      },
+      "tags": [
+        "底盘",
+        "电机",
+        "命令"
+      ]
+    },
+    {
+      "id": "rover.chassis.motorLeft",
+      "label": "左电机",
+      "kind": "part",
+      "path": "Rover_B2::rover.chassis.motorLeft",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "physicalId": "MOTOR-L",
+        "includedIn": "CH-01"
+      },
+      "tags": [
+        "电机",
+        "包含"
+      ]
+    },
+    {
+      "id": "rover.chassis.motorRight",
+      "label": "右电机",
+      "kind": "part",
+      "path": "Rover_B2::rover.chassis.motorRight",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "physicalId": "MOTOR-R",
+        "includedIn": "CH-01"
+      },
+      "tags": [
+        "电机",
+        "包含"
+      ]
+    },
+    {
+      "id": "rover.meanLoadAtBattery_W",
+      "label": "电池侧平均功耗",
+      "kind": "attribute",
+      "path": "Rover_B2::rover.meanLoadAtBattery_W",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "base_W": 27.222222,
+        "added_W": 8.888889,
+        "total_W": 36.111111,
+        "plan": {
+          "baseDevice_W": 24.5,
+          "baseBattery_W": 27.222222,
+          "defaultIncrementBattery_W": 8.888889,
+          "cameraUsbReservation_A": 0.8,
+          "sources": {
+            "lidar": "HW-LIVOX published reference power, not actual average",
+            "allOtherPower": "AUTHOR_EDITABLE_DESIGN_ALLOWANCES",
+            "efficiency": "AUTHOR_ASSUMPTION"
+          },
+          "scope": "Device-side loads excluding downstream camera in host allowance; divide by aggregate DC efficiency ONCE. Base/tray/battery remain synthetic. No added mass/temperature model.",
+          "effectiveIncrementBattery_W": 8.888889,
+          "overrideIncrement": false,
+          "computeDeviceAllowance_W": 11
+        },
+        "provenance": "MIXED_PUBLISHED_REFERENCE_AND_ASSUMPTIONS"
+      },
+      "tags": [
+        "功耗",
+        "负载",
+        "相机",
+        "power"
+      ]
+    },
+    {
+      "id": "rover.estimatedRuntime_h",
+      "label": "续航分析",
+      "kind": "analysis",
+      "path": "Rover_B2::rover.estimatedRuntime_h",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "value_h": 3.5446153955218933,
+        "formula": "energy_Wh × 0.8 / meanLoadAtBattery_W"
+      },
+      "tags": [
+        "续航",
+        "runtime",
+        "电池",
+        "功耗"
+      ]
+    },
+    {
+      "id": "runtimeRequirement",
+      "label": "R-04续航要求",
+      "kind": "requirement",
+      "path": "Rover_B2::runtimeRequirement",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "id": "R-04",
+        "minimum_h": 2
+      },
+      "tags": [
+        "续航",
+        "要求"
+      ]
+    },
+    {
+      "id": "widthRequirement",
+      "label": "R-05宽度要求",
+      "kind": "requirement",
+      "path": "Rover_B2::widthRequirement",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "id": "R-05",
+        "maximum_mm": 350
+      },
+      "tags": [
+        "宽度",
+        "安装",
+        "要求"
+      ]
+    },
+    {
+      "id": "offlineOperation",
+      "label": "R-03离线要求",
+      "kind": "requirement",
+      "path": "Rover_B2::offlineOperation",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "id": "R-03",
+        "requiresInternet": false
+      },
+      "tags": [
+        "离线",
+        "要求"
+      ]
+    },
+    {
+      "id": "operationalWorkflow",
+      "label": "导航和状态记录职责",
+      "kind": "action",
+      "path": "Rover_B2::operationalWorkflow",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "states": [
+          "idle",
+          "navigating",
+          "stopped",
+          "fault"
+        ],
+        "runtimeStatus": "NOT_IMPLEMENTED"
+      },
+      "tags": [
+        "行为",
+        "导航",
+        "故障"
+      ]
+    },
+    {
+      "id": "rover.commandAdapter",
+      "label": "速度→轮速适配",
+      "kind": "part",
+      "path": "Rover_B2::rover.commandAdapter",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "type": "DiffDriveAdapter",
+        "wheelRadius_m": 0.05,
+        "track_m": 0.28
+      },
+      "tags": [
+        "接口",
+        "命令",
+        "轮速",
+        "适配"
+      ]
+    },
+    {
+      "id": "rover.camera",
+      "label": "RealSense D435i",
+      "kind": "part",
+      "path": "Rover_B2::rover.camera",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "physicalId": "RS-D435I-01",
+        "depthTechnology": "stereo/global shutter",
+        "rgbShutter": "rolling",
+        "usb": "USB-C3.1Gen1",
+        "depthFov_deg": [
+          87,
+          58
+        ],
+        "body_mm": [
+          90,
+          25,
+          25
+        ],
+        "depthProfileProposed": [
+          1280,
+          720,
+          30
+        ],
+        "depthRangePolicy_m": [
+          0.3,
+          3
+        ],
+        "powerReservation_W": 4,
+        "sourceRefs": [
+          "HW-D435",
+          "HW-RS-ROS"
+        ],
+        "concurrency": "NOT_RUN"
+      },
+      "tags": [
+        "深度",
+        "相机",
+        "图像",
+        "D435i",
+        "USB",
+        "深度"
+      ]
+    },
+    {
+      "id": "rover.visionProcessor",
+      "label": "本地视觉处理",
+      "kind": "part",
+      "path": "Rover_B2::rover.visionProcessor",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "deployedOn": "rover.compute",
+        "requiresInternet": false,
+        "runtime": "portable",
+        "execution": "NOT_RUN"
+      },
+      "tags": [
+        "相机",
+        "处理",
+        "离线",
+        "CUDA"
+      ]
+    },
+    {
+      "id": "rover.imageRecorder",
+      "label": "本地记录任务",
+      "kind": "part",
+      "path": "Rover_B2::rover.imageRecorder",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "deployedOn": "rover.compute",
+        "requiresInternet": false,
+        "storage": "NOT_SELECTED",
+        "execution": "NOT_RUN"
+      },
+      "tags": [
+        "相机",
+        "记录",
+        "离线"
+      ]
+    },
+    {
+      "id": "localVisionRequirement",
+      "label": "R-07新增视觉要求",
+      "kind": "requirement",
+      "path": "Rover_B2::localVisionRequirement",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "id": "R-07",
+        "source": "CR-08"
+      },
+      "tags": [
+        "相机",
+        "新增",
+        "要求"
+      ]
+    },
+    {
+      "id": "localVisionWorkflow",
+      "label": "采集→本地处理→记录",
+      "kind": "action",
+      "path": "Rover_B2::localVisionWorkflow",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "runtimeStatus": "NOT_IMPLEMENTED"
+      },
+      "tags": [
+        "相机",
+        "行为",
+        "离线"
+      ]
+    },
+    {
+      "id": "rover.compute",
+      "label": "Pi 5 · 16GB",
+      "kind": "part",
+      "path": "Rover_B2::rover.compute",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "selection": "pi5_16",
+        "ram_GB": 16,
+        "cpu": "4× Cortex-A76 @2.4GHz",
+        "gpu": "VideoCore VII; no NVIDIA CUDA GPU",
+        "form": "single_board",
+        "meanDeviceBudget_W": 11,
+        "powerBudgetProvenance": "AUTHOR_ASSUMPTION_NOT_TDP",
+        "storage": "microSD; PCIe2.0×1 NVMe requires HAT/adapter",
+        "sourceRefs": [
+          "HW-PI",
+          "HW-PI-MECH",
+          "HW-PI-USB"
+        ]
+      },
+      "tags": [
+        "Jetson",
+        "Orin",
+        "树莓派",
+        "Raspberry",
+        "Pi5",
+        "主控",
+        "计算",
+        "CUDA",
+        "电源",
+        "功耗"
+      ]
+    },
+    {
+      "id": "rover.livoxDriver",
+      "label": "Livox ROS Driver 2",
+      "kind": "part",
+      "path": "Rover_B2::rover.livoxDriver",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "target": "Mid-360S",
+        "output": "PointCloud2 + IMU",
+        "transport": "100BASE-TX / UDP",
+        "version": "PIN_S_CAPABLE_RELEASE",
+        "deployedOn": "rover.compute",
+        "execution": "NOT_RUN",
+        "sourceRefs": [
+          "HW-LIVOX-ROS"
+        ]
+      },
+      "tags": [
+        "驱动",
+        "雷达",
+        "MID-360S",
+        "PointCloud2"
+      ]
+    },
+    {
+      "id": "rover.cloudProjection",
+      "label": "点云→二维扫描",
+      "kind": "part",
+      "path": "Rover_B2::rover.cloudProjection",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "implementation": "pointcloud_to_laserscan",
+        "input": "PointCloud2",
+        "output": "LaserScan",
+        "heightSlice_m": null,
+        "targetFrame": null,
+        "configuration": "MUST_CONFIGURE_AND_VALIDATE",
+        "deployedOn": "rover.compute",
+        "sourceRefs": [
+          "HW-PC2SCAN"
+        ]
+      },
+      "tags": [
+        "点云",
+        "扫描",
+        "适配",
+        "PointCloud2"
+      ]
+    },
+    {
+      "id": "rover.stateEstimator",
+      "label": "状态估计 / TF职责",
+      "kind": "part",
+      "path": "Rover_B2::rover.stateEstimator",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "imuInput": "Livox driver IMU",
+        "otherInput": "wheel odometry",
+        "cameraImuInput": "NOT_FUSED",
+        "extrinsics": "UNVERIFIED",
+        "deployedOn": "rover.compute"
+      },
+      "tags": [
+        "IMU",
+        "时钟",
+        "坐标",
+        "TF"
+      ]
+    },
+    {
+      "id": "rover.camera.imu",
+      "label": "D435i · 内置IMU",
+      "kind": "part",
+      "path": "Rover_B2::rover.camera.imu",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "physicalId": "RS-D435I-01/IMU",
+        "includedIn": "RS-D435I-01",
+        "distinctPhysicalDevice": true,
+        "statisticalIndependence": "NOT_ASSESSED",
+        "fusion": "NOT_CONFIGURED",
+        "sourceRefs": [
+          "HW-D435"
+        ]
+      },
+      "tags": [
+        "D435i",
+        "IMU"
+      ]
+    },
+    {
+      "id": "rover.realsenseDriver",
+      "label": "RealSense ROS驱动",
+      "kind": "part",
+      "path": "Rover_B2::rover.realsenseDriver",
+      "file": "Rover_B2.sysml",
+      "revision": "B2",
+      "data": {
+        "input": "USB3 device streams",
+        "output": "RGBDFrame + CameraInfo + IMU",
+        "deployedOn": "rover.compute",
+        "version": "NOT_PINNED",
+        "sourceRefs": [
+          "HW-RS-ROS"
+        ]
+      },
+      "tags": [
+        "D435i",
+        "USB",
+        "驱动"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "rover",
+      "to": "rover.battery",
+      "type": "contains"
+    },
+    {
+      "from": "rover",
+      "to": "rover.tray",
+      "type": "contains"
+    },
+    {
+      "from": "rover",
+      "to": "rover.lidar",
+      "type": "contains"
+    },
+    {
+      "from": "rover.lidar",
+      "to": "rover.lidar.imu",
+      "type": "includes"
+    },
+    {
+      "from": "rover",
+      "to": "rover.navigation",
+      "type": "contains"
+    },
+    {
+      "from": "rover",
+      "to": "rover.chassis",
+      "type": "contains"
+    },
+    {
+      "from": "rover.chassis",
+      "to": "rover.chassis.motorLeft",
+      "type": "includes"
+    },
+    {
+      "from": "rover.chassis",
+      "to": "rover.chassis.motorRight",
+      "type": "includes"
+    },
+    {
+      "from": "rover.battery",
+      "to": "rover.tray",
+      "type": "fitsInto"
+    },
+    {
+      "from": "rover.battery",
+      "to": "rover.estimatedRuntime_h",
+      "type": "parameter"
+    },
+    {
+      "from": "rover.meanLoadAtBattery_W",
+      "to": "rover.estimatedRuntime_h",
+      "type": "parameter"
+    },
+    {
+      "from": "runtimeRequirement",
+      "to": "rover.estimatedRuntime_h",
+      "type": "constrains"
+    },
+    {
+      "from": "widthRequirement",
+      "to": "rover.tray",
+      "type": "constrains"
+    },
+    {
+      "from": "offlineOperation",
+      "to": "rover.navigation",
+      "type": "constrains"
+    },
+    {
+      "from": "rover.navigation",
+      "to": "operationalWorkflow",
+      "type": "allocated"
+    },
+    {
+      "from": "rover.battery",
+      "to": "rover.meanLoadAtBattery_W",
+      "type": "supplies_aggregate"
+    },
+    {
+      "from": "rover.navigation",
+      "to": "rover.commandAdapter",
+      "type": "BodyVelocity"
+    },
+    {
+      "from": "rover.commandAdapter",
+      "to": "rover.chassis",
+      "type": "WheelRPM"
+    },
+    {
+      "from": "rover",
+      "to": "rover.commandAdapter",
+      "type": "contains"
+    },
+    {
+      "from": "rover",
+      "to": "rover.camera",
+      "type": "contains"
+    },
+    {
+      "from": "rover",
+      "to": "rover.visionProcessor",
+      "type": "contains"
+    },
+    {
+      "from": "rover",
+      "to": "rover.imageRecorder",
+      "type": "contains"
+    },
+    {
+      "from": "rover.visionProcessor",
+      "to": "rover.imageRecorder",
+      "type": "LocalObservation"
+    },
+    {
+      "from": "rover.camera",
+      "to": "rover.meanLoadAtBattery_W",
+      "type": "included_in_increment"
+    },
+    {
+      "from": "rover.visionProcessor",
+      "to": "rover.meanLoadAtBattery_W",
+      "type": "included_in_increment"
+    },
+    {
+      "from": "rover.imageRecorder",
+      "to": "rover.meanLoadAtBattery_W",
+      "type": "included_in_increment"
+    },
+    {
+      "from": "localVisionRequirement",
+      "to": "rover.camera",
+      "type": "allocated"
+    },
+    {
+      "from": "localVisionRequirement",
+      "to": "localVisionWorkflow",
+      "type": "constrains"
+    },
+    {
+      "from": "rover.visionProcessor",
+      "to": "localVisionWorkflow",
+      "type": "allocated"
+    },
+    {
+      "from": "rover",
+      "to": "rover.compute",
+      "type": "contains"
+    },
+    {
+      "from": "rover",
+      "to": "rover.livoxDriver",
+      "type": "contains"
+    },
+    {
+      "from": "rover.lidar",
+      "to": "rover.livoxDriver",
+      "type": "EthernetUDP"
+    },
+    {
+      "from": "rover.lidar",
+      "to": "rover.compute",
+      "type": "Ethernet100BASE-TX"
+    },
+    {
+      "from": "rover.livoxDriver",
+      "to": "rover.stateEstimator",
+      "type": "ImuSample"
+    },
+    {
+      "from": "rover.stateEstimator",
+      "to": "rover.navigation",
+      "type": "TF_and_odometry"
+    },
+    {
+      "from": "rover",
+      "to": "rover.stateEstimator",
+      "type": "contains"
+    },
+    {
+      "from": "rover.compute",
+      "to": "rover.meanLoadAtBattery_W",
+      "type": "included_host_allowance"
+    },
+    {
+      "from": "rover",
+      "to": "rover.cloudProjection",
+      "type": "contains"
+    },
+    {
+      "from": "rover.livoxDriver",
+      "to": "rover.cloudProjection",
+      "type": "PointCloud2"
+    },
+    {
+      "from": "rover.cloudProjection",
+      "to": "rover.navigation",
+      "type": "LaserScan"
+    },
+    {
+      "from": "rover.navigation",
+      "to": "rover.compute",
+      "type": "deployedOn"
+    },
+    {
+      "from": "rover.commandAdapter",
+      "to": "rover.compute",
+      "type": "deployedOn"
+    },
+    {
+      "from": "rover.livoxDriver",
+      "to": "rover.compute",
+      "type": "deployedOn"
+    },
+    {
+      "from": "rover.cloudProjection",
+      "to": "rover.compute",
+      "type": "deployedOn"
+    },
+    {
+      "from": "rover.stateEstimator",
+      "to": "rover.compute",
+      "type": "deployedOn"
+    },
+    {
+      "from": "rover.camera",
+      "to": "rover.camera.imu",
+      "type": "includes"
+    },
+    {
+      "from": "rover",
+      "to": "rover.realsenseDriver",
+      "type": "contains"
+    },
+    {
+      "from": "rover.camera",
+      "to": "rover.compute",
+      "type": "USB3"
+    },
+    {
+      "from": "rover.camera",
+      "to": "rover.realsenseDriver",
+      "type": "USBDeviceStream"
+    },
+    {
+      "from": "rover.realsenseDriver",
+      "to": "rover.visionProcessor",
+      "type": "RGBDFrame"
+    },
+    {
+      "from": "rover.realsenseDriver",
+      "to": "rover.imageRecorder",
+      "type": "RGBDFrame"
+    },
+    {
+      "from": "rover.realsenseDriver",
+      "to": "rover.compute",
+      "type": "deployedOn"
+    },
+    {
+      "from": "rover.visionProcessor",
+      "to": "rover.compute",
+      "type": "deployedOn"
+    },
+    {
+      "from": "rover.imageRecorder",
+      "to": "rover.compute",
+      "type": "deployedOn"
+    }
+  ],
+  "fingerprint": "demo-fnv-dbf58858",
+  "omitted": [
+    "full electrical architecture",
+    "actuator dynamics",
+    "safety validation",
+    "mass/inertia",
+    "exact CAD"
+  ],
+  "parser": "NOT_RUN",
+  "sourceCatalogRevision": "rover-hardware-catalog/1",
+  "hardwareEvidence": [
+    {
+      "id": "U-DRIVER",
+      "status": "NOT_RUN",
+      "detail": "Mid-360S-capable SDK/driver and RealSense firmware/wrapper versions must be pinned and tested; no installed driver has run."
+    },
+    {
+      "id": "U-PROFILE",
+      "status": "NOT_RUN",
+      "detail": "Depth1280×720@30 is a planned mode; RGB and IMU simultaneous stream negotiation is not tested."
+    },
+    {
+      "id": "U-TF",
+      "status": "UNKNOWN",
+      "detail": "IMU clocks, extrinsics, odometry and transform ownership require integration verification. Two built-in IMUs are not plug-and-play fusion."
+    },
+    {
+      "id": "U-PERFORMANCE",
+      "status": "NOT_RUN",
+      "detail": "Real navigation, inference speed, thermal throttling, endurance and stopping remain untested."
+    }
+  ]
+}

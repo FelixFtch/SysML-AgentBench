@@ -1,0 +1,131 @@
+{
+  "papers": [
+    {
+      "id": "NPS",
+      "color": "nps",
+      "title": "Leveraging Generative AI to Build, Modify, and Query MBSE Models",
+      "authors": "Ryan Longshore · Ryan Bell · Raymond Madachy",
+      "file": "SYM-AM-24-138(1).pdf",
+      "pages": "幻灯片 8、10、12–15（PDF 共19页）",
+      "url": "https://dair.nps.edu/bitstream/123456789/5237/1/SYM-AM-24-138.pdf",
+      "supported": "SSE-SM 配置建模指令、领域知识、SysML 规范/记法和模板；自行车案例按文字建立模型、增加踏板和承载需求。",
+      "transfer": "我们将这种建立/修改方法用于需求模型、模拟供应商模型及小车版本修改。供应商角色划分与小车情境由我们提出。",
+      "boundary": "原文是小型案例；这些资料不证明当前 Astra 的 SysML 成功率。本页模型输出为预写模板，不是实际 API 返回。"
+    },
+    {
+      "id": "CMBSE",
+      "color": "cmb",
+      "title": "LLM-Assisted Semantic Alignment and Integration in Collaborative Model-Based Systems Engineering Using SysML v2",
+      "authors": "Zirui Li · Stephan Husung · Haoze Wang",
+      "file": "2508.16181v2(1).pdf",
+      "pages": "PDF pp.5–7 · §IV-A/B/D · Fig.1",
+      "url": "https://arxiv.org/abs/2508.16181",
+      "supported": "七阶段：准备、元素提取、匹配建议、匹配审查、附加包、检查、导出。保留原模型，通过 import/alias/扩展关系做软对齐，并设人工确认。",
+      "transfer": "我们保留三份供应商源文件，形成映射JSON与独立集成模型。接口单位适配、去重、版本绑定和数值检查是本项目扩展。",
+      "boundary": "alias 仅引用/命名，不等于实现单位转换。原论文部分校验是 LLM 自检；本页独立规则不是 SysML 解析器。本页将确认合并为A/B两道教学审批，不是七阶段逐点复现。"
+    },
+    {
+      "id": "GRAG",
+      "color": "grag",
+      "title": "Integrating SysML v2 into a GRAG LLM Pipeline: Design, Implementation and Evaluation",
+      "authors": "Elias Bader · Jounes Alexander Gross · Katharina Polanec · Markus Michael Peter · Christian Neureiter",
+      "file": "GRAG_SysML_v2(1).pdf",
+      "pages": "PDF pp.3–5 · Fig.1 · §IV · Table I",
+      "url": "https://github.com/eeeeebader/SysML-v2-GRAG-Pipeline",
+      "supported": "模型API JSON-LD → 简化RDF → 节点及一跳邻居 → MiniLM 384维 → FAISS余弦阈值检索 → 重建上下文 → GPT-4.1回答。小样例为电动车。",
+      "transfer": "我们将索引用于读取A的电池、负载、托盘及关联需求，帮助变更；批准B后明确重建索引。需求/接口/行为关系需扩展原转换器。",
+      "boundary": "本页使用关键词匹配与一跳图展开，不运行MiniLM、FAISS或GPT。图取自教学数据，而非SysML模型API；不称为论文复现或完整影响分析。"
+    },
+    {
+      "id": "BRIEF",
+      "color": "ours",
+      "title": "RTRC / UConn · Agentic AI for Systems Engineering Discovery and Design",
+      "authors": "用户上传项目书",
+      "file": "2706 - RTRC - Agentic AI for Systems Engineering Discovery and Design.docx",
+      "pages": "第1页 Statement of Need；第2页 Additional Requirements",
+      "url": "",
+      "supported": "核心目标是 requirements-to-SysML 的agent探索、比较及证据报告；以多平台海事场景为代表，并要求自然语言需求数据验证。",
+      "transfer": "小车是我们选定的方法开发案例；最终替代海事场景需赞助方认可。",
+      "boundary": "本页不是RTRC现有工作流的审计，不是已部署产品，也不是完整实验结果。"
+    }
+  ],
+  "hardware": [
+    {
+      "id": "HW-NX",
+      "title": "NVIDIA · Jetson Orin NX Series Modules datasheet",
+      "url": "https://developer.nvidia.com/downloads/jetson-orin-nx-module-series-data-sheet",
+      "location": "Overview pp.1–3; Module drawing",
+      "scope": "16GB module CPU/GPU/memory, 69.6×45mm, external storage, module power modes. Carrier and whole-system input are NOT specified by these facts."
+    },
+    {
+      "id": "HW-PI",
+      "title": "Raspberry Pi · Raspberry Pi 5 product specification",
+      "url": "https://www.raspberrypi.com/products/raspberry-pi-5/",
+      "location": "Specification",
+      "scope": "BCM2712, A76 2.4GHz, RAM variants, USB/Ethernet/PCIe. PSU capacity is not average load."
+    },
+    {
+      "id": "HW-PI-MECH",
+      "title": "Raspberry Pi 5 · official mechanical drawing",
+      "url": "https://pip.raspberrypi.com/documents/RP-008347-DS-1-raspberry-pi-5-mechanical-drawing.pdf",
+      "location": "single sheet",
+      "scope": "85×56mm reference board outline. Drawing explicitly excludes production data/tolerances and some components."
+    },
+    {
+      "id": "HW-PI-USB",
+      "title": "Raspberry Pi documentation · USB current and fan budget",
+      "url": "https://www.raspberrypi.com/documentation/computers/raspberry-pi.html",
+      "location": "Universal Serial Bus → Raspberry Pi 5",
+      "scope": "600mA peripheral limit with ordinary 3A supply, 1.6A with detected 5V5A supply; budget shared with fan."
+    },
+    {
+      "id": "HW-D435",
+      "title": "RealSense · D435i technical specification",
+      "url": "https://www.realsenseai.com/cn/products/d435i/",
+      "location": "深度参数 / RGB / 物理参数",
+      "scope": "Stereo depth, 87×58° depth FOV, ideal .3–3m, depth up to1280×720, up to90fps in supported modes (not necessarily together), RGB1920×1080@30, USB-C3.1Gen1,90×25×25mm, IMU."
+    },
+    {
+      "id": "HW-RS-ROS",
+      "title": "RealSense · ROS wrapper",
+      "url": "https://github.com/realsenseai/realsense-ros",
+      "location": "README and device/stream configuration",
+      "scope": "Driver/stream integration reference; actual target OS, firmware, stream combinations and throughput remain untested."
+    },
+    {
+      "id": "HW-LIVOX",
+      "title": "Livox · Mid-360S specifications",
+      "url": "https://www.livoxtech.com/mid-360s/specs",
+      "location": "Basic specs / notes 2,4,5,8",
+      "scope": "360° by -7..52°,200kpoints/s,10Hztypical,100BASE-TX,ICM40609,9–27V,6.5W; selfheating peak14W;65×65×60mm265g.40m@10%100klx;100m is cutoff not guaranteed detection."
+    },
+    {
+      "id": "HW-LIVOX-SUPPORT",
+      "title": "Livox · Mid-360S support & downloads",
+      "url": "https://www.livoxtech.com/support/mid-360s",
+      "location": "downloads",
+      "scope": "Use exact S variant, protocol, SDK/driver release and firmware. User spelling LIVO360s is only an unconfirmed alias."
+    },
+    {
+      "id": "HW-LIVOX-ROS",
+      "title": "Livox · livox_ros_driver2",
+      "url": "https://github.com/Livox-SDK/livox_ros_driver2",
+      "location": "Supported lidar list; transfer formats",
+      "scope": "Public repository includes Mid360s material in indexed documentation; retrieved README snapshots differed. Pin/verify a Mid360s-capable version before deployment; no live driver tested here."
+    },
+    {
+      "id": "HW-PC2SCAN",
+      "title": "ROS perception · pointcloud_to_laserscan",
+      "url": "https://github.com/ros-perception/pointcloud_to_laserscan",
+      "location": "PointCloudToLaserScanNode",
+      "scope": "Converts PointCloud2 to LaserScan under configured height/frame/angle conditions; not universally interchangeable with a native scanner."
+    },
+    {
+      "id": "HW-SLAM",
+      "title": "SLAM Toolbox · 2D mapping and localization",
+      "url": "https://github.com/SteveMacenski/slam_toolbox",
+      "location": "API / subscriptions / transforms",
+      "scope": "LaserScan and transforms for chosen 2D route; motion estimation and TF must be provided and validated separately."
+    }
+  ]
+}

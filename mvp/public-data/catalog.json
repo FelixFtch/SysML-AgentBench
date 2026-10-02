@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "id": "nasa-cfe",
+      "manifest": "nasa-cfe/manifest.json"
+    },
+    {
+      "id": "sysml-official-vehicle",
+      "manifest": "sysml-official-vehicle/manifest.json"
+    }
+  ]
+}

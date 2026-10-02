@@ -1,0 +1,6 @@
+rdflib>=6.4.0
+sentence-transformers>=2.2.2
+faiss-cpu>=1.7.4
+numpy>=1.23.5
+openai>=0.27.0
+ipykernel>=6.29.2

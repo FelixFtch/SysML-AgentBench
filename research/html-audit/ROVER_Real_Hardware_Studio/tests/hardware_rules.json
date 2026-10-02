@@ -1,0 +1,142 @@
+[
+  {
+    "id": "H01",
+    "title": "NX16的模块和待选载板分别建模",
+    "pass": true
+  },
+  {
+    "id": "H02",
+    "title": "A电池侧预算只除一次效率",
+    "pass": true
+  },
+  {
+    "id": "H03",
+    "title": "B增量包括主控与D435i预留",
+    "pass": true
+  },
+  {
+    "id": "H04",
+    "title": "默认NX的B0续航不足",
+    "pass": true
+  },
+  {
+    "id": "H05",
+    "title": "B1大电池仍不适配原托盘",
+    "pass": true
+  },
+  {
+    "id": "H06",
+    "title": "B2有限检查通过而载板仍未知",
+    "pass": true
+  },
+  {
+    "id": "H07",
+    "title": "雷达记录是官方S规格",
+    "pass": true
+  },
+  {
+    "id": "H08",
+    "title": "无直连雷达→导航Scan2D",
+    "pass": true
+  },
+  {
+    "id": "H09",
+    "title": "D435i两种快门不混同",
+    "pass": true
+  },
+  {
+    "id": "H10",
+    "title": "两只IMU各有物理ID",
+    "pass": true
+  },
+  {
+    "id": "H11",
+    "title": "SysML包含主控与驱动而非孤立标签",
+    "pass": true
+  },
+  {
+    "id": "H12",
+    "title": "相机通过驱动进入图像处理",
+    "pass": true
+  },
+  {
+    "id": "H13",
+    "title": "NX外部载板仍未捏造",
+    "pass": true
+  },
+  {
+    "id": "H14",
+    "title": "修改硬件改变模型指纹",
+    "pass": true
+  },
+  {
+    "id": "H15",
+    "title": "Pi8内存正确无NX子模块",
+    "pass": true
+  },
+  {
+    "id": "H16",
+    "title": "默认Pi的B0可以通过有限检查",
+    "pass": true
+  },
+  {
+    "id": "H17",
+    "title": "3A模式相机外设预算超限",
+    "pass": true
+  },
+  {
+    "id": "H18",
+    "title": "恢复5A模式预算通过",
+    "pass": true
+  },
+  {
+    "id": "H19",
+    "title": "Pi不能满足CUDA-only硬件要求",
+    "pass": true
+  },
+  {
+    "id": "H20",
+    "title": "USB2与本例USB3需求不符",
+    "pass": true
+  },
+  {
+    "id": "H21",
+    "title": "缺点云适配阻止A",
+    "pass": true
+  },
+  {
+    "id": "H22",
+    "title": "28V超出雷达额定范围",
+    "pass": true
+  },
+  {
+    "id": "H23",
+    "title": "Pi16模型使用正确类型",
+    "pass": true
+  },
+  {
+    "id": "H24",
+    "title": "主控查询可以返回真实选择",
+    "pass": true
+  },
+  {
+    "id": "H25",
+    "title": "来源是公开文档而非随机虚构URL",
+    "pass": true
+  },
+  {
+    "id": "H26",
+    "title": "100m保存为截止，不是检测距离",
+    "pass": true
+  },
+  {
+    "id": "H27",
+    "title": "D435i深度负载算式正确",
+    "pass": true
+  },
+  {
+    "id": "H28",
+    "title": "原草稿均没有真实解析声明",
+    "pass": true
+  }
+]

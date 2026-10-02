@@ -1,0 +1,7 @@
+{
+  "synthetic": true,
+  "packages": [
+    {"id": "REUSE-LOW-POWER-P2", "source_id": "SRC-REUSE-LOW-R1", "revision": "1", "intent": "Retain raw recording and add P2 path using 128 GB recorder", "node_power_w": 54.0, "nominal_storage_gb": 128.0, "preview_rate_mbps": 2.0, "required_approval": "R-UPLOAD-001 to R-UPLOAD-P2 replacement", "applicability": ["constant declared observation condition", "same ICD revisions", "raw original data preserved locally"], "unknowns": ["P2 task quality", "latency limit", "hardware measurements", "eight-hour integrity"]},
+    {"id": "REUSE-HIGH-PERFORMANCE", "source_id": "SRC-REUSE-HIGH-R1", "revision": "1", "intent": "Reuse higher-power processing configuration and 128 GB recorder", "node_power_w": 68.0, "nominal_storage_gb": 128.0, "preview_rate_mbps": 2.0, "required_approval": "R-UPLOAD-001 to R-UPLOAD-P2 replacement", "applicability": ["requires node power budget at least 68 W", "same ICD revisions"], "known_failure": "Does not meet the current 60 W node power budget; no automatic budget increase is permitted"}
+  ]
+}

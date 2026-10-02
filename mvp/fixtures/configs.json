@@ -1,0 +1,69 @@
+{
+  "synthetic": true,
+  "notice": "Synthetic engineering test materials; not RTX products, original company records, or hardware measurements.",
+  "schema_version": 1,
+  "common": {
+    "retention_hours": 8.0,
+    "payload_fraction": 0.8,
+    "network_overhead": 1.2,
+    "power_limit_w": 60.0,
+    "preview_mbps": 2.0,
+    "link_mbps": 8.0,
+    "storage_unit": "GB decimal",
+    "rate_unit": "Mbit/s decimal",
+    "power_condition": "synthetic steady observation condition; total gateway node input including payloads and losses; excludes shore equipment"
+  },
+  "cases": {
+    "baseline": {
+      "configuration_id": "MARINE-01-C0",
+      "label": "Legacy system baseline",
+      "data_rate_mbps": 6.0,
+      "storage_gb": 64.0,
+      "power_w": 44.0,
+      "preview_requested": false,
+      "source_id": "SRC-LEGACY-DB-R1",
+      "reuse_id": null
+    },
+    "upgraded_legacy": {
+      "configuration_id": "MARINE-01-C1",
+      "label": "Increased data rate with legacy hardware",
+      "data_rate_mbps": 18.0,
+      "storage_gb": 64.0,
+      "power_w": 44.0,
+      "preview_requested": false,
+      "source_id": "SRC-CHANGE-001",
+      "reuse_id": null
+    },
+    "candidate_a": {
+      "configuration_id": "MARINE-01-A",
+      "label": "Candidate A: 128 GB and low-power P2 processing",
+      "data_rate_mbps": 18.0,
+      "storage_gb": 128.0,
+      "power_w": 54.0,
+      "preview_requested": true,
+      "source_id": "SRC-REUSE-LOW-R1",
+      "reuse_id": "REUSE-LOW-POWER-P2"
+    },
+    "candidate_b": {
+      "configuration_id": "MARINE-01-B",
+      "label": "Candidate B: 128 GB and high-performance processing",
+      "data_rate_mbps": 18.0,
+      "storage_gb": 128.0,
+      "power_w": 68.0,
+      "preview_requested": true,
+      "source_id": "SRC-REUSE-HIGH-R1",
+      "reuse_id": "REUSE-HIGH-PERFORMANCE"
+    },
+    "degraded_link": {
+      "configuration_id": "MARINE-01-A-LINK15",
+      "label": "Candidate A with a 1.5 Mbit/s degraded link",
+      "data_rate_mbps": 18.0,
+      "storage_gb": 128.0,
+      "power_w": 54.0,
+      "link_mbps": 1.5,
+      "preview_requested": true,
+      "source_id": "SRC-CHANGE-002",
+      "reuse_id": "REUSE-LOW-POWER-P2"
+    }
+  }
+}

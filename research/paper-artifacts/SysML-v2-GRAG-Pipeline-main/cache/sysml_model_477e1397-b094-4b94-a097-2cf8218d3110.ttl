@@ -1,0 +1,252 @@
+@prefix sysml: <http://example.org/sysml#> .
+
+sysml:ElectricVehicleModel sysml:imports sysml:ScalarValues ;
+    sysml:label "ElectricVehicleModel" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances>,
+        <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:type sysml:Package .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances> sysml:imports <http://example.org/sysml#ElectricVehicleModel/PartDefinitions> ;
+    sysml:label "VehicleInstances" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Battery>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/CoolingSystem>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Motor>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV> ;
+    sysml:type sysml:Package .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle> sysml:comment """Instance representing a standard electric vehicle configuration.
+""" ;
+    sysml:isDefinedBy <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle> ;
+    sysml:label "baseModelVehicle" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/cooling>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery> sysml:label "battery" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery/capacity>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery/voltage> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery/capacity> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "capacity" ;
+    sysml:member sysml:85.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery/voltage> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "voltage" ;
+    sysml:member sysml:400.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/cooling> sysml:label "cooling" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/cooling/coolantTemp> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/cooling/coolantTemp> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "coolantTemp" ;
+    sysml:member sysml:22.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor> sysml:label "motor" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor/efficiency>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor/torque> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor/efficiency> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "efficiency" ;
+    sysml:member sysml:0.93 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor/torque> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "torque" ;
+    sysml:member sysml:450.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV> sysml:comment """Instance representing a compact city vehicle optimized for efficiency and lower power.
+""" ;
+    sysml:isDefinedBy <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle> ;
+    sysml:label "cityCompactEV" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/battery>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/cooling>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/motor> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/battery> sysml:label "battery" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/battery/capacity>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/battery/voltage> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/battery/capacity> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "capacity" ;
+    sysml:member sysml:60.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/battery/voltage> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "voltage" ;
+    sysml:member sysml:350.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/cooling> sysml:label "cooling" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/cooling/coolantTemp> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/cooling/coolantTemp> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "coolantTemp" ;
+    sysml:member sysml:25.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/motor> sysml:label "motor" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/motor/efficiency>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/motor/torque> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/motor/efficiency> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "efficiency" ;
+    sysml:member sysml:0.91 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/cityCompactEV/motor/torque> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "torque" ;
+    sysml:member sysml:300.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV> sysml:comment """Instance representing a high-performance electric vehicle with upgraded battery and motor.
+""" ;
+    sysml:isDefinedBy <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle> ;
+    sysml:label "highPerformanceEV" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/cooling>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery> sysml:label "battery" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery/capacity>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery/voltage> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery/capacity> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "capacity" ;
+    sysml:member sysml:100.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery/voltage> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "voltage" ;
+    sysml:member sysml:450.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/cooling> sysml:label "cooling" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/cooling/coolantTemp> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/cooling/coolantTemp> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "coolantTemp" ;
+    sysml:member sysml:20.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor> sysml:label "motor" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/efficiency>,
+        <http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/torque> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/efficiency> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "efficiency" ;
+    sysml:member sysml:0.96 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/torque> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "torque" ;
+    sysml:member sysml:600.0 ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions> sysml:label "PartDefinitions" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Battery>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/CoolingSystem>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Motor> ;
+    sysml:type sysml:Package .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Battery/capacity> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "capacity" ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Battery/voltage> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "voltage" ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/CoolingSystem/coolantTemp> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "coolantTemp" ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Motor/efficiency> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "efficiency" ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Motor/torque> sysml:isDefinedBy <http://example.org/sysml#ScalarValues/Real> ;
+    sysml:label "torque" ;
+    sysml:type sysml:AttributeUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Battery> sysml:comment """This part represents a battery component, storing electric energy.
+It includes attributes for voltage and charge capacity. 
+""" ;
+    sysml:label "Battery" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Battery/capacity>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Battery/voltage> ;
+    sysml:type sysml:PartDefinition .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/CoolingSystem> sysml:comment """This part represents the cooling system responsible for thermal regulation.
+It includes an attribute indicating coolant temperature.
+""" ;
+    sysml:label "CoolingSystem" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/CoolingSystem/coolantTemp> ;
+    sysml:type sysml:PartDefinition .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Motor> sysml:comment """This part defines an electric motor.
+Attributes include torque and efficiency, used for performance evaluation.
+""" ;
+    sysml:label "Motor" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Motor/efficiency>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Motor/torque> ;
+    sysml:type sysml:PartDefinition .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery> sysml:isDefinedBy <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Battery> ;
+    sysml:label "battery" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Battery/capacity>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Battery/voltage> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling> sysml:isDefinedBy <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/CoolingSystem> ;
+    sysml:label "cooling" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/CoolingSystem/coolantTemp> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor> sysml:isDefinedBy <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Motor> ;
+    sysml:label "motor" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Motor/efficiency>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/Motor/torque> ;
+    sysml:type sysml:PartUsage .
+
+<http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle> sysml:comment """This is a composite system definition representing a vehicle's energy and cooling architecture.
+It composes a battery, motor, and cooling system as internal parts.
+""" ;
+    sysml:label "ElectricVehicle" ;
+    sysml:member <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling>,
+        <http://example.org/sysml#ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor> ;
+    sysml:type sysml:PartDefinition .
+
+<http://example.org/sysml#ScalarValues/Real> sysml:label "Real" ;
+    sysml:type sysml:DataType .
+

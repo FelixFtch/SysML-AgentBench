@@ -1,0 +1,9 @@
+downloads/
+runtime/
+java21
+kernel/
+kernel-home/
+.venv/
+__pycache__/
+build/
+smoke-results/

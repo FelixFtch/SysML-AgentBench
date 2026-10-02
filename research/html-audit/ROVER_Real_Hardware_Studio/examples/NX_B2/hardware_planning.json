@@ -1,0 +1,39 @@
+{
+  "hardware": {
+    "computeId": "nx16",
+    "computeA_W": 12,
+    "computeB_W": 24,
+    "drive_W": 10,
+    "other_W": 1,
+    "cameraReservation_W": 4,
+    "conversionEfficiency": 0.9,
+    "lidarSupply_V": 12,
+    "pointcloudAdapter": true,
+    "usbMode": "usb3",
+    "piSupply": "5a",
+    "usbOther_A": 0.15,
+    "fan_A": 0.15,
+    "visionRuntime": "portable",
+    "depthProfile": [
+      1280,
+      720,
+      30
+    ],
+    "depthUseMax_m": 3,
+    "jetsonCarrier": "NOT_SELECTED",
+    "firmware": "NOT_PINNED",
+    "osImage": "TO_BE_VALIDATED"
+  },
+  "power": {
+    "baseDevice_W": 29.5,
+    "baseBattery_W": 32.777778,
+    "defaultIncrementBattery_W": 17.777778,
+    "cameraUsbReservation_A": 0.8,
+    "sources": {
+      "lidar": "HW-LIVOX published reference power, not actual average",
+      "allOtherPower": "AUTHOR_EDITABLE_DESIGN_ALLOWANCES",
+      "efficiency": "AUTHOR_ASSUMPTION"
+    },
+    "scope": "Device-side loads excluding downstream camera in host allowance; divide by aggregate DC efficiency ONCE. Base/tray/battery remain synthetic. No added mass/temperature model."
+  }
+}

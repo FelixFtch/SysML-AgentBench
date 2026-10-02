@@ -1,0 +1,46 @@
+{
+  "id": "sysml-official-vehicle",
+  "repository": "Systems-Modeling/SysML-v2-Release",
+  "commit": "fb97b754f29588b8e9c7a35f370880cd15eb29e7",
+  "license": "EPL-2.0",
+  "type": "official illustrative SysML v2 engineering model; not measured vehicle or requirements-to-model gold",
+  "files": [
+    {
+      "upstream_path": "LICENSE",
+      "local_path": "sysml-official-vehicle/upstream/LICENSE",
+      "source_url": "https://raw.githubusercontent.com/Systems-Modeling/SysML-v2-Release/fb97b754f29588b8e9c7a35f370880cd15eb29e7/LICENSE",
+      "size_bytes": 14198,
+      "sha256": "0becf16567beb77fa252b7664631dd177c8f9a1889e48995b45379c7130e5303",
+      "modified": false
+    },
+    {
+      "upstream_path": "README.md",
+      "local_path": "sysml-official-vehicle/upstream/README.md",
+      "source_url": "https://raw.githubusercontent.com/Systems-Modeling/SysML-v2-Release/fb97b754f29588b8e9c7a35f370880cd15eb29e7/README.md",
+      "size_bytes": 7752,
+      "sha256": "e86a23b3cefc0835fffc34d2970028ed3e227121f65eab43ad2f314e46a778a7",
+      "modified": false
+    },
+    {
+      "upstream_path": "sysml/src/examples/Vehicle Example/VehicleDefinitions.sysml",
+      "local_path": "sysml-official-vehicle/upstream/sysml/src/examples/Vehicle Example/VehicleDefinitions.sysml",
+      "source_url": "https://raw.githubusercontent.com/Systems-Modeling/SysML-v2-Release/fb97b754f29588b8e9c7a35f370880cd15eb29e7/sysml/src/examples/Vehicle%20Example/VehicleDefinitions.sysml",
+      "size_bytes": 1051,
+      "sha256": "26aaac35d37d7298157ac6cbad7d4dbad5f638389561f4d0216975ff3ca0ffbd",
+      "modified": false
+    },
+    {
+      "upstream_path": "sysml/src/examples/Vehicle Example/VehicleUsages.sysml",
+      "local_path": "sysml-official-vehicle/upstream/sysml/src/examples/Vehicle Example/VehicleUsages.sysml",
+      "source_url": "https://raw.githubusercontent.com/Systems-Modeling/SysML-v2-Release/fb97b754f29588b8e9c7a35f370880cd15eb29e7/sysml/src/examples/Vehicle%20Example/VehicleUsages.sysml",
+      "size_bytes": 2446,
+      "sha256": "895344628a0a5c74147aba9a32acc143efda109bae3947e16a44e43cb623983d",
+      "modified": false
+    }
+  ],
+  "retrieved_at": "2026-09-22T07:27:11.773427+00:00",
+  "source_url": "https://github.com/Systems-Modeling/SysML-v2-Release",
+  "license_scope": "Upstream repository declaration; original licenses and notices retained; no relicensing of third-party material",
+  "rtx_relation": "Public independent source, not RTX requirements, models, parameters or endorsement",
+  "provenance": "Downloaded byte-for-byte over HTTPS from commit-pinned upstream raw URLs"
+}

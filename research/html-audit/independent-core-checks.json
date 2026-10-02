@@ -1,0 +1,189 @@
+{
+  "rows": [
+    {
+      "profile": "nx16",
+      "candidate": "A",
+      "power_W": 32.777778,
+      "runtime_h": 2.3430508315725374,
+      "pass": true,
+      "fails": [],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03"
+      ]
+    },
+    {
+      "profile": "nx16",
+      "candidate": "B0",
+      "power_W": 50.555556,
+      "runtime_h": 1.5191208657659705,
+      "pass": false,
+      "fails": [
+        "K-RUNTIME"
+      ],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03",
+        "R-07"
+      ]
+    },
+    {
+      "profile": "nx16",
+      "candidate": "B1",
+      "power_W": 50.555556,
+      "runtime_h": 2.5318681096099507,
+      "pass": false,
+      "fails": [
+        "K-FIT"
+      ],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03",
+        "R-07"
+      ]
+    },
+    {
+      "profile": "nx16",
+      "candidate": "B2",
+      "power_W": 50.555556,
+      "runtime_h": 2.5318681096099507,
+      "pass": true,
+      "fails": [],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03",
+        "R-07"
+      ]
+    },
+    {
+      "profile": "pi5_8",
+      "candidate": "A",
+      "power_W": 27.222222,
+      "runtime_h": 2.821224512826323,
+      "pass": true,
+      "fails": [],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03"
+      ]
+    },
+    {
+      "profile": "pi5_8",
+      "candidate": "B0",
+      "power_W": 36.111111,
+      "runtime_h": 2.126769237313136,
+      "pass": true,
+      "fails": [],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03",
+        "R-07"
+      ]
+    },
+    {
+      "profile": "pi5_8",
+      "candidate": "B1",
+      "power_W": 36.111111,
+      "runtime_h": 3.5446153955218933,
+      "pass": false,
+      "fails": [
+        "K-FIT"
+      ],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03",
+        "R-07"
+      ]
+    },
+    {
+      "profile": "pi5_8",
+      "candidate": "B2",
+      "power_W": 36.111111,
+      "runtime_h": 3.5446153955218933,
+      "pass": true,
+      "fails": [],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03",
+        "R-07"
+      ]
+    },
+    {
+      "profile": "pi5_16",
+      "candidate": "A",
+      "power_W": 27.222222,
+      "runtime_h": 2.821224512826323,
+      "pass": true,
+      "fails": [],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03"
+      ]
+    },
+    {
+      "profile": "pi5_16",
+      "candidate": "B0",
+      "power_W": 36.111111,
+      "runtime_h": 2.126769237313136,
+      "pass": true,
+      "fails": [],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03",
+        "R-07"
+      ]
+    },
+    {
+      "profile": "pi5_16",
+      "candidate": "B1",
+      "power_W": 36.111111,
+      "runtime_h": 3.5446153955218933,
+      "pass": false,
+      "fails": [
+        "K-FIT"
+      ],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03",
+        "R-07"
+      ]
+    },
+    {
+      "profile": "pi5_16",
+      "candidate": "B2",
+      "power_W": 36.111111,
+      "runtime_h": 3.5446153955218933,
+      "pass": true,
+      "fails": [],
+      "graphRequirementIds": [
+        "R-04",
+        "R-05",
+        "R-03",
+        "R-07"
+      ]
+    }
+  ],
+  "removedEdgesDiff": {
+    "from": "A",
+    "to": "A",
+    "added": [],
+    "removed": [],
+    "changed": [],
+    "newConnections": []
+  },
+  "deletedAllGraphEdgesStillChecksPass": true,
+  "noRequirementMatch": "NO_CONTEXT",
+  "defaultSysmlHasSubject": false,
+  "defaultSysmlHasSatisfy": false
+}

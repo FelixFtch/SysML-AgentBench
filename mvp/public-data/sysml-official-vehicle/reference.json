@@ -1,0 +1,14 @@
+{
+  "package_name": "VehicleUsages",
+  "model_files": [
+    "upstream/sysml/src/examples/Vehicle Example/VehicleUsages.sysml",
+    "upstream/sysml/src/examples/Vehicle Example/VehicleDefinitions.sysml"
+  ],
+  "label": "Official SysML v2 vehicle definitions and variants",
+  "source_kind": "public_official_sysml_reference_model",
+  "license": "EPL-2.0",
+  "source_commit": "fb97b754f29588b8e9c7a35f370880cd15eb29e7",
+  "manifest": "manifest.json",
+  "gold_semantic_model": false,
+  "scope": "Unmodified official illustrative SysML model; language validation only"
+}

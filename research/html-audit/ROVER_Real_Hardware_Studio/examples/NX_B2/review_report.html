@@ -1,0 +1,53 @@
+<!doctype html><html lang="zh-CN"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ROVER · 单页工作流审查记录</title><style>body{max-width:1000px;margin:40px auto;padding:0 20px;font:15px/1.8 system-ui,sans-serif;color:#203c47}h1{font-size:29px}h2{font-size:20px;margin-top:32px}.note{background:#fff3da;padding:16px;border-left:4px solid #b18644}table{border-collapse:collapse;width:100%;font-size:13px}th,td{text-align:left;padding:10px;border-bottom:1px solid #dbe5e9}th{background:#f0f5f6}pre{white-space:pre-wrap;word-break:break-word;background:#f2f5f6;padding:14px;font-size:11px}small{color:#70838d}</style><body><small>LOCAL TEACHING DEMO · 2026-09-16T00:48:04.531Z</small><h1>需求 → 模拟供应商 → 集成模型 → 查询与修改</h1><p class="note">器件规格附厂家来源；底盘/电池/托盘和工作负载为教学假设。GPT未调用，SysML解析器未运行。模型图来自教学JSON；本地检索不是MiniLM/FAISS。审批仅保存教学候选，不构成工程发布或实物安全验证。</p><h2>运行与批准状态</h2><p>执行到节点 12/12。A批准：已记录；B批准：B2；当前检索索引：B2。</p><h2>需求</h2><table><tr><th>ID</th><th>要求</th></tr><tr><td>R-01</td><td>沿已有室内地图在指定站点间行驶。</td></tr><tr><td>R-02</td><td>障碍条件成立时进入停止状态；恢复条件另行审查。</td></tr><tr><td>R-03</td><td>基本导航和停止处理不依赖互联网。</td></tr><tr><td>R-04</td><td>规定工作负载下，估算续航不少于2小时。</td></tr><tr><td>R-05</td><td>含附件的整车宽度不超过350 mm。</td></tr><tr><td>R-06</td><td>可区分待命、导航、停止和故障状态。</td></tr><tr><td>R-07</td><td>增加深度相机、本地处理和图像记录；保持离线导航、2小时续航和350 mm宽度要求。（教学候选已明确批准）</td></tr></table><h2>实际检查结果</h2><p>A估算续航 2.34h。未执行实体测试。</p><table><tr><th>候选</th><th>估算续航</th><th>仓配合</th><th>整车宽度</th><th>本地子集</th></tr><tr><td>B0</td><td>1.52 h · FAIL</td><td>PASS</td><td>330mm · PASS</td><td>FAIL</td></tr><tr><td>B1</td><td>2.53 h · PASS</td><td>FAIL</td><td>330mm · PASS</td><td>FAIL</td></tr><tr><td>B2</td><td>2.53 h · PASS</td><td>PASS</td><td>340mm · PASS</td><td>PASS</td></tr></table><p>余量系数0.8；主控Jetson Orin NX 16GB；基线电池侧平均32.78W；本次增量17.78W；尺寸采用固定方向名义盒体。电气兼容、制造、质量/惯量、真实动力学均未验证。</p><h2>器件与预算来源</h2><pre>{
+  &quot;selection&quot;: {
+    &quot;computeId&quot;: &quot;nx16&quot;,
+    &quot;computeA_W&quot;: 12,
+    &quot;computeB_W&quot;: 24,
+    &quot;drive_W&quot;: 10,
+    &quot;other_W&quot;: 1,
+    &quot;cameraReservation_W&quot;: 4,
+    &quot;conversionEfficiency&quot;: 0.9,
+    &quot;lidarSupply_V&quot;: 12,
+    &quot;pointcloudAdapter&quot;: true,
+    &quot;usbMode&quot;: &quot;usb3&quot;,
+    &quot;piSupply&quot;: &quot;5a&quot;,
+    &quot;usbOther_A&quot;: 0.15,
+    &quot;fan_A&quot;: 0.15,
+    &quot;visionRuntime&quot;: &quot;portable&quot;,
+    &quot;depthProfile&quot;: [
+      1280,
+      720,
+      30
+    ],
+    &quot;depthUseMax_m&quot;: 3,
+    &quot;jetsonCarrier&quot;: &quot;NOT_SELECTED&quot;,
+    &quot;firmware&quot;: &quot;NOT_PINNED&quot;,
+    &quot;osImage&quot;: &quot;TO_BE_VALIDATED&quot;
+  },
+  &quot;powerPlan&quot;: {
+    &quot;baseDevice_W&quot;: 29.5,
+    &quot;baseBattery_W&quot;: 32.777778,
+    &quot;defaultIncrementBattery_W&quot;: 17.777778,
+    &quot;cameraUsbReservation_A&quot;: 0.8,
+    &quot;sources&quot;: {
+      &quot;lidar&quot;: &quot;HW-LIVOX published reference power, not actual average&quot;,
+      &quot;allOtherPower&quot;: &quot;AUTHOR_EDITABLE_DESIGN_ALLOWANCES&quot;,
+      &quot;efficiency&quot;: &quot;AUTHOR_ASSUMPTION&quot;
+    },
+    &quot;scope&quot;: &quot;Device-side loads excluding downstream camera in host allowance; divide by aggregate DC efficiency ONCE. Base/tray/battery remain synthetic. No added mass/temperature model.&quot;
+  }
+}</pre><p>外部载板输入、实际帧率/USB协商、SDK版本、温升与导航性能没有执行验证。厂家参数不是整车性能。</p><h2>三项研究具体使用处</h2><h3>NPS · Leveraging Generative AI to Build, Modify, and Query MBSE Models</h3><p><b>幻灯片 8、10、12–15（PDF 共19页）</b>。SSE-SM 配置建模指令、领域知识、SysML 规范/记法和模板；自行车案例按文字建立模型、增加踏板和承载需求。</p><p>本项目：我们将这种建立/修改方法用于需求模型、模拟供应商模型及小车版本修改。供应商角色划分与小车情境由我们提出。</p><p class="note">原文是小型案例；这些资料不证明当前 Astra 的 SysML 成功率。本页模型输出为预写模板，不是实际 API 返回。</p><h3>CMBSE · LLM-Assisted Semantic Alignment and Integration in Collaborative Model-Based Systems Engineering Using SysML v2</h3><p><b>PDF pp.5–7 · §IV-A/B/D · Fig.1</b>。七阶段：准备、元素提取、匹配建议、匹配审查、附加包、检查、导出。保留原模型，通过 import/alias/扩展关系做软对齐，并设人工确认。</p><p>本项目：我们保留三份供应商源文件，形成映射JSON与独立集成模型。接口单位适配、去重、版本绑定和数值检查是本项目扩展。</p><p class="note">alias 仅引用/命名，不等于实现单位转换。原论文部分校验是 LLM 自检；本页独立规则不是 SysML 解析器。本页将确认合并为A/B两道教学审批，不是七阶段逐点复现。</p><h3>GRAG · Integrating SysML v2 into a GRAG LLM Pipeline: Design, Implementation and Evaluation</h3><p><b>PDF pp.3–5 · Fig.1 · §IV · Table I</b>。模型API JSON-LD → 简化RDF → 节点及一跳邻居 → MiniLM 384维 → FAISS余弦阈值检索 → 重建上下文 → GPT-4.1回答。小样例为电动车。</p><p>本项目：我们将索引用于读取A的电池、负载、托盘及关联需求，帮助变更；批准B后明确重建索引。需求/接口/行为关系需扩展原转换器。</p><p class="note">本页使用关键词匹配与一跳图展开，不运行MiniLM、FAISS或GPT。图取自教学数据，而非SysML模型API；不称为论文复现或完整影响分析。</p><h2>实际本地动作记录</h2><p><b>1. 更换主控：Raspberry Pi 5 · 8GB</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:47:56.498Z · stage 0</small></p><p><b>2. 更换主控：Raspberry Pi 5 · 16GB</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:47:56.855Z · stage 0</small></p><p><b>3. 硬件接口或工程预算改变：piSupply</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:47:58.182Z · stage 0</small></p><p><b>4. 硬件接口或工程预算改变：piSupply</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:47:58.347Z · stage 0</small></p><p><b>5. 硬件接口或工程预算改变：visionRuntime</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:47:58.546Z · stage 0</small></p><p><b>6. 硬件接口或工程预算改变：visionRuntime</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:47:59.090Z · stage 0</small></p><p><b>7. 硬件接口或工程预算改变：usbMode</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:47:59.179Z · stage 0</small></p><p><b>8. 硬件接口或工程预算改变：usbMode</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:47:59.276Z · stage 0</small></p><p><b>9. 硬件接口或工程预算改变：pointcloudAdapter</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:47:59.369Z · stage 0</small></p><p><b>10. 工程师给出小车要求</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:47:59.473Z · stage 1</small></p><p><b>11. 总体 Agent 写需求模型</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:47:59.546Z · stage 2</small></p><p><b>12. 三家模拟供应商交方案</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:47:59.596Z · stage 3</small></p><p><b>13. 对应需求，找出接口冲突</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:47:59.635Z · stage 4</small></p><p><b>14. 附加集成，形成小车 A</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:47:59.665Z · stage 5</small></p><p><b>15. 检查 A，工程师确认</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:47:59.700Z · stage 6</small></p><p><b>16. 硬件接口或工程预算改变：pointcloudAdapter</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:47:59.851Z · stage 0</small></p><p><b>17. 硬件接口或工程预算改变：lidarSupply_V</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:47:59.931Z · stage 0</small></p><p><b>18. 硬件接口或工程预算改变：lidarSupply_V</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:48:00.013Z · stage 0</small></p><p><b>19. 更换主控：Jetson Orin NX 16GB</b><br><small>HARDWARE_INVALIDATION · 2026-09-16T00:48:00.223Z · stage 0</small></p><p><b>20. 工程师给出小车要求</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:00.368Z · stage 1</small></p><p><b>21. 总体 Agent 写需求模型</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:00.476Z · stage 2</small></p><p><b>22. 三家模拟供应商交方案</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:00.590Z · stage 3</small></p><p><b>23. 对应需求，找出接口冲突</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:00.716Z · stage 4</small></p><p><b>24. 附加集成，形成小车 A</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:00.774Z · stage 5</small></p><p><b>25. 检查 A，工程师确认</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:00.841Z · stage 6</small></p><p><b>26. 工程师确认教学基线 A</b><br><small>HUMAN_APPROVAL · 2026-09-16T00:48:01.257Z · stage 6</small></p><p><b>27. 模型 A 变成可查知识</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:01.324Z · stage 7</small></p><p><b>28. 新增要求，检索影响依据</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:01.371Z · stage 8</small></p><p><b>29. 修改感知与软件方案</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:01.560Z · stage 9</small></p><p><b>30. 重新集成，准备两种修复</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:01.610Z · stage 10</small></p><p><b>31. 同样规则，逐项比较候选</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:01.650Z · stage 11</small></p><p><b>32. 工程师确认候选 B2</b><br><small>HUMAN_APPROVAL · 2026-09-16T00:48:03.268Z · stage 12</small></p><p><b>33. 人工批准 B，更新知识版本</b><br><small>LOCAL_EXECUTION · 2026-09-16T00:48:03.268Z · stage 12</small></p><p><b>34. 将已确认 B 写入派生索引</b><br><small>INDEX_REBUILD · 2026-09-16T00:48:03.373Z · stage 12</small></p><h2>未验证项</h2><pre>{
+  &quot;llm&quot;: &quot;NOT_CONNECTED&quot;,
+  &quot;modelGeneration&quot;: &quot;PREAUTHORED_TEMPLATES_NOT_API_OUTPUT&quot;,
+  &quot;sysmlParser&quot;: &quot;NOT_RUN&quot;,
+  &quot;graph&quot;: &quot;AUTHORED_FIXTURE_NOT_PARSED_MODEL&quot;,
+  &quot;retrieval&quot;: &quot;KEYWORD_ONE_HOP_NOT_MINILM_FAISS&quot;,
+  &quot;robotControl&quot;: &quot;NOT_IMPLEMENTED&quot;,
+  &quot;physicalValidation&quot;: &quot;NOT_RUN&quot;,
+  &quot;modelBenchmark&quot;: &quot;NOT_RUN&quot;,
+  &quot;approval&quot;: &quot;UNAUTHENTICATED_LOCAL_TEACHING_ACTION&quot;,
+  &quot;fingerprint&quot;: &quot;NONCRYPTOGRAPHIC_CHANGE_DETECTOR&quot;,
+  &quot;storage&quot;: &quot;TAB_MEMORY_RESETS_ON_RELOAD&quot;,
+  &quot;paperReproduction&quot;: &quot;NOT_PERFORMED&quot;,
+  &quot;sponsorScenario&quot;: &quot;Rover is a proposed development case, not approval to replace maritime context&quot;
+}</pre><h2>可复用依据</h2><p>原始模型保持：未修改。完整JSON应与本报告一并保存；截图不是正式测试证据。</p><p><small>本报告只反映导出时刻。小车是本项目提议的开发案例，替代项目书的海事场景需赞助方同意。</small></p></body></html>

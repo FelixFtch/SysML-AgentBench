@@ -1,0 +1,462 @@
+{
+  "time": "2026-09-16T00:48:18Z",
+  "environment": "Chromium with ANGLE SwiftShader (WebGL API path, not physicalRTX4090)",
+  "summary": {
+    "passed": 74,
+    "total": 74
+  },
+  "checks": [
+    {
+      "id": "B01",
+      "title": "Native WebGL context and depth buffers created",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B02",
+      "title": "Initial compute NX16 and source catalog available",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B03",
+      "title": "All 28 deterministic hardware rules",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B04",
+      "title": "Current source hashes intact",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B05",
+      "title": "Runtime formula is dynamic, not old32W",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B06",
+      "title": "Camera dimensions are90x25x25mm and mode maxima separated",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B07",
+      "title": "Official S model cutoff is not guaranteed40m range",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B08",
+      "title": "All primary sources use HTTPS",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B09",
+      "title": "Compute facts included in graph and SysML",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B10",
+      "title": "Model numeric text retains computed budget precision",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B11",
+      "title": "No direct LiDAR-to-navigation edge",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B12",
+      "title": "Public IMU ownership distinct from calibration proof",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B13",
+      "title": "Select Pi8 updates core/geometry/selected hardware",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B14",
+      "title": "Select Pi16 updates type and RAM",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B15",
+      "title": "Pi B0 is not hard-coded to fail",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B16",
+      "title": "Ordinary3A PSU fails B peripheral allowance",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B17",
+      "title": "A without camera can still satisfy .6A allowance",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B18",
+      "title": "Recognized5A restores model-side peripheral budget",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B19",
+      "title": "Pi CUDA-only is rejected",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B20",
+      "title": "USB2 conflicts with selected USB3 profile requirement",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B21",
+      "title": "Missing projection prevents A approval",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B22",
+      "title": "Workflow stops atA and does not approve invalid configuration",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B23",
+      "title": "Hardwarechange resets run and index",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B24",
+      "title": "28V outside LiDAR limits is rejected",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B25",
+      "title": "Nonfinite inputs rejected without corrupting state",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B26",
+      "title": "Out-of-range input rejected",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B27",
+      "title": "PrepareB pauses at unapproved A",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B28",
+      "title": "ExplicitAapproval recorded",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B29",
+      "title": "B checks executed, A index preserved",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B30",
+      "title": "B1cannot pass despite capacity",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B31",
+      "title": "Re-render preserves explicit acknowledgements",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B32",
+      "title": "ApprovedB creates only teaching release atstep12",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B33",
+      "title": "Index points to approvedB fingerprint",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B34",
+      "title": "New model retrieves selected compute with sources",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B35",
+      "title": "Original supplier models stay unchanged",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B36",
+      "title": "Report has actual hardware and dynamic budgets",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B37",
+      "title": "Hardwareevidence marks unknown carrier not runtimevalidated",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B38",
+      "title": "Download hardware",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B39",
+      "title": "Download planning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B40",
+      "title": "Download hardwareModel",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B41",
+      "title": "Download modelA",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B42",
+      "title": "Download modelB",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B43",
+      "title": "Download report",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B44",
+      "title": "Changinghostinvalidates models/approval/index",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B45",
+      "title": "Invalidation log preserves which prior evidence became stale",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B46",
+      "title": "Pi B0 is an allowed alternative",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B47",
+      "title": "B0approved, index not forcedB2",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B48",
+      "title": "Teaching lesson1 renders",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B49",
+      "title": "Teaching lesson2 renders",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B50",
+      "title": "Teaching lesson3 renders",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B51",
+      "title": "Teaching lesson4 renders",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B52",
+      "title": "Teaching lesson5 renders",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B53",
+      "title": "Teaching lesson6 renders",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B54",
+      "title": "Teaching lesson7 renders",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B55",
+      "title": "Diagram tab structure",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B56",
+      "title": "Diagram tab ports",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B57",
+      "title": "Diagram tab behavior",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B58",
+      "title": "Diagram tab code",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B59",
+      "title": "Part-link rover.compute",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B60",
+      "title": "Part-link rover.camera",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B61",
+      "title": "Part-link rover.lidar",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B62",
+      "title": "Part-link rover.livoxDriver",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B63",
+      "title": "Part-link rover.camera.imu",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B64",
+      "title": "LiDARportteaching uses actual packets, not oldScanPort",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B65",
+      "title": "CameraUSBteaching points to actual source",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B66",
+      "title": "144WebGLrotation cases keep nonempty buffers/no GL errors",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B67",
+      "title": "Softwareisolationrevealsitscomputinghostnotemptyview",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B68",
+      "title": "Restoreviewclearsisolation",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B69",
+      "title": "CPU fallback remains available",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B70",
+      "title": "Auto restoresWebGL",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B71",
+      "title": "No body horizontaloverflow 390px",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B72",
+      "title": "No body horizontaloverflow 768px",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B73",
+      "title": "No body horizontaloverflow 1440px",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "id": "B74",
+      "title": "NoJavaScript runtime errors",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "js_errors": [],
+  "limitations": [
+    "No real LLM calls",
+    "No SysML parser executed",
+    "No device/driver/USB measurements",
+    "Model and geometry share authored data; not parser-derived CAD",
+    "All operating loads are editable planning assumptions"
+  ]
+}

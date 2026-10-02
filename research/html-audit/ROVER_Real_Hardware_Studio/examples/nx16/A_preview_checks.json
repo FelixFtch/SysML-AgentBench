@@ -1,0 +1,143 @@
+{
+  "candidate": "A",
+  "runtime_h": 2.3430508315725374,
+  "usableEnergy_Wh": 76.80000000000001,
+  "checks": [
+    {
+      "id": "K-RUNTIME",
+      "requirement": "R-04",
+      "name": "续航估算",
+      "status": "PASS",
+      "actual": 2.3430508315725374,
+      "required": 2,
+      "unit": "h",
+      "formula": "96 Wh × 0.8 ÷ 32.777778 W",
+      "scope": "Constant battery-side mean load; not measured endurance"
+    },
+    {
+      "id": "K-FIT",
+      "requirement": "R-05",
+      "name": "电池仓配合",
+      "status": "PASS",
+      "actual": [
+        120,
+        80,
+        45
+      ],
+      "required": [
+        130,
+        90,
+        50
+      ],
+      "unit": "mm",
+      "scope": "Axis-aligned nominal box, fixed orientation; no tolerance/cable/strength test"
+    },
+    {
+      "id": "K-WIDTH",
+      "requirement": "R-05",
+      "name": "整车宽度",
+      "status": "PASS",
+      "actual": 330,
+      "required": 350,
+      "unit": "mm",
+      "scope": "Supplied illustrative overall envelope"
+    },
+    {
+      "id": "K-CMD",
+      "requirement": "R-01",
+      "name": "命令适配职责",
+      "status": "PASS",
+      "actual": "BodyVelocity → DiffDriveAdapter → WheelRPM",
+      "scope": "Fixture graph connectivity; not driver implementation"
+    },
+    {
+      "id": "K-LOCAL",
+      "requirement": "R-03",
+      "name": "无云端依赖分配",
+      "status": "PASS",
+      "actual": "No cloud node in bounded fixture",
+      "scope": "Model configuration only; no real navigation execution"
+    },
+    {
+      "id": "K-PCLOUD",
+      "requirement": "INTERFACE-DESIGN",
+      "name": "三维点云到二维扫描职责",
+      "status": "PASS",
+      "actual": "Mid-360S → driver → PointCloud2 → projection → LaserScan",
+      "required": "explicit projection for selected 2D route",
+      "scope": "Checks declared graph choice; not execution or calibrated slicing"
+    },
+    {
+      "id": "K-LIDAR-V",
+      "requirement": "INTERFACE-DESIGN",
+      "name": "雷达输入电压范围",
+      "status": "PASS",
+      "actual": 12,
+      "required": "9…27 V DC",
+      "scope": "Nominal design value vs published range; no surge/cold-start test"
+    }
+  ],
+  "notEstablished": {
+    "sysmlParser": "NOT_RUN",
+    "requirementsSemanticCoverage": "HUMAN_REVIEW_REQUIRED",
+    "brakingSafety": "NOT_RUN",
+    "hardwareEndurance": "NOT_RUN",
+    "electricalCompatibility": "NOT_CHECKED",
+    "mechanicalStrength": "NOT_RUN",
+    "cadManufacturability": "NOT_RUN",
+    "hardwareFacts": "PUBLISHED_SPECS_NOT_MEASURED",
+    "carrier": "NOT_SELECTED",
+    "softwareCompatibility": "NOT_RUN",
+    "depthStreamConcurrency": "NOT_RUN"
+  },
+  "assumptions": [
+    "Device-side loads excluding downstream camera in host allowance; divide by aggregate DC efficiency ONCE. Base/tray/battery remain synthetic. No added mass/temperature model.",
+    "Published component facts are cited; all host workload/camera current reservations are design assumptions.",
+    "Jetson power modes and Pi PSU capacity are NOT whole-system average consumption.",
+    "Source facts do not prove system compatibility or safety.",
+    "Same authored data generates graph and SysML; actual parser NOT RUN."
+  ],
+  "unresolvedHardware": [
+    {
+      "id": "U-CARRIER",
+      "status": "UNKNOWN",
+      "detail": "Orin NX16 module selected, carrier unspecified: external input voltage, connector count, USB power, storage and cooling are NOT established."
+    },
+    {
+      "id": "U-DRIVER",
+      "status": "NOT_RUN",
+      "detail": "Mid-360S-capable SDK/driver and RealSense firmware/wrapper versions must be pinned and tested; no installed driver has run."
+    },
+    {
+      "id": "U-PROFILE",
+      "status": "NOT_RUN",
+      "detail": "Depth1280×720@30 is a planned mode; RGB and IMU simultaneous stream negotiation is not tested."
+    },
+    {
+      "id": "U-TF",
+      "status": "UNKNOWN",
+      "detail": "IMU clocks, extrinsics, odometry and transform ownership require integration verification. Two built-in IMUs are not plug-and-play fusion."
+    },
+    {
+      "id": "U-PERFORMANCE",
+      "status": "NOT_RUN",
+      "detail": "Real navigation, inference speed, thermal throttling, endurance and stopping remain untested."
+    }
+  ],
+  "powerPlan": {
+    "baseDevice_W": 29.5,
+    "baseBattery_W": 32.777778,
+    "defaultIncrementBattery_W": 17.777778,
+    "cameraUsbReservation_A": 0.8,
+    "sources": {
+      "lidar": "HW-LIVOX published reference power, not actual average",
+      "allOtherPower": "AUTHOR_EDITABLE_DESIGN_ALLOWANCES",
+      "efficiency": "AUTHOR_ASSUMPTION"
+    },
+    "scope": "Device-side loads excluding downstream camera in host allowance; divide by aggregate DC efficiency ONCE. Base/tray/battery remain synthetic. No added mass/temperature model.",
+    "effectiveIncrementBattery_W": 0,
+    "overrideIncrement": false,
+    "computeDeviceAllowance_W": 12
+  },
+  "hardwareFingerprint": "demo-fnv-c465140e"
+}

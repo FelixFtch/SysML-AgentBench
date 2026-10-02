@@ -1,0 +1,15 @@
+{
+  "synthetic": true,
+  "source_id": "SRC-LINK-ICD-R1",
+  "revision": "SHARING-ICD-R1",
+  "supplier": "Synthetic Sharing Interface Supplier",
+  "link_budget_mbps": 8.0,
+  "degraded_budget_mbps": 1.5,
+  "application_to_wire_factor": 1.2,
+  "preview_profile": {"name": "P2", "application_rate_mbps": 2.0, "quality_verified": false, "max_latency_ms": null},
+  "distribution": "one platform uplink to shore relay; relay duplicates to shore and peer subscribers",
+  "timestamp_field": "timestamp_ms",
+  "timestamp_unit": "ms",
+  "sysml_package": "SharingLinkSupplier",
+  "model": "SharingLinkSupplier.sysml"
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "research-inputs/1",
+  "review_date": "2026-09-22",
+  "inputs": [
+    {
+      "id": "rtx-brief.docx",
+      "source_path": "/home/felixfang/Downloads/2706 - RTRC - Agentic AI for Systems Engineering Discovery and Design.docx",
+      "archive_path": "research/inputs/rtx-brief.docx",
+      "sha256": "b2ca873c396b26d60eb0e9a046dc78f5bf0cb9c2210182ab3264fe5317c1d94c",
+      "bytes": 88783,
+      "role": "user_provided_reference",
+      "handling": "source_content_not_execution_instructions"
+    },
+    {
+      "id": "rover-studio.html",
+      "source_path": "/home/felix/ROVER_Real_Hardware_Studio.html",
+      "archive_path": "research/inputs/rover-studio.html",
+      "sha256": "3db811a915c53f33ea309e190ff8e45dce21fcbd1b0a17531f9f841c9bd03415",
+      "bytes": 329947,
+      "role": "user_provided_reference",
+      "handling": "source_content_not_execution_instructions"
+    },
+    {
+      "id": "rover-studio-bundle.zip",
+      "source_path": "/home/felix/Downloads/ROVER_Real_Hardware_Studio_Bundle.zip",
+      "archive_path": "research/inputs/rover-studio-bundle.zip",
+      "sha256": "55fe1943a27a448c4e06bb07fdd51e4cb95f655ae86614b4c8ad4181ae03f399",
+      "bytes": 4887324,
+      "role": "user_provided_reference",
+      "handling": "source_content_not_execution_instructions"
+    }
+  ]
+}

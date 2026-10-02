@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-09-22T07:33:35.846830+00:00",
+  "mode": "real HTTP + official SysML reference imports",
+  "references": [
+    {
+      "reference_name": "sysml-official-vehicle",
+      "record_id": "20260922T073335-825550ebed",
+      "run_id": "20260922T073335-6f397158",
+      "sysml_status": "PASS",
+      "status": "UNKNOWN",
+      "budget_status": "NOT_APPLICABLE",
+      "model_elements": 30,
+      "parsed_element_count": 501,
+      "checks": [
+        {
+          "id": "PUBLIC-SEMANTIC-REVIEW",
+          "label": "Engineering meaning and acceptance",
+          "status": "UNKNOWN",
+          "detail": "Public source imported and statically validated. No unstated requirements, satisfaction or physical verification are inferred."
+        }
+      ],
+      "zip_files": 18,
+      "zip_bytes": 3678044,
+      "source_hashes_verified": true,
+      "reopen_equal": true
+    },
+    {
+      "reference_name": "nasa-cfe",
+      "record_id": "20260922T073343-e8ea67ca0e",
+      "run_id": "20260922T073343-5f519a28",
+      "sysml_status": "PASS",
+      "status": "UNKNOWN",
+      "budget_status": "NOT_APPLICABLE",
+      "model_elements": 14,
+      "parsed_element_count": 273,
+      "checks": [
+        {
+          "id": "PUBLIC-SEMANTIC-REVIEW",
+          "label": "Engineering meaning and acceptance",
+          "status": "UNKNOWN",
+          "detail": "Public source imported and statically validated. No unstated requirements, satisfaction or physical verification are inferred."
+        }
+      ],
+      "zip_files": 23,
+      "zip_bytes": 1684896,
+      "source_hashes_verified": true,
+      "reopen_equal": true
+    }
+  ]
+}

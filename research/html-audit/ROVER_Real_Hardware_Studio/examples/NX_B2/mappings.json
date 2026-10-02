@@ -1,0 +1,67 @@
+{
+  "status": "RECORDED_LOCAL_FIXTURE",
+  "sourceModelsUnchanged": true,
+  "mappings": [
+    {
+      "id": "M-01",
+      "source": "HardwareOffers::LivoxDriver.cloudOut",
+      "target": "LocalNavigation.scanIn",
+      "sourceType": "PointCloud2 (3D)",
+      "targetType": "LaserScan (2D)",
+      "proposedTag": "RequireModification",
+      "decision": "选择点云投影适配职责；切片高度、TF和障碍表达须实测。不能只改字段名。",
+      "sourceUnchanged": true
+    },
+    {
+      "id": "M-02",
+      "source": "SoftwareOffer::LocalNavigation.commandOut",
+      "target": "MechatronicsOffer::OfferedChassis.input",
+      "sourceType": "BodyVelocity [m/s, rad/s]",
+      "targetType": "WheelRPM [rpm]",
+      "proposedTag": "RequireModification",
+      "decision": "Add DiffDriveAdapter and two typed connections; no alias-only conversion.",
+      "sourceUnchanged": true
+    },
+    {
+      "id": "M-03",
+      "source": "Mid360S.imu + D435i.imu",
+      "target": "state estimation inputs",
+      "sourceType": "two physical built-in IMUs",
+      "targetType": "time/calibration contract",
+      "proposedTag": "RequireComplement",
+      "decision": "Livox ICM40609 与D435i惯性单元分别登记。未自动融合，不重复采购；有两个IMU不证明冗余。",
+      "sourceUnchanged": true
+    },
+    {
+      "id": "M-04",
+      "source": "MechatronicsOffer::OfferedChassis",
+      "target": "integrated parts/procurement view",
+      "sourceType": "assembly includes MOTOR-L/MOTOR-R",
+      "targetType": "physical identity registry",
+      "proposedTag": "RequireComplement",
+      "decision": "Retain motor child nodes but add inclusion metadata; no second purchased motor set.",
+      "sourceUnchanged": true
+    },
+    {
+      "id": "M-05",
+      "source": "D435i USB-C3.1Gen1",
+      "target": "Jetson Orin NX 16GB",
+      "sourceType": "USB peripheral",
+      "targetType": "host + driver + power budget",
+      "proposedTag": "RequireComplement",
+      "decision": "NX是模块：载板、USB主机连接器和端口电流未确认；不能把模块参数当外部XT30输入。",
+      "sourceUnchanged": true
+    },
+    {
+      "id": "M-06",
+      "source": "vision runtime requirement",
+      "target": "1024 CUDA cores / 32 Tensor cores",
+      "sourceType": "portable",
+      "targetType": "compute backend",
+      "proposedTag": "RequireComplement",
+      "decision": "只检查CUDA硬件前提；可移植CPU路径的速度、内存和软件构建仍未运行。",
+      "sourceUnchanged": true
+    }
+  ],
+  "modelConfidence": "NOT_MEASURED"
+}

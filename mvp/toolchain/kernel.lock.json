@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/Systems-Modeling/SysML-v2-Pilot-Implementation",
+  "release": "2026-08",
+  "kernel_version": "0.62.0",
+  "url": "https://github.com/Systems-Modeling/SysML-v2-Pilot-Implementation/releases/download/2026-08/jupyter-sysml-kernel-0.62.0.zip",
+  "sha256": "5a015ed3f2b3d2dae14e9c3fb9602d9e1fef5f9ce33cf396c422329405cc3cb2",
+  "digest_source": "https://api.github.com/repos/Systems-Modeling/SysML-v2-Pilot-Implementation/releases/tags/2026-08",
+  "compatibility_note": "This 2026-08 implementation includes 2.1 development content. Tested SysML v2 expressions are not a claim of complete SysML 2.0 conformance."
+}

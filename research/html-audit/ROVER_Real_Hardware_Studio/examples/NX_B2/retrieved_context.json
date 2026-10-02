@@ -1,0 +1,315 @@
+{
+  "query": "新增深度相机如何影响续航、电池和安装托盘？",
+  "revision": "A",
+  "sourceFingerprint": "demo-fnv-1e69c9e1",
+  "method": "LOCAL_KEYWORD_PLUS_ONE_HOP_NOT_MINILM_OR_FAISS",
+  "terms": [
+    "电池",
+    "续航",
+    "相机",
+    "深度",
+    "托盘",
+    "安装"
+  ],
+  "seeds": [
+    {
+      "id": "rover.tray",
+      "score": 3,
+      "hits": [
+        "电池",
+        "托盘",
+        "安装"
+      ]
+    },
+    {
+      "id": "rover.battery",
+      "score": 2,
+      "hits": [
+        "电池",
+        "续航"
+      ]
+    },
+    {
+      "id": "rover.estimatedRuntime_h",
+      "score": 2,
+      "hits": [
+        "电池",
+        "续航"
+      ]
+    },
+    {
+      "id": "rover.meanLoadAtBattery_W",
+      "score": 2,
+      "hits": [
+        "电池",
+        "相机"
+      ]
+    }
+  ],
+  "elements": [
+    {
+      "id": "rover",
+      "label": "小车系统",
+      "kind": "part",
+      "path": "Rover_A::rover",
+      "file": "Rover_A.sysml",
+      "revision": "A",
+      "data": {},
+      "tags": [
+        "system"
+      ],
+      "retrievalRole": "one_hop_neighbor",
+      "keywordHits": []
+    },
+    {
+      "id": "rover.battery",
+      "label": "电池",
+      "kind": "part",
+      "path": "Rover_A::rover.battery",
+      "file": "Rover_A.sysml",
+      "revision": "A",
+      "data": {
+        "selection": "BAT-96",
+        "energy_Wh": 96,
+        "size_mm": [
+          120,
+          80,
+          45
+        ]
+      },
+      "tags": [
+        "电池",
+        "battery",
+        "续航",
+        "能源"
+      ],
+      "retrievalRole": "keyword_seed",
+      "keywordHits": [
+        "电池",
+        "续航"
+      ]
+    },
+    {
+      "id": "rover.tray",
+      "label": "CNC电池托盘",
+      "kind": "part",
+      "path": "Rover_A::rover.tray",
+      "file": "Rover_A.sysml",
+      "revision": "A",
+      "data": {
+        "selection": "TRAY-A",
+        "inside_mm": [
+          130,
+          90,
+          50
+        ]
+      },
+      "tags": [
+        "托盘",
+        "安装",
+        "尺寸",
+        "CNC"
+      ],
+      "retrievalRole": "keyword_seed",
+      "keywordHits": [
+        "电池",
+        "托盘",
+        "安装"
+      ]
+    },
+    {
+      "id": "rover.meanLoadAtBattery_W",
+      "label": "电池侧平均功耗",
+      "kind": "attribute",
+      "path": "Rover_A::rover.meanLoadAtBattery_W",
+      "file": "Rover_A.sysml",
+      "revision": "A",
+      "data": {
+        "base_W": 32.777778,
+        "added_W": 0,
+        "total_W": 32.777778,
+        "plan": {
+          "baseDevice_W": 29.5,
+          "baseBattery_W": 32.777778,
+          "defaultIncrementBattery_W": 17.777778,
+          "cameraUsbReservation_A": 0.8,
+          "sources": {
+            "lidar": "HW-LIVOX published reference power, not actual average",
+            "allOtherPower": "AUTHOR_EDITABLE_DESIGN_ALLOWANCES",
+            "efficiency": "AUTHOR_ASSUMPTION"
+          },
+          "scope": "Device-side loads excluding downstream camera in host allowance; divide by aggregate DC efficiency ONCE. Base/tray/battery remain synthetic. No added mass/temperature model.",
+          "effectiveIncrementBattery_W": 0,
+          "overrideIncrement": false,
+          "computeDeviceAllowance_W": 12
+        },
+        "provenance": "MIXED_PUBLISHED_REFERENCE_AND_ASSUMPTIONS"
+      },
+      "tags": [
+        "功耗",
+        "负载",
+        "相机",
+        "power"
+      ],
+      "retrievalRole": "keyword_seed",
+      "keywordHits": [
+        "电池",
+        "相机"
+      ]
+    },
+    {
+      "id": "rover.estimatedRuntime_h",
+      "label": "续航分析",
+      "kind": "analysis",
+      "path": "Rover_A::rover.estimatedRuntime_h",
+      "file": "Rover_A.sysml",
+      "revision": "A",
+      "data": {
+        "value_h": 2.3430508315725374,
+        "formula": "energy_Wh × 0.8 / meanLoadAtBattery_W"
+      },
+      "tags": [
+        "续航",
+        "runtime",
+        "电池",
+        "功耗"
+      ],
+      "retrievalRole": "keyword_seed",
+      "keywordHits": [
+        "电池",
+        "续航"
+      ]
+    },
+    {
+      "id": "runtimeRequirement",
+      "label": "R-04续航要求",
+      "kind": "requirement",
+      "path": "Rover_A::runtimeRequirement",
+      "file": "Rover_A.sysml",
+      "revision": "A",
+      "data": {
+        "id": "R-04",
+        "minimum_h": 2
+      },
+      "tags": [
+        "续航",
+        "要求"
+      ],
+      "retrievalRole": "one_hop_neighbor",
+      "keywordHits": [
+        "续航"
+      ]
+    },
+    {
+      "id": "widthRequirement",
+      "label": "R-05宽度要求",
+      "kind": "requirement",
+      "path": "Rover_A::widthRequirement",
+      "file": "Rover_A.sysml",
+      "revision": "A",
+      "data": {
+        "id": "R-05",
+        "maximum_mm": 350
+      },
+      "tags": [
+        "宽度",
+        "安装",
+        "要求"
+      ],
+      "retrievalRole": "one_hop_neighbor",
+      "keywordHits": [
+        "安装"
+      ]
+    },
+    {
+      "id": "rover.compute",
+      "label": "Orin NX 16GB",
+      "kind": "part",
+      "path": "Rover_A::rover.compute",
+      "file": "Rover_A.sysml",
+      "revision": "A",
+      "data": {
+        "selection": "nx16",
+        "ram_GB": 16,
+        "cpu": "8× Arm Cortex-A78AE",
+        "gpu": "1024 CUDA cores / 32 Tensor cores",
+        "form": "module_plus_unselected_carrier",
+        "meanDeviceBudget_W": 12,
+        "powerBudgetProvenance": "AUTHOR_ASSUMPTION_NOT_TDP",
+        "storage": "External NVMe; carrier/SSD not selected",
+        "sourceRefs": [
+          "HW-NX"
+        ]
+      },
+      "tags": [
+        "Jetson",
+        "Orin",
+        "树莓派",
+        "Raspberry",
+        "Pi5",
+        "主控",
+        "计算",
+        "CUDA",
+        "电源",
+        "功耗"
+      ],
+      "retrievalRole": "one_hop_neighbor",
+      "keywordHits": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "rover",
+      "to": "rover.battery",
+      "type": "contains"
+    },
+    {
+      "from": "rover",
+      "to": "rover.tray",
+      "type": "contains"
+    },
+    {
+      "from": "rover.battery",
+      "to": "rover.tray",
+      "type": "fitsInto"
+    },
+    {
+      "from": "rover.battery",
+      "to": "rover.estimatedRuntime_h",
+      "type": "parameter"
+    },
+    {
+      "from": "rover.meanLoadAtBattery_W",
+      "to": "rover.estimatedRuntime_h",
+      "type": "parameter"
+    },
+    {
+      "from": "runtimeRequirement",
+      "to": "rover.estimatedRuntime_h",
+      "type": "constrains"
+    },
+    {
+      "from": "widthRequirement",
+      "to": "rover.tray",
+      "type": "constrains"
+    },
+    {
+      "from": "rover.battery",
+      "to": "rover.meanLoadAtBattery_W",
+      "type": "supplies_aggregate"
+    },
+    {
+      "from": "rover",
+      "to": "rover.compute",
+      "type": "contains"
+    },
+    {
+      "from": "rover.compute",
+      "to": "rover.meanLoadAtBattery_W",
+      "type": "included_host_allowance"
+    }
+  ],
+  "status": "CONTEXT_FOUND",
+  "llmAnswer": "NOT_CALLED",
+  "completeness": "Not guaranteed; use explicit model queries for complete lists"
+}

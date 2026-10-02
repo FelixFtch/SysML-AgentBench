@@ -1,0 +1,13 @@
+{
+  "package_name": "NASA_CFE_Imported",
+  "model_files": [
+    "derived/NASA_CFE_Imported.sysml"
+  ],
+  "label": "NASA cFE software-bus requirements \u2014 source-backed text import",
+  "source_kind": "public_nasa_requirements_text_import",
+  "license": "Apache-2.0",
+  "source_commit": "7d283938c9af5bd6e439f3fc307e61b0c7799640",
+  "manifest": "manifest.json",
+  "gold_semantic_model": false,
+  "scope": "Requirement definitions/usages and source metadata; no formal constraints or satisfy links"
+}

@@ -1,0 +1,267 @@
+{
+  "status": "LOCAL_GRAPH_DIFF",
+  "diff": {
+    "from": "A",
+    "to": "B2",
+    "added": [
+      {
+        "id": "rover.camera",
+        "label": "RealSense D435i"
+      },
+      {
+        "id": "rover.visionProcessor",
+        "label": "本地视觉处理"
+      },
+      {
+        "id": "rover.imageRecorder",
+        "label": "本地记录任务"
+      },
+      {
+        "id": "localVisionRequirement",
+        "label": "R-07新增视觉要求"
+      },
+      {
+        "id": "localVisionWorkflow",
+        "label": "采集→本地处理→记录"
+      },
+      {
+        "id": "rover.camera.imu",
+        "label": "D435i · 内置IMU"
+      },
+      {
+        "id": "rover.realsenseDriver",
+        "label": "RealSense ROS驱动"
+      }
+    ],
+    "removed": [],
+    "changed": [
+      {
+        "id": "rover.battery",
+        "label": "电池",
+        "before": {
+          "selection": "BAT-96",
+          "energy_Wh": 96,
+          "size_mm": [
+            120,
+            80,
+            45
+          ]
+        },
+        "after": {
+          "selection": "BAT-160",
+          "energy_Wh": 160,
+          "size_mm": [
+            140,
+            80,
+            45
+          ]
+        }
+      },
+      {
+        "id": "rover.tray",
+        "label": "CNC电池托盘",
+        "before": {
+          "selection": "TRAY-A",
+          "inside_mm": [
+            130,
+            90,
+            50
+          ]
+        },
+        "after": {
+          "selection": "TRAY-B",
+          "inside_mm": [
+            150,
+            90,
+            50
+          ]
+        }
+      },
+      {
+        "id": "rover.meanLoadAtBattery_W",
+        "label": "电池侧平均功耗",
+        "before": {
+          "base_W": 32.777778,
+          "added_W": 0,
+          "total_W": 32.777778,
+          "plan": {
+            "baseDevice_W": 29.5,
+            "baseBattery_W": 32.777778,
+            "defaultIncrementBattery_W": 17.777778,
+            "cameraUsbReservation_A": 0.8,
+            "sources": {
+              "lidar": "HW-LIVOX published reference power, not actual average",
+              "allOtherPower": "AUTHOR_EDITABLE_DESIGN_ALLOWANCES",
+              "efficiency": "AUTHOR_ASSUMPTION"
+            },
+            "scope": "Device-side loads excluding downstream camera in host allowance; divide by aggregate DC efficiency ONCE. Base/tray/battery remain synthetic. No added mass/temperature model.",
+            "effectiveIncrementBattery_W": 0,
+            "overrideIncrement": false,
+            "computeDeviceAllowance_W": 12
+          },
+          "provenance": "MIXED_PUBLISHED_REFERENCE_AND_ASSUMPTIONS"
+        },
+        "after": {
+          "base_W": 32.777778,
+          "added_W": 17.777778,
+          "total_W": 50.555556,
+          "plan": {
+            "baseDevice_W": 29.5,
+            "baseBattery_W": 32.777778,
+            "defaultIncrementBattery_W": 17.777778,
+            "cameraUsbReservation_A": 0.8,
+            "sources": {
+              "lidar": "HW-LIVOX published reference power, not actual average",
+              "allOtherPower": "AUTHOR_EDITABLE_DESIGN_ALLOWANCES",
+              "efficiency": "AUTHOR_ASSUMPTION"
+            },
+            "scope": "Device-side loads excluding downstream camera in host allowance; divide by aggregate DC efficiency ONCE. Base/tray/battery remain synthetic. No added mass/temperature model.",
+            "effectiveIncrementBattery_W": 17.777778,
+            "overrideIncrement": false,
+            "computeDeviceAllowance_W": 24
+          },
+          "provenance": "MIXED_PUBLISHED_REFERENCE_AND_ASSUMPTIONS"
+        }
+      },
+      {
+        "id": "rover.estimatedRuntime_h",
+        "label": "续航分析",
+        "before": {
+          "value_h": 2.3430508315725374,
+          "formula": "energy_Wh × 0.8 / meanLoadAtBattery_W"
+        },
+        "after": {
+          "value_h": 2.5318681096099507,
+          "formula": "energy_Wh × 0.8 / meanLoadAtBattery_W"
+        }
+      },
+      {
+        "id": "rover.compute",
+        "label": "Orin NX 16GB",
+        "before": {
+          "selection": "nx16",
+          "ram_GB": 16,
+          "cpu": "8× Arm Cortex-A78AE",
+          "gpu": "1024 CUDA cores / 32 Tensor cores",
+          "form": "module_plus_unselected_carrier",
+          "meanDeviceBudget_W": 12,
+          "powerBudgetProvenance": "AUTHOR_ASSUMPTION_NOT_TDP",
+          "storage": "External NVMe; carrier/SSD not selected",
+          "sourceRefs": [
+            "HW-NX"
+          ]
+        },
+        "after": {
+          "selection": "nx16",
+          "ram_GB": 16,
+          "cpu": "8× Arm Cortex-A78AE",
+          "gpu": "1024 CUDA cores / 32 Tensor cores",
+          "form": "module_plus_unselected_carrier",
+          "meanDeviceBudget_W": 24,
+          "powerBudgetProvenance": "AUTHOR_ASSUMPTION_NOT_TDP",
+          "storage": "External NVMe; carrier/SSD not selected",
+          "sourceRefs": [
+            "HW-NX"
+          ]
+        }
+      }
+    ],
+    "newConnections": [
+      {
+        "from": "rover",
+        "to": "rover.camera",
+        "type": "contains"
+      },
+      {
+        "from": "rover",
+        "to": "rover.visionProcessor",
+        "type": "contains"
+      },
+      {
+        "from": "rover",
+        "to": "rover.imageRecorder",
+        "type": "contains"
+      },
+      {
+        "from": "rover.visionProcessor",
+        "to": "rover.imageRecorder",
+        "type": "LocalObservation"
+      },
+      {
+        "from": "rover.camera",
+        "to": "rover.meanLoadAtBattery_W",
+        "type": "included_in_increment"
+      },
+      {
+        "from": "rover.visionProcessor",
+        "to": "rover.meanLoadAtBattery_W",
+        "type": "included_in_increment"
+      },
+      {
+        "from": "rover.imageRecorder",
+        "to": "rover.meanLoadAtBattery_W",
+        "type": "included_in_increment"
+      },
+      {
+        "from": "localVisionRequirement",
+        "to": "rover.camera",
+        "type": "allocated"
+      },
+      {
+        "from": "localVisionRequirement",
+        "to": "localVisionWorkflow",
+        "type": "constrains"
+      },
+      {
+        "from": "rover.visionProcessor",
+        "to": "localVisionWorkflow",
+        "type": "allocated"
+      },
+      {
+        "from": "rover.camera",
+        "to": "rover.camera.imu",
+        "type": "includes"
+      },
+      {
+        "from": "rover",
+        "to": "rover.realsenseDriver",
+        "type": "contains"
+      },
+      {
+        "from": "rover.camera",
+        "to": "rover.compute",
+        "type": "USB3"
+      },
+      {
+        "from": "rover.camera",
+        "to": "rover.realsenseDriver",
+        "type": "USBDeviceStream"
+      },
+      {
+        "from": "rover.realsenseDriver",
+        "to": "rover.visionProcessor",
+        "type": "RGBDFrame"
+      },
+      {
+        "from": "rover.realsenseDriver",
+        "to": "rover.imageRecorder",
+        "type": "RGBDFrame"
+      },
+      {
+        "from": "rover.realsenseDriver",
+        "to": "rover.compute",
+        "type": "deployedOn"
+      },
+      {
+        "from": "rover.visionProcessor",
+        "to": "rover.compute",
+        "type": "deployedOn"
+      },
+      {
+        "from": "rover.imageRecorder",
+        "to": "rover.compute",
+        "type": "deployedOn"
+      }
+    ]
+  }
+}

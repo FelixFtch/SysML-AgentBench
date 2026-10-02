@@ -1,0 +1,193 @@
+{
+  "timestamp": "2026-09-22T07:42:40.169306+00:00",
+  "server": "http://127.0.0.1:8765",
+  "mode": "real HTTP + official SysML engine; no mock",
+  "cases": [
+    {
+      "request": {
+        "case_name": "candidate_a",
+        "preview_approved": true
+      },
+      "record_id": "20260922T074240-bad9405f87",
+      "run_id": "20260922T074240-96ff73ec",
+      "run_dir": "/home/felix/Documents/ChatGPT/RTX agent/mvp/runs/20260922T074240-96ff73ec",
+      "sysml_status": "PASS",
+      "status": "UNKNOWN",
+      "checks": [
+        {
+          "id": "R-STORE-001",
+          "status": "PASS",
+          "actual": 64.8,
+          "limit": 102.4,
+          "unit": "GB"
+        },
+        {
+          "id": "R-UPLOAD-P2",
+          "status": "PASS",
+          "actual": 2.4,
+          "limit": 8.0,
+          "unit": "Mbit/s"
+        },
+        {
+          "id": "R-POWER-001",
+          "status": "PASS",
+          "actual": 54.0,
+          "limit": 60.0,
+          "unit": "W"
+        },
+        {
+          "id": "D-UPLOAD-POLICY",
+          "status": "PASS",
+          "actual": 2.0,
+          "limit": 2.0,
+          "unit": "Mbit/s"
+        },
+        {
+          "id": "R-TOPOLOGY-001",
+          "status": "PASS",
+          "actual": 9,
+          "limit": 9,
+          "unit": "connections"
+        },
+        {
+          "id": "D-UNIT-CONTRACT",
+          "status": "PASS",
+          "actual": {
+            "totalPower": [
+              "SI::watt"
+            ],
+            "powerLimit": [
+              "SI::watt"
+            ],
+            "retentionTime": [
+              "SI::second"
+            ],
+            "dataRateUnit": "Mbit/s (decimal)",
+            "capacityUnit": "GB (decimal)"
+          },
+          "limit": null,
+          "unit": null
+        },
+        {
+          "id": "R-RUNTIME-001",
+          "status": "UNKNOWN",
+          "actual": null,
+          "limit": null,
+          "unit": null
+        },
+        {
+          "id": "D-DECISION-BINDING",
+          "status": "PASS",
+          "actual": true,
+          "limit": null,
+          "unit": null
+        },
+        {
+          "id": "D-WARNING-REVIEW",
+          "status": "PASS",
+          "actual": null,
+          "limit": null,
+          "unit": null
+        }
+      ],
+      "named_element_count": 83,
+      "zip_files": 41,
+      "zip_bytes": 7416616,
+      "reopen_equal": true,
+      "source_hashes_verified": true
+    },
+    {
+      "request": {
+        "case_name": "candidate_a",
+        "preview_approved": false
+      },
+      "record_id": "20260922T074251-e57423ee0a",
+      "run_id": "20260922T074251-ff7ee969",
+      "run_dir": "/home/felix/Documents/ChatGPT/RTX agent/mvp/runs/20260922T074251-ff7ee969",
+      "sysml_status": "PASS",
+      "status": "FAIL",
+      "checks": [
+        {
+          "id": "R-STORE-001",
+          "status": "PASS",
+          "actual": 64.8,
+          "limit": 102.4,
+          "unit": "GB"
+        },
+        {
+          "id": "R-UPLOAD-001",
+          "status": "FAIL",
+          "actual": 21.6,
+          "limit": 8.0,
+          "unit": "Mbit/s"
+        },
+        {
+          "id": "R-POWER-001",
+          "status": "PASS",
+          "actual": 54.0,
+          "limit": 60.0,
+          "unit": "W"
+        },
+        {
+          "id": "D-UPLOAD-POLICY",
+          "status": "PASS",
+          "actual": 18.0,
+          "limit": 18.0,
+          "unit": "Mbit/s"
+        },
+        {
+          "id": "R-TOPOLOGY-001",
+          "status": "PASS",
+          "actual": 8,
+          "limit": 8,
+          "unit": "connections"
+        },
+        {
+          "id": "D-UNIT-CONTRACT",
+          "status": "PASS",
+          "actual": {
+            "totalPower": [
+              "SI::watt"
+            ],
+            "powerLimit": [
+              "SI::watt"
+            ],
+            "retentionTime": [
+              "SI::second"
+            ],
+            "dataRateUnit": "Mbit/s (decimal)",
+            "capacityUnit": "GB (decimal)"
+          },
+          "limit": null,
+          "unit": null
+        },
+        {
+          "id": "R-RUNTIME-001",
+          "status": "UNKNOWN",
+          "actual": null,
+          "limit": null,
+          "unit": null
+        },
+        {
+          "id": "D-DECISION-BINDING",
+          "status": "PASS",
+          "actual": false,
+          "limit": null,
+          "unit": null
+        },
+        {
+          "id": "D-WARNING-REVIEW",
+          "status": "PASS",
+          "actual": null,
+          "limit": null,
+          "unit": null
+        }
+      ],
+      "named_element_count": 76,
+      "zip_files": 41,
+      "zip_bytes": 7080303,
+      "reopen_equal": true,
+      "source_hashes_verified": true
+    }
+  ]
+}

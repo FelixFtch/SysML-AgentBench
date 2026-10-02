@@ -1,0 +1,540 @@
+{
+  "package": "ROVER Real Hardware Studio",
+  "files": [
+    {
+      "path": "CHANGELOG_中文.md",
+      "bytes": 827,
+      "sha256": "7399e0227e364e902c67cab0e5cda07ffe21bfed0da70c0fd7e5a3b0804d102d"
+    },
+    {
+      "path": "README_先看这里.md",
+      "bytes": 6545,
+      "sha256": "b1c3ba5966ddc955e313a4ce1be2c78e8a8d5a664464163331d2b08433dbb450"
+    },
+    {
+      "path": "ROVER_Real_Hardware_Studio.html",
+      "bytes": 329947,
+      "sha256": "3db811a915c53f33ea309e190ff8e45dce21fcbd1b0a17531f9f841c9bd03415"
+    },
+    {
+      "path": "build.py",
+      "bytes": 916,
+      "sha256": "c4db3cb9ed43eb4ec876f1507cb76ee016d9d211394cb864b6c5f67b73a3f71e"
+    },
+    {
+      "path": "examples/NX_B2/HardwareOffers.sysml",
+      "bytes": 3391,
+      "sha256": "b8bf356db619a3bb23de39893927368cea6dc73488080895663cd240d6dd4a02"
+    },
+    {
+      "path": "examples/NX_B2/RoverLibrary.sysml",
+      "bytes": 2310,
+      "sha256": "39178e532a51c1e836dc28296d02b562e82d1b07a1f634c274849330c787bad6"
+    },
+    {
+      "path": "examples/NX_B2/RoverRequirements.sysml",
+      "bytes": 935,
+      "sha256": "0fffe37624f24130f43b84e2f7bfca90ae304360f7cf8920a9dcb5674f2e4a1b"
+    },
+    {
+      "path": "examples/NX_B2/Rover_A.sysml",
+      "bytes": 5578,
+      "sha256": "54e35e0c206f5958efedbf2f2e8565f7f23062774200c08ad4fab1bd9dd94996"
+    },
+    {
+      "path": "examples/NX_B2/Rover_B.sysml",
+      "bytes": 6702,
+      "sha256": "47204434e2705fd508136b174cf9ae8ca02e434b7fea562a769294646986f6dd"
+    },
+    {
+      "path": "examples/NX_B2/hardware_catalog.json",
+      "bytes": 7664,
+      "sha256": "2bf3f21e681db3f3634cb16378dc654771cfd97ae81ca2e74fc9c74a0017a787"
+    },
+    {
+      "path": "examples/NX_B2/hardware_planning.json",
+      "bytes": 1095,
+      "sha256": "0f06d0963e3bdf472e21856f32bec2c7b2927af4306906ce75690f0a6f932179"
+    },
+    {
+      "path": "examples/NX_B2/mappings.json",
+      "bytes": 2592,
+      "sha256": "b447561cbdb14ba8929b1fde87c4d42e17efcdb92ef82ba878ce4d9e74428764"
+    },
+    {
+      "path": "examples/NX_B2/model_author.md",
+      "bytes": 1205,
+      "sha256": "5d2e174eb98a93e1aea85409c087ed82c3d34176268d70059bcb470a3fac88db"
+    },
+    {
+      "path": "examples/NX_B2/model_diff.json",
+      "bytes": 7261,
+      "sha256": "7b72d4083e1fd470e91adaa380a51e84762e71e6431acb035a5cb3470bf07730"
+    },
+    {
+      "path": "examples/NX_B2/model_index.json",
+      "bytes": 27239,
+      "sha256": "281ce29f0269e4c217f8bd65c8ccbf29e684265a464ea6df1853e0a38acf7122"
+    },
+    {
+      "path": "examples/NX_B2/paper_map.json",
+      "bytes": 7816,
+      "sha256": "44a64a27c737799ee00b94c20b41552c54ca4ea49ddee197c0bea82378fa0bc3"
+    },
+    {
+      "path": "examples/NX_B2/requirements.md",
+      "bytes": 627,
+      "sha256": "30d91168505ccd3266327e2d0efc8e7253b077d46030e11cad787004535a4137"
+    },
+    {
+      "path": "examples/NX_B2/retrieved_context.json",
+      "bytes": 7083,
+      "sha256": "eca031a011bee720fa699a61917b74860e06f58cfca2d10c9bd034e345b70b38"
+    },
+    {
+      "path": "examples/NX_B2/review_report.html",
+      "bytes": 12069,
+      "sha256": "fd21418725adf6bb11cb14df598f8b057102dad63ac147c28f975258decfb841"
+    },
+    {
+      "path": "examples/NX_B2/supplier_offers.json",
+      "bytes": 17224,
+      "sha256": "1cf88dc13345c25f694615b74f88cdb31d343bc15a57628a0716961c03c45b00"
+    },
+    {
+      "path": "examples/NX_B2/workflow_evidence.json",
+      "bytes": 348280,
+      "sha256": "5fac8f7a36ffb21c4f94c740c6356b4c9f6f6c82b25525b8b6866ae4caa74057"
+    },
+    {
+      "path": "examples/nx16/A_preview_checks.json",
+      "bytes": 4964,
+      "sha256": "17086e7e1dd0e6a5e328fc0d55f06eb38e9aa886104d8ae283b3f047f67b5dd2"
+    },
+    {
+      "path": "examples/nx16/B0_preview_checks.json",
+      "bytes": 5654,
+      "sha256": "197fda2cf513090a3f5c911645874b7f2e9669a85fea0a2858bcec559d56492f"
+    },
+    {
+      "path": "examples/nx16/B1_preview_checks.json",
+      "bytes": 5641,
+      "sha256": "6efcadd20015bf9c2a707fb377449cd8a4e6a0f12318539641c9f45835ece58d"
+    },
+    {
+      "path": "examples/nx16/B2_preview_checks.json",
+      "bytes": 5641,
+      "sha256": "ea6baca83e737610552a415582710d07c166681b6c9bc815bc376a7c141d3b22"
+    },
+    {
+      "path": "examples/nx16/HardwareOffers.sysml",
+      "bytes": 3391,
+      "sha256": "b8bf356db619a3bb23de39893927368cea6dc73488080895663cd240d6dd4a02"
+    },
+    {
+      "path": "examples/nx16/MechatronicsOffer.sysml",
+      "bytes": 1028,
+      "sha256": "546d24269393c2e48515138fafd590936ebb166170445e14ba7c32a0e7f3c5a5"
+    },
+    {
+      "path": "examples/nx16/PerceptionOffer.sysml",
+      "bytes": 208,
+      "sha256": "24f0ccfe2099d49be19363b5d1772b8fe9d5c36efff553b65dc2bda61044337a"
+    },
+    {
+      "path": "examples/nx16/RoverLibrary.sysml",
+      "bytes": 2310,
+      "sha256": "39178e532a51c1e836dc28296d02b562e82d1b07a1f634c274849330c787bad6"
+    },
+    {
+      "path": "examples/nx16/Rover_A_DRAFT.sysml",
+      "bytes": 5578,
+      "sha256": "54e35e0c206f5958efedbf2f2e8565f7f23062774200c08ad4fab1bd9dd94996"
+    },
+    {
+      "path": "examples/nx16/Rover_B0_DRAFT.sysml",
+      "bytes": 6701,
+      "sha256": "c1b6fdb4ee8ad06ffe5dade1fd6d44d466e4b6524f0493ee2f98ce02e6ff6e62"
+    },
+    {
+      "path": "examples/nx16/Rover_B1_DRAFT.sysml",
+      "bytes": 6702,
+      "sha256": "b7bf958f02169d21bcb9580eb92a2a62781ebb632f125516884fbe5811aaa073"
+    },
+    {
+      "path": "examples/nx16/Rover_B2_DRAFT.sysml",
+      "bytes": 6702,
+      "sha256": "47204434e2705fd508136b174cf9ae8ca02e434b7fea562a769294646986f6dd"
+    },
+    {
+      "path": "examples/nx16/SoftwareOffer.sysml",
+      "bytes": 460,
+      "sha256": "78cb94334d3a63875af356a487844873a3ec6da89d0dc6225412cba1c1e65055"
+    },
+    {
+      "path": "examples/nx16/preview_graph_B2.json",
+      "bytes": 27239,
+      "sha256": "281ce29f0269e4c217f8bd65c8ccbf29e684265a464ea6df1853e0a38acf7122"
+    },
+    {
+      "path": "examples/pi5_16/A_preview_checks.json",
+      "bytes": 5104,
+      "sha256": "647c4018f8618f67ebff3f2559289297ba9228cdb2e08b276ec806aabcc93473"
+    },
+    {
+      "path": "examples/pi5_16/B0_preview_checks.json",
+      "bytes": 5794,
+      "sha256": "093a9a733b54432b3786cea377fcecc2a09897f9bc1913178f94854574e92bd8"
+    },
+    {
+      "path": "examples/pi5_16/B1_preview_checks.json",
+      "bytes": 5783,
+      "sha256": "e0b9a1fcea0679639164f2a35156f9b2723d900ec91690729c537380ba46aaed"
+    },
+    {
+      "path": "examples/pi5_16/B2_preview_checks.json",
+      "bytes": 5783,
+      "sha256": "eaae6c8084055d07beff946a40ac8dacee5ad11e48ddaf78b92b59bb193a2707"
+    },
+    {
+      "path": "examples/pi5_16/HardwareOffers.sysml",
+      "bytes": 3391,
+      "sha256": "b8bf356db619a3bb23de39893927368cea6dc73488080895663cd240d6dd4a02"
+    },
+    {
+      "path": "examples/pi5_16/MechatronicsOffer.sysml",
+      "bytes": 1028,
+      "sha256": "546d24269393c2e48515138fafd590936ebb166170445e14ba7c32a0e7f3c5a5"
+    },
+    {
+      "path": "examples/pi5_16/PerceptionOffer.sysml",
+      "bytes": 208,
+      "sha256": "24f0ccfe2099d49be19363b5d1772b8fe9d5c36efff553b65dc2bda61044337a"
+    },
+    {
+      "path": "examples/pi5_16/RoverLibrary.sysml",
+      "bytes": 2310,
+      "sha256": "39178e532a51c1e836dc28296d02b562e82d1b07a1f634c274849330c787bad6"
+    },
+    {
+      "path": "examples/pi5_16/Rover_A_DRAFT.sysml",
+      "bytes": 5581,
+      "sha256": "e0eff23eca0c34904d7ac05a3d858b34c6984998f1e2ad65574acd67b6f7f814"
+    },
+    {
+      "path": "examples/pi5_16/Rover_B0_DRAFT.sysml",
+      "bytes": 6704,
+      "sha256": "fec82c63cbe4ce1a23301860820def8d270314d152404be3af56f080b1ef3f67"
+    },
+    {
+      "path": "examples/pi5_16/Rover_B1_DRAFT.sysml",
+      "bytes": 6705,
+      "sha256": "6f8c68a2a4f1b9dfcefdb31542da68729ed919fdcbaf1fc2adae59758ba08efb"
+    },
+    {
+      "path": "examples/pi5_16/Rover_B2_DRAFT.sysml",
+      "bytes": 6705,
+      "sha256": "9cceb5f1398e304dac087164aa4e114ab8b154f5781db030aaaa2ac842d9915f"
+    },
+    {
+      "path": "examples/pi5_16/SoftwareOffer.sysml",
+      "bytes": 460,
+      "sha256": "78cb94334d3a63875af356a487844873a3ec6da89d0dc6225412cba1c1e65055"
+    },
+    {
+      "path": "examples/pi5_16/preview_graph_B2.json",
+      "bytes": 25677,
+      "sha256": "cbe89debe27734cfebbb68c91c691c48b9adfe9fadce5a8cb27a46c7d53c0383"
+    },
+    {
+      "path": "examples/pi5_8/A_preview_checks.json",
+      "bytes": 5104,
+      "sha256": "d091518ff11f64818efb789864e8a9b089e97ebd5ad9c487cb09b91788db2ebe"
+    },
+    {
+      "path": "examples/pi5_8/B0_preview_checks.json",
+      "bytes": 5794,
+      "sha256": "0830cb8b54963766664e4227ec7faa52cc54236825c613eb9d4ae5ba5f0659fb"
+    },
+    {
+      "path": "examples/pi5_8/B1_preview_checks.json",
+      "bytes": 5783,
+      "sha256": "75e1e72e113b89de70d09d519b9100bdaaf391fe8af44e67edcdb9b6639ef151"
+    },
+    {
+      "path": "examples/pi5_8/B2_preview_checks.json",
+      "bytes": 5783,
+      "sha256": "eb1c3f8d8d10cfd5a549fc3601a1f5b53dfd4044b812ea7023ddcd199f3ea8a1"
+    },
+    {
+      "path": "examples/pi5_8/HardwareOffers.sysml",
+      "bytes": 3391,
+      "sha256": "b8bf356db619a3bb23de39893927368cea6dc73488080895663cd240d6dd4a02"
+    },
+    {
+      "path": "examples/pi5_8/MechatronicsOffer.sysml",
+      "bytes": 1028,
+      "sha256": "546d24269393c2e48515138fafd590936ebb166170445e14ba7c32a0e7f3c5a5"
+    },
+    {
+      "path": "examples/pi5_8/PerceptionOffer.sysml",
+      "bytes": 208,
+      "sha256": "24f0ccfe2099d49be19363b5d1772b8fe9d5c36efff553b65dc2bda61044337a"
+    },
+    {
+      "path": "examples/pi5_8/RoverLibrary.sysml",
+      "bytes": 2310,
+      "sha256": "39178e532a51c1e836dc28296d02b562e82d1b07a1f634c274849330c787bad6"
+    },
+    {
+      "path": "examples/pi5_8/Rover_A_DRAFT.sysml",
+      "bytes": 5579,
+      "sha256": "1db09a539bbb6c464101d45f08819122b76727b576d1ad374b48fb80c1ce8858"
+    },
+    {
+      "path": "examples/pi5_8/Rover_B0_DRAFT.sysml",
+      "bytes": 6702,
+      "sha256": "c7b07efa5c0290414c00928b6a76ec62db854f397049dc637624e9f99a680f4b"
+    },
+    {
+      "path": "examples/pi5_8/Rover_B1_DRAFT.sysml",
+      "bytes": 6703,
+      "sha256": "56bf8293b8a12cc8705fbf08bfa2ad1610fa0d1a0eefd982e6f9ca48a6902570"
+    },
+    {
+      "path": "examples/pi5_8/Rover_B2_DRAFT.sysml",
+      "bytes": 6703,
+      "sha256": "a1a6ef8ccb6049d18b8f8706c2acc3e6f8409feab0ed372317258b20c13d11d1"
+    },
+    {
+      "path": "examples/pi5_8/SoftwareOffer.sysml",
+      "bytes": 460,
+      "sha256": "78cb94334d3a63875af356a487844873a3ec6da89d0dc6225412cba1c1e65055"
+    },
+    {
+      "path": "examples/pi5_8/preview_graph_B2.json",
+      "bytes": 25670,
+      "sha256": "720980cf4ac3fc29d8d80a761cc323a667acebd3e0bbba6c6ea009e4169402e5"
+    },
+    {
+      "path": "hardware_catalog.json",
+      "bytes": 7664,
+      "sha256": "2bf3f21e681db3f3634cb16378dc654771cfd97ae81ca2e74fc9c74a0017a787"
+    },
+    {
+      "path": "release_validation.json",
+      "bytes": 512,
+      "sha256": "28f80b3c80b0318b68e06ad64f728c95656d999973873e6b26aee340a781c0cc"
+    },
+    {
+      "path": "screenshots/01_hardware_overview.png",
+      "bytes": 464428,
+      "sha256": "babbf53b2e0d510e149f4bd6070db4057965ce5f712fbc109710bbd022b785e4"
+    },
+    {
+      "path": "screenshots/02_jetson_B2_studio.png",
+      "bytes": 512471,
+      "sha256": "3bf725f87b465020381a9d21a45db935a2f963ebddb72c7a395b331f4f9797ff"
+    },
+    {
+      "path": "screenshots/03_pi16_usb_model.png",
+      "bytes": 494855,
+      "sha256": "4613c346cb24bbfed9cf268b6b20fd58a64cd04f332954b52a7ffd9665f64724"
+    },
+    {
+      "path": "screenshots/04_pi_cuda_conflict.png",
+      "bytes": 105351,
+      "sha256": "fcb93b7cec52ee4df8f9d8599889a69822326e8f146a34c0762b241f93808fd9"
+    },
+    {
+      "path": "screenshots/final_hardware_configurator.png",
+      "bytes": 458591,
+      "sha256": "b105668c03a253da0a100805aee488b61c36ef2735996b142535ea4f78c2ef5f"
+    },
+    {
+      "path": "screenshots/final_jetson_studio.png",
+      "bytes": 509079,
+      "sha256": "19870d57056e82c817f71aba37db908bfa71e9bc6d62bbae601f9e21a6e20287"
+    },
+    {
+      "path": "screenshots/final_pi_studio.png",
+      "bytes": 501378,
+      "sha256": "442b571b2978612473010eae15cce511bf13913eafde3c8bb77d02b21d30d553"
+    },
+    {
+      "path": "screenshots/smoke.png",
+      "bytes": 335420,
+      "sha256": "e10529b7ae40c1b56dcbc81bc5f7d0fb42bc7900a8837968cbec82bb86567857"
+    },
+    {
+      "path": "screenshots/width_1440_hardware.png",
+      "bytes": 287219,
+      "sha256": "dce3247078280d493771b51f34a1216866a099ec1d831b2bad7e31e8f42be45b"
+    },
+    {
+      "path": "screenshots/width_1440_studio.png",
+      "bytes": 283403,
+      "sha256": "41d31697a4ff304fc5072d668fe7c17c173cde89e79e9128f858be05c74175d4"
+    },
+    {
+      "path": "screenshots/width_390_hardware.png",
+      "bytes": 109522,
+      "sha256": "943e2665be34304557b39f398f1df3645fd3009eaa373825badbba116d70ab0b"
+    },
+    {
+      "path": "screenshots/width_390_studio.png",
+      "bytes": 87672,
+      "sha256": "d68cc131e18bdf295e399b1fdc5bc42157c963dd2a6cd1eea84fdceba8c6e5f8"
+    },
+    {
+      "path": "screenshots/width_768_hardware.png",
+      "bytes": 217133,
+      "sha256": "84a61eb68c5acf74ebbf7003093ea8780937302757a3def7c657f6a631f89bdf"
+    },
+    {
+      "path": "screenshots/width_768_studio.png",
+      "bytes": 157571,
+      "sha256": "9d48d72f1000275b39bbbba7f2af262209fa1ab5287b01b986c4876cd0c97ff4"
+    },
+    {
+      "path": "sources.json",
+      "bytes": 3914,
+      "sha256": "656cd78f473d7d34aabcd39a338a4653d94e868984331e238943ccce91a725b0"
+    },
+    {
+      "path": "src/app.js",
+      "bytes": 65810,
+      "sha256": "304a194c61458e3f34d218721661c2df15395842418aa78a9c7d43e1fcbd06f0"
+    },
+    {
+      "path": "src/core.js",
+      "bytes": 28612,
+      "sha256": "86e161309ef18241a7405c53e0d962f2c46a54c412a9189a793edf9a6146fb85"
+    },
+    {
+      "path": "src/hardware.css",
+      "bytes": 5665,
+      "sha256": "2a777a7b8c7f58e1f248082c6e5167b2026064de1cd3a7d016e90a18b947ba3e"
+    },
+    {
+      "path": "src/hardware_core.js",
+      "bytes": 25573,
+      "sha256": "e7ae7da1c9cb9f572da031442c68e0265d70addfc5b493ece7fdb18d3165f9b0"
+    },
+    {
+      "path": "src/hardware_section.html",
+      "bytes": 649,
+      "sha256": "5a8867fcf3f89bd05f910ae4502a061a515878faeb36841a74819a3b743454b7"
+    },
+    {
+      "path": "src/hardware_ui.js",
+      "bytes": 36290,
+      "sha256": "fb252d80f89aebb4fd8d764d7e15a406338adb5b0bc7e75997933fa892660e60"
+    },
+    {
+      "path": "src/index.template.html",
+      "bytes": 10578,
+      "sha256": "28c078aeec1dee7108989cccb87c82186c68cf966c1ba491f9d40099718c7dd6"
+    },
+    {
+      "path": "src/learning.css",
+      "bytes": 8449,
+      "sha256": "4987c43faedbaab8968ec215449ae312ac19d2fdec3a8a7a9c0aa74b07fad703"
+    },
+    {
+      "path": "src/learning.js",
+      "bytes": 27934,
+      "sha256": "894e7a97ea93556c591eae845d054777aa1a1703bf47a5ec2162bda8212c2872"
+    },
+    {
+      "path": "src/learning_section.html",
+      "bytes": 525,
+      "sha256": "d0d6299468b1fb73c676fa0c689845083b73b282cccc31a19103b2ccc7af3a9d"
+    },
+    {
+      "path": "src/style.css",
+      "bytes": 21013,
+      "sha256": "0c81bffc4ca7a8e5982d7fd9c1e26a52023199022f47f281b3da50e7df5eff1c"
+    },
+    {
+      "path": "src/visual.css",
+      "bytes": 14367,
+      "sha256": "bd66c9bcfadf787b3fc86c7f9b04bde592e0a43f53c56ea15a400fdc9c4bf3ad"
+    },
+    {
+      "path": "src/visual.js",
+      "bytes": 37616,
+      "sha256": "9d928472ebc7ecaf86aed22ecb649158b980bfe11b09047d1e9ed053a12a50c6"
+    },
+    {
+      "path": "src/visual_section.html",
+      "bytes": 7345,
+      "sha256": "572fa23c60f40268619400eced93deb5005e312737a7e871b1225557928029e7"
+    },
+    {
+      "path": "src/webgl_rover.js",
+      "bytes": 39755,
+      "sha256": "8a8ef77c63d2ec8e694a9ae64cc78d76c3755f5cbe105853896b8d032c3dfe94"
+    },
+    {
+      "path": "tests/browser_report.json",
+      "bytes": 9840,
+      "sha256": "ba1a9485302c4df05e6dcf9c0cc9c66175878ad4b3ffab5328487db771b51cf8"
+    },
+    {
+      "path": "tests/download_smoke/HardwareOffers.sysml",
+      "bytes": 3391,
+      "sha256": "b8bf356db619a3bb23de39893927368cea6dc73488080895663cd240d6dd4a02"
+    },
+    {
+      "path": "tests/download_smoke/Rover_A_DRAFT.sysml",
+      "bytes": 5578,
+      "sha256": "54e35e0c206f5958efedbf2f2e8565f7f23062774200c08ad4fab1bd9dd94996"
+    },
+    {
+      "path": "tests/download_smoke/Rover_B2_DRAFT.sysml",
+      "bytes": 6702,
+      "sha256": "47204434e2705fd508136b174cf9ae8ca02e434b7fea562a769294646986f6dd"
+    },
+    {
+      "path": "tests/download_smoke/hardware_catalog.json",
+      "bytes": 7664,
+      "sha256": "2bf3f21e681db3f3634cb16378dc654771cfd97ae81ca2e74fc9c74a0017a787"
+    },
+    {
+      "path": "tests/download_smoke/hardware_planning.json",
+      "bytes": 1095,
+      "sha256": "0f06d0963e3bdf472e21856f32bec2c7b2927af4306906ce75690f0a6f932179"
+    },
+    {
+      "path": "tests/download_smoke/review_report.html",
+      "bytes": 12069,
+      "sha256": "c13917edaa01e9a4b8b1c5831ce189f89a8363c5b6d541a38e101948a4a4317a"
+    },
+    {
+      "path": "tests/hardware_rules.json",
+      "bytes": 2575,
+      "sha256": "e6d427e006d90285c130bfe422528df68979d44cfb5c2b62948670e7ae5f36fb"
+    },
+    {
+      "path": "tests/renderer.json",
+      "bytes": 2115,
+      "sha256": "b0dd60ab618ae151e1fc6cd9aa65028b84b075937d2679b2b235ba4188ebe264"
+    },
+    {
+      "path": "tests/rotation_cases.json",
+      "bytes": 31210,
+      "sha256": "6e4b9d2d26d80925c68e088105049f9aaae7f278ce44863379056587dbdb60cb"
+    },
+    {
+      "path": "tests/test_browser.py",
+      "bytes": 13363,
+      "sha256": "c85253c76f6e9487ac4c533a666097f8dc30f53c379a6b8f01bd547edbb72917"
+    },
+    {
+      "path": "verify_package.py",
+      "bytes": 531,
+      "sha256": "5d561ff40ed53c6f5573b21f43d6297b8048cba5f55cccd891da35562ca79e89"
+    }
+  ]
+}

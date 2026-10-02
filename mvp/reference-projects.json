@@ -1,0 +1,91 @@
+{
+  "retrieved": "2026-09-22",
+  "projects": [
+    {
+      "name": "CMBSE",
+      "repository": "https://github.com/ziruili-tu-ilmenau/CMBSE.git",
+      "commit": "42a8a0d2487d64cfbe20e1cf23a0421dde748ad0",
+      "full_clone": true,
+      "license_files": [],
+      "role": "Paper supplier-alignment examples; reference only; no explicit license detected in earlier audit."
+    },
+    {
+      "name": "SysML-v2-API-Cookbook",
+      "repository": "https://github.com/Systems-Modeling/SysML-v2-API-Cookbook.git",
+      "commit": "7a7d92939e6c68533d61bbd8d308037e814abd96",
+      "full_clone": true,
+      "license_files": [],
+      "role": "Official repository/API integration examples; cloned, not executed."
+    },
+    {
+      "name": "SysML-v2-API-Services",
+      "repository": "https://github.com/Systems-Modeling/SysML-v2-API-Services.git",
+      "commit": "0af711b14bbcea7b240bb0a3a65817ae68302092",
+      "full_clone": true,
+      "license_files": [
+        "LICENSE"
+      ],
+      "role": "Official repository service reference; cloned, not deployed."
+    },
+    {
+      "name": "SysML-v2-GRAG-Pipeline",
+      "repository": "https://github.com/eeeeebader/SysML-v2-GRAG-Pipeline.git",
+      "commit": "d910822179cccda2d815121f03aa9d11888cd65f",
+      "full_clone": true,
+      "license_files": [
+        "LICENSE"
+      ],
+      "role": "Paper graph-retrieval implementation; reference only, not used as a validator."
+    },
+    {
+      "name": "SysML-v2-Pilot-Implementation",
+      "repository": "https://github.com/Systems-Modeling/SysML-v2-Pilot-Implementation.git",
+      "commit": "692170b71867353b8f90341e61556f49a5beb0e5",
+      "full_clone": true,
+      "license_files": [
+        "LICENSE"
+      ],
+      "role": "Pinned official language implementation source; official release JAR is executed by the MVP."
+    },
+    {
+      "name": "SysML-v2-Release",
+      "repository": "https://github.com/Systems-Modeling/SysML-v2-Release.git",
+      "commit": "fb97b754f29588b8e9c7a35f370880cd15eb29e7",
+      "full_clone": true,
+      "license_files": [
+        "LICENSE"
+      ],
+      "role": "Pinned model library actually loaded by the MVP."
+    },
+    {
+      "name": "ace",
+      "repository": "https://github.com/ace-agent/ace.git",
+      "commit": "82709de050e1db6e6ef2f07bcb0393560b94992a",
+      "full_clone": true,
+      "license_files": [
+        "LICENSE.txt"
+      ],
+      "role": "Validated procedural-memory candidate; cloned, not installed or connected."
+    },
+    {
+      "name": "graphiti",
+      "repository": "https://github.com/getzep/graphiti.git",
+      "commit": "16cdf7045378c8d53ae01f94e2fa60d238cb0f68",
+      "full_clone": true,
+      "license_files": [
+        "LICENSE"
+      ],
+      "role": "Temporal memory candidate; cloned, not installed or connected."
+    },
+    {
+      "name": "nasa-cFE",
+      "repository": "https://github.com/nasa/cFE.git",
+      "commit": "7d283938c9af5bd6e439f3fc307e61b0c7799640",
+      "full_clone": true,
+      "license_files": [
+        "LICENSE"
+      ],
+      "role": "Complete NASA cFE source repository, pinned to the downloaded requirements snapshot; requirements imported, flight software not built or executed."
+    }
+  ]
+}

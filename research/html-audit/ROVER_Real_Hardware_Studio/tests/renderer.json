@@ -1,0 +1,85 @@
+{
+  "build": "rotation-fix-2026-09-15-r1",
+  "renderer": "WEBGL",
+  "requestedRenderer": "auto",
+  "reason": "",
+  "glInfo": {
+    "version": "WebGL 1.0 (OpenGL ES 2.0 Chromium)",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "depthBits": 24,
+    "drawingBuffer": [
+      733,
+      438
+    ],
+    "contextAttributes": {
+      "alpha": false,
+      "antialias": true,
+      "depth": true,
+      "desynchronized": false,
+      "failIfMajorPerformanceCaveat": false,
+      "powerPreference": "default",
+      "premultipliedAlpha": true,
+      "preserveDrawingBuffer": true,
+      "stencil": false,
+      "xrCompatible": false
+    }
+  },
+  "glError": 0,
+  "pickFramebufferComplete": true,
+  "revision": "A",
+  "parts": [
+    "rover.chassis",
+    "rover.chassis.motorLeft",
+    "rover.chassis.motorRight",
+    "rover.tray",
+    "rover.battery",
+    "rover.lidar",
+    "rover.lidar.imu",
+    "rover.compute",
+    "rover.compute.carrier",
+    "rover.compute.module"
+  ],
+  "selected": "rover.compute",
+  "explode": 0,
+  "renderCount": 4,
+  "pickCount": 0,
+  "camera": {
+    "azimuth": 0.9,
+    "elevation": 0.6,
+    "distance": 0.7064359057335393,
+    "projection": "orthographic",
+    "near": 0.17310393028723253,
+    "far": 1.4348314422978603,
+    "orbitDistance": 0.9386235817233952,
+    "visibleRadius": 0.2462078605744651,
+    "zoomDistance": 0.7064359057335393,
+    "autoFit": true,
+    "visibleBounds": {
+      "min": [
+        -0.17949999499320984,
+        -1.1920928827402477e-10,
+        -0.165
+      ],
+      "max": [
+        0.17949999499320984,
+        0.3004999933242798,
+        0.165
+      ]
+    },
+    "depthClipPolicy": "orbit outside assembly; dynamic planes"
+  },
+  "visibility": {
+    "isolate": false,
+    "cutaway": false,
+    "transparent": false,
+    "focusGroup": "all"
+  },
+  "geometrySource": "AUTHORED_SCHEMATIC_GEOMETRY_PLUS_CATALOG_DIMENSIONS",
+  "depthPolicy": "EXPLICIT_FRAME_STATE_OPAQUE_DEPTH_SORTED_ALPHA",
+  "meshCount": 62,
+  "lastDraw": {
+    "drawCalls": 62,
+    "visibleMeshes": 62
+  },
+  "parser": "NOT_RUN"
+}

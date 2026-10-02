@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "synthetic": true,
+  "notice": "Synthetic engineering example, not RTX source data or hardware test evidence.",
+  "configuration": {
+    "source_rowid": 1,
+    "case_name": "baseline",
+    "configuration_id": "MARINE-01-C0",
+    "label": "Legacy system baseline",
+    "data_rate_mbps": 6.0,
+    "retention_hours": 8.0,
+    "storage_gb": 64.0,
+    "payload_fraction": 0.8,
+    "link_mbps": 8.0,
+    "network_overhead": 1.2,
+    "power_w": 44.0,
+    "power_limit_w": 60.0,
+    "preview_mbps": 2.0,
+    "preview_requested": false,
+    "preview_approved": false,
+    "source_id": "SRC-LEGACY-DB-R1",
+    "reuse_id": null,
+    "power_condition": "synthetic steady observation condition; total gateway node input including payloads and losses; excludes shore equipment",
+    "synthetic": true,
+    "database_sha256": "88c7bd9a47fc37f8eea73f500c06db16f402dce2a3e533749f3aa1175eee0d41",
+    "source_database": "/home/felix/Documents/ChatGPT/RTX agent/mvp/fixtures/legacy.sqlite",
+    "runtime_overrides": {},
+    "upload_rate_mbps": 6.0,
+    "upload_policy": "FULL_REALTIME",
+    "approval_required": false,
+    "pending_approval": false,
+    "upload_requirement_id": "R-UPLOAD-001"
+  },
+  "model_entrypoint": "MarineGateway.sysml",
+  "required_model_files": [
+    "MarineGateway.sysml",
+    "suppliers/PayloadSupplier.sysml",
+    "suppliers/SharingLinkSupplier.sysml"
+  ],
+  "validation_status": "NOT_RUN",
+  "artifacts": [
+    {
+      "path": "MarineGateway.sysml",
+      "sha256": "d14216cf3c6f0cf6d805702b81c74271722ce9dacac8b642de4358d610c8c0e1",
+      "size": 6685
+    },
+    {
+      "path": "requirements.json",
+      "sha256": "80fdb34ea73637f0d2eb0e80dcc9d74a9d9c4e3c425c9e808c9971fa5ab59daf",
+      "size": 5044
+    },
+    {
+      "path": "source_mapping.json",
+      "sha256": "76a2b871b7046bfff248a57624e27edb9f0fedce1ef77b9c1cfc84a8fb263828",
+      "size": 13478
+    },
+    {
+      "path": "sources/legacy.sqlite",
+      "sha256": "88c7bd9a47fc37f8eea73f500c06db16f402dce2a3e533749f3aa1175eee0d41",
+      "size": 49152
+    },
+    {
+      "path": "sources/original/configs.json",
+      "sha256": "0e39e087bc031c2819c9b5650ed635060dfddf2c93cdfa22d2c4f4cee72eed48",
+      "size": 2183
+    },
+    {
+      "path": "sources/original/requirements.json",
+      "sha256": "4cc077649b61ebc6b23d64944d6497d4b12afa74017287c031d9df9b5dfa6ec4",
+      "size": 4870
+    },
+    {
+      "path": "sources/original/reuse_packages.json",
+      "sha256": "30f78b950d87778ce5b4916024bf48e4dda94857958596340d6927b0d934b29a",
+      "size": 1067
+    },
+    {
+      "path": "sources/original/suppliers/payload_icd.json",
+      "sha256": "70f3355d82bcef34b696bbe891a37a85435a40d9a21d3bb1a638666e12d5adb4",
+      "size": 547
+    },
+    {
+      "path": "sources/original/suppliers/sharing_icd.json",
+      "sha256": "ba7fa558fd9e67c0e3a5480c5b21828e542284fc6dc6db5b4ddf7e8544fce9c3",
+      "size": 606
+    },
+    {
+      "path": "sources/reuse_packages.json",
+      "sha256": "30f78b950d87778ce5b4916024bf48e4dda94857958596340d6927b0d934b29a",
+      "size": 1067
+    },
+    {
+      "path": "suppliers/PayloadSupplier.sysml",
+      "sha256": "a74c35cc5bfa566921206a72071de8147fc8a4560bfebea6d52bf54a340d6b54",
+      "size": 532
+    },
+    {
+      "path": "suppliers/SharingLinkSupplier.sysml",
+      "sha256": "af328acd5663cfd5944d996a8a2d2185f8ecbe4a86dc284528b1a8f6453b7a20",
+      "size": 816
+    },
+    {
+      "path": "suppliers/payload_icd.json",
+      "sha256": "70f3355d82bcef34b696bbe891a37a85435a40d9a21d3bb1a638666e12d5adb4",
+      "size": 547
+    },
+    {
+      "path": "suppliers/sharing_icd.json",
+      "sha256": "ba7fa558fd9e67c0e3a5480c5b21828e542284fc6dc6db5b4ddf7e8544fce9c3",
+      "size": 606
+    }
+  ]
+}

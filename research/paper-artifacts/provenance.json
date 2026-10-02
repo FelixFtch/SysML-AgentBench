@@ -1,0 +1,19 @@
+{
+  "retrieved_at": "2026-09-22T06:42:20.778189+00:00",
+  "sources": [
+    {
+      "repository": "https://github.com/ziruili-tu-ilmenau/CMBSE",
+      "sha": "42a8a0d2487d64cfbe20e1cf23a0421dde748ad0",
+      "commit_date": "2025-07-04T14:31:25Z",
+      "archive": "CMBSE-main.tar.gz",
+      "archive_sha256": "f2e7efea274b84f44fe9d43da7d0494b8a6cb43d7bd779b80276db1922d9e43b"
+    },
+    {
+      "repository": "https://github.com/eeeeebader/SysML-v2-GRAG-Pipeline",
+      "sha": "d910822179cccda2d815121f03aa9d11888cd65f",
+      "commit_date": "2025-07-15T23:06:08Z",
+      "archive": "GRAG-main.tar.gz",
+      "archive_sha256": "27b97e574c4310449d6c90804cee55089af5b4dab36a8e1a37701b74f61c1b52"
+    }
+  ]
+}

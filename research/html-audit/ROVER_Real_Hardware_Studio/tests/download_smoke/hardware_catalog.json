@@ -1,0 +1,237 @@
+{
+  "version": "rover-hardware-catalog/1",
+  "reviewedOn": "2026-09-15",
+  "sources": [
+    {
+      "id": "HW-NX",
+      "title": "NVIDIA · Jetson Orin NX Series Modules datasheet",
+      "url": "https://developer.nvidia.com/downloads/jetson-orin-nx-module-series-data-sheet",
+      "location": "Overview pp.1–3; Module drawing",
+      "scope": "16GB module CPU/GPU/memory, 69.6×45mm, external storage, module power modes. Carrier and whole-system input are NOT specified by these facts."
+    },
+    {
+      "id": "HW-PI",
+      "title": "Raspberry Pi · Raspberry Pi 5 product specification",
+      "url": "https://www.raspberrypi.com/products/raspberry-pi-5/",
+      "location": "Specification",
+      "scope": "BCM2712, A76 2.4GHz, RAM variants, USB/Ethernet/PCIe. PSU capacity is not average load."
+    },
+    {
+      "id": "HW-PI-MECH",
+      "title": "Raspberry Pi 5 · official mechanical drawing",
+      "url": "https://pip.raspberrypi.com/documents/RP-008347-DS-1-raspberry-pi-5-mechanical-drawing.pdf",
+      "location": "single sheet",
+      "scope": "85×56mm reference board outline. Drawing explicitly excludes production data/tolerances and some components."
+    },
+    {
+      "id": "HW-PI-USB",
+      "title": "Raspberry Pi documentation · USB current and fan budget",
+      "url": "https://www.raspberrypi.com/documentation/computers/raspberry-pi.html",
+      "location": "Universal Serial Bus → Raspberry Pi 5",
+      "scope": "600mA peripheral limit with ordinary 3A supply, 1.6A with detected 5V5A supply; budget shared with fan."
+    },
+    {
+      "id": "HW-D435",
+      "title": "RealSense · D435i technical specification",
+      "url": "https://www.realsenseai.com/cn/products/d435i/",
+      "location": "深度参数 / RGB / 物理参数",
+      "scope": "Stereo depth, 87×58° depth FOV, ideal .3–3m, depth up to1280×720, up to90fps in supported modes (not necessarily together), RGB1920×1080@30, USB-C3.1Gen1,90×25×25mm, IMU."
+    },
+    {
+      "id": "HW-RS-ROS",
+      "title": "RealSense · ROS wrapper",
+      "url": "https://github.com/realsenseai/realsense-ros",
+      "location": "README and device/stream configuration",
+      "scope": "Driver/stream integration reference; actual target OS, firmware, stream combinations and throughput remain untested."
+    },
+    {
+      "id": "HW-LIVOX",
+      "title": "Livox · Mid-360S specifications",
+      "url": "https://www.livoxtech.com/mid-360s/specs",
+      "location": "Basic specs / notes 2,4,5,8",
+      "scope": "360° by -7..52°,200kpoints/s,10Hztypical,100BASE-TX,ICM40609,9–27V,6.5W; selfheating peak14W;65×65×60mm265g.40m@10%100klx;100m is cutoff not guaranteed detection."
+    },
+    {
+      "id": "HW-LIVOX-SUPPORT",
+      "title": "Livox · Mid-360S support & downloads",
+      "url": "https://www.livoxtech.com/support/mid-360s",
+      "location": "downloads",
+      "scope": "Use exact S variant, protocol, SDK/driver release and firmware. User spelling LIVO360s is only an unconfirmed alias."
+    },
+    {
+      "id": "HW-LIVOX-ROS",
+      "title": "Livox · livox_ros_driver2",
+      "url": "https://github.com/Livox-SDK/livox_ros_driver2",
+      "location": "Supported lidar list; transfer formats",
+      "scope": "Public repository includes Mid360s material in indexed documentation; retrieved README snapshots differed. Pin/verify a Mid360s-capable version before deployment; no live driver tested here."
+    },
+    {
+      "id": "HW-PC2SCAN",
+      "title": "ROS perception · pointcloud_to_laserscan",
+      "url": "https://github.com/ros-perception/pointcloud_to_laserscan",
+      "location": "PointCloudToLaserScanNode",
+      "scope": "Converts PointCloud2 to LaserScan under configured height/frame/angle conditions; not universally interchangeable with a native scanner."
+    },
+    {
+      "id": "HW-SLAM",
+      "title": "SLAM Toolbox · 2D mapping and localization",
+      "url": "https://github.com/SteveMacenski/slam_toolbox",
+      "location": "API / subscriptions / transforms",
+      "scope": "LaserScan and transforms for chosen 2D route; motion estimation and TF must be provided and validated separately."
+    }
+  ],
+  "compute": {
+    "nx16": {
+      "name": "Jetson Orin NX 16GB",
+      "short": "Orin NX 16GB",
+      "form": "module_plus_unselected_carrier",
+      "ram_GB": 16,
+      "cpu": "8× Arm Cortex-A78AE",
+      "gpu": "1024 CUDA cores / 32 Tensor cores",
+      "memory": "16GB 128-bit LPDDR5",
+      "boardFootprint_mm": [
+        69.6,
+        45
+      ],
+      "cudaHardware": true,
+      "modulePowerModes_W": [
+        10,
+        15,
+        25,
+        40
+      ],
+      "storage": "External NVMe; carrier/SSD not selected",
+      "source": [
+        "HW-NX"
+      ],
+      "defaults": {
+        "computeA_W": 12,
+        "computeB_W": 24
+      }
+    },
+    "pi5_8": {
+      "name": "Raspberry Pi 5 · 8GB",
+      "short": "Pi 5 · 8GB",
+      "form": "single_board",
+      "ram_GB": 8,
+      "cpu": "4× Cortex-A76 @2.4GHz",
+      "gpu": "VideoCore VII; no NVIDIA CUDA GPU",
+      "memory": "LPDDR4X-4267",
+      "boardFootprint_mm": [
+        85,
+        56
+      ],
+      "cudaHardware": false,
+      "usb3HostPorts": 2,
+      "ethernet": "Gigabit Ethernet",
+      "storage": "microSD; PCIe2.0×1 NVMe requires HAT/adapter",
+      "source": [
+        "HW-PI",
+        "HW-PI-MECH",
+        "HW-PI-USB"
+      ],
+      "defaults": {
+        "computeA_W": 7,
+        "computeB_W": 11
+      }
+    },
+    "pi5_16": {
+      "name": "Raspberry Pi 5 · 16GB",
+      "short": "Pi 5 · 16GB",
+      "form": "single_board",
+      "ram_GB": 16,
+      "cpu": "4× Cortex-A76 @2.4GHz",
+      "gpu": "VideoCore VII; no NVIDIA CUDA GPU",
+      "memory": "LPDDR4X-4267",
+      "boardFootprint_mm": [
+        85,
+        56
+      ],
+      "cudaHardware": false,
+      "usb3HostPorts": 2,
+      "ethernet": "Gigabit Ethernet",
+      "storage": "microSD; PCIe2.0×1 NVMe requires HAT/adapter",
+      "source": [
+        "HW-PI",
+        "HW-PI-MECH",
+        "HW-PI-USB"
+      ],
+      "defaults": {
+        "computeA_W": 7,
+        "computeB_W": 11
+      }
+    }
+  },
+  "camera": {
+    "id": "D435I",
+    "name": "RealSense D435i",
+    "physicalId": "RS-D435I-01",
+    "body_mm": [
+      90,
+      25,
+      25
+    ],
+    "depthFov_deg": [
+      87,
+      58
+    ],
+    "idealDepthRange_m": [
+      0.3,
+      3
+    ],
+    "depthMaxResolution": [
+      1280,
+      720
+    ],
+    "depthMaxFps": 90,
+    "rgbPublishedMode": [
+      1920,
+      1080,
+      30
+    ],
+    "depthShutter": "global",
+    "rgbShutter": "rolling",
+    "usb": "USB-C 3.1 Gen1",
+    "imu": "built-in accelerometer + gyroscope",
+    "source": [
+      "HW-D435",
+      "HW-RS-ROS"
+    ],
+    "notes": "Maximum depth resolution and maximum frame rate are separate limits. Stream combination must be enumerated on real device. 4W is an editable power reservation, not a vendor rating."
+  },
+  "lidar": {
+    "id": "MID360S",
+    "name": "Livox Mid-360S",
+    "requestedAlias": "LIVO360s",
+    "aliasIdentity": "UNCONFIRMED_USER_SPELLING; this demo explicitly selects official Mid-360S",
+    "body_mm": [
+      65,
+      65,
+      60
+    ],
+    "mass_g": 265,
+    "horizontalFov_deg": 360,
+    "verticalFov_deg": [
+      -7,
+      52
+    ],
+    "pointRate_per_s": 200000,
+    "typicalFrame_Hz": 10,
+    "link": "100BASE-TX Ethernet",
+    "imu": "ICM40609",
+    "supply_V": [
+      9,
+      27
+    ],
+    "publishedPower_W": 6.5,
+    "coldSelfHeatPeak_W": 14,
+    "rangeTypical_m": 40,
+    "rangeConditions": "10% reflectivity at100klx",
+    "cutoff_m": 100,
+    "source": [
+      "HW-LIVOX",
+      "HW-LIVOX-SUPPORT",
+      "HW-LIVOX-ROS"
+    ]
+  }
+}

@@ -176,11 +176,24 @@ def main() -> None:
         if p.get("intl") else f"{name} 输入 ${p['input']}、输出 ${p['output']}"
         for name, p in prices["models"].items()
     )
+    group_cn = {"matrix": "主力矩阵（72 格）", "agent": "现成 agent", "judge": "裁判", "other": "其他实验",
+                "part2": "第二部分", "mod": "MOD 变更链"}
+    label_cn = {"P0": "P0 直接写", "P1": "P1 按报错返工", "P2": "P2 先列提纲", "P3": "P3 提纲 + 检索笔记",
+                "opencode": "OpenCode（24 题）", "jev": "Jev 判 288 格", "graph": "图检索读模型（5 题）",
+                "sysengbench": "SysEngBench（20 题）", "mod": "一次运行"}
+    label_cn["part2"] = "一次运行（整次记录）" if any(item.get("complete") for item in costs["items"] if item["id"] == "part2") else "一次运行（缺对齐和读回）"
     cost_body = "\n".join(
-        f"<tr><td>{item['group']}</td><td>{item['label']}</td><td>{item['model']}</td><td>{item['input']:,}</td>"
+        f"<tr><td>{group_cn[item['group_id']]}</td><td>{label_cn[item['id']]}</td><td>{item['model']}</td><td>{item['input']:,}</td>"
         f"<td>{item.get('cached') or 0:,}</td><td>{item['output']:,}</td><td>${item['usd']:.4f}</td></tr>"
         for item in costs["items"]
     )
+    missing = costs["missing"]
+    unrecorded_cn = ["qwen3.8-max 当裁判看 288 份答卷：当时没有记录 token。", "Claude Code 两批共 28 次作答：经 CCR 路由，没有拿到用量。",
+                     "PURE 两题：没有记录 token。"]
+    if missing["part2_partial"]:
+        unrecorded_cn.append(f"第二部分有 {missing['part2_partial']} 次运行只记了需求、设计和权衡，对齐和读回两步没有记；之后的运行整次都记。")
+    if missing["mod_unlogged"]:
+        unrecorded_cn.append(f"MOD 变更链有 {missing['mod_unlogged']} 次运行早于用量记录，没有记；之后的运行整次都记。")
     no_question = fail_counts.get("no-question", 0)
     html = f"""<!doctype html>
 <html lang="zh-CN">
@@ -213,7 +226,7 @@ footer {{ border-top: 1px solid #bbb; margin-top: 28px; padding-top: 16px; font-
 <tr><td>失败是不是改个数字就能过？</td><td>按现行判分 {totals['FAIL']} 格失败，其中 {syntax_fail} 格死在官方语法。官方能解析的 {parsed} 份 GEN/MOD 答卷里，没有一份改过必须保留的数（包括上限）；另外 {unparsed} 份没有通过官方解析或没有官方运行记录，无从判断。MOD-05 的设计必然超预算（78 W 对 60 W）；12 格都没改上限、该保留的数都在，按现行判分算通过。</td></tr>
 <tr><td>现成编程代理和主力矩阵是同一批吗？</td><td>不是。OpenCode（qwen3.8-flash）24 格、Claude Code 加 qwen3.8-max 24 格单独列表。不能和 288 格加总。</td></tr>
 <tr><td>第二个模型能不能当裁判？</td><td>不能。qwen3.8-max 看完全部 288 份 flash 答卷，和工具一致 157/288。它把 70 份工具判失败的卷说成通过，其中 MOD-05 的 12 份超功率全部被说成通过。Jev {jev['model']} 一致 {jev['agree']}/{jev['cells']}，误判通过 {jev['false_pass']} 格，全是官方语法都过不了的写新模型题。分数不因此改写。</td></tr>
-<tr><td>跑这些花了多少钱？</td><td>按阿里云中国（北京）区标价，主力矩阵四种写法合计约 ${sum(item['usd'] for item in costs['items'] if item['group'].startswith('主力矩阵')):.3f}；OpenCode 做 24 题 ${next(item['usd'] for item in costs['items'] if item['label'].startswith('OpenCode')):.3f}。见第 6 节。</td></tr>
+<tr><td>跑这些花了多少钱？</td><td>按阿里云中国（北京）区标价，主力矩阵四种写法合计约 ${sum(item['usd'] for item in costs['items'] if item['group_id'] == 'matrix'):.3f}；OpenCode 做 24 题 ${next(item['usd'] for item in costs['items'] if item['id'] == 'opencode'):.3f}。见第 6 节。</td></tr>
 </table>
 
 <h2>1. 测的是什么</h2>
@@ -269,7 +282,7 @@ footer {{ border-top: 1px solid #bbb; margin-top: 28px; padding-top: 16px; font-
 <tr><th>分组</th><th>项目</th><th>模型</th><th>输入 token</th><th>其中缓存读</th><th>输出 token</th><th>美元</th></tr>
 {cost_body}
 </table>
-<p>没有记录用量、不在表里的：{' '.join(costs['unrecorded'])}</p>
+<p>没有记录用量、不在表里的：{' '.join(unrecorded_cn)}</p>
 
 <h2>7. 三条可以指着讲的旧记录</h2>
 <table>

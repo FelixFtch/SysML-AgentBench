@@ -25,6 +25,8 @@ COHORTS = {
     "claude2": ["claude-qwen-20261003T034819"],
 }
 RULE = "题目通过 = 官方语法通过，必须存在的名字和连接都在，没有多写数字，必须保留的数没改，清单里的检查结果和标准答案预期一致。"
+RULE_EN = ("A task passes when the official parse passes, every required name and connection is present, no number was invented, "
+           "every value to keep is unchanged, and every engineering check comes out as the answer key expects.")
 
 
 def _key(cohort_id: str, row: dict) -> tuple:

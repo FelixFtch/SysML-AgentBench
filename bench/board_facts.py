@@ -68,15 +68,15 @@ def _sysengbench() -> dict:
     path = ANALYSIS / "sysengbench-jev.json"
     if not path.is_file():
         return {
-            "status": "未打分",
-            "reason": "题号已写在 analysis/sysengbench-ids.txt。打分结果文件还没有。",
+            "status": "not scored",
+            "reason": "Question ids are in analysis/sysengbench-ids.txt; there is no score file yet.",
             "n": 0,
             "correct": 0,
         }
     payload = json.loads(path.read_text(encoding="utf-8"))
     return {
-        "status": "已打分",
-        "reason": "选择题，单独计分，不并进 288 格。",
+        "status": "scored",
+        "reason": "Multiple choice, scored on its own, not added to the 288 cells.",
         "n": payload["n"],
         "correct": payload["correct"],
         "ids": payload["ids"],
@@ -85,8 +85,8 @@ def _sysengbench() -> dict:
 
 PRICES = {
     "checked": "2026-10-03",
-    "region": "中国（北京）",
-    "region_note": "我们的端点在 cn-beijing，按这一区的标价算；国际区价格只作对照。不含免费额度和促销。",
+    "region": "China (Beijing)",
+    "region_note": "Our endpoint is in cn-beijing, so that region's list price is used; the international price is shown for comparison. Free quota and promotions are not applied.",
     "models": {
         "qwen3.8-flash": {"input": 0.113, "cache": 0.014, "output": 0.382, "intl": {"input": 0.15, "cache": 0.016, "output": 0.47},
                           "source": "https://www.alibabacloud.com/help/en/model-studio/qwen3-8-flash"},
@@ -154,25 +154,26 @@ def _run_tokens(record: dict) -> tuple[dict, bool]:
 
 def _costs(flash: list[dict]) -> dict:
     items = []
-    for name, label in (("P0", "P0 直接写"), ("P1", "P1 按报错返工"), ("P2", "P2 先列提纲"), ("P3", "P3 提纲 + 检索笔记")):
+    for name, label in (("P0", "P0 one-shot"), ("P1", "P1 repair from errors"), ("P2", "P2 outline first"), ("P3", "P3 outline + retrieved notes")):
         rows = [row for row in flash if row["configuration"] == name]
         tokens = _call_tokens([call for row in rows for call in row.get("calls") or []])
-        items.append({"group": "主力矩阵（72 格）", "label": label, "model": "qwen3.8-flash", **tokens,
+        items.append({"id": name, "group_id": "matrix", "group": "Main matrix (72 cells each)", "label": label, "model": "qwen3.8-flash", **tokens,
                       "passes": sum(row["status"] == "PASS" for row in rows), "cells": len(rows),
                       "unrecorded": sum(1 for row in rows if not row.get("calls"))})
     opencode = _opencode_tokens()
     opencode_rows = _rows("opencode-20261003T001321/results.jsonl")
-    items.append({"group": "现成 agent", "label": f"OpenCode（{opencode['runs']} 题）", "model": "qwen3.8-flash", **opencode,
-                  "cells": len(opencode_rows)})
+    items.append({"id": "opencode", "group_id": "agent", "group": "Off-the-shelf agent", "label": f"OpenCode ({opencode['runs']} tasks)",
+                  "model": "qwen3.8-flash", **opencode, "cells": len(opencode_rows)})
     jev = json.loads((ANALYSIS / "jev-heldout-20261003.json").read_text(encoding="utf-8"))["summary"]["usage"]
-    items.append({"group": "裁判", "label": "Jev 判 288 格", "model": "jev-1.13.0",
+    items.append({"id": "jev", "group_id": "judge", "group": "Judge", "label": "Jev judging 288 cells", "model": "jev-1.13.0",
                   "input": jev["input_tokens"], "cached": 0, "output": jev["output_tokens"], "calls": 36})
     graph = json.loads((ANALYSIS / "graph-query-max.json").read_text(encoding="utf-8"))
-    items.append({"group": "其他实验", "label": f"图检索读模型（{len(graph)} 题）", "model": "qwen3.8-max",
-                  **_call_tokens([item for item in graph if item.get("usage")])})
+    items.append({"id": "graph", "group_id": "other", "group": "Other experiments", "label": f"Graph retrieval, query tasks ({len(graph)})",
+                  "model": "qwen3.8-max", **_call_tokens([item for item in graph if item.get("usage")])})
     sysengbench = json.loads((ANALYSIS / "sysengbench-jev.json").read_text(encoding="utf-8"))
-    items.append({"group": "其他实验", "label": f"SysEngBench（{sysengbench['n']} 题）", "model": "jev-1.13.0",
-                  "input": sysengbench["usage"]["input_tokens"], "cached": 0, "output": sysengbench["usage"]["output_tokens"], "calls": 1})
+    items.append({"id": "sysengbench", "group_id": "other", "group": "Other experiments", "label": f"SysEngBench ({sysengbench['n']} questions)",
+                  "model": "jev-1.13.0", "input": sysengbench["usage"]["input_tokens"], "cached": 0,
+                  "output": sysengbench["usage"]["output_tokens"], "calls": 1})
     runs = []
     for path in sorted(ANALYSIS.glob("discover-2026*.json")):
         record = json.loads(path.read_text(encoding="utf-8"))
@@ -186,10 +187,11 @@ def _costs(flash: list[dict]) -> dict:
     if basis:
         average = {key: round(sum(run[key] for run in basis) / len(basis)) for key in ("input", "cached", "output", "calls")}
         if complete_runs:
-            label = "一次运行（整次记录）" if len(basis) == 1 else f"一次运行（整次记录的 {len(basis)} 次平均）"
+            label = "One run (fully recorded)" if len(basis) == 1 else f"One run (average of {len(basis)} fully recorded)"
         else:
-            label = f"一次运行（{len(basis)} 次平均，缺对齐和读回）"
-        items.append({"group": "第二部分", "label": label, "model": "qwen3.8-max", **average, "complete": bool(complete_runs)})
+            label = f"One run (average of {len(basis)}, alignment and read-back missing)"
+        items.append({"id": "part2", "group_id": "part2", "group": "Part 2 prototype", "label": label, "model": "qwen3.8-max", **average,
+                      "complete": bool(complete_runs)})
     mod_runs, mod_unlogged = [], 0
     for path in sorted(ANALYSIS.glob("mvp-case-*-MOD-*/case.json")):
         record = json.loads(path.read_text(encoding="utf-8"))
@@ -200,26 +202,27 @@ def _costs(flash: list[dict]) -> dict:
     part2_partial = sum(1 for run in runs if not run["complete"])
     if mod_runs:
         average = {key: round(sum(run[key] for run in mod_runs) / len(mod_runs)) for key in ("input", "cached", "output", "calls")}
-        items.append({"group": "MOD 变更链", "label": "一次运行" if len(mod_runs) == 1 else f"一次运行（{len(mod_runs)} 次平均）",
+        items.append({"id": "mod", "group_id": "mod", "group": "MOD change chain",
+                      "label": "One run" if len(mod_runs) == 1 else f"One run (average of {len(mod_runs)})",
                       "model": "qwen3.8-max", **average})
     for item in items:
         item["usd"] = round(_usd(item["model"], item), 6)
         item["usd_intl"] = round(_usd(item["model"], item, intl=True), 6)
     unrecorded = [
-        "qwen3.8-max 当裁判看 288 份答卷：当时没有记录 token。",
-        "Claude Code 两批共 28 次作答：经 CCR 路由，没有拿到用量。",
-        "PURE 两题：没有记录 token。",
+        "The qwen3.8-max judge over 288 answers: tokens were not recorded.",
+        "Claude Code, 28 answers in two batches: routed through CCR, usage not available.",
+        "The two PURE tasks: tokens were not recorded.",
     ]
     if part2_partial:
-        unrecorded.append(f"第二部分有 {part2_partial} 次运行只记了需求、设计和权衡，对齐和读回两步没有记；之后的运行整次都记。")
+        unrecorded.append(f"{part2_partial} Part 2 runs recorded only requirements, designs and trade-offs, not alignment and read-back; later runs record everything.")
     if mod_unlogged:
-        unrecorded.append(f"MOD 变更链有 {mod_unlogged} 次运行早于用量记录，没有记；之后的运行整次都记。")
+        unrecorded.append(f"{mod_unlogged} MOD change runs predate usage logging; later runs record everything.")
     missing_cells = sum(item.get("unrecorded") or 0 for item in items)
     if missing_cells:
-        unrecorded.insert(0, f"主力矩阵里有 {missing_cells} 格没有调用记录（第一批里没交卷或出错的格）。")
+        unrecorded.insert(0, f"{missing_cells} main-matrix cells have no call log.")
     return {"prices": PRICES, "items": items, "runs": runs, "mod_runs": mod_runs, "unrecorded": unrecorded,
             "missing": {"matrix_cells": missing_cells, "part2_partial": part2_partial, "mod_unlogged": mod_unlogged},
-            "recorded_usd": round(sum(item["usd"] for item in items if item["group"] not in {"第二部分", "MOD 变更链"})
+            "recorded_usd": round(sum(item["usd"] for item in items if item["group_id"] not in {"part2", "mod"})
                                   + sum(_usd("qwen3.8-max", run) for run in runs)
                                   + sum(_usd("qwen3.8-max", run) for run in mod_runs), 4)}
 
@@ -255,7 +258,7 @@ def _knowledge() -> dict:
 
 
 def facts() -> dict:
-    from bench.rescore import OUT as RESCORED, RULE, apply, load
+    from bench.rescore import OUT as RESCORED, RULE_EN, apply, load
     table = load()
     archived_flash = fill_calls(_rows("heldout-*/results.jsonl"))
     flash = [apply("flash", row, table) for row in archived_flash]
@@ -371,9 +374,9 @@ def facts() -> dict:
             "qry01_pass": sum(row["status"] == "PASS" for row in qry01),
             "qry01_n": len(qry01),
             "links": [
-                "水面船无线电 → 指挥船",
-                "无人机无线电 → 指挥船",
-                "指挥船 → 岸",
+                "USV radio → command ship",
+                "UAV radio → command ship",
+                "command ship → shore",
             ],
         },
         "safety": {
@@ -383,11 +386,11 @@ def facts() -> dict:
         "graph": {task: {"status": item["status"], "answer": item["answer"]} for task, item in sorted(graph.items())},
         "rescore": {
             "file": f"analysis/{RESCORED.name}",
-            "rule": RULE,
+            "rule": RULE_EN,
             "archived_flash_pass": sum(row["status"] == "PASS" for row in archived_flash),
             "changed": [{"cohort_id": item["cohort_id"], "task_id": item["task_id"], "configuration": item["configuration"],
                          "repeat": item["repeat"], "archived": item["archived_status"], "status": item["status"]}
                         for item in table.values() if item.get("changed")],
-            "judge_basis": "两个裁判被问的是「答卷达不达标」，问法里写明超预算算不达标，所以和它们比的是工具的设计判定。只有 MOD-05 的设计判定（超预算 FAIL）和题目判定（老实作答 PASS）不同。",
+            "judge_basis": "Both judges were asked whether the submission meets the standard, and told that an over-budget design does not, so they are compared with the tool's design verdict. Only MOD-05 has different design (over budget: FAIL) and task (honest answer: PASS) verdicts.",
         },
     }

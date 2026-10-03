@@ -1,223 +1,224 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RTRC · 需求写成 SysML v2：agent 能做到哪一步</title>
+<title>RTRC · Requirements to SysML v2: how far can an agent go?</title>
 <link rel="stylesheet" href="/board.css">
 </head>
 <body>
 <header class="masthead">
   <div class="mast-inner">
     <div>
-      <p class="kicker">RTRC 2706 · Agentic AI for Systems Engineering · 合成海事场景</p>
-      <h1>需求写成 SysML v2：agent 能做到哪一步</h1>
-      <p class="lead">分数只来自官方 SysML v2 Pilot 和事先写好的清单。模型的提示里没有标准答案。所有数字都是合成的，不是 RTX 规格。语法通过只说明能解析，不等于工程验收。</p>
+      <p class="kicker">RTRC 2706 · Agentic AI for Systems Engineering · synthetic maritime scenario</p>
+      <h1>Requirements to SysML v2: how far can an agent go?</h1>
+      <p class="lead">Scores come only from the official SysML v2 Pilot and answer keys written in advance. The model's prompt never contains the answer key. Every number is synthetic, not an RTX specification. Passing the syntax check means the model parses, not that the design is accepted.</p>
     </div>
     <div class="kpis">
-      <div class="kpi"><span>考试总分 · 主力模型</span><b id="kpi-total">—</b><small id="kpi-total-sub">288 格 · 官方 Pilot + 清单</small></div>
-      <div class="kpi"><span>裁判和工具一致</span><b id="kpi-jev">—</b><small id="kpi-jev-sub">Jev · 只旁听不计分</small></div>
-      <div class="kpi"><span>记忆库</span><b id="kpi-mem">—</b><small id="kpi-mem-sub">已有模型卡片 + 已批准设计</small></div>
+      <div class="kpi"><span>Exam score · main model</span><b id="kpi-total">—</b><small id="kpi-total-sub">288 cells · official Pilot + answer keys</small></div>
+      <div class="kpi"><span>Judge agrees with the tool</span><b id="kpi-jev">—</b><small id="kpi-jev-sub">Jev · observes only, not scored</small></div>
+      <div class="kpi"><span>Memory</span><b id="kpi-mem">—</b><small id="kpi-mem-sub">existing model cards + approved designs</small></div>
     </div>
   </div>
 </header>
 
 <div class="shell">
-  <nav class="toc" id="toc" aria-label="目录">
-    <h5>开始</h5>
-    <a href="#s01"><b>0.1</b>先看这里：能动手的 6 处</a>
-    <a href="#s02"><b>0.2</b>agent 的记忆从哪来</a>
-    <a href="#s03"><b>0.3</b>三篇论文用在哪一步</a>
-    <h5>第一部分 · 考试</h5>
-    <a href="#s11"><b>1.1</b>考试流程图<span class="op-dot">①</span></a>
-    <a href="#s12"><b>1.2</b>总成绩</a>
-    <a href="#s13"><b>1.3</b>288 格矩阵<span class="op-dot">②</span></a>
-    <a href="#s14"><b>1.4</b>一格的完整过程</a>
-    <a href="#s15"><b>1.5</b>操作台<span class="op-dot">③</span></a>
-    <a href="#s16"><b>1.6</b>OpenCode 的工具调用</a>
-    <h5>第二部分 · 真实场景</h5>
-    <a href="#s21"><b>2.1</b>应用流程图<span class="op-dot">①</span></a>
-    <a href="#s22"><b>2.2</b>船 · 设计空间<span class="op-dot">④</span></a>
-    <a href="#s23"><b>2.3</b>这次运行<span class="op-dot">⑤</span></a>
-    <a href="#s24"><b>2.4</b>MOD 变更<span class="op-dot">⑥</span></a>
-    <a href="#s25"><b>2.5</b>三项能力</a>
+  <nav class="toc" id="toc" aria-label="Contents">
+    <h5>Start</h5>
+    <a href="#s01"><b>0.1</b>Start here: 6 things you can do</a>
+    <a href="#s02"><b>0.2</b>Where the agent's memory comes from</a>
+    <a href="#s03"><b>0.3</b>Where the three papers are used</a>
+    <h5>Part 1 · Exam</h5>
+    <a href="#s11"><b>1.1</b>Exam flow<span class="op-dot">①</span></a>
+    <a href="#s12"><b>1.2</b>Scores</a>
+    <a href="#s13"><b>1.3</b>288-cell matrix<span class="op-dot">②</span></a>
+    <a href="#s14"><b>1.4</b>One cell, end to end</a>
+    <a href="#s15"><b>1.5</b>Console<span class="op-dot">③</span></a>
+    <a href="#s16"><b>1.6</b>OpenCode's tool calls</a>
+    <h5>Part 2 · Real scenario</h5>
+    <a href="#s21"><b>2.1</b>Agent flow<span class="op-dot">①</span></a>
+    <a href="#s22"><b>2.2</b>Vessel · design space<span class="op-dot">④</span></a>
+    <a href="#s23"><b>2.3</b>This run<span class="op-dot">⑤</span></a>
+    <a href="#s24"><b>2.4</b>MOD changes<span class="op-dot">⑥</span></a>
+    <a href="#s25"><b>2.5</b>Three capabilities</a>
   </nav>
 
   <main class="main">
     <!-- ================= PART 0 ================= -->
     <header class="part-head">
       <span class="part-num">0</span>
-      <div><h2>先看这里</h2><p>这一页分两部分。第一部分是考试：24 道封存的题，看模型和 agent 在没有标准答案的情况下能写对多少。第二部分是真实场景：从一份空白任务简报开始，agent 检索已有模型、写需求、写两套设计、过官方校验、和已有模型对齐、核算，最后由人决定。</p></div>
+      <div><h2>Start here</h2><p>This page has two parts. Part 1 is an exam: 24 sealed tasks, to see how much models and agents get right without the answer key. Part 2 is a real scenario: from a blank task brief, an agent retrieves existing models, writes requirements and two designs, passes official validation, aligns with an existing model, checks the budgets, and a person decides.</p></div>
     </header>
 
     <section class="card" id="s01">
-      <div class="sec-head"><span class="sec-num">0.1</span><div><h3>这页回答三个问题，你能动手的地方有 6 处</h3><p class="sec-lead">橙色边框的区块是操作区。每个操作区顶部都写了：你可以做什么、点了会发生什么、要多久。没有橙色边框的区块只读。</p></div></div>
+      <div class="sec-head"><span class="sec-num">0.1</span><div><h3>Three questions this page answers, and 6 places you can act</h3><p class="sec-lead">Sections with an orange border are interactive. Each one says at the top what you can do, what happens, and how long it takes. Sections without an orange border are read-only.</p></div></div>
       <div class="answers" id="answers"></div>
       <div class="ops" id="ops"></div>
     </section>
 
     <section class="card" id="s02">
-      <div class="sec-head"><span class="sec-num">0.2</span><div><h3>agent 的记忆从哪来</h3><p class="sec-lead">agent 不是凭空写。它能看到的材料只有下面这几类，每一类写明了在哪一步被取、会不会进模型提示。点下面的蓝色小标签，会在流程图里亮出用到它的那一步。</p></div></div>
+      <div class="sec-head"><span class="sec-num">0.2</span><div><h3>Where the agent's memory comes from</h3><p class="sec-lead">The agent does not write from nothing. These are the only materials it can see; each card says at which step it is read and whether it enters the model's prompt. Click a blue tag to light up the step that uses it in the flow diagrams.</p></div></div>
       <div class="ks-grid" id="sources"></div>
     </section>
 
     <section class="card" id="s03">
-      <div class="sec-head"><span class="sec-num">0.3</span><div><h3>三篇指定论文：原理，以及在流程里落在哪一步</h3><p class="sec-lead">按流程顺序排：先检索（论文 2），再生成、修改、查询（论文 3），最后对齐（论文 1）。每篇都写了原文怎么做、这里怎么做、在哪一步、本页的证据、没有复现的部分。点「落在流程哪一步」里的小标签，会跳到流程图并选中那一步；点「两张图里只亮它」，两张图只亮这一篇用到的节点。</p></div></div>
+      <div class="sec-head"><span class="sec-num">0.3</span><div><h3>The three assigned papers: what they do and where they sit in the flow</h3><p class="sec-lead">In flow order: retrieval (Paper 2), then generation, modification and query (Paper 3), then alignment (Paper 1). Each card shows what the paper does, what we do, which step it sits at, the evidence on this page, and what was not reproduced. A tag under "Where it sits in the flow" jumps to that step; "Highlight only this paper" lights only that paper's steps in both diagrams.</p></div></div>
       <div class="paper-cols" id="papers"></div>
     </section>
 
     <!-- ================= PART 1 ================= -->
     <header class="part-head" id="part1">
       <span class="part-num">1</span>
-      <div><h2>考试：24 道封存题，288 格成绩</h2><p>同一个模型（qwen3.8-flash）用四种写法（P0 直接写、P1 按报错返工、P2 先列提纲、P3 提纲加检索笔记），每格重复 3 次。另外 OpenCode 和 Claude 两个 agent 各做一遍 24 题。工具判分，裁判模型只旁听。</p></div>
+      <div><h2>Exam: 24 sealed tasks, 288 scored cells</h2><p>One model (qwen3.8-flash) with four approaches (P0 one-shot, P1 repair from errors, P2 outline first, P3 outline + retrieved notes), each cell repeated 3 times. Two off-the-shelf agents, OpenCode and Claude Code, also did the 24 tasks once each. The tools score; model judges only observe.</p></div>
     </header>
 
     <section class="card op" id="s11">
-      <div class="sec-head"><span class="sec-num">1.1</span><div><h3>考试流程图：一格成绩是怎么来的</h3><p class="sec-lead">每格都从左走到右。上面一行是封存材料，只在标出的那一步打开；下面一行是条件触发的返工和旁听裁判。在 1.3 选一格或在 1.5 开一次运行，这张图会跟着那一格的真实记录点亮。</p></div><div class="sec-tools"><span class="op-pill">操作 ①</span></div></div>
-      <div class="op-guide"><span class="op-badge">操作 ①</span><div><b>你可以</b>点任一节点看它的输入、输出和由谁执行；用右上角的按钮只亮出某一篇论文用到的节点。</div><div><b>会发生</b>节点下方出现说明。图的颜色跟随当前选中的那一格：绿过、红不过、灰没走、黄正在跑。</div><div><b>用时</b>即时，只读存档，不调用模型。</div></div>
+      <div class="sec-head"><span class="sec-num">1.1</span><div><h3>Exam flow: how one cell gets its score</h3><p class="sec-lead">Every cell runs left to right. The top row is sealed material, opened only at the marked step; the bottom row is the conditional repair loop and the observing judges. Pick a cell in 1.3 or start a run in 1.5 and this diagram lights up with that cell's real record.</p></div><div class="sec-tools"><span class="op-pill">Action ①</span></div></div>
+      <div class="op-guide"><span class="op-badge">Action ①</span><div><b>You can</b>Click any node to see its input, output and who runs it; use the buttons at the top right to light up only one paper's nodes.</div><div><b>What happens</b>A description opens under the diagram. Colours follow the selected cell: green passed, red failed, grey skipped, yellow running.</div><div><b>Time</b>Instant; reads the archive, no model call.</div></div>
       <div id="flow-bench"></div>
     </section>
 
     <section class="card" id="s12">
-      <div class="sec-head"><span class="sec-num">1.2</span><div><h3>总成绩：通过率、token、裁判准不准、花了多少钱</h3><p class="sec-lead">先看最终数字。通过率按写法、按题型、按 agent 分开；token 是这一批记录到的总量；裁判一栏看两个模型裁判和官方工具判的结果一致多少；最下面按阿里云和 TypeSafe 的官方单价把 token 折合成美元。</p></div></div>
+      <div class="sec-head"><span class="sec-num">1.2</span><div><h3>Scores: pass rates, tokens, how accurate the judges are, and cost</h3><p class="sec-lead">The headline numbers. Pass rates by approach, task type and agent; tokens recorded for this batch; how often the two model judges agree with the official tool; and, at the bottom, tokens converted to USD at Alibaba Cloud's and TypeSafe's official prices.</p></div></div>
       <div class="kpi-row" id="kpis"></div>
       <div class="panels" id="score-panels"></div>
     </section>
 
     <section class="card op" id="s13">
-      <div class="sec-head"><span class="sec-num">1.3</span><div><h3>288 格矩阵：每一格都能点开</h3><p class="sec-lead">每行一道题，每列一种写法的一次重复，最右两列是两个 agent。行尾是这一行的通过数，列底是这一列的通过率。</p></div><div class="sec-tools"><div class="seg-toggle" id="mx-mode"><button data-mode="tool" class="on">工具判分</button><button data-mode="jev">Jev 对不对</button><button data-mode="qwen">qwen 对不对</button></div></div></div>
-      <div class="op-guide"><span class="op-badge">操作 ②</span><div><b>你可以</b>点任一格；切换上方按钮，把颜色换成「工具判分」或某个裁判和工具是否一致。</div><div><b>会发生</b>1.4 显示这一格的完整过程，1.1 的流程图按这一格点亮。</div><div><b>用时</b>即时，只读存档。</div></div>
+      <div class="sec-head"><span class="sec-num">1.3</span><div><h3>288-cell matrix: every cell opens</h3><p class="sec-lead">Each row is a task; each column is one repeat of one approach; the two rightmost columns are the agents. The row end is that task's pass count; the column foot is that column's pass rate. The guide below explains every code.</p></div><div class="sec-tools"><div class="seg-toggle" id="mx-mode"><button data-mode="tool" class="on">Tool verdict</button><button data-mode="jev">Is Jev right?</button><button data-mode="qwen">Is qwen right?</button></div></div></div>
+      <div class="op-guide"><span class="op-badge">Action ②</span><div><b>You can</b>Click any cell; switch the buttons above to colour cells by the tool's verdict or by whether a judge agrees with the tool.</div><div><b>What happens</b>1.4 shows that cell end to end, and the 1.1 diagram lights up with it.</div><div><b>Time</b>Instant; reads the archive.</div></div>
+      <div class="glossary" id="mx-guide"></div>
       <div class="mx-tools"><div class="legend" id="mx-legend"></div></div>
       <div class="mx-wrap" id="matrix"></div>
     </section>
 
     <section class="card" id="s14">
-      <div class="sec-head"><span class="sec-num">1.4</span><div><h3>一格的完整过程</h3><p class="sec-lead" id="cell-lead">上面的情景按这道题画：左边是题目涉及的平台，线上跑的是题目要求的数据流；右边是清单，颜色来自这一格答卷的判定，缺的部件和连线变红、停下，改了不该改的数也会标红。下面是这一格走过的每一步，最下面左右对照题面、标准答案和考生答案。</p></div></div>
+      <div class="sec-head"><span class="sec-num">1.4</span><div><h3>One cell, end to end</h3><p class="sec-lead" id="cell-lead">The scene is drawn for this task: on the left the platforms it involves, with the data flows it asks for; on the right the checklist, coloured by this cell's verdict. Missing parts and links turn red and stop, and a changed value that had to stay is marked red. The bar under the scene shows only the checks that apply to this task type. Below are the steps this cell went through, then the task statement, answer key and the agent's answer side by side.</p></div></div>
       <div id="cell-head"></div>
       <div class="md"><div class="list" id="cell-steps"></div><div class="detail" id="cell-detail"></div></div>
       <div class="original" id="cell-original"></div>
     </section>
 
     <section class="card op" id="s15">
-      <div class="sec-head"><span class="sec-num">1.5</span><div><h3>操作台：重跑一道题，或者自己出一道</h3><p class="sec-lead">两种都走 1.1 的同一条流程。新出的题也要附标准答案，阅卷时才打开。</p></div><div class="sec-tools"><span class="op-pill">操作 ③</span></div></div>
-      <div class="op-guide"><span class="op-badge">操作 ③</span><div><b>你可以</b>左边：选一道封存题和一种写法重跑。右边：写题面和标准答案出一道新题，或点示例按钮填一份。</div><div><b>会发生</b>真实调用你选的模型，并用官方 Pilot 校验。1.1 的图实时点亮，跑完 1.4 显示这次的完整过程、用了多少 token、按官方单价折合多少美元。默认 qwen3.8-flash，和 288 格矩阵同一个模型；结果单独显示，不并入 288 格。</div><div><b>用时</b>P0 约 20–40 秒；P1 最多返工 3 次，约 1–2 分钟。同一时间只跑一个。</div></div>
+      <div class="sec-head"><span class="sec-num">1.5</span><div><h3>Console: re-run a task, or write your own</h3><p class="sec-lead">Both use the same flow as 1.1. A new task also needs an answer key, which is opened only for scoring.</p></div><div class="sec-tools"><span class="op-pill">Action ③</span></div></div>
+      <div class="op-guide"><span class="op-badge">Action ③</span><div><b>You can</b>Left: pick a sealed task and an approach to re-run. Right: write a task statement and answer key for a new task, or fill in an example.</div><div><b>What happens</b>Real calls to the model you choose, validated by the official Pilot. The 1.1 diagram lights up live; when it finishes, 1.4 shows the whole run, the tokens used and their cost in USD at official prices. The default is qwen3.8-flash, the same model as the 288-cell matrix; results are shown separately and not added to the 288.</div><div><b>Time</b>P0 about 20–40 s; P1 up to 3 repairs, about 1–2 min. One run at a time.</div></div>
       <div class="console">
         <section>
-          <h4>重跑一道封存题</h4>
-          <div class="row"><label>题目<select id="run-task"></select></label><label>写法<select id="run-config"><option value="P0">P0 直接写</option><option value="P1">P1 按报错返工（≤3 次）</option><option value="P2">P2 先列提纲</option><option value="P3">P3 提纲 + 检索笔记</option></select></label></div>
-          <label>模型<select id="run-model"><option value="qwen3.8-flash">qwen3.8-flash（和 288 格矩阵同一个，结果可比）</option><option value="qwen3.8-max">qwen3.8-max（更强、更贵，结果单独看）</option></select></label>
+          <h4>Re-run a sealed task</h4>
+          <div class="row"><label>Task<select id="run-task"></select></label><label>Approach<select id="run-config"><option value="P0">P0 one-shot</option><option value="P1">P1 repair from errors (≤3)</option><option value="P2">P2 outline first</option><option value="P3">P3 outline + retrieved notes</option></select></label></div>
+          <label>Model<select id="run-model"><option value="qwen3.8-flash">qwen3.8-flash (same as the 288-cell matrix, comparable)</option><option value="qwen3.8-max">qwen3.8-max (stronger, costlier, read separately)</option></select></label>
           <p class="hint" id="run-config-note"></p>
-          <button class="cta" id="run-go">开始重跑</button>
+          <button class="cta" id="run-go">Start the re-run</button>
           <div class="mini-steps" id="run-mini"></div>
-          <div class="status" id="run-status">还没开始。</div>
+          <div class="status" id="run-status">Not started.</div>
         </section>
         <section>
-          <h4>出一道新题</h4>
-          <div class="ex"><span class="hint">填一个示例：</span><button data-example="GEN">写模型 GEN</button><button data-example="QRY">读模型 QRY</button><button data-example="AMB">该提问 AMB</button></div>
-          <div class="row"><label>类型<select id="new-type"><option value="GEN">GEN 写模型</option><option value="MOD">MOD 改模型</option><option value="QRY">QRY 读模型</option><option value="AMB">AMB 该提问</option><option value="RT">RT 回读</option></select></label><label>包名（GEN/MOD 要填）<input id="new-package" value="Inbox"></label></div>
-          <label>题面（考生只看到这一段）<textarea id="new-req" rows="5" placeholder="Package name: ..."></textarea></label>
-          <label>标准答案（GEN/MOD/AMB/RT 写 YAML，QRY 写 JSON；考生看不到）<textarea id="new-gold" rows="5"></textarea></label>
-          <div class="row"><label>写法<select id="new-config"><option value="P0">P0 直接写</option><option value="P1">P1 按报错返工</option><option value="P2">P2 先列提纲</option><option value="P3">P3 提纲 + 检索笔记</option></select></label><label>模型<select id="new-model"><option value="qwen3.8-flash">qwen3.8-flash</option><option value="qwen3.8-max">qwen3.8-max</option></select></label></div>
-          <button class="cta" id="new-go">出题并运行</button>
-          <div class="status" id="new-status">还没开始。</div>
+          <h4>Write a new task</h4>
+          <div class="ex"><span class="hint">Fill in an example:</span><button data-example="GEN">GEN: generate a model</button><button data-example="QRY">QRY: query a model</button><button data-example="AMB">AMB: ask, don't guess</button></div>
+          <div class="row"><label>Type<select id="new-type"><option value="GEN">GEN · generate a new model</option><option value="MOD">MOD · modify an existing model</option><option value="QRY">QRY · query a model</option><option value="AMB">AMB · ambiguous: ask, don't guess</option><option value="RT">RT · round trip: model back to text</option></select></label><label>Package name (GEN/MOD)<input id="new-package" value="Inbox"></label></div>
+          <label>Task statement (the only text the agent sees)<textarea id="new-req" rows="5" placeholder="Package name: ..."></textarea></label>
+          <label>Answer key (YAML for GEN/MOD/AMB/RT, JSON for QRY; hidden from the agent)<textarea id="new-gold" rows="5"></textarea></label>
+          <div class="row"><label>Approach<select id="new-config"><option value="P0">P0 one-shot</option><option value="P1">P1 repair from errors</option><option value="P2">P2 outline first</option><option value="P3">P3 outline + retrieved notes</option></select></label><label>Model<select id="new-model"><option value="qwen3.8-flash">qwen3.8-flash</option><option value="qwen3.8-max">qwen3.8-max</option></select></label></div>
+          <button class="cta" id="new-go">Create task and run</button>
+          <div class="status" id="new-status">Not started.</div>
         </section>
       </div>
     </section>
 
     <section class="card" id="s16">
-      <div class="sec-head"><span class="sec-num">1.6</span><div><h3>OpenCode 做 MOD-05 时调用了哪些工具</h3><p class="sec-lead">OpenCode 是一个能读写文件、跑命令的 agent。下面是它做 MOD-05 时的工具调用记录，按顺序排。它也跑了官方校验，最后功率仍是 78 W：设计超预算，但上限和该保留的数都没改，按现行判分这道题它答对了。</p></div></div>
+      <div class="sec-head"><span class="sec-num">1.6</span><div><h3>Which tools OpenCode called on MOD-05</h3><p class="sec-lead">OpenCode is an agent that reads and writes files and runs commands. Below are its tool calls on MOD-05, in order. It also ran the official validation, and power was still 78 W: the design is over budget, but the limit and every value to keep are unchanged, so under the current scorer it answered the task correctly.</p></div></div>
       <div class="trace" id="trace"></div>
     </section>
 
     <!-- ================= PART 2 ================= -->
     <header class="part-head" id="part2">
       <span class="part-num">2</span>
-      <div><h2>真实场景：从空白任务到可批准的设计</h2><p>任务书要的是：自动生成需求，再生成设计概念，再做一致性检查。这里一条流程全部接上模型：你在 2.2 定任务，agent 按 2.1 的六个阶段走，2.3 记录每一步，最后人决定是否批准入库。批准的设计会进记忆库，下一次检索能查到。</p></div>
+      <div><h2>Real scenario: from a blank task to an approvable design</h2><p>The sponsor's brief asks for three things: generate requirements automatically, generate design concepts, and check consistency. Here one flow does all three with a model: you set the task in 2.2, the agent runs the six stages of 2.1, 2.3 records every step, and a person decides whether a design goes into memory. Approved designs join memory and the next retrieval finds them.</p></div>
     </header>
 
     <section class="card op" id="s21">
-      <div class="sec-head"><span class="sec-num">2.1</span><div><h3>应用流程图：六个阶段，谁做、读什么、交什么</h3><p class="sec-lead">上面一行是记忆库：已有的 MaritimeISR 模型加上人批准过的设计。中间是六个阶段。下面一行是守门、返工、器件目录和权衡方案。绿色虚线是记忆回路：人批准后，设计进记忆库。在 2.2 交给 agent 后，这张图实时点亮。</p></div><div class="sec-tools"><span class="op-pill">操作 ①</span></div></div>
-      <div class="op-guide"><span class="op-badge">操作 ①</span><div><b>你可以</b>点任一节点看说明和这次运行的结果；用右上角的按钮只亮出某一篇论文用到的节点。</div><div><b>会发生</b>节点下方出现说明；点「看这一步的记录」会在 2.3 打开这一步。</div><div><b>用时</b>即时，不调用模型。</div></div>
+      <div class="sec-head"><span class="sec-num">2.1</span><div><h3>Agent flow: six stages, who does what, what each reads and produces</h3><p class="sec-lead">The top row is memory: the existing MaritimeISR model plus designs a person approved. The middle row is the six stages. The bottom row holds the guard, the repair loop, the parts catalog and trade-offs. The green dashed line is the memory loop: once approved, a design joins memory. After you give a task to the agent in 2.2, this diagram lights up live.</p></div><div class="sec-tools"><span class="op-pill">Action ①</span></div></div>
+      <div class="op-guide"><span class="op-badge">Action ①</span><div><b>You can</b>Click any node for its description and this run's result; use the buttons at the top right to light up only one paper's nodes.</div><div><b>What happens</b>A description opens under the diagram; "See this step's record in 2.3" opens that step in 2.3.</div><div><b>Time</b>Instant; no model call.</div></div>
       <div id="flow-app"></div>
     </section>
 
     <section class="card op" id="s22">
-      <div class="sec-head"><span class="sec-num">2.2</span><div><h3>船 · 设计空间 · 出任务</h3><p class="sec-lead">一艘港口巡逻的无人水面船，带相机、边缘计算机、蜂窝上行和本地存储。功率上限 60 W 是规定，不能改。其余的器件和参数可以换，船图和下面的三块预算表立即按公式重算。按 1 → 4 的顺序走。</p></div><div class="sec-tools"><span class="op-pill">操作 ④</span></div></div>
-      <div class="op-guide"><span class="op-badge">操作 ④</span><div><b>你可以</b>换 5 类器件、调 3 个参数，或者直接改右下的任务简报。鼠标移到某一类器件上，船图会亮出它。</div><div><b>会发生</b>船图、功率 / 上传 / 容量三块表在浏览器里按公式重算，不调用模型。点「交给 agent」后，简报走 2.1 的六个阶段，结果在 2.3。</div><div><b>用时</b>重算即时。交给 agent 约 1–2 分钟，调用模型 6–11 次，写一份新的运行记录。</div></div>
+      <div class="sec-head"><span class="sec-num">2.2</span><div><h3>Vessel · design space · set the task</h3><p class="sec-lead">A harbor-patrol unmanned surface vessel with cameras, an edge computer, a cellular uplink and local storage. The 60 W power limit is a requirement and cannot change. Every other part and parameter can, and the vessel diagram and the three budget tables below recompute instantly. Work through steps 1 → 4.</p></div><div class="sec-tools"><span class="op-pill">Action ④</span></div></div>
+      <div class="op-guide"><span class="op-badge">Action ④</span><div><b>You can</b>Swap 5 kinds of parts, change 3 parameters, or edit the task brief at the bottom right directly. Hover a part row to light it up on the vessel diagram.</div><div><b>What happens</b>The vessel diagram and the power / upload / storage tables recompute in the browser; no model call. "Give to the agent" sends the brief through the six stages of 2.1, with results in 2.3.</div><div><b>Time</b>Recompute is instant. The agent takes about 1–2 min, makes 6–11 model calls, and writes a new run record.</div></div>
       <div class="harbor">
           <div class="tabs" id="harbor-tabs"></div>
-          <svg id="harbor" viewBox="0 0 1200 650" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="巡逻船、相机、设备箱和岸站">
+          <svg id="harbor" viewBox="0 0 1200 650" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Patrol vessel, cameras, equipment box and shore station">
             <defs><linearGradient id="hw" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#183e53"/><stop offset="1" stop-color="#0e293d"/></linearGradient><linearGradient id="hh" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e5eef0"/><stop offset="1" stop-color="#8ea9b5"/></linearGradient><marker id="ha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#64dcce"/></marker><marker id="hr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#b8a1f0"/></marker></defs>
             <rect width="1200" height="650" fill="url(#hw)"/>
             <g fill="none" stroke="#2c6a80" stroke-width="2" opacity=".6"><path d="M25 83q35-12 70 0t70 0m385 0q35-12 70 0t70 0M35 265q40-13 80 0t80 0m365 18q40-13 80 0t80 0M720 388q40-13 80 0t80 0M734 594q35-12 70 0t70 0m45-35q35-12 70 0t70 0M760 35q25-10 50 0t50 0"/></g>
             <path d="M918 0H1200V260L1103 260V211H989V167H918Z" fill="#516571"/><path d="M934 0V152H1003V198H1116V246H1200" fill="none" stroke="#91a4aa" stroke-width="4"/>
             <g fill="#344e5b"><rect x="948" y="26" width="44" height="80"/><rect x="1003" y="26" width="62" height="35"/><rect x="1077" y="27" width="85" height="28"/></g>
-            <text class="scene-micro" x="40" y="38">情景示意 · 没有连接真实硬件 · 数字是合成的</text>
-            <path d="M342 147L653 211L633 296Z" fill="#64dcce" opacity=".07" stroke="#70d2c4" stroke-dasharray="5 5"/><text class="scene-small" x="494" y="169">相机视场</text>
-            <g><ellipse cx="659" cy="294" rx="37" ry="8" fill="#0a2331" opacity=".6"/><path d="M637 283L648 250H669L679 283Z" fill="#ea9b43"/><rect x="651" y="232" width="15" height="21" fill="#f4b76b"/><path d="M651 231L659 217L667 231Z" fill="#edb96e"/><path d="M644 268H673" stroke="#263846" stroke-width="7"/><circle cx="659" cy="214" r="4" fill="#ffeeae"/><text class="scene-label" x="616" y="322">浮标 H-07</text></g>
+            <text class="scene-micro" x="40" y="38">Illustration only · no real hardware connected · numbers are synthetic</text>
+            <path d="M342 147L653 211L633 296Z" fill="#64dcce" opacity=".07" stroke="#70d2c4" stroke-dasharray="5 5"/><text class="scene-small" x="494" y="169">camera field of view</text>
+            <g><ellipse cx="659" cy="294" rx="37" ry="8" fill="#0a2331" opacity=".6"/><path d="M637 283L648 250H669L679 283Z" fill="#ea9b43"/><rect x="651" y="232" width="15" height="21" fill="#f4b76b"/><path d="M651 231L659 217L667 231Z" fill="#edb96e"/><path d="M644 268H673" stroke="#263846" stroke-width="7"/><circle cx="659" cy="214" r="4" fill="#ffeeae"/><text class="scene-label" x="616" y="322">Buoy H-07</text></g>
             <ellipse cx="307" cy="287" rx="246" ry="29" fill="#061d2c" opacity=".5"/>
             <path d="M69 240L451 240L550 209L516 270L152 290L90 270Z" fill="url(#hh)" stroke="#dce8ed" stroke-width="2"/><path d="M86 255L501 255" stroke="#da8550" stroke-width="9"/>
             <path d="M168 235L180 176H316L356 235Z" fill="#d2e1e6" stroke="#91aebb" stroke-width="2"/><path d="M190 188H232V215H185ZM241 188H280L292 215H241ZM289 188H307L326 215H301Z" fill="#284d61" stroke="#62899a" stroke-width="2"/>
             <path d="M172 177H321" stroke="#e5eef1" stroke-width="8"/><path d="M118 237V209H158M374 235V204H473V230" fill="none" stroke="#c2d4dc" stroke-width="3"/>
             <text x="174" y="271" fill="#173c51" font-size="17" font-weight="700" letter-spacing="2">PATROL-01</text>
-            <g data-harbor-component="sensors"><path d="M293 174V127H344" stroke="#bdcfd7" stroke-width="6"/><rect class="harbor-focus" x="313" y="112" width="61" height="42" rx="10" fill="#d1e0e7" stroke="#67bebd" stroke-width="2"/><circle cx="355" cy="127" r="8" fill="#285466"/><circle id="ir-dot" cx="355" cy="143" r="6" fill="#e0a35f"/><text class="scene-label" x="215" y="76">桅杆相机</text><text class="scene-small" x="216" y="96" id="lbl-cams">可见光 41 W · 红外 12 W</text></g>
-            <g data-harbor-component="router"><path d="M410 236V167M397 185Q410 167 423 185M388 177Q410 149 432 177" fill="none" stroke="#c3aedf" stroke-width="3"/><text class="scene-small" x="438" y="202">天线</text></g>
+            <g data-harbor-component="sensors"><path d="M293 174V127H344" stroke="#bdcfd7" stroke-width="6"/><rect class="harbor-focus" x="313" y="112" width="61" height="42" rx="10" fill="#d1e0e7" stroke="#67bebd" stroke-width="2"/><circle cx="355" cy="127" r="8" fill="#285466"/><circle id="ir-dot" cx="355" cy="143" r="6" fill="#e0a35f"/><text class="scene-label" x="215" y="76">Mast cameras</text><text class="scene-small" x="216" y="96" id="lbl-cams">visible 41 W · infrared 12 W</text></g>
+            <g data-harbor-component="router"><path d="M410 236V167M397 185Q410 167 423 185M388 177Q410 149 432 177" fill="none" stroke="#c3aedf" stroke-width="3"/><text class="scene-small" x="438" y="202">antenna</text></g>
             <rect x="201" y="225" width="76" height="19" rx="3" fill="#335261" stroke="#83aaa9"/><path d="M238 244V352" stroke="#8babb8" stroke-width="1.5" stroke-dasharray="4 5"/>
-            <path class="harbor-data-line" d="M313 141H286V345H123V416" marker-end="url(#ha)"/><text class="scene-small data-text" x="63" y="333" id="lbl-eth">以太网，图像</text>
+            <path class="harbor-data-line" d="M313 141H286V345H123V416" marker-end="url(#ha)"/><text class="scene-small data-text" x="63" y="333" id="lbl-eth">Ethernet, imagery</text>
             <circle r="5" fill="#64dcce"><animateMotion dur="2.4s" repeatCount="indefinite" path="M313 141H286V345H123V416"/></circle>
-            <path class="harbor-radio-line" id="uplink-line" d="M422 169Q625 24 977 128" marker-end="url(#hr)"/><text class="scene-label radio-text" x="640" y="81" id="lbl-uplink">上行容量 8 Mbps</text><text class="scene-small" x="652" y="101" id="lbl-upload">上传 18 Mbps</text>
+            <path class="harbor-radio-line" id="uplink-line" d="M422 169Q625 24 977 128" marker-end="url(#hr)"/><text class="scene-label radio-text" x="640" y="81" id="lbl-uplink">uplink 8 Mbps</text><text class="scene-small" x="652" y="101" id="lbl-upload">upload 18 Mbps</text>
             <circle r="5" fill="#b8a1f0"><animateMotion dur="3s" repeatCount="indefinite" path="M422 169Q625 24 977 128"/></circle>
-            <g data-harbor-component="shore"><rect class="harbor-focus" x="977" y="77" width="184" height="117" rx="8" fill="#203b4b" stroke="#bba3e6" stroke-width="1.5"/><rect x="994" y="94" width="50" height="37" rx="3" fill="#315b6b" stroke="#8bb7c2"/><path d="M1004 120L1018 105L1034 119" fill="none" stroke="#67dccc" stroke-width="2"/><rect x="1055" y="97" width="83" height="9" rx="3" fill="#58748a"/><rect x="1055" y="114" width="65" height="7" rx="3" fill="#405e73"/><text class="scene-label" x="994" y="157">岸站</text><text class="scene-small" x="994" y="177">操作员看图 · 人在这里审批</text></g>
-            <path class="harbor-radio-line" d="M1077 194V366Q1077 394 1011 424" marker-end="url(#hr)"/><text class="scene-small radio-text" x="910" y="285">岸上转发的第二份</text>
-            <g data-harbor-component="peer"><path class="harbor-focus" d="M861 454H1071L1036 486H899Z" fill="#99b3c0" stroke="#bba3e6" stroke-width="2"/><path d="M916 454V416H988L1010 454Z" fill="#cbdce4"/><rect x="926" y="425" width="50" height="20" fill="#2a5265"/><path d="M985 413V385M975 399Q985 385 995 399" fill="none" stroke="#cab3ef" stroke-width="2"/><text class="scene-label" x="886" y="517">第二艘船</text><text class="scene-small" x="885" y="537">收同一份共享图像</text></g>
+            <g data-harbor-component="shore"><rect class="harbor-focus" x="977" y="77" width="184" height="117" rx="8" fill="#203b4b" stroke="#bba3e6" stroke-width="1.5"/><rect x="994" y="94" width="50" height="37" rx="3" fill="#315b6b" stroke="#8bb7c2"/><path d="M1004 120L1018 105L1034 119" fill="none" stroke="#67dccc" stroke-width="2"/><rect x="1055" y="97" width="83" height="9" rx="3" fill="#58748a"/><rect x="1055" y="114" width="65" height="7" rx="3" fill="#405e73"/><text class="scene-label" x="994" y="157">Shore station</text><text class="scene-small" x="994" y="177">operator views imagery · approvals here</text></g>
+            <path class="harbor-radio-line" d="M1077 194V366Q1077 394 1011 424" marker-end="url(#hr)"/><text class="scene-small radio-text" x="910" y="285">second copy relayed ashore</text>
+            <g data-harbor-component="peer"><path class="harbor-focus" d="M861 454H1071L1036 486H899Z" fill="#99b3c0" stroke="#bba3e6" stroke-width="2"/><path d="M916 454V416H988L1010 454Z" fill="#cbdce4"/><rect x="926" y="425" width="50" height="20" fill="#2a5265"/><path d="M985 413V385M975 399Q985 385 995 399" fill="none" stroke="#cab3ef" stroke-width="2"/><text class="scene-label" x="886" y="517">Second vessel</text><text class="scene-small" x="885" y="537">receives the same shared imagery</text></g>
             <rect id="box-frame" x="35" y="354" width="724" height="271" rx="12" fill="#102436" stroke="#527b8b" stroke-width="2"/>
-            <text class="scene-label" x="55" y="384" id="box-title">甲板下设备箱 · 上限 60 W · 当前 78 W</text>
+            <text class="scene-label" x="55" y="384" id="box-title">Below-deck equipment box · limit 60 W · now 78 W</text>
             <rect x="420" y="372" width="320" height="10" rx="5" fill="#1a3344"/><rect id="box-bar" x="420" y="372" width="320" height="10" rx="5" fill="#d9534f"/><rect id="box-lim" x="666" y="368" width="3" height="18" fill="#ffd7a8"/>
-            <g data-harbor-component="ingest"><rect class="harbor-focus" x="62" y="425" width="162" height="83" rx="6" fill="#193f4d" stroke="#57aaa8"/><text class="scene-label" x="76" y="449">采集</text><text class="scene-small" x="76" y="470">认来源和序号</text><text class="scene-small" x="76" y="490">核对时间戳</text></g>
-            <g data-harbor-component="processor"><rect class="harbor-focus" x="276" y="425" width="199" height="83" rx="6" fill="#193f4d" stroke="#57aaa8"/><text class="scene-label" x="290" y="449" id="lbl-cpu">边缘计算机 25 W</text><text class="scene-small" x="290" y="470">整理时间，做预览</text><text class="scene-small" x="290" y="490">原件保持不动</text></g>
-            <g data-harbor-component="storage"><rect class="harbor-focus" id="storage-box" x="548" y="425" width="181" height="83" rx="6" fill="#193f4d" stroke="#57aaa8"/><text class="scene-label" x="562" y="449" id="lbl-store">本地记录 128 GB</text><text class="scene-small" x="562" y="470" id="lbl-rec">18 Mbps · 8 小时原件</text><text class="scene-small" x="562" y="490" id="lbl-need">需要 64.8 GB</text></g>
-            <g data-harbor-component="router"><rect class="harbor-focus" x="276" y="541" width="199" height="66" rx="6" fill="#33354e" stroke="#a995cc"/><text class="scene-label" x="290" y="565" id="lbl-router">蜂窝路由 8 Mbps</text><text class="scene-small" x="290" y="586">链路断了就在本地排队</text></g>
+            <g data-harbor-component="ingest"><rect class="harbor-focus" x="62" y="425" width="162" height="83" rx="6" fill="#193f4d" stroke="#57aaa8"/><text class="scene-label" x="76" y="449">Capture</text><text class="scene-small" x="76" y="470">identifies source, sequence</text><text class="scene-small" x="76" y="490">checks timestamps</text></g>
+            <g data-harbor-component="processor"><rect class="harbor-focus" x="276" y="425" width="199" height="83" rx="6" fill="#193f4d" stroke="#57aaa8"/><text class="scene-label" x="290" y="449" id="lbl-cpu">edge computer 25 W</text><text class="scene-small" x="290" y="470">aligns time, makes previews</text><text class="scene-small" x="290" y="490">leaves originals untouched</text></g>
+            <g data-harbor-component="storage"><rect class="harbor-focus" id="storage-box" x="548" y="425" width="181" height="83" rx="6" fill="#193f4d" stroke="#57aaa8"/><text class="scene-label" x="562" y="449" id="lbl-store">local recorder 128 GB</text><text class="scene-small" x="562" y="470" id="lbl-rec">18 Mbps · 8 h of originals</text><text class="scene-small" x="562" y="490" id="lbl-need">needs 64.8 GB</text></g>
+            <g data-harbor-component="router"><rect class="harbor-focus" x="276" y="541" width="199" height="66" rx="6" fill="#33354e" stroke="#a995cc"/><text class="scene-label" x="290" y="565" id="lbl-router">cellular router 8 Mbps</text><text class="scene-small" x="290" y="586">queues locally if the link drops</text></g>
             <path class="harbor-data-line" d="M224 466H276M475 466H548M374 508V541" marker-end="url(#ha)"/>
-            <text class="scene-micro data-text" x="485" y="452">原件</text><text class="scene-micro data-text" x="388" y="529" id="lbl-share">共享图像</text>
-            <path class="harbor-power-line" d="M75 557H177V525H639V508M144 525V508M374 525V508"/><text class="scene-small power-text" x="62" y="583" id="lbl-power">24 V 输入 · 合计 78 W</text>
+            <text class="scene-micro data-text" x="485" y="452">originals</text><text class="scene-micro data-text" x="388" y="529" id="lbl-share">shared imagery</text>
+            <path class="harbor-power-line" d="M75 557H177V525H639V508M144 525V508M374 525V508"/><text class="scene-small power-text" x="62" y="583" id="lbl-power">24 V in · total 78 W</text>
             <path class="harbor-radio-line" d="M475 576H786V182H423" marker-end="url(#hr)"/>
           </svg>
           <p class="note" id="harbor-note"></p>
       </div>
       <div class="ship-mid">
-        <div class="cfg-wrap"><div class="step-h"><span>1</span>选器件和参数</div><div class="cfg" id="cfg"></div></div>
-        <div class="budget-wrap"><div class="step-h"><span>2</span>看三项预算会不会超</div><div class="budget" id="budget"></div></div>
+        <div class="cfg-wrap"><div class="step-h"><span>1</span>Pick parts and parameters</div><div class="cfg" id="cfg"></div></div>
+        <div class="budget-wrap"><div class="step-h"><span>2</span>See whether the three budgets hold</div><div class="budget" id="budget"></div></div>
       </div>
       <div class="ship-go">
         <div class="brief-col">
-          <div class="step-h"><span>3</span>任务简报：agent 拿到的全部输入（可以直接改）</div>
+          <div class="step-h"><span>3</span>Task brief: everything the agent receives (you can edit it)</div>
           <textarea id="brief" spellcheck="false"></textarea>
-          <p class="hint" id="brief-note">简报由上面的选择生成。改了文字以后，agent 只看文字。</p>
+          <p class="hint" id="brief-note">The brief is generated from the choices above. Once you edit the text, the agent sees only the text.</p>
         </div>
         <div class="go-col">
-          <div class="step-h"><span>4</span>交给 agent</div>
-          <div class="flow-ctrl" style="margin-top:0"><button class="cta big" id="discover-go">交给 agent，开始六个阶段</button><button id="brief-reset">按选择重写简报</button></div>
-          <div class="status" id="discover-status">还没开始。2.3 现在显示的是上一次运行。</div>
-          <div class="next-steps"><span>检索记忆库，取已有元素</span><span>拆成编号需求，核对数字来源</span><span>写设计 A 和设计 B</span><span>官方 Pilot 校验，失败就按报错返工</span><span>和 MaritimeISR 对齐，对齐包也过 Pilot</span><span>核算、读回、等人决定</span></div>
+          <div class="step-h"><span>4</span>Give it to the agent</div>
+          <div class="flow-ctrl" style="margin-top:0"><button class="cta big" id="discover-go">Give to the agent: run the six stages</button><button id="brief-reset">Regenerate the brief from the choices</button></div>
+          <div class="status" id="discover-status">Not started. 2.3 shows the previous run.</div>
+          <div class="next-steps"><span>Retrieve existing elements from memory</span><span>Split into numbered requirements, check number sources</span><span>Write design A and design B</span><span>Official Pilot validation; repair from errors on failure</span><span>Align with MaritimeISR; the alignment package also goes through the Pilot</span><span>Budget checks, read-back, wait for a person</span></div>
         </div>
       </div>
     </section>
 
     <section class="card op" id="s23">
-      <div class="sec-head"><span class="sec-num">2.3</span><div><h3>这次运行：每一步拿到什么、交出什么</h3><p class="sec-lead" id="run-lead">左边是 2.1 的每一步，按发生顺序排。点一步看它的输入、输出和核对结果。</p></div><div class="sec-tools"><span class="op-pill">操作 ⑤</span></div></div>
-      <div class="op-guide"><span class="op-badge">操作 ⑤</span><div><b>你可以</b>点左边任一步看细节；在「权衡方案」里把一个方案填回 2.2；在「⑥ 人决定」里批准一套四项核算全过的设计入库。</div><div><b>会发生</b>填回只改 2.2 的选择，不自动运行。批准会把这套设计的官方解析加进记忆库（analysis/memory/approved.jsonl），下一次「① 检索」就能查到它。</div><div><b>用时</b>即时。批准写文件，不能在页面上撤销。</div></div>
+      <div class="sec-head"><span class="sec-num">2.3</span><div><h3>This run: what each step received and produced</h3><p class="sec-lead" id="run-lead">On the left, every step of 2.1 in the order it happened. Click a step to see its input, output and checks.</p></div><div class="sec-tools"><span class="op-pill">Action ⑤</span></div></div>
+      <div class="op-guide"><span class="op-badge">Action ⑤</span><div><b>You can</b>Click any step on the left for details; under "Trade-offs", send a proposal back to 2.2; under "⑥ Person decides", approve a design that passes all four checks into memory.</div><div><b>What happens</b>Sending back only changes the choices in 2.2; nothing runs automatically. Approval adds the design's official parse to memory (analysis/memory/approved.jsonl), and the next "① Retrieve" finds it.</div><div><b>Time</b>Instant. Approval writes a file and cannot be undone from the page.</div></div>
       <div id="run-head"></div>
       <div class="md"><div class="list" id="run-steps"></div><div class="detail" id="run-detail"></div></div>
     </section>
 
     <section class="card op" id="s24">
-      <div class="sec-head"><span class="sec-num">2.4</span><div><h3>真实变更：让模型改已有模型（MOD-01 到 MOD-05）</h3><p class="sec-lead">每道题给一份已有模型和一段变更要求。模型改完，官方 Pilot 校验；清单核对必须存在、必须连接、必须保留的内容，有功率检查的再核功率；最后模型把改后的模型读回成文字。<b>题目判定</b>看 agent 有没有照题改对，<b>设计判定</b>看设计本身超没超预算，两者分开显示。</p></div><div class="sec-tools"><span class="op-pill">操作 ⑥</span></div></div>
-      <div class="op-guide"><span class="op-badge">操作 ⑥</span><div><b>你可以</b>选一道 MOD 题，看它最近一次的完整变更记录；点「重跑这道题」，让模型重新改一次。</div><div><b>会发生</b>调用 .env 里配置的模型（现在是 qwen3.8-max）改模型、再读回；官方 Pilot 校验；清单核对。审批门只在模型改了基线里的上限时触发，并一律拒绝。</div><div><b>用时</b>约 30 秒到 1 分钟，调用模型 2 次。同一时间只跑一个。</div></div>
+      <div class="sec-head"><span class="sec-num">2.4</span><div><h3>Real changes: the model edits an existing model (MOD-01 to MOD-05)</h3><p class="sec-lead">Each task gives an existing model and a change request. After the model edits it, the official Pilot validates it; the checklist checks required names, connections and values to keep, plus power where the task has a budget; finally the model reads the edited model back as text. The <b>task verdict</b> says whether the agent made the requested change correctly; the <b>design verdict</b> says whether the design itself meets its budget. They are shown separately.</p></div><div class="sec-tools"><span class="op-pill">Action ⑥</span></div></div>
+      <div class="op-guide"><span class="op-badge">Action ⑥</span><div><b>You can</b>Pick a MOD task to see its latest full change record; click "Re-run" to have the model make the change again.</div><div><b>What happens</b>Calls the model configured in .env (currently qwen3.8-max) to edit and then read back; the official Pilot validates; the checklist is applied. The approval gate triggers only if the model changes the baseline's limit, and then always rejects.</div><div><b>Time</b>About 30 s to 1 min, two model calls. One run at a time.</div></div>
       <div id="mod05"></div>
     </section>
 
     <section class="card" id="s25">
-      <div class="sec-head"><span class="sec-num">2.5</span><div><h3>任务书要的三项能力，现在做到哪</h3><p class="sec-lead">每项都写了做到的部分、证据和还没做的部分。</p></div></div>
+      <div class="sec-head"><span class="sec-num">2.5</span><div><h3>The brief's three capabilities: where they stand</h3><p class="sec-lead">Each lists what is done, the evidence, and what is not done yet.</p></div></div>
       <div class="caps" id="caps"></div>
     </section>
   </main>

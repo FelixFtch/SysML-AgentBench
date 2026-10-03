@@ -12,7 +12,7 @@
   const MONO = "'JetBrains Mono', ui-monospace, Menlo, monospace";
   const C = { img: "#5fd3c6", trk: "#f2b33d", lnk: "#b6a1f0", pwr: "#f0d08a", ok: "#63c890", bad: "#ff8a80", lock: "#f6c768",
     dim: "#6f8a9c", add: "#ff9f43", txt: "#e6f2f6", sub: "#a9c3cf" };
-  const TYPE = { GEN: "写新模型", MOD: "改已有模型", QRY: "读模型", AMB: "该提问", RT: "回读" };
+  const TYPE = { GEN: "generate a new model", MOD: "modify an existing model", QRY: "query a model", AMB: "ask, don't guess", RT: "model back to text" };
   let seq = 0;
 
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -128,7 +128,7 @@
     const lx = c ? 0.25 * a[0] + 0.5 * c[0] + 0.25 * b[0] : (a[0] + b[0]) / 2;
     const ly = c ? 0.25 * a[1] + 0.5 * c[1] + 0.25 * b[1] : (a[1] + b[1]) / 2;
     if (o.label) s += pill(lx + (o.lx || 0), ly + (o.ly ?? -13), o.label, state === "miss" ? "bad" : state === "unknown" ? "dim" : o.added ? "add" : kind, 10.5);
-    if (state === "miss") s += pill(lx + (o.lx || 0), ly + (o.ly ?? -13) + 21, "缺这条连接", "bad", 10.5);
+    if (state === "miss") s += pill(lx + (o.lx || 0), ly + (o.ly ?? -13) + 21, "link missing", "bad", 10.5);
     return s;
   }
 
@@ -138,9 +138,9 @@
     let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="${o.added || state === "miss" ? 2 : 1.4}" ${state === "miss" ? 'stroke-dasharray="5 4"' : ""}/>`;
     s += `<text x="${x + 9}" y="${y + 17}" font-size="12.5" font-weight="800" fill="${C.txt}">${esc(title)}</text>`;
     if (sub) s += `<text x="${x + 9}" y="${y + 31}" font-size="10" fill="${C.sub}">${esc(fit(sub, w - 14, 10))}</text>`;
-    if (state === "miss") s += pill(x + w - 3, y, "缺", "bad", 10, "end");
-    else if (o.added) s += pill(x + w - 3, y, state === "unknown" ? "要加" : "新增", state === "unknown" ? "dim" : "add", 10, "end");
-    else if (o.lock) s += pill(x + w - 3, y, "保留", state === "unknown" ? "dim" : "lock", 10, "end");
+    if (state === "miss") s += pill(x + w - 3, y, "missing", "bad", 10, "end");
+    else if (o.added) s += pill(x + w - 3, y, state === "unknown" ? "to add" : "added", state === "unknown" ? "dim" : "add", 10, "end");
+    else if (o.lock) s += pill(x + w - 3, y, "kept", state === "unknown" ? "dim" : "lock", 10, "end");
     return `<g>${s}</g>`;
   }
 
@@ -258,7 +258,7 @@
     return `<g transform="translate(${x} ${y})"><path d="M0 0 H30 L40 10 V48 H0 Z" fill="#eef4f7" stroke="${stroke}" stroke-width="2"/><path d="M30 0 V10 H40" fill="none" stroke="#b9c9d2"/>`
       + [16, 24, 32, 40].map((ly) => `<path d="M6 ${ly} H${ly === 40 ? 24 : 34}" stroke="#9fb3bf" stroke-width="2"/>`).join("")
       + `<text x="50" y="18" font-size="12" font-weight="800" fill="${C.txt}">${esc(title)}</text><text x="50" y="34" font-size="10.5" fill="${C.sub}">${esc(sub)}</text>`
-      + (state === "miss" ? pill(44, 0, "缺", "bad", 10, "end") : o.added ? pill(44, 0, "新增", state === "unknown" ? "dim" : "add", 10, "end") : "") + `</g>`;
+      + (state === "miss" ? pill(44, 0, "missing", "bad", 10, "end") : o.added ? pill(44, 0, "added", state === "unknown" ? "dim" : "add", 10, "end") : "") + `</g>`;
   }
 
   function timer(x, y, r, label, state) {
@@ -275,7 +275,7 @@
   function calendar(x, y, days, state) {
     const c = state === "miss" ? C.bad : state === "unknown" ? C.dim : C.lnk;
     let s = `<rect x="${x - 6}" y="${y - 18}" width="${6 * 16 + 12}" height="${5 * 14 + 26}" rx="6" fill="rgba(6,22,34,.85)" stroke="#2f5870"/>`;
-    s += `<text x="${x}" y="${y - 5}" font-size="10" font-weight="800" fill="${C.sub}">保存天数</text>`;
+    s += `<text x="${x}" y="${y - 5}" font-size="10" font-weight="800" fill="${C.sub}">days kept</text>`;
     for (let i = 0; i < days; i++) {
       const cx = x + (i % 6) * 16;
       const cy = y + Math.floor(i / 6) * 14;
@@ -294,13 +294,13 @@
 
   function statusPills(ctx, x, y) {
     const pills = [];
-    if (ctx.live) pills.push(["正在跑", "lock"]);
-    else if (ctx.status) pills.push([`题目判定 ${ctx.status}`, ctx.status === "PASS" ? "ok" : "bad"]);
+    if (ctx.live) pills.push(["running", "lock"]);
+    else if (ctx.status) pills.push([`task ${ctx.status}`, ctx.status === "PASS" ? "ok" : "bad"]);
     if (ctx.type === "GEN" || ctx.type === "MOD") {
-      if (ctx.sysml) pills.push([`官方语法 ${ctx.sysml}`, ctx.sysml === "PASS" ? "ok" : "bad"]);
-      if (ctx.repairs) pills.push([`返工 ${ctx.repairs} 次`, "lock"]);
+      if (ctx.sysml) pills.push([`syntax ${ctx.sysml}`, ctx.sysml === "PASS" ? "ok" : "bad"]);
+      if (ctx.repairs) pills.push([`${ctx.repairs} repair${ctx.repairs > 1 ? "s" : ""}`, "lock"]);
     }
-    if (ctx.design && ctx.design !== "UNKNOWN") pills.push([`设计判定 ${ctx.design}`, ctx.design === "PASS" ? "ok" : "bad"]);
+    if (ctx.design && ctx.design !== "UNKNOWN") pills.push([`design ${ctx.design}`, ctx.design === "PASS" ? "ok" : "bad"]);
     let cx = x;
     return pills.map(([t, tone]) => { const s = pill(cx, y, t, tone, 10.5, "start"); cx += tw(t, 10.5) + 22; return s; }).join("");
   }
@@ -351,9 +351,9 @@
   }
 
   function judgedNote(ctx, J) {
-    if (ctx.live) return { text: "这一格正在跑。跑完后，这里按官方解析结果给每一项上色。" };
+    if (ctx.live) return { text: "This cell is running. When it finishes, each item is coloured from the official parse." };
     if (!J.judged && (ctx.type === "GEN" || ctx.type === "MOD")) {
-      return { text: ctx.sysml === "FAIL" ? "官方语法没过：清单没有往下判，上面每一项都还没判。" : (J.v.reason || "没有这一格的官方解析结果。"), tone: "bad" };
+      return { text: ctx.sysml === "FAIL" ? "The official syntax check failed, so the checklist was not applied: none of the items above were judged." : (J.v.reason || "No official parse for this cell."), tone: "bad" };
     }
     return null;
   }
@@ -361,17 +361,17 @@
   /* GEN board: definitions as chips, parts tree, attributes, connections. */
   function genBoard(ctx, J, spec) {
     const sections = [];
-    if (spec.defs) sections.push({ head: "定义（part def / port def）", chips: true, items: spec.defs.map((d) => ({ text: d, state: J.el(d) })) });
-    if (spec.parts) sections.push({ head: "部件和端口", items: spec.parts.map(([key, depth, label]) => ({ text: label || key.split("::").pop(), state: J.el(key), indent: depth * 14, note: J.el(key) === "miss" ? "缺" : "" })) });
+    if (spec.defs) sections.push({ head: "DEFINITIONS (part def / port def)", chips: true, items: spec.defs.map((d) => ({ text: d, state: J.el(d) })) });
+    if (spec.parts) sections.push({ head: "PARTS AND PORTS", items: spec.parts.map(([key, depth, label]) => ({ text: label || key.split("::").pop(), state: J.el(key), indent: depth * 14, note: J.el(key) === "miss" ? "missing" : "" })) });
     if (spec.attrs) {
-      sections.push({ head: "属性（数值不能改）", items: spec.attrs.map(([key, value, unit]) => {
+      sections.push({ head: "ATTRIBUTES (values must match)", items: spec.attrs.map(([key, value, unit]) => {
         const info = J.keepInfo(key);
         const st = J.el(key) === "miss" ? "miss" : J.keep(key);
-        return { text: `${key.split("::").pop()} = ${value}${unit ? ` ${unit}` : ""}`, state: st, mono: true, note: info ? `实际 ${info.actual ?? "缺"}` : st === "ok" ? "数值对" : "" };
+        return { text: `${key.split("::").pop()} = ${value}${unit ? ` ${unit}` : ""}`, state: st, mono: true, note: info ? `is ${info.actual ?? "missing"}` : st === "ok" ? "value ok" : "" };
       }) });
     }
-    if (spec.reqs) sections.push({ head: "需求定义", items: spec.reqs.map(([key, label]) => ({ text: label, state: J.el(key) })) });
-    if (spec.links) sections.push({ head: "连接", items: spec.links.map(([a, b]) => ({ text: `${a.split(".").slice(-2).join(".")} → ${b.split(".").slice(-2).join(".")}`, state: J.cn(a, b), mono: true, note: J.cn(a, b) === "miss" ? "缺" : "" })) });
+    if (spec.reqs) sections.push({ head: "REQUIREMENT DEFINITIONS", items: spec.reqs.map(([key, label]) => ({ text: label, state: J.el(key) })) });
+    if (spec.links) sections.push({ head: "CONNECTIONS", items: spec.links.map(([a, b]) => ({ text: `${a.split(".").slice(-2).join(".")} → ${b.split(".").slice(-2).join(".")}`, state: J.cn(a, b), mono: true, note: J.cn(a, b) === "miss" ? "missing" : "" })) });
     return board(ctx, spec.title, sections, judgedNote(ctx, J));
   }
 
@@ -380,13 +380,13 @@
     const item = (it) => {
       const st = it.kind === "cn" ? J.cn(it.a, it.b) : it.kind === "keep" ? (J.el(it.key) === "miss" ? "miss" : J.keep(it.key)) : J.el(it.key);
       const info = it.kind === "keep" ? J.keepInfo(it.key) : null;
-      return { text: it.text, state: st === "ok" && it.added ? "add" : st, mono: !!it.mono, note: st === "miss" ? (info ? `实际 ${info.actual ?? "缺"}` : "缺") : it.added && st === "ok" ? "做到" : st === "ok" ? "没动" : "" };
+      return { text: it.text, state: st === "ok" && it.added ? "add" : st, mono: !!it.mono, note: st === "miss" ? (info ? `is ${info.actual ?? "missing"}` : "missing") : it.added && st === "ok" ? "done" : st === "ok" ? "unchanged" : "" };
     };
     const sections = [
-      { head: "这次要加", items: spec.add.map((it) => item({ ...it, added: true })) },
-      { head: "必须保留（改了就算错）", items: spec.keep.map(item) },
+      { head: "THIS CHANGE ADDS", items: spec.add.map((it) => item({ ...it, added: true })) },
+      { head: "MUST STAY (changing it is wrong)", items: spec.keep.map(item) },
     ];
-    if (spec.check) sections.push({ head: "工程检查", items: [spec.check(J)] });
+    if (spec.check) sections.push({ head: "ENGINEERING CHECK", items: [spec.check(J)] });
     return board(ctx, spec.title, sections, judgedNote(ctx, J));
   }
 
@@ -395,22 +395,22 @@
     const v = ctx.verdict || {};
     const got = v.actual;
     let items;
-    if (ctx.live) items = [{ text: "正在跑", state: "unknown" }];
-    else if (!v.expected) items = [{ text: "这一格没有判定结果", state: "unknown" }];
-    else if (v.reason && !got) items = [{ text: `答卷不是 JSON：${v.reason}`, state: "bad" }];
+    if (ctx.live) items = [{ text: "running", state: "unknown" }];
+    else if (!v.expected) items = [{ text: "no verdict for this cell", state: "unknown" }];
+    else if (v.reason && !got) items = [{ text: `answer is not JSON: ${v.reason}`, state: "bad" }];
     else items = spec.compare(v.expected, got || {});
     return board(ctx, spec.title, [
-      { head: "问题", items: para(spec.question, 12) },
-      { head: "标准答案 → 考生答案", items },
-    ], ctx.answer ? { text: `考生原文：${String(ctx.answer).replace(/\s+/g, " ").slice(0, 220)}`, lines: 3, mono: true } : null);
+      { head: "QUESTION", items: para(spec.question, 12) },
+      { head: "ANSWER KEY → AGENT'S ANSWER", items },
+    ], ctx.answer ? { text: `Agent wrote: ${String(ctx.answer).replace(/\s+/g, " ").slice(0, 220)}`, lines: 3, mono: true } : null);
   }
 
   const norm = (x) => String(x ?? "").trim();
   function listCompare(expected, got, label) {
     const set = new Set((got || []).map(norm));
-    const rows = (expected || []).map((name) => ({ text: name, state: set.has(norm(name)) ? "ok" : "miss", mono: true, note: set.has(norm(name)) ? "答到" : "漏答" }));
-    for (const extra of (got || []).filter((g) => !(expected || []).map(norm).includes(norm(g)))) rows.push({ text: extra, state: "bad", mono: true, note: "多答" });
-    if (!got) rows.unshift({ text: `答卷里没有 ${label}`, state: "bad" });
+    const rows = (expected || []).map((name) => ({ text: name, state: set.has(norm(name)) ? "ok" : "miss", mono: true, note: set.has(norm(name)) ? "answered" : "not given" }));
+    for (const extra of (got || []).filter((g) => !(expected || []).map(norm).includes(norm(g)))) rows.push({ text: extra, state: "bad", mono: true, note: "not in key" });
+    if (!got) rows.unshift({ text: `the answer has no ${label}`, state: "bad" });
     return rows;
   }
   const numEq = (a, b) => a != null && b != null && Number(a) === Number(b);
@@ -421,16 +421,16 @@
     const missing = (v.missing_questions || []).map((g) => norm(g[0]).toLowerCase());
     const items = spec.groups.map(([first, label]) => {
       const asked = !ctx.live && v.missing_questions && !missing.includes(first);
-      return { text: `问到「${label}」`, state: ctx.live || !v.missing_questions ? "unknown" : asked ? "ok" : "miss", note: ctx.live || !v.missing_questions ? "" : asked ? "问了" : "没问" };
+      return { text: `asks about ${label}`, state: ctx.live || !v.missing_questions ? "unknown" : asked ? "ok" : "miss", note: ctx.live || !v.missing_questions ? "" : asked ? "asked" : "not asked" };
     });
     if (v.missing_questions) {
-      items.push({ text: "没有自己编一个数", state: v.invented_number ? "bad" : "ok", note: v.invented_number ? "编了" : "没编" });
-      items.push({ text: "答卷里有问句", state: v.asked ? "ok" : "bad", note: v.asked ? "有" : "没有" });
+      items.push({ text: "invents no number", state: v.invented_number ? "bad" : "ok", note: v.invented_number ? "invented" : "none" });
+      items.push({ text: "uses a question mark", state: v.asked ? "ok" : "bad", note: v.asked ? "yes" : "no ?" });
     }
     return board(ctx, spec.title, [
-      { head: "题面", items: para(spec.brief, 12) },
-      { head: "正确做法：停下来问", items },
-    ], ctx.answer ? { text: `考生原文：${String(ctx.answer).replace(/\s+/g, " ").slice(0, 220)}`, lines: 3 } : null);
+      { head: "TASK STATEMENT", items: para(spec.brief, 12) },
+      { head: "RIGHT MOVE: STOP AND ASK", items },
+    ], ctx.answer ? { text: `Agent wrote: ${String(ctx.answer).replace(/\s+/g, " ").slice(0, 220)}`, lines: 3 } : null);
   }
 
   /* RT board: model text, the phrases the read-back must keep, and the answer. */
@@ -439,9 +439,9 @@
     const missing = new Set((v.missing || []).map((m) => m.toLowerCase()));
     const judged = !ctx.live && Array.isArray(v.missing);
     return board(ctx, spec.title, [
-      { head: "模型里写的", items: para(spec.doc, 11.2, true) },
-      { head: "读回必须提到", items: spec.phrases.map((ph) => ({ text: ph, state: !judged ? "unknown" : missing.has(ph.toLowerCase()) ? "miss" : "ok", note: !judged ? "" : missing.has(ph.toLowerCase()) ? "漏了" : "提到" })) },
-    ], ctx.answer ? { text: `考生读回：${String(ctx.answer).replace(/\s+/g, " ").slice(0, 240)}`, lines: 4 } : null);
+      { head: "WRITTEN IN THE MODEL", items: para(spec.doc, 11.2, true) },
+      { head: "READ-BACK MUST MENTION", items: spec.phrases.map((ph) => ({ text: ph, state: !judged ? "unknown" : missing.has(ph.toLowerCase()) ? "miss" : "ok", note: !judged ? "" : missing.has(ph.toLowerCase()) ? "missing" : "mentioned" })) },
+    ], ctx.answer ? { text: `Agent read back: ${String(ctx.answer).replace(/\s+/g, " ").slice(0, 240)}`, lines: 4 } : null);
   }
 
   /* ---------------- the 24 scenes ---------------- */
@@ -451,7 +451,7 @@
     const boat = usv(p, 120, 150, 1, { radio: true, eoState: J.el("usv::camera"), radioState: J.el("usv::radio"), state: J.el("usv") });
     const cmd = ship(p, 440, 152, 0.8, { state: J.el("commandShip") });
     let s = boat.svg + cmd.svg;
-    s += inside(16, 196, 400, 130, "usv 内部：要写的三个部件和两条连接", boat.a.hull);
+    s += inside(16, 196, 400, 130, "inside usv: three parts and two connections to write", boat.a.hull);
     s += block(30, 236, 104, 46, "camera", "Camera · imagery", J.el("usv::camera"));
     s += block(168, 236, 112, 46, "processor", "imageryIn · uplink", J.el("usv::processor"));
     s += block(314, 236, 90, 46, "radio", "fromProcessor · toShore", J.el("usv::radio"));
@@ -459,8 +459,8 @@
     s += link(p, "c2", [280, 259], [314, 259], "lnk", J.cn("usv.processor.uplink", "usv.radio.fromProcessor"), { label: "uplink", ly: -32 });
     s += link(p, "c3", [359, 236], cmd.a.portL, "lnk", J.cn("usv.radio.toShore", "commandShip.fromUsv"), { c: [420, 210], label: "toShore → fromUsv", lx: 60, ly: -16, dur: 2.8 });
     s += pill(cmd.a.top[0] + 8, cmd.a.top[1] - 4, "commandShip", toneOf(J.el("commandShip")), 11);
-    return { s, stamp: [262, 62], title: "GEN-01 · 从零写：水面船把图像经处理器和无线电送到指挥船",
-      board: genBoard(ctx, J, { title: "清单：UsvLink 要有的元素",
+    return { s, stamp: [262, 62], title: "GEN-01 · from scratch: the USV sends imagery via processor and radio to the command ship",
+      board: genBoard(ctx, J, { title: "Checklist: UsvLink must contain",
         defs: ["ImageryPort", "LinkPort", "Camera", "Processor", "Radio", "CommandShip"],
         parts: [["usv", 0], ["usv::camera", 1, "camera : Camera"], ["usv::processor", 1, "processor : Processor"], ["usv::radio", 1, "radio : Radio"], ["commandShip", 0, "commandShip : CommandShip"]],
         links: [["usv.camera.imagery", "usv.processor.imageryIn"], ["usv.processor.uplink", "usv.radio.fromProcessor"], ["usv.radio.toShore", "commandShip.fromUsv"]] }) };
@@ -472,7 +472,7 @@
     s += contact(118, 168, 0.75) + contact(420, 182, 0.6);
     s += cone(plane.a.eo, [118, 172], 34, C.img);
     s += plane.svg;
-    s += inside(16, 200, 556, 128, "uav 内部：两个传感器汇到处理器，再交给无线电", plane.a.body);
+    s += inside(16, 200, 556, 128, "inside uav: two sensors feed the processor, then the radio", plane.a.body);
     s += block(28, 222, 116, 42, "searchRadar", "Radar · tracks", J.el("uav::searchRadar"));
     s += block(28, 276, 116, 42, "eoCamera", "Camera · imagery", J.el("uav::eoCamera"));
     s += block(214, 246, 122, 46, "processor", "trackIn · imageryIn · uplink", J.el("uav::processor"));
@@ -480,8 +480,8 @@
     s += link(p, "c1", [144, 243], [214, 262], "trk", J.cn("uav.searchRadar.tracks", "uav.processor.trackIn"), { label: "tracks", ly: -14 });
     s += link(p, "c2", [144, 297], [214, 278], "img", J.cn("uav.eoCamera.imagery", "uav.processor.imageryIn"), { label: "imagery", ly: 18 });
     s += link(p, "c3", [336, 269], [420, 269], "lnk", J.cn("uav.processor.uplink", "uav.radio.fromProcessor"), { label: "uplink", ly: -14 });
-    return { s, stamp: [452, 110], title: "GEN-02 · 从零写：无人机的雷达和相机汇到处理器",
-      board: genBoard(ctx, J, { title: "清单：UavSearch 要有的元素",
+    return { s, stamp: [452, 110], title: "GEN-02 · from scratch: the UAV's radar and camera feed one processor",
+      board: genBoard(ctx, J, { title: "Checklist: UavSearch must contain",
         defs: ["Radar", "Camera", "Processor", "Radio"],
         parts: [["uav", 0], ["uav::searchRadar", 1, "searchRadar : Radar"], ["uav::eoCamera", 1, "eoCamera : Camera"], ["uav::processor", 1, "processor : Processor"], ["uav::radio", 1, "radio : Radio"]],
         links: [["uav.searchRadar.tracks", "uav.processor.trackIn"], ["uav.eoCamera.imagery", "uav.processor.imageryIn"], ["uav.processor.uplink", "uav.radio.fromProcessor"]] }) };
@@ -499,9 +499,9 @@
     s += `<path d="M${cmd.a.fusion[0]} ${cmd.a.fusion[1]} Q420 60 474 76" fill="none" stroke="#7fb6c4" stroke-dasharray="3 4"/>`;
     const lat = J.el("commandShip::fusionLatencyS") === "miss" ? "miss" : J.keep("commandShip::fusionLatencyS");
     s += timer(506, 84, 28, "fusionLatencyS = 2.0", lat);
-    s += pill(150, 300, "只要求端口和融合处理器，不要求连线", "dim", 11);
-    return { s, stamp: [400, 262], title: "GEN-03 · 从零写：指挥船的融合节点，融合时延 2.0 秒",
-      board: genBoard(ctx, J, { title: "清单：FusionNode 要有的元素",
+    s += pill(150, 300, "ports and a fusion processor only; no links required", "dim", 11);
+    return { s, stamp: [400, 262], title: "GEN-03 · from scratch: the command ship's fusion node, 2.0 s latency",
+      board: genBoard(ctx, J, { title: "Checklist: FusionNode must contain",
         defs: ["LinkPort", "Processor"],
         parts: [["commandShip", 0, "commandShip"], ["commandShip::fromUsv", 1, "port fromUsv : LinkPort"], ["commandShip::fromUav", 1, "port fromUav : LinkPort"], ["commandShip::fusion", 1, "fusion : Processor"]],
         attrs: [["commandShip::fusionLatencyS", "2.0", "s"]] }) };
@@ -517,12 +517,12 @@
     s += pill(st.a.racks[0] + 4, st.a.racks[1] + 30, "archive : Processor", toneOf(J.el("shore::archive"), "img"), 10.5);
     const days = J.el("shore::archiveDays") === "miss" ? "miss" : J.keep("shore::archiveDays");
     s += calendar(352, 222, 30, days) + pill(406, 318, "archiveDays = 30", toneOf(days, "lnk"), 10.5);
-    s += doc(40, 238, "ShoreArchiveRetention", "存档留 30 天", J.el("ShoreArchiveRetention"));
-    return { s, stamp: [180, 200], title: "GEN-04 · 从零写：岸站存档，回传 50 Mbps，留 30 天",
-      board: genBoard(ctx, J, { title: "清单：ShoreArchive 要有的元素",
+    s += doc(40, 238, "ShoreArchiveRetention", "keep the archive 30 days", J.el("ShoreArchiveRetention"));
+    return { s, stamp: [180, 200], title: "GEN-04 · from scratch: shore archive, 50 Mbps backhaul, kept 30 days",
+      board: genBoard(ctx, J, { title: "Checklist: ShoreArchive must contain",
         parts: [["shore", 0, "shore"], ["shore::fromCommand", 1, "port fromCommand : LinkPort"], ["shore::archive", 1, "archive : Processor"]],
-        attrs: [["shore::backhaulMbps", "50.0", "Mbps"], ["shore::archiveDays", "30.0", "天"]],
-        reqs: [["ShoreArchiveRetention", "ShoreArchiveRetention（文档写明留 30 天）"]] }) };
+        attrs: [["shore::backhaulMbps", "50.0", "Mbps"], ["shore::archiveDays", "30.0", "days"]],
+        reqs: [["ShoreArchiveRetention", "ShoreArchiveRetention (doc says keep 30 days)"]] }) };
   };
 
   S["GEN-05"] = (p, ctx, J) => {
@@ -536,30 +536,30 @@
     s += link(p, "c3", cmd.a.portR, st.a.antenna, "lnk", J.cn("commandShip.toShore", "shore.fromCommand"), { c: [440, 60], label: "toShore → fromCommand", ly: -8, lx: -10 });
     s += pill(boat.a.stern[0] + 10, boat.a.stern[1] + 34, "usv", toneOf(J.el("usv")), 10.5) + pill(plane.a.nose[0] + 6, plane.a.nose[1] - 18, "uav", toneOf(J.el("uav")), 10.5);
     s += pill(cmd.a.deck[0], cmd.a.deck[1] + 50, "commandShip", toneOf(J.el("commandShip")), 10.5) + pill(st.a.roof[0], st.a.roof[1] + 76, "shore", toneOf(J.el("shore")), 10.5);
-    return { s, stamp: [300, 282], title: "GEN-05 · 从零写：四个平台和三条链路",
-      board: genBoard(ctx, J, { title: "清单：FourNode 要有的元素",
-        parts: [["usv", 0, "usv"], ["usv::radio", 1, "radio : Radio"], ["uav", 0, "uav"], ["uav::radio", 1, "radio : Radio"], ["commandShip", 0, "commandShip（三个端口）"], ["shore", 0, "shore : ShoreStation"]],
+    return { s, stamp: [300, 282], title: "GEN-05 · from scratch: four platforms and three links",
+      board: genBoard(ctx, J, { title: "Checklist: FourNode must contain",
+        parts: [["usv", 0, "usv"], ["usv::radio", 1, "radio : Radio"], ["uav", 0, "uav"], ["uav::radio", 1, "radio : Radio"], ["commandShip", 0, "commandShip (three ports)"], ["shore", 0, "shore : ShoreStation"]],
         links: [["usv.radio.toCommand", "commandShip.fromUsv"], ["uav.radio.toCommand", "commandShip.fromUav"], ["commandShip.toShore", "shore.fromCommand"]] }) };
   };
 
   S["MOD-01"] = (p, ctx, J) => {
     const boat = usv(p, 132, 150, 1.05, { ir: true, ais: true, radio: true, irState: J.el("usv::irCamera") === "ok" ? "add" : J.el("usv::irCamera"), eoState: J.el("usv::eoCamera"), aisState: J.el("usv::ais") });
     let s = boat.svg;
-    s += pill(330, 70, "powerLimitW = 60 · 不能改", toneOf(J.keep("usv::powerLimitW"), "lock"), 11);
-    s += inside(16, 192, 556, 136, "usv 内部：新加红外相机接到处理器，旧的三条连接都要留着", boat.a.hull);
+    s += pill(330, 70, "powerLimitW = 60 · fixed", toneOf(J.keep("usv::powerLimitW"), "lock"), 11);
+    s += inside(16, 192, 556, 136, "inside usv: wire the new infrared camera to the processor; keep the existing links", boat.a.hull);
     s += block(28, 216, 106, 30, "eoCamera", "", J.el("usv::eoCamera"), { lock: true });
     s += block(28, 253, 106, 30, "irCamera", "", J.el("usv::irCamera"), { added: true });
     s += block(28, 290, 106, 30, "ais", "", J.el("usv::ais"), { lock: true });
     s += block(222, 240, 122, 46, "processor", "imageryIn · trackIn · uplink", "ok");
     s += block(440, 240, 104, 46, "radio", "fromProcessor", "ok");
-    s += link(p, "c1", [134, 231], [222, 254], "img", J.cn("usv.eoCamera.imagery", "usv.processor.imageryIn"), { label: "保留", ly: -10, lx: -6 });
-    s += link(p, "c2", [134, 268], [222, 264], "img", J.cn("usv.irCamera.imagery", "usv.processor.imageryIn"), { added: true, label: "新增", ly: -9 });
-    s += link(p, "c3", [134, 305], [222, 276], "trk", J.cn("usv.ais.tracks", "usv.processor.trackIn"), { label: "保留", ly: 14, lx: -6 });
-    s += link(p, "c4", [344, 263], [440, 263], "lnk", "plain", { label: "uplink（清单没查）", ly: -36 });
-    return { s, title: "MOD-01 · 改模型：加一台红外相机，其余不动",
-      board: modBoard(ctx, J, { title: "清单：UsvPlain 改完要满足",
-        add: [{ key: "usv::irCamera", text: "部件 irCamera : Camera" }, { kind: "cn", a: "usv.irCamera.imagery", b: "usv.processor.imageryIn", text: "irCamera.imagery → processor.imageryIn", mono: true }],
-        keep: [{ key: "usv::eoCamera", text: "部件 eoCamera" }, { key: "usv::ais", text: "部件 ais" },
+    s += link(p, "c1", [134, 231], [222, 254], "img", J.cn("usv.eoCamera.imagery", "usv.processor.imageryIn"), { label: "kept", ly: -10, lx: -6 });
+    s += link(p, "c2", [134, 268], [222, 264], "img", J.cn("usv.irCamera.imagery", "usv.processor.imageryIn"), { added: true, label: "added", ly: -9 });
+    s += link(p, "c3", [134, 305], [222, 276], "trk", J.cn("usv.ais.tracks", "usv.processor.trackIn"), { label: "kept", ly: 14, lx: -6 });
+    s += link(p, "c4", [344, 263], [440, 263], "lnk", "plain", { label: "uplink (not checked)", ly: -36 });
+    return { s, title: "MOD-01 · edit: add an infrared camera, change nothing else",
+      board: modBoard(ctx, J, { title: "Checklist: UsvPlain after the change",
+        add: [{ key: "usv::irCamera", text: "part irCamera : Camera" }, { kind: "cn", a: "usv.irCamera.imagery", b: "usv.processor.imageryIn", text: "irCamera.imagery → processor.imageryIn", mono: true }],
+        keep: [{ key: "usv::eoCamera", text: "part eoCamera" }, { key: "usv::ais", text: "part ais" },
           { kind: "cn", a: "usv.eoCamera.imagery", b: "usv.processor.imageryIn", text: "eoCamera.imagery → processor", mono: true },
           { kind: "cn", a: "usv.ais.tracks", b: "usv.processor.trackIn", text: "ais.tracks → processor.trackIn", mono: true },
           { kind: "keep", key: "usv::powerLimitW", text: "powerLimitW = 60.0", mono: true }] }) };
@@ -568,59 +568,59 @@
   S["MOD-02"] = (p, ctx, J) => {
     const boat = usv(p, 150, 152, 1.05, { ais: true, radio: false, aisState: J.el("vessel::ais") === "ok" ? "add" : J.el("vessel::ais"), eoState: J.el("vessel::camera") });
     let s = contact(420, 150, 0.62) + contact(500, 182, 0.55) + ping(420, 138) + ping(500, 172);
-    s += link(p, "a1", [410, 132], boat.a.ais, "trk", J.el("vessel::ais") === "miss" ? "miss" : J.el("vessel::ais"), { c: [300, 60], added: true, label: "AIS 航迹", ly: -4 });
+    s += link(p, "a1", [410, 132], boat.a.ais, "trk", J.el("vessel::ais") === "miss" ? "miss" : J.el("vessel::ais"), { c: [300, 60], added: true, label: "AIS tracks", ly: -4 });
     s += boat.svg;
-    s += inside(16, 196, 556, 132, "vessel 内部：新加 AIS 接到处理器；图像和航迹要用同一个时间戳", boat.a.hull);
+    s += inside(16, 196, 556, 132, "inside vessel: wire the new AIS to the processor; imagery and tracks share one timestamp", boat.a.hull);
     s += block(28, 224, 112, 40, "camera", "Camera · imagery", J.el("vessel::camera"), { lock: true });
     s += block(28, 278, 112, 40, "ais", "AisReceiver · tracks", J.el("vessel::ais"), { added: true });
     s += block(222, 240, 116, 46, "processor", "imageryIn · trackIn", "ok");
-    s += link(p, "c1", [140, 244], [222, 256], "img", J.cn("vessel.camera.imagery", "vessel.processor.imageryIn"), { label: "保留", ly: -10 });
-    s += link(p, "c2", [140, 298], [222, 272], "trk", J.cn("vessel.ais.tracks", "vessel.processor.trackIn"), { added: true, label: "新增", ly: 16 });
-    s += doc(392, 226, "TimeAlign", "航迹和图像同一时间戳", J.el("TimeAlign"), { added: true });
+    s += link(p, "c1", [140, 244], [222, 256], "img", J.cn("vessel.camera.imagery", "vessel.processor.imageryIn"), { label: "kept", ly: -10 });
+    s += link(p, "c2", [140, 298], [222, 272], "trk", J.cn("vessel.ais.tracks", "vessel.processor.trackIn"), { added: true, label: "added", ly: 16 });
+    s += doc(392, 226, "TimeAlign", "tracks and imagery share a timestamp", J.el("TimeAlign"), { added: true });
     s += `<g transform="translate(366 263)"><circle r="14" fill="#0e3445" stroke="${C.lock}" stroke-width="2"/><path d="M0 -8 V0 L6 4" stroke="${C.lock}" stroke-width="2" fill="none"/></g>`;
-    return { s, title: "MOD-02 · 改模型：加 AIS 接收机和一条时间对齐需求",
-      board: modBoard(ctx, J, { title: "清单：VesselAlign 改完要满足",
-        add: [{ key: "vessel::ais", text: "部件 ais : AisReceiver" }, { kind: "cn", a: "vessel.ais.tracks", b: "vessel.processor.trackIn", text: "ais.tracks → processor.trackIn", mono: true }, { key: "TimeAlign", text: "需求 TimeAlign（时间戳对齐）" }],
-        keep: [{ key: "vessel::camera", text: "部件 camera" }, { kind: "cn", a: "vessel.camera.imagery", b: "vessel.processor.imageryIn", text: "camera.imagery → processor.imageryIn", mono: true }] }) };
+    return { s, title: "MOD-02 · edit: add an AIS receiver and a time-alignment requirement",
+      board: modBoard(ctx, J, { title: "Checklist: VesselAlign after the change",
+        add: [{ key: "vessel::ais", text: "part ais : AisReceiver" }, { kind: "cn", a: "vessel.ais.tracks", b: "vessel.processor.trackIn", text: "ais.tracks → processor.trackIn", mono: true }, { key: "TimeAlign", text: "requirement TimeAlign (shared timestamp)" }],
+        keep: [{ key: "vessel::camera", text: "part camera" }, { kind: "cn", a: "vessel.camera.imagery", b: "vessel.processor.imageryIn", text: "camera.imagery → processor.imageryIn", mono: true }] }) };
   };
 
   S["MOD-03"] = (p, ctx, J) => {
     const st = station(500, 132, 0.85, { state: J.el("shore") });
     const boat = usv(p, 130, 156, 1.05, { radio: true, radioState: J.el("vessel::radio") });
     let s = land(410).replace("url(#LAND)", `url(#${p}-land)`) + st.svg + boat.svg;
-    s += link(p, "c2", boat.a.radio, st.a.antenna, "lnk", J.cn("vessel.radio.toShore", "shore.fromVessel"), { c: [330, 10], added: true, label: "新增：radio.toShore → shore.fromVessel", ly: 2, dur: 3 });
+    s += link(p, "c2", boat.a.radio, st.a.antenna, "lnk", J.cn("vessel.radio.toShore", "shore.fromVessel"), { c: [330, 10], added: true, label: "added: radio.toShore → shore.fromVessel", ly: 2, dur: 3 });
     s += pill(st.a.roof[0], st.a.roof[1] + 72, "shore : ShoreStation", toneOf(J.el("shore")), 10.5);
-    s += inside(16, 214, 330, 112, "vessel 内部：原来的这条连接要留着", boat.a.hull);
+    s += inside(16, 214, 330, 112, "inside vessel: this existing link must stay", boat.a.hull);
     s += block(30, 250, 112, 46, "processor", "uplink", "ok");
     s += block(214, 250, 112, 46, "radio", "fromProcessor · toShore", J.el("vessel::radio"), { lock: true });
-    s += link(p, "c1", [142, 273], [214, 273], "lnk", J.cn("vessel.processor.uplink", "vessel.radio.fromProcessor"), { label: "保留", ly: -14 });
-    return { s, stamp: [280, 186], title: "MOD-03 · 改模型：给船上无线电加一条到岸站的链路",
-      board: modBoard(ctx, J, { title: "清单：ShoreHop 改完要满足",
+    s += link(p, "c1", [142, 273], [214, 273], "lnk", J.cn("vessel.processor.uplink", "vessel.radio.fromProcessor"), { label: "kept", ly: -14 });
+    return { s, stamp: [280, 186], title: "MOD-03 · edit: add a link from the vessel radio to the shore",
+      board: modBoard(ctx, J, { title: "Checklist: ShoreHop after the change",
         add: [{ kind: "cn", a: "vessel.radio.toShore", b: "shore.fromVessel", text: "radio.toShore → shore.fromVessel", mono: true }],
-        keep: [{ key: "vessel::radio", text: "部件 vessel.radio" }, { key: "shore", text: "部件 shore" }, { kind: "cn", a: "vessel.processor.uplink", b: "vessel.radio.fromProcessor", text: "processor.uplink → radio.fromProcessor", mono: true }] }) };
+        keep: [{ key: "vessel::radio", text: "part vessel.radio" }, { key: "shore", text: "part shore" }, { kind: "cn", a: "vessel.processor.uplink", b: "vessel.radio.fromProcessor", text: "processor.uplink → radio.fromProcessor", mono: true }] }) };
   };
 
   S["MOD-04"] = (p, ctx, J) => {
     const boat = usv(p, 150, 152, 1.05, { radio: true });
     let s = boat.svg;
-    s += pill(360, 66, "uplinkMbps = 8 · 不能改", toneOf(J.el("usv::uplinkMbps") === "miss" ? "miss" : J.keep("usv::uplinkMbps"), "lock"), 11);
-    s += inside(16, 196, 556, 132, "usv.radio：新加一个健康端口，上行速率保持 8", boat.a.hull);
-    s += block(36, 236, 150, 56, "radio", "port fromProcessor（原有）", "ok", { lock: true });
+    s += pill(360, 66, "uplinkMbps = 8 · fixed", toneOf(J.el("usv::uplinkMbps") === "miss" ? "miss" : J.keep("usv::uplinkMbps"), "lock"), 11);
+    s += inside(16, 196, 556, 132, "usv.radio: add a health port; the uplink stays at 8", boat.a.hull);
+    s += block(36, 236, 150, 56, "radio", "port fromProcessor (existing)", "ok", { lock: true });
     const health = J.el("usv::radio::health");
     s += `<rect x="186" y="256" width="14" height="14" rx="3" fill="${health === "miss" ? C.bad : health === "unknown" ? C.dim : C.add}"/>` + pill(193, 306, "port health : LinkPort", health === "miss" ? "bad" : health === "unknown" ? "dim" : "add", 10.5);
     const ecg = "M206 263 H250 L258 246 L266 280 L274 236 L282 263 H330 L338 250 L346 276 L354 263 H420";
     s += `<path d="${ecg}" fill="none" stroke="${health === "miss" ? C.bad : health === "unknown" ? C.dim : C.add}" stroke-width="2.4" stroke-dasharray="${health === "ok" ? "220 400" : "4 6"}">${health === "ok" && !reduced() ? `<animate attributeName="stroke-dashoffset" values="220;-400" dur="2.2s" repeatCount="indefinite"/>` : ""}</path>`;
-    s += `<rect x="428" y="230" width="112" height="64" rx="8" fill="#0b2a36" stroke="#2f5870"/><text x="440" y="252" font-size="11" fill="${C.sub}" font-weight="800">健康监视</text><circle class="sc-blink" cx="520" cy="248" r="4" fill="${health === "ok" ? C.ok : C.dim}"/><text x="440" y="276" font-size="12" fill="${C.txt}">心跳 · 链路好</text>`;
-    return { s, title: "MOD-04 · 改模型：给无线电加健康端口",
-      board: modBoard(ctx, J, { title: "清单：RadioHealth 改完要满足",
-        add: [{ key: "usv::radio::health", text: "端口 radio.health : LinkPort" }],
+    s += `<rect x="428" y="230" width="112" height="64" rx="8" fill="#0b2a36" stroke="#2f5870"/><text x="440" y="252" font-size="11" fill="${C.sub}" font-weight="800">health monitor</text><circle class="sc-blink" cx="520" cy="248" r="4" fill="${health === "ok" ? C.ok : C.dim}"/><text x="440" y="276" font-size="12" fill="${C.txt}">heartbeat · link ok</text>`;
+    return { s, title: "MOD-04 · edit: give the radio a health port",
+      board: modBoard(ctx, J, { title: "Checklist: RadioHealth after the change",
+        add: [{ key: "usv::radio::health", text: "port radio.health : LinkPort" }],
         keep: [{ kind: "keep", key: "usv::uplinkMbps", text: "uplinkMbps = 8.0", mono: true }] }) };
   };
 
   S["MOD-05"] = (p, ctx, J) => {
     const boat = usv(p, 132, 150, 1.05, { ir: true, irState: J.el("usv::irCamera") === "ok" ? "add" : J.el("usv::irCamera") });
     let s = boat.svg;
-    s += inside(16, 190, 556, 138, "usv 的 24 V 设备箱：三台设备的功率加起来和上限比", boat.a.hull);
+    s += inside(16, 190, 556, 138, "usv's 24 V equipment box: the three devices' power summed against the limit", boat.a.hull);
     const chk = (J.v.checks || [])[0] || {};
     const draws = { eo: 41, cpu: 25, ir: 12 };
     const keepEo = J.keep("usv::eoCamera::drawW");
@@ -637,18 +637,18 @@
     s += bar(0, draws.eo, "#3aa58a", 0) + bar(draws.eo, draws.cpu, "#2f8fb0", 0.5) + bar(draws.eo + draws.cpu, draws.ir, C.add, 1);
     s += `<rect x="${x0 + limit * scale}" y="250" width="${(18 * scale).toFixed(1)}" height="30" fill="${C.bad}" opacity=".35" class="sc-pulse"/>`;
     const keepLimit = J.keep("usv::powerLimitW");
-    s += `<path d="M${x0 + limit * scale} 236 V292" stroke="${keepLimit === "miss" ? C.bad : C.lock}" stroke-width="3"/>` + pill(x0 + limit * scale, 226, "上限 60 W · 不能改", toneOf(keepLimit, "lock"), 10.5);
+    s += `<path d="M${x0 + limit * scale} 236 V292" stroke="${keepLimit === "miss" ? C.bad : C.lock}" stroke-width="3"/>` + pill(x0 + limit * scale, 226, "limit 60 W · fixed", toneOf(keepLimit, "lock"), 10.5);
     s += `<text x="${x0}" y="304" font-size="11.5" fill="${C.txt}" font-weight="700">41 + 25 + 12 = ${chk.total_w != null ? chk.total_w : 78} W</text>`;
-    s += `<text x="${x0 + 100 * scale}" y="304" text-anchor="end" font-size="11.5" fill="${C.bad}" font-weight="800">超出 ${chk.total_w != null && chk.limit_w != null ? chk.total_w - chk.limit_w : 18} W</text>`;
-    if (J.judged) s += pill(x0 + 180, 318, chk.match ? "设计超预算被如实报告，和标准答案预期一致" : "检查结果和预期不一致", chk.match ? "ok" : "bad", 10.5);
-    return { s, title: "MOD-05 · 改模型：加 12 W 红外相机，60 W 上限不能改",
-      board: modBoard(ctx, J, { title: "清单：PowerBudget 改完要满足",
-        add: [{ key: "usv::irCamera", text: "部件 irCamera" }, { kind: "keep", key: "usv::irCamera::drawW", text: "irCamera.drawW = 12.0", mono: true }],
+    s += `<text x="${x0 + 100 * scale}" y="304" text-anchor="end" font-size="11.5" fill="${C.bad}" font-weight="800">over by ${chk.total_w != null && chk.limit_w != null ? chk.total_w - chk.limit_w : 18} W</text>`;
+    if (J.judged) s += pill(x0 + 180, 318, chk.match ? "over budget, reported honestly, as the key expects" : "check result differs from the key", chk.match ? "ok" : "bad", 10.5);
+    return { s, title: "MOD-05 · edit: add a 12 W infrared camera; the 60 W limit cannot change",
+      board: modBoard(ctx, J, { title: "Checklist: PowerBudget after the change",
+        add: [{ key: "usv::irCamera", text: "part irCamera" }, { kind: "keep", key: "usv::irCamera::drawW", text: "irCamera.drawW = 12.0", mono: true }],
         keep: [{ kind: "keep", key: "usv::powerLimitW", text: "powerLimitW = 60.0", mono: true }, { kind: "keep", key: "usv::eoCamera::drawW", text: "eoCamera.drawW = 41.0", mono: true }, { kind: "keep", key: "usv::computer::drawW", text: "computer.drawW = 25.0", mono: true }],
         check: (JJ) => {
           const c = (JJ.v.checks || [])[0];
-          if (!JJ.judged || !c) return { text: "R-POWER-001：还没判", state: "unknown" };
-          return { text: `R-POWER-001 应 ${c.expected}，实 ${c.actual}（${c.total_w}/${c.limit_w} W）`, state: c.match ? "ok" : "miss", note: c.match ? "一致" : "不一致" };
+          if (!JJ.judged || !c) return { text: "R-POWER-001: not judged yet", state: "unknown" };
+          return { text: `R-POWER-001 ${c.actual} (${c.total_w}/${c.limit_w} W), key ${c.expected}`, state: c.match ? "ok" : "miss", note: c.match ? "match" : "mismatch" };
         } }) };
   };
 
@@ -673,8 +673,8 @@
     let s = base.s;
     s += spotlight(base.a.boat.a.hull[0], base.a.boat.a.hull[1] - 20, 44, 1) + spotlight(base.a.plane.a.body[0], base.a.plane.a.body[1], 40, 2);
     s += spotlight(base.a.cmd.a.deck[0] - 10, base.a.cmd.a.deck[1] - 20, 52, 3) + spotlight(base.a.st.a.roof[0], base.a.st.a.roof[1] + 20, 40, 4);
-    return { s, title: "QRY-01 · 读模型：数出四个平台",
-      board: qryBoard(ctx, { title: "读 MaritimeISR，回答问题", question: "模型里有哪四个平台（part usage）？答它们的全名。",
+    return { s, title: "QRY-01 · query: name the four platforms",
+      board: qryBoard(ctx, { title: "Read MaritimeISR and answer", question: "Which four platform part usages does the model contain? Give their qualified names.",
         compare: (e, g) => listCompare(e.platforms, g.platforms, "platforms") }) };
   };
 
@@ -682,31 +682,31 @@
     const base = isr(p);
     let s = base.s + spotlight(base.a.boat.a.hull[0], base.a.boat.a.hull[1] - 18, 46, null);
     s += pill(base.a.boat.a.top[0] + 70, base.a.boat.a.top[1] - 6, "powerLimitW = 60", "lock", 12);
-    return { s, title: "QRY-02 · 读模型：水面船的功率上限",
-      board: qryBoard(ctx, { title: "读 MaritimeISR，回答问题", question: "UnmannedSurfaceVessel 的 powerLimitW 解析出来是多少？",
+    return { s, title: "QRY-02 · query: the USV's power limit",
+      board: qryBoard(ctx, { title: "Read MaritimeISR and answer", question: "What does UnmannedSurfaceVessel's powerLimitW parse to?",
         compare: (e, g) => [
-          { text: `attribute：${g.attribute ?? "（没答）"}`, state: norm(g.attribute) === norm(e.attribute) ? "ok" : "miss", mono: true, note: norm(g.attribute) === norm(e.attribute) ? "对" : `应为 …${String(e.attribute).split("::").pop()}` },
-          { text: `value：${g.value ?? "（没答）"}`, state: numEq(g.value, e.value) ? "ok" : "miss", mono: true, note: numEq(g.value, e.value) ? "对" : `应为 ${e.value}` }] }) };
+          { text: `attribute: ${g.attribute ?? "(none)"}`, state: norm(g.attribute) === norm(e.attribute) ? "ok" : "miss", mono: true, note: norm(g.attribute) === norm(e.attribute) ? "right" : `key: …${String(e.attribute).split("::").slice(-2).join("::")}` },
+          { text: `value: ${g.value ?? "(none)"}`, state: numEq(g.value, e.value) ? "ok" : "miss", mono: true, note: numEq(g.value, e.value) ? "right" : `key: ${e.value}` }] }) };
   };
 
   S["QRY-03"] = (p, ctx) => {
     const base = isr(p, { hot: ["l1", "l2", "l3"] });
     let s = base.s + spotlight(base.a.cmd.a.deck[0] - 10, base.a.cmd.a.deck[1] - 20, 56, null);
     s += pill(196, 160, "1", "lnk", 13) + pill(226, 76, "2", "lnk", 13) + pill(430, 98, "3", "lnk", 13);
-    s += pill(318, 238, "端点在 commandShip 的连接：3 条", "ok", 12);
-    return { s, title: "QRY-03 · 读模型：有几条连接碰到指挥船",
-      board: qryBoard(ctx, { title: "读 MaritimeISR，回答问题", question: "有多少条 connect 语句的一端在 commandShip 上？",
-        compare: (e, g) => [{ text: `connections：考生 ${g.connections ?? "（没答）"}，标准 ${e.connections}`, state: numEq(g.connections, e.connections) ? "ok" : "miss", note: numEq(g.connections, e.connections) ? "对" : "错" }] }) };
+    s += pill(318, 238, "connections ending on commandShip: 3", "ok", 12);
+    return { s, title: "QRY-03 · query: how many links touch the command ship",
+      board: qryBoard(ctx, { title: "Read MaritimeISR and answer", question: "How many connect statements have an endpoint on commandShip?",
+        compare: (e, g) => [{ text: `connections: agent ${g.connections ?? "(none)"}, key ${e.connections}`, state: numEq(g.connections, e.connections) ? "ok" : "miss", note: numEq(g.connections, e.connections) ? "right" : "wrong" }] }) };
   };
 
   S["QRY-04"] = (p, ctx) => {
     const base = isr(p);
     let s = base.s + spotlight(base.a.plane.a.body[0], base.a.plane.a.body[1], 48, null);
-    s += `<rect x="236" y="20" width="182" height="96" rx="10" fill="rgba(6,22,34,.9)" stroke="#2f5870"/><text x="248" y="38" font-size="10.5" font-weight="800" fill="${C.sub}">FixedWingUav 里的部件</text>`;
+    s += `<rect x="236" y="20" width="182" height="96" rx="10" fill="rgba(6,22,34,.9)" stroke="#2f5870"/><text x="248" y="38" font-size="10.5" font-weight="800" fill="${C.sub}">parts in FixedWingUav</text>`;
     s += ["eoCamera", "searchRadar", "processor", "radio"].map((n, i) => `<text x="250" y="${58 + i * 16}" font-size="12" fill="${C.txt}" font-family="${MONO}">• ${n}</text>`).join("");
     s += `<path d="M${base.a.plane.a.nose[0]} ${base.a.plane.a.nose[1]} L236 60" stroke="#7fb6c4" stroke-dasharray="3 4"/>`;
-    return { s, title: "QRY-04 · 读模型：无人机里有哪些部件",
-      board: qryBoard(ctx, { title: "读 MaritimeISR，回答问题", question: "part def FixedWingUav 里嵌套了哪些 part usage？答全名。",
+    return { s, title: "QRY-04 · query: which parts are inside the UAV",
+      board: qryBoard(ctx, { title: "Read MaritimeISR and answer", question: "Which part usages are nested in part def FixedWingUav? Give qualified names.",
         compare: (e, g) => listCompare(e.parts, g.parts, "parts") }) };
   };
 
@@ -716,20 +716,20 @@
     const top = base.a.boat.a.top;
     s += `<path d="M${top[0]} ${top[1]} Q${top[0] + 60} 96 236 68" fill="none" stroke="#7fb6c4" stroke-dasharray="3 4"/>`;
     s += pill(300, 44, "powerLimitW 60 W", "lock", 11) + pill(300, 68, "uplinkMbps 8 Mbps", "lnk", 11) + pill(300, 92, "storageGB 128 GB", "img", 11);
-    return { s, title: "QRY-05 · 读模型：水面船的三个数",
-      board: qryBoard(ctx, { title: "读 MaritimeISR，回答问题", question: "读出 UnmannedSurfaceVessel 的 powerLimitW、uplinkMbps、storageGB。",
-        compare: (e, g) => ["powerLimitW", "uplinkMbps", "storageGB"].map((k) => ({ text: `${k}：考生 ${g[k] ?? "（没答）"}，标准 ${e[k]}`, state: numEq(g[k], e[k]) ? "ok" : "miss", mono: true, note: numEq(g[k], e[k]) ? "对" : "错" })) }) };
+    return { s, title: "QRY-05 · query: three values of the USV",
+      board: qryBoard(ctx, { title: "Read MaritimeISR and answer", question: "Read UnmannedSurfaceVessel's powerLimitW, uplinkMbps and storageGB.",
+        compare: (e, g) => ["powerLimitW", "uplinkMbps", "storageGB"].map((k) => ({ text: `${k}: agent ${g[k] ?? "(none)"}, key ${e[k]}`, state: numEq(g[k], e[k]) ? "ok" : "miss", mono: true, note: numEq(g[k], e[k]) ? "right" : "wrong" })) }) };
   };
 
   S["AMB-01"] = (p, ctx) => {
     const st = station(500, 132, 0.85, { archive: true });
     const boat = usv(p, 130, 160, 1, { ais: true, radio: true });
     let s = land(410).replace("url(#LAND)", `url(#${p}-land)`) + st.svg + boat.svg;
-    s += link(p, "t1", boat.a.radio, st.a.antenna, "trk", "plain", { c: [320, 30], label: "航迹要实时送到岸上", ly: -2, dur: 2.6 });
-    s += fog(240, 210, "时延 ? 秒") + fog(360, 250, "带宽 ? Mbps");
-    return { s, title: "AMB-01 · 该提问：实时共享，但没给时延和带宽",
-      board: ambBoard(ctx, { title: "缺信息时，答卷要停下来问", brief: "Tracks must be shared from the vessel to the shore in real time. No latency and no bandwidth are given.",
-        groups: [["latency", "时延"], ["bandwidth", "带宽"]] }) };
+    s += link(p, "t1", boat.a.radio, st.a.antenna, "trk", "plain", { c: [320, 30], label: "tracks must reach shore in real time", ly: -2, dur: 2.6 });
+    s += fog(240, 210, "latency ? s") + fog(360, 250, "bandwidth ? Mbps");
+    return { s, title: "AMB-01 · ask: real-time sharing, but no latency or bandwidth given",
+      board: ambBoard(ctx, { title: "Missing information: stop and ask", brief: "Tracks must be shared from the vessel to the shore in real time. No latency and no bandwidth are given.",
+        groups: [["latency", "latency"], ["bandwidth", "bandwidth"]] }) };
   };
 
   S["AMB-02"] = (p, ctx) => {
@@ -740,24 +740,24 @@
     s += `<path d="M${cx - 70} ${cy} A70 70 0 0 1 ${cx + 70} ${cy}" fill="none" stroke="#2f5870" stroke-width="12"/>`;
     s += `<path d="M${cx - 70} ${cy} A70 70 0 0 1 ${cx + 20} ${cy - 67}" fill="none" stroke="${C.pwr}" stroke-width="12" opacity=".75"/>`;
     s += `<g transform="translate(${cx} ${cy})"><path d="M0 0 L0 -60" stroke="${C.txt}" stroke-width="3" stroke-linecap="round">${reduced() ? "" : `<animateTransform attributeName="transform" type="rotate" values="-60;40;-20;55;-60" dur="6s" repeatCount="indefinite"/>`}</path><circle r="6" fill="${C.txt}"/></g>`;
-    s += `<text x="${cx}" y="${cy + 26}" text-anchor="middle" font-size="12" fill="${C.sub}">功率表</text>`;
-    s += fog(cx + 40, cy - 92, "上限 ? W");
-    s += pill(170, 300, "「越低越好」不是一个能检查的数", "dim", 11);
-    return { s, title: "AMB-02 · 该提问：要省电，但没给瓦数上限",
-      board: ambBoard(ctx, { title: "缺信息时，答卷要停下来问", brief: "The vessel power use must be as low as possible. No watt limit is given.",
-        groups: [["watt", "功率上限（多少瓦）"]] }) };
+    s += `<text x="${cx}" y="${cy + 26}" text-anchor="middle" font-size="12" fill="${C.sub}">power meter</text>`;
+    s += fog(cx + 40, cy - 92, "limit ? W");
+    s += pill(170, 300, "\"as low as possible\" is not a number you can check", "dim", 11);
+    return { s, title: "AMB-02 · ask: save power, but no watt limit given",
+      board: ambBoard(ctx, { title: "Missing information: stop and ask", brief: "The vessel power use must be as low as possible. No watt limit is given.",
+        groups: [["watt", "the power limit in watts"]] }) };
   };
 
   S["AMB-03"] = (p, ctx) => {
     const st = station(470, 132, 0.95, { archive: true });
     let s = land(330).replace("url(#LAND)", `url(#${p}-land)`) + st.svg;
-    s += `<g transform="translate(150 250)"><ellipse cx="0" cy="-46" rx="46" ry="12" fill="#2a4a5c" stroke="#7fb6c4"/><path d="M-46 -46 V20 A46 12 0 0 0 46 20 V-46" fill="#1b3442" stroke="#7fb6c4"/><ellipse cx="0" cy="20" rx="46" ry="12" fill="none" stroke="#7fb6c4"/><text x="0" y="-6" text-anchor="middle" font-size="15" font-weight="800" fill="${C.txt}">128 GB</text><text x="0" y="12" text-anchor="middle" font-size="10.5" fill="${C.sub}">存储</text></g>`;
+    s += `<g transform="translate(150 250)"><ellipse cx="0" cy="-46" rx="46" ry="12" fill="#2a4a5c" stroke="#7fb6c4"/><path d="M-46 -46 V20 A46 12 0 0 0 46 20 V-46" fill="#1b3442" stroke="#7fb6c4"/><ellipse cx="0" cy="20" rx="46" ry="12" fill="none" stroke="#7fb6c4"/><text x="0" y="-6" text-anchor="middle" font-size="15" font-weight="800" fill="${C.txt}">128 GB</text><text x="0" y="12" text-anchor="middle" font-size="10.5" fill="${C.sub}">storage</text></g>`;
     s += calendar(352, 226, 30, "ok");
-    s += fog(250, 168, "数据率 ? Mbps");
-    s += pill(270, 318, "需要的容量 = 数据率 × 30 天 → 算不出来", "dim", 11);
-    return { s, title: "AMB-03 · 该提问：存 30 天、128 GB，但不知道数据率",
-      board: ambBoard(ctx, { title: "缺信息时，答卷要停下来问", brief: "The shore keeps tracks for 30 days and has 128 GB of storage. No data rate is given.",
-        groups: [["data rate", "数据率"]] }) };
+    s += fog(250, 168, "data rate ? Mbps");
+    s += pill(270, 318, "needed storage = data rate × 30 days → cannot compute", "dim", 11);
+    return { s, title: "AMB-03 · ask: keep 30 days on 128 GB, but no data rate given",
+      board: ambBoard(ctx, { title: "Missing information: stop and ask", brief: "The shore keeps tracks for 30 days and has 128 GB of storage. No data rate is given.",
+        groups: [["data rate", "the data rate"]] }) };
   };
 
   S["AMB-04"] = (p, ctx) => {
@@ -765,12 +765,12 @@
     const cmd = ship(p, 450, 160, 0.8);
     let s = boat.svg + cmd.svg;
     s += link(p, "u1", boat.a.radio, cmd.a.portL, "lnk", "plain", { c: [290, 40], label: "uplink", ly: -2 });
-    s += `<g><rect x="40" y="226" width="220" height="44" rx="8" fill="#eef4f7"/><text x="54" y="245" font-size="11" fill="#33505f">句子一</text><text x="54" y="262" font-size="13" font-weight="800" fill="#10233a" font-family="${MONO}">the uplink is 8</text></g>`;
-    s += `<g><rect x="300" y="226" width="240" height="44" rx="8" fill="#eef4f7"/><text x="314" y="245" font-size="11" fill="#33505f">句子二</text><text x="314" y="262" font-size="13" font-weight="800" fill="#10233a" font-family="${MONO}">the uplink is 8 MHz</text></g>`;
-    s += pill(280, 300, "8 Mbps？还是 8 MHz？单位没定", "lock", 12);
-    return { s, title: "AMB-04 · 该提问：同一个上行，两句话的单位冲突",
-      board: ambBoard(ctx, { title: "冲突时，答卷要停下来问", brief: "One sentence says the uplink is 8. Another says the uplink is 8 MHz. The unit is not settled.",
-        groups: [["unit", "单位"]] }) };
+    s += `<g><rect x="40" y="226" width="220" height="44" rx="8" fill="#eef4f7"/><text x="54" y="245" font-size="11" fill="#33505f">sentence 1</text><text x="54" y="262" font-size="13" font-weight="800" fill="#10233a" font-family="${MONO}">the uplink is 8</text></g>`;
+    s += `<g><rect x="300" y="226" width="240" height="44" rx="8" fill="#eef4f7"/><text x="314" y="245" font-size="11" fill="#33505f">sentence 2</text><text x="314" y="262" font-size="13" font-weight="800" fill="#10233a" font-family="${MONO}">the uplink is 8 MHz</text></g>`;
+    s += pill(280, 300, "8 Mbps? or 8 MHz? the unit is not settled", "lock", 12);
+    return { s, title: "AMB-04 · ask: one uplink, two sentences with conflicting units",
+      board: ambBoard(ctx, { title: "Conflicting units: stop and ask", brief: "One sentence says the uplink is 8. Another says the uplink is 8 MHz. The unit is not settled.",
+        groups: [["unit", "the unit"]] }) };
   };
 
   S["RT-01"] = (p, ctx) => {
@@ -778,8 +778,8 @@
     const boat = usv(p, 140, 160, 1, { radio: true });
     let s = land(410).replace("url(#LAND)", `url(#${p}-land)`) + st.svg + boat.svg;
     s += link(p, "r1", boat.a.eo, st.a.antenna, "img", "plain", { c: [330, 10], label: "camera imagery → shore", ly: -2 });
-    return { s, title: "RT-01 · 回读：水面船把相机图像送到岸上",
-      board: rtBoard(ctx, { title: "把模型读回成句子", doc: "The unmanned surface vessel sends camera imagery to the shore.", phrases: ["unmanned surface vessel", "camera", "shore"] }) };
+    return { s, title: "RT-01 · round trip: the USV sends camera imagery ashore",
+      board: rtBoard(ctx, { title: "Restate the model in sentences", doc: "The unmanned surface vessel sends camera imagery to the shore.", phrases: ["unmanned surface vessel", "camera", "shore"] }) };
   };
 
   S["RT-02"] = (p, ctx) => {
@@ -787,8 +787,8 @@
     let s = boat.svg;
     s += `<rect x="340" y="214" width="200" height="30" rx="6" fill="#0b2230" stroke="#2f5870"/><rect x="340" y="214" width="160" height="30" rx="6" fill="${C.pwr}" opacity=".5"/><path d="M500 204 V254" stroke="${C.lock}" stroke-width="3"/>`;
     s += pill(500, 194, "powerLimitW = 60 W", "lock", 11.5);
-    return { s, title: "RT-02 · 回读：水面船的功率上限 60 W",
-      board: rtBoard(ctx, { title: "把模型读回成句子", doc: "The unmanned surface vessel power limit is 60 W.", phrases: ["power limit", "60"] }) };
+    return { s, title: "RT-02 · round trip: the USV's 60 W power limit",
+      board: rtBoard(ctx, { title: "Restate the model in sentences", doc: "The unmanned surface vessel power limit is 60 W.", phrases: ["power limit", "60"] }) };
   };
 
   S["RT-03"] = (p, ctx) => {
@@ -796,8 +796,8 @@
     const cmd = ship(p, 420, 170, 0.85);
     let s = sweep(plane.a.radar[0], plane.a.radar[1], 120, C.trk, "ok") + plane.svg + cmd.svg;
     s += link(p, "r1", plane.a.radar, cmd.a.mast, "trk", "plain", { c: [330, 90], label: "radar tracks → command ship", ly: -4 });
-    return { s, title: "RT-03 · 回读：无人机雷达把航迹送到指挥船",
-      board: rtBoard(ctx, { title: "把模型读回成句子", doc: "The UAV radar shares tracks with the command ship.", phrases: ["radar", "command ship"] }) };
+    return { s, title: "RT-03 · round trip: the UAV radar sends tracks to the command ship",
+      board: rtBoard(ctx, { title: "Restate the model in sentences", doc: "The UAV radar shares tracks with the command ship.", phrases: ["radar", "command ship"] }) };
   };
 
   S["RT-04"] = (p, ctx) => {
@@ -805,9 +805,9 @@
     const cmd = ship(p, 120, 168, 0.66);
     let s = land(330).replace("url(#LAND)", `url(#${p}-land)`) + st.svg + cmd.svg;
     s += link(p, "r1", cmd.a.mast, st.a.door, "lnk", "plain", { c: [300, 40], label: "backhaul 50 Mbit/s", ly: -6 });
-    s += calendar(352, 226, 30, "ok") + pill(406, 318, "存 30 天", "lnk", 10.5);
-    return { s, title: "RT-04 · 回读：岸站存 30 天，回传 50 Mbit/s",
-      board: rtBoard(ctx, { title: "把模型读回成句子", doc: "The shore archive keeps tracks for 30 days on a 50 Mbit/s backhaul.", phrases: ["30 days", "50"] }) };
+    s += calendar(352, 226, 30, "ok") + pill(406, 318, "kept 30 days", "lnk", 10.5);
+    return { s, title: "RT-04 · round trip: shore keeps 30 days, 50 Mbit/s backhaul",
+      board: rtBoard(ctx, { title: "Restate the model in sentences", doc: "The shore archive keeps tracks for 30 days on a 50 Mbit/s backhaul.", phrases: ["30 days", "50"] }) };
   };
 
   S["RT-05"] = (p, ctx) => {
@@ -818,14 +818,14 @@
     s += link(p, "r1", boat.a.radio, cmd.a.portL, "lnk", "plain", { c: [170, 160], label: "uplink 1", ly: -2 });
     s += link(p, "r2", plane.a.radio, cmd.a.portL2, "lnk", "plain", { c: [170, 50], label: "uplink 2", ly: 6 });
     s += timer(506, 84, 28, "fusion latency", "ok");
-    return { s, title: "RT-05 · 回读：融合时延 2 秒，指挥船收两路上行",
-      board: rtBoard(ctx, { title: "把模型读回成句子", doc: "Fusion latency is 2 seconds and the command ship accepts two uplinks.", phrases: ["2 seconds", "two uplinks"] }) };
+    return { s, title: "RT-05 · round trip: 2 s fusion latency, two uplinks into the command ship",
+      board: rtBoard(ctx, { title: "Restate the model in sentences", doc: "Fusion latency is 2 seconds and the command ship accepts two uplinks.", phrases: ["2 seconds", "two uplinks"] }) };
   };
 
   function fallback(p, ctx) {
     const boat = usv(p, 160, 160, 1.1, { radio: true });
-    return { s: boat.svg, title: `${ctx.task || "新题"} · ${TYPE[ctx.type] || ""}`,
-      board: board(ctx, "这道题没有专门的情景", [{ head: "说明", items: [{ text: "新出的题用通用画面。", state: "info" }, { text: "判定看下方的完整过程。", state: "info" }] }]) };
+    return { s: boat.svg, title: `${ctx.task || "new task"} · ${TYPE[ctx.type] || ""}`,
+      board: board(ctx, "No dedicated scene for this task", [{ head: "NOTE", items: [{ text: "New tasks use a generic picture.", state: "info" }, { text: "The verdict is in the full process below.", state: "info" }] }]) };
   }
 
   /* ---------------- entry point ---------------- */
@@ -839,7 +839,7 @@
     const out = make(p, ctx, J);
     let stampSvg = "";
     const at = out.stamp || (ctx.type === "MOD" ? [430, 104] : [300, 268]);
-    if (!ctx.live && (ctx.type === "GEN" || ctx.type === "MOD") && ctx.sysml === "FAIL") stampSvg = stamp(at[0], at[1], `官方语法退回${ctx.attempts ? ` · 交了 ${ctx.attempts} 次` : ""}`);
+    if (!ctx.live && (ctx.type === "GEN" || ctx.type === "MOD") && ctx.sysml === "FAIL") stampSvg = stamp(at[0], at[1], `syntax FAIL${ctx.attempts ? ` · ${ctx.attempts} attempt${ctx.attempts > 1 ? "s" : ""}` : ""}`);
     const titleW = Math.min(tw(out.title, 12.5) + 24, BX - 26);
     host.innerHTML = `<svg class="scene2" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(out.title)}" font-family="${SANS}">
       ${defs(p)}${backdrop(p)}${out.s}${stampSvg}

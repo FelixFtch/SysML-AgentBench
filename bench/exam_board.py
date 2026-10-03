@@ -48,11 +48,11 @@ def _gold(task_id: str) -> str:
     for path in sorted(gold.rglob("*")):
         if path.is_file() and path.suffix in {".yaml", ".json", ".sysml", ".md"}:
             parts.append(f"# {path.relative_to(gold)}\n{_read(path)}")
-    return "\n\n".join(parts) or "这道题的标准答案文件没有找到。"
+    return "\n\n".join(parts) or "No answer key file was found for this task."
 
 
 def _requirements(task_id: str) -> str:
-    return _read(_task_dir(task_id) / "input" / "requirements.md") or "题面文件没有找到。"
+    return _read(_task_dir(task_id) / "input" / "requirements.md") or "No task statement file was found."
 
 
 def _agent_dir(config: str, task_id: str, repeat: int) -> Path | None:
@@ -89,7 +89,7 @@ def _model_text(row: dict) -> str:
         response = Path(folder) / "response.txt"
         if response.is_file():
             return _read(response)
-    return "这一格的答卷正文没有和成绩行连在一起。判定仍然来自当时保存的状态。"
+    return "The answer text of this cell is not linked to its score row. The verdict still comes from the saved status."
 
 
 def _watts(text: str) -> list[tuple[str, float]]:
@@ -106,54 +106,54 @@ def _flow(row: dict, answer: str) -> list[dict]:
     syntax = row.get("sysml_status")
     repairs = int(row.get("repair_rounds") or 0)
     calls = row.get("calls") or []
-    call_line = "、".join(item.get("step", "") for item in calls) or "成绩行没有逐步调用记录"
-    steps = [_step("发题面", "pass", "题面已发出。标准答案不在考生提示里。")]
+    call_line = ", ".join(item.get("step", "") for item in calls) or "the score row has no per-step call log"
+    steps = [_step("Issue task", "pass", "Task statement sent. The answer key is not in the prompt.")]
     if status == "TIMEOUT":
-        steps.append(_step("考生写模型", "fail", "到时限时没有交卷。这一格不计失败。"))
-        steps.append(_step("官方语法", "skip", "没有答卷，语法没有判。"))
-        steps.append(_step("按报错再改", "skip", "没有进入返工。"))
-        steps.append(_step("读瓦数", "skip", "没有答卷。"))
-        steps.append(_step("对照清单", "skip", "没有答卷，不计通过或失败。"))
-        steps.append(_step("审批门", "skip", "没有答卷。"))
-        steps.append(_step("存档", "pass", "超时记录已保存。"))
+        steps.append(_step("Write answer", "fail", "No answer before the time limit. This cell does not count as a failure."))
+        steps.append(_step("Official syntax", "skip", "No answer, so no syntax verdict."))
+        steps.append(_step("Repair from errors", "skip", "No repair."))
+        steps.append(_step("Read values", "skip", "No answer."))
+        steps.append(_step("Check against key", "skip", "No answer; counts as neither pass nor fail."))
+        steps.append(_step("Approval gate", "skip", "No answer."))
+        steps.append(_step("Archive", "pass", "Timeout recorded."))
         return steps
     if kind in {"GEN", "MOD"}:
-        steps.append(_step("考生写模型", "pass" if answer else "fail", f"记录的调用：{call_line}"))
+        steps.append(_step("Write answer", "pass" if answer else "fail", f"Recorded calls: {call_line}"))
         if syntax == "PASS":
-            steps.append(_step("官方语法", "pass", "官方 Pilot 通过。这只表示语法通过。"))
+            steps.append(_step("Official syntax", "pass", "The official Pilot passed it. That only means the syntax is valid."))
         elif syntax == "FAIL":
-            steps.append(_step("官方语法", "fail", "官方 Pilot 没有通过。清单不再往下判功率。"))
+            steps.append(_step("Official syntax", "fail", "The official Pilot rejected it. The checklist is not applied."))
         else:
-            steps.append(_step("官方语法", "fail", "没有得到官方语法结果。"))
+            steps.append(_step("Official syntax", "fail", "No official syntax result."))
         if repairs:
-            end = "最后一次语法通过。" if syntax == "PASS" else "三次之后语法仍未通过。"
-            steps.append(_step("按报错再改", "pass" if syntax == "PASS" else "fail", f"返工 {repairs} 次。{end}"))
+            end = "The last attempt passed." if syntax == "PASS" else "Still failing after three repairs."
+            steps.append(_step("Repair from errors", "pass" if syntax == "PASS" else "fail", f"{repairs} repair round(s). {end}"))
         else:
-            steps.append(_step("按报错再改", "skip", "这次没有返工。"))
+            steps.append(_step("Repair from errors", "skip", "No repair this time."))
     else:
-        steps.append(_step("考生写模型", "pass", f"这道题交的是文字或 JSON，不交 SysML。调用：{call_line}"))
-        steps.append(_step("官方语法", "skip", "读模型、提问和回读不跑官方语法。"))
-        steps.append(_step("按报错再改", "skip", "这道题没有语法返工。"))
+        steps.append(_step("Write answer", "pass", f"This task takes text or JSON, not SysML. Calls: {call_line}"))
+        steps.append(_step("Official syntax", "skip", "Query, ambiguity and round-trip tasks are not parsed by the Pilot."))
+        steps.append(_step("Repair from errors", "skip", "No syntax repair for this task type."))
     numbers = _watts(answer)
     if numbers:
-        shown = "，".join(f"{name} {value:g}" for name, value in numbers)
-        steps.append(_step("读瓦数", "pass", f"从交卷里读到：{shown}。"))
+        shown = ", ".join(f"{name} {value:g}" for name, value in numbers)
+        steps.append(_step("Read values", "pass", f"Read from the answer: {shown}."))
     else:
-        steps.append(_step("读瓦数", "skip", "这格交卷里没有 Real 瓦数，或正文没有连上。"))
+        steps.append(_step("Read values", "skip", "No Real wattage values in this answer, or its text is not linked."))
     if status == "PASS":
-        note = "和标准答案一致。"
+        note = "Matches the answer key."
         if row.get("engineering_status") == "FAIL":
-            note = ("设计判定 FAIL：功率 41+25+12=78 W，上限 60 W，和标准答案预期的 FAIL 一致；必须保留的数都在，上限没改。题目判定通过。"
-                    if row.get("task_id") == "MOD-05" else "设计判定 FAIL，和标准答案预期一致。题目判定通过。")
+            note = ("Design verdict FAIL: power 41 + 25 + 12 = 78 W against a 60 W limit, as the answer key expects; every kept value is present and the limit is unchanged. Task verdict PASS."
+                    if row.get("task_id") == "MOD-05" else "Design verdict FAIL, as the answer key expects. Task verdict PASS.")
         if row.get("archived_status") and row["archived_status"] != status:
-            note += f"（原判 {row['archived_status']}，按现行判分规则重算。）"
-        steps.append(_step("对照清单", "pass", note))
+            note += f" (Archived verdict {row['archived_status']}; re-scored with the current rule.)"
+        steps.append(_step("Check against key", "pass", note))
     elif status == "FAIL":
-        steps.append(_step("对照清单", "fail", "和标准答案不一致。"))
+        steps.append(_step("Check against key", "fail", "Does not match the answer key."))
     else:
-        steps.append(_step("对照清单", "skip", f"状态是 {status}。"))
-    steps.append(_step("审批门", "skip", "这一格的成绩文件没有单独的审批记录。"))
-    steps.append(_step("存档", "pass", "成绩行已在分析文件里。"))
+        steps.append(_step("Check against key", "skip", f"Status is {status}."))
+    steps.append(_step("Approval gate", "skip", "This cell's score file has no separate approval record."))
+    steps.append(_step("Archive", "pass", "The score row is in the analysis files."))
     return steps
 
 
@@ -176,15 +176,15 @@ def _cells() -> list[dict]:
     flash = _lines(ROOT / "analysis/heldout-20261003T000045/results.jsonl")
     flash += _lines(ROOT / "analysis/heldout-20261003T001321/results.jsonl")
     for row in fill_calls(flash):
-        rows.append({**apply("flash", row, table), "cohort": "主力矩阵", "cohort_id": "flash"})
+        rows.append({**apply("flash", row, table), "cohort": "Main matrix", "cohort_id": "flash"})
     for row in _lines(ROOT / "analysis/opencode-20261003T001321/results.jsonl"):
         rows.append({**apply("opencode", row, table), "cohort": "OpenCode", "cohort_id": "opencode", "repeat": 1})
     for row in _lines(ROOT / "analysis/claude-qwen-20261003T014507/results.jsonl"):
         path = ROOT / "analysis/claude-qwen-20261003T014507" / f"{row['task_id']}.txt"
-        rows.append({**apply("claude1", row, table), "cohort": "Claude 第一次", "cohort_id": "claude1", "repeat": 1, "text_file": str(path)})
+        rows.append({**apply("claude1", row, table), "cohort": "Claude first run", "cohort_id": "claude1", "repeat": 1, "text_file": str(path)})
     for row in _lines(ROOT / "analysis/claude-qwen-20261003T034819/results.jsonl"):
         path = ROOT / "analysis/claude-qwen-20261003T034819" / f"{row['task_id']}.txt"
-        rows.append({**apply("claude2", row, table), "cohort": "Claude 重跑", "cohort_id": "claude2", "repeat": 1, "text_file": str(path)})
+        rows.append({**apply("claude2", row, table), "cohort": "Claude rerun", "cohort_id": "claude2", "repeat": 1, "text_file": str(path)})
     for index, row in enumerate(rows):
         row["id"] = f"{row['cohort_id']}:{row.get('repeat')}:{row['task_id']}:{row.get('configuration')}:{index}"
     return rows
@@ -314,7 +314,7 @@ def _verdict(row: dict, answer: str) -> dict:
         if row.get("type") in {"GEN", "MOD"}:
             paths = _attempt_paths(row)
             if not paths:
-                return {"reason": "没有找到官方运行目录。"}
+                return {"reason": "The official run folder was not found."}
             scored = score_run(paths[-1], task_dir / "gold" / "assertions.yaml")
             return {key: scored[key] for key in VERDICT_KEYS if key in scored}
         return score_answer(task_dir, answer or "")
@@ -448,21 +448,21 @@ def _gold_dir(task_dir: Path) -> str:
 def _prepare_inbox(payload: dict) -> Path:
     kind = payload.get("type") or ""
     if kind not in {"GEN", "MOD", "QRY", "AMB", "RT"}:
-        raise ValueError("类型要是 GEN、MOD、QRY、AMB、RT 之一。")
+        raise ValueError("Type must be one of GEN, MOD, QRY, AMB, RT.")
     requirements = (payload.get("requirements") or "").strip()
     gold = (payload.get("gold") or "").strip()
     if not requirements or not gold:
-        raise ValueError("题面和标准答案都要有。")
+        raise ValueError("Both a task statement and an answer key are required.")
     package = (payload.get("package") or "Inbox").strip()
     if kind in {"GEN", "MOD"} and not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", package):
-        raise ValueError("包名要用字母开头，只能有字母、数字和下划线。")
+        raise ValueError("The package name must start with a letter and use only letters, digits and underscores.")
     if kind == "QRY":
         json.loads(gold)
     else:
         import yaml
         parsed = yaml.safe_load(gold)
         if not isinstance(parsed, dict):
-            raise ValueError("标准答案要是一份 YAML 对象。")
+            raise ValueError("The answer key must be a YAML mapping.")
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     folder = ROOT / "mvp" / "exam-inbox" / stamp
     (folder / "input").mkdir(parents=True)
@@ -489,33 +489,33 @@ def _execute(task_dir: Path, config: str, job: dict) -> None:
         job["task_id"] = case["id"]
         job["type"] = case["type"]
         job["configuration"] = config
-    _push(job, _step("发题面", "pass", "题面已交给考生。gold 目录没有放进提示。"))
+    _push(job, _step("Issue task", "pass", "Task statement given to the model. The gold folder is not in the prompt."))
     prefix: list[dict] = []
     if config in {"P2", "P3"}:
         notes = ""
         if config == "P3":
-            _phase(job, "取笔记", "正在按题面里的词取笔记。笔记里没有标准答案。")
+            _phase(job, "Retrieve notes", "Retrieving notes by the words in the task statement. The notes contain no answer key.")
             found = _retrieve(prompt)
             notes = "\n\n".join(f"[{item['source']}]\n{item['text']}" for item in found)
             with JOB_LOCK:
                 job["retrieved"] = found
-            _push(job, _step("取笔记", "pass", f"取到 {len(found)} 段：" + "、".join(item["source"] for item in found)))
-        _phase(job, "列提纲", "正在列提纲，这一步还不写 SysML。")
+            _push(job, _step("Retrieve notes", "pass", f"{len(found)} notes: " + ", ".join(item["source"] for item in found)))
+        _phase(job, "Outline", "Writing an outline; no SysML yet.")
         outlined = chat([
             {"role": "system", "content": "List the parts, ports, connections, and attributes the task requires. Reply with one JSON object. Do not write SysML yet."},
             {"role": "user", "content": prompt if not notes else prompt + "\n\nReference notes:\n" + notes},
         ], max_tokens=1500)
         with JOB_LOCK:
             job["outline"] = outlined["text"]
-        _push(job, _step("列提纲", "pass", "提纲已返回，下一步按提纲写模型。"))
+        _push(job, _step("Outline", "pass", "Outline returned; the model writes from it next."))
         prefix = [{"role": "user", "content": "Outline:\n" + outlined["text"]},
                   {"role": "assistant", "content": "I will follow that outline."}]
-    _phase(job, "考生写模型", "正在调用模型。这一步的提示里仍然没有标准答案。")
+    _phase(job, "Write answer", "Calling the model. The prompt still has no answer key.")
     written = _answer(case, prompt, prefix=prefix)
     text = written["text"]
     with JOB_LOCK:
         job["answer"] = text
-    _push(job, _step("考生写模型", "pass", f"模型 {written.get('model') or ''} 已交卷。"))
+    _push(job, _step("Write answer", "pass", f"Model {written.get('model') or ''} submitted its answer."))
     syntax = None
     rounds = 0
     run_dir = None
@@ -524,7 +524,7 @@ def _execute(task_dir: Path, config: str, job: dict) -> None:
         attempts = 4 if config == "P1" else 1
         previous_sha = None
         for attempt in range(attempts):
-            _phase(job, "官方语法", f"正在用官方 Pilot 解析第 {attempt + 1} 份模型。")
+            _phase(job, "Official syntax", f"The official Pilot is parsing model attempt {attempt + 1}.")
             try:
                 source = extract_sysml(text)
             except ValueError as exc:
@@ -553,8 +553,8 @@ def _execute(task_dir: Path, config: str, job: dict) -> None:
             if syntax == "PASS" or attempt == attempts - 1:
                 break
             rounds += 1
-            _push(job, _step("官方语法", "fail", diagnostic or "官方语法没有通过。"))
-            _phase(job, "按报错再改", f"第 {rounds} 次把官方报错发回模型。数字保持题面里的值。")
+            _push(job, _step("Official syntax", "fail", diagnostic or "The official parse failed."))
+            _phase(job, "Repair from errors", f"Repair {rounds}: the official errors go back to the model. Numbers stay as in the task.")
             repaired = chat([
                 {"role": "system", "content": SYSML_RULES},
                 {"role": "user", "content": prompt},
@@ -564,36 +564,36 @@ def _execute(task_dir: Path, config: str, job: dict) -> None:
             text = repaired["text"]
             with JOB_LOCK:
                 job["answer"] = text
-            _push(job, _step("按报错再改", "pass", f"第 {rounds} 次修改已返回。发回模型的官方报错：{(diagnostic or '')[:400]}"))
-        _push(job, _step("官方语法", "pass" if syntax == "PASS" else "fail",
-                         "官方 Pilot 通过。这只表示语法通过。" if syntax == "PASS" else (diagnostic or "官方语法没有通过。")))
+            _push(job, _step("Repair from errors", "pass", f"Repair {rounds} returned. Official errors sent back: {(diagnostic or '')[:400]}"))
+        _push(job, _step("Official syntax", "pass" if syntax == "PASS" else "fail",
+                         "The official Pilot passed it. That only means the syntax is valid." if syntax == "PASS" else (diagnostic or "The official parse failed.")))
         if rounds == 0:
-            _push(job, _step("按报错再改", "skip", "这次没有返工。"))
+            _push(job, _step("Repair from errors", "skip", "No repair this time."))
     else:
-        _push(job, _step("官方语法", "skip", "这道题不交 SysML。"))
-        _push(job, _step("按报错再改", "skip", "这道题没有语法返工。"))
+        _push(job, _step("Official syntax", "skip", "This task does not take SysML."))
+        _push(job, _step("Repair from errors", "skip", "No syntax repair for this task type."))
     numbers = _watts(job.get("answer") or "")
     if numbers:
-        _push(job, _step("读瓦数", "pass", "，".join(f"{name} {value:g}" for name, value in numbers)))
+        _push(job, _step("Read values", "pass", ", ".join(f"{name} {value:g}" for name, value in numbers)))
     else:
-        _push(job, _step("读瓦数", "skip", "交卷里没有 Real 瓦数。"))
-    _phase(job, "对照清单", "用标准答案核对交卷。这一步才读 gold。")
+        _push(job, _step("Read values", "skip", "No Real wattage values in the answer."))
+    _phase(job, "Check against key", "Checking the answer against the answer key. Only this step reads the gold folder.")
     solved = {"text": text, "run_dir": run_dir, "sysml_status": syntax}
     scored = grade(task_dir, solved)
     status = scored["status"]
     if status == "PASS":
-        note = "和标准答案一致。"
+        note = "Matches the answer key."
         if scored.get("engineering_status") == "FAIL":
-            note = "设计判定 FAIL，和标准答案预期一致；必须保留的数都在。题目判定通过。"
-        _push(job, _step("对照清单", "pass", note))
+            note = "Design verdict FAIL, as the answer key expects; every kept value is present. Task verdict PASS."
+        _push(job, _step("Check against key", "pass", note))
     else:
         reason = scored.get("reason") or scored.get("missing") or ""
         preserve = scored.get("must_preserve") or {}
         if preserve.get("missing"):
-            reason = "必须保留的数被改了：" + "，".join(f"{item['qualified_name']} 应为 {item['expected']}，实际 {item['actual']}" for item in preserve["missing"])
-        _push(job, _step("对照清单", "fail", str(reason) or "和标准答案不一致。"))
-    _push(job, _step("审批门", "skip", "这次运行没有人提交改限值的请求。"))
-    _push(job, _step("存档", "pass", f"最终 {status}。运行目录：{run_dir or '无官方运行'}"))
+            reason = "A value that had to stay was changed: " + "; ".join(f"{item['qualified_name']} should be {item['expected']}, is {item['actual']}" for item in preserve["missing"])
+        _push(job, _step("Check against key", "fail", str(reason) or "Does not match the answer key."))
+    _push(job, _step("Approval gate", "skip", "Nobody asked to change a limit in this run."))
+    _push(job, _step("Archive", "pass", f"Final {status}. Run folder: {run_dir or 'no official run'}"))
     with JOB_LOCK:
         job["status_label"] = status
         job["sysml_status"] = syntax
@@ -616,16 +616,16 @@ def _worker(payload: dict, job: dict) -> None:
             task_id = payload.get("task_id") or ""
             task_dir = HELD / task_id
             if not (task_dir / "case.yaml").is_file():
-                raise ValueError("没有这道现成题。")
+                raise ValueError("No such held-out task.")
             config = payload.get("configuration") or "P0"
         if config not in {"P0", "P1", "P2", "P3"}:
-            raise ValueError("写法要是 P0、P1、P2、P3。")
+            raise ValueError("The approach must be P0, P1, P2 or P3.")
         _execute(task_dir, config, job)
         with JOB_LOCK:
             if job.get("status") == "running":
                 job["status"] = "done"
     except Exception as exc:
-        _push(job, _step("存档", "fail", f"{type(exc).__name__}: {exc}"))
+        _push(job, _step("Archive", "fail", f"{type(exc).__name__}: {exc}"))
         with JOB_LOCK:
             job["status"] = "error"
             job["error"] = str(exc)
@@ -671,16 +671,16 @@ def _start_discover(brief: str) -> tuple[dict | None, str]:
     global BUSY
     brief = (brief or "").strip()
     if len(brief) < 20:
-        return None, "简报至少写一句完整的任务，包括平台和要共享的信息。"
+        return None, "Write at least one full sentence for the brief, including the platform and what must be shared."
     with JOB_LOCK:
         if BUSY:
-            return None, "上一次还在跑，等它走完再开下一次。"
+            return None, "The previous run is still going; start the next one when it finishes."
         BUSY = True
-        titles = {"brief": "任务简报", "retrieve": "① 检索记忆库", "requirements": "② 写需求", "source": "数字来源核对",
-                  "design": "② 写设计 A / B", "syntax": "③ 官方校验", "repair": "按报错返工", "align": "④ 对齐",
-                  "simulate": "⑤ 核算", "tradeoff": "权衡方案", "readback": "⑤ 读回", "gate": "⑥ 人决定"}
+        titles = {"brief": "Brief", "retrieve": "① Retrieve from memory", "requirements": "② Write requirements", "source": "Number source check",
+                  "design": "② Write designs A / B", "syntax": "③ Official validation", "repair": "Repair from errors", "align": "④ Align",
+                  "simulate": "⑤ Budget checks", "tradeoff": "Trade-offs", "readback": "⑤ Read back", "gate": "⑥ Person decides"}
         job = {"id": uuid.uuid4().hex[:12], "kind": "discover", "status": "running", "phase": "requirements",
-               "steps": [{"key": key, "title": titles[key], "state": "wait", "detail": "还没走到。"} for key in DISCOVER_STEPS],
+               "steps": [{"key": key, "title": titles[key], "state": "wait", "detail": "Not reached yet."} for key in DISCOVER_STEPS],
                "brief": brief, "record": None, "error": ""}
         JOBS[job["id"]] = job
     threading.Thread(target=_discover_worker, args=(brief, job), daemon=True).start()
@@ -723,10 +723,10 @@ def _mvp_case_worker(job: dict, task_id: str) -> None:
 def _start_mvp_case(task_id: str) -> tuple[dict | None, str]:
     global BUSY
     if task_id not in MOD_TASKS:
-        return None, "题目要是 MOD-01 到 MOD-05 之一。"
+        return None, "The task must be one of MOD-01 to MOD-05."
     with JOB_LOCK:
         if BUSY:
-            return None, "上一次还在跑，等它走完再开下一次。"
+            return None, "The previous run is still going; start the next one when it finishes."
         BUSY = True
         job = {"id": uuid.uuid4().hex[:12], "kind": "mvp", "task_id": task_id, "status": "running", "record": None, "error": ""}
         JOBS[job["id"]] = job
@@ -741,20 +741,20 @@ def _start(payload: dict) -> tuple[dict | None, str]:
     global BUSY
     model = payload.get("model") or CONSOLE_MODELS[0]
     if model not in CONSOLE_MODELS:
-        return None, "模型要是 qwen3.8-flash 或 qwen3.8-max。"
+        return None, "The model must be qwen3.8-flash or qwen3.8-max."
     with JOB_LOCK:
         if BUSY:
-            return None, "上一次还在跑，等它走完再开下一次。"
+            return None, "The previous run is still going; start the next one when it finishes."
         BUSY = True
         config = payload.get("configuration") or "P0"
-        titles = (["发题面"] + (["取笔记"] if config == "P3" else []) + (["列提纲"] if config in {"P2", "P3"} else [])
-                  + ["考生写模型", "官方语法", "按报错再改", "读瓦数", "对照清单", "审批门", "存档"])
-        blank = [_step(title, "wait", "还没走到。") for title in titles]
+        titles = (["Issue task"] + (["Retrieve notes"] if config == "P3" else []) + (["Outline"] if config in {"P2", "P3"} else [])
+                  + ["Write answer", "Official syntax", "Repair from errors", "Read values", "Check against key", "Approval gate", "Archive"])
+        blank = [_step(title, "wait", "Not reached yet.") for title in titles]
         job = {"id": uuid.uuid4().hex[:12], "status": "running", "steps": blank, "current": 0, "attempts": [], "retrieved": [],
-               "requirements": "", "answer": "", "gold": "", "phase": "发题面",
-               "phase_detail": "正在读题面。", "error": "", "task_id": payload.get("task_id") or "新题",
+               "requirements": "", "answer": "", "gold": "", "phase": "Issue task",
+               "phase_detail": "Reading the task statement.", "error": "", "task_id": payload.get("task_id") or "new task",
                "configuration": payload.get("configuration") or "P0", "type": payload.get("type") or "",
-               "cohort": "这次运行", "repeat": 1, "status_label": "RUNNING", "sysml_status": None,
+               "cohort": "This run", "repeat": 1, "status_label": "RUNNING", "sysml_status": None,
                "engineering_status": None, "model": model, "verdict": {}, "usage": None}
         JOBS[job["id"]] = job
     threading.Thread(target=_worker, args=(payload, job), daemon=True).start()
@@ -816,7 +816,7 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 body = {"catalog": CATALOG, "budgets": budgets(choice), "brief": brief_from(choice)}
             except KeyError as exc:
-                self._send(400, json.dumps({"error": f"目录里没有 {exc}"}, ensure_ascii=False).encode(), "application/json; charset=utf-8")
+                self._send(400, json.dumps({"error": f"Not in the catalog: {exc}"}, ensure_ascii=False).encode(), "application/json; charset=utf-8")
                 return
             self._send(200, json.dumps(body, ensure_ascii=False).encode(), "application/json; charset=utf-8")
             return
@@ -856,7 +856,7 @@ class Handler(BaseHTTPRequestHandler):
         try:
             payload = json.loads(self.rfile.read(length).decode("utf-8") or "{}")
         except json.JSONDecodeError:
-            self._send(400, '{"error":"不是 JSON"}'.encode(), "application/json")
+            self._send(400, '{"error":"Not JSON"}'.encode(), "application/json")
             return
         if parsed.path == "/api/approve":
             from bench.discover import approve

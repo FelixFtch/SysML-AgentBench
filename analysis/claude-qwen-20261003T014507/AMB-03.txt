@@ -1,0 +1,13 @@
+The storage check isn't computable as specified, so I won't guess a number or model this in SysML yet. The intended check has the form:
+
+`ingest_rate × 30 days ≤ 128 GB`
+
+Two of the three terms are given; the rate is missing. To close it out, please provide:
+
+1. **Track data rate** — either directly (GB/day or MB/s sustained into the shore archive), or as components:
+   - new tracks per day, and
+   - bytes retained per track (per fused track object, or per update × updates per track if full history is kept — which is it?)
+2. **Unit convention for "128 GB"** — decimal GB (10⁹ bytes) or GiB (2³⁰)? And is 128 GB total or usable capacity (i.e., does it need to absorb index/metadata/replication overhead)?
+3. **Retention semantics** — is 30 days a rolling window (oldest tracks purged, so steady-state rate × 30 d ≤ 128 GB is the check), or cumulative from cold start?
+
+If there is no authoritative data rate anywhere in the source material, the alternative is to treat these as two independent stated parameters (retention = 30 d; capacity = 128 GB) with no derived consistency check — tell me which reading you want and I'll proceed accordingly.

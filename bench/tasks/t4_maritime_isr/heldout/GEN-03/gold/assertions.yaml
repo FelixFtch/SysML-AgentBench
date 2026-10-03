@@ -1,0 +1,15 @@
+task_id: GEN-03
+package: FusionNode
+status: single-author
+must_exist:
+- qualified_name: FusionNode::LinkPort
+- qualified_name: FusionNode::Processor
+- qualified_name: FusionNode::commandShip
+- qualified_name: FusionNode::commandShip::fromUsv
+- qualified_name: FusionNode::commandShip::fromUav
+- qualified_name: FusionNode::commandShip::fusion
+- qualified_name: FusionNode::commandShip::fusionLatencyS
+must_connect: []
+must_preserve:
+- qualified_name: FusionNode::commandShip::fusionLatencyS
+  value: 2.0

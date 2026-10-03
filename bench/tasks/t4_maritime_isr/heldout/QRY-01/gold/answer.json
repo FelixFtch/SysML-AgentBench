@@ -1,0 +1,8 @@
+{
+  "platforms": [
+    "MaritimeISR::usv",
+    "MaritimeISR::uav",
+    "MaritimeISR::commandShip",
+    "MaritimeISR::shore"
+  ]
+}

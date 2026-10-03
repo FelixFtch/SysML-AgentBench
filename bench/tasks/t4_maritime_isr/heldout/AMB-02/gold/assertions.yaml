@@ -1,0 +1,6 @@
+task_id: AMB-02
+should_ask:
+- - watt
+  - power limit
+  - how many watts
+must_not_invent_number: true

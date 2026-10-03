@@ -1,0 +1,18 @@
+task_id: GEN-05
+package: FourNode
+status: single-author
+must_exist:
+- qualified_name: FourNode::usv
+- qualified_name: FourNode::uav
+- qualified_name: FourNode::commandShip
+- qualified_name: FourNode::shore
+- qualified_name: FourNode::usv::radio
+- qualified_name: FourNode::uav::radio
+must_connect:
+- - FourNode::usv::radio::toCommand
+  - FourNode::commandShip::fromUsv
+- - FourNode::uav::radio::toCommand
+  - FourNode::commandShip::fromUav
+- - FourNode::commandShip::toShore
+  - FourNode::shore::fromCommand
+must_preserve: []

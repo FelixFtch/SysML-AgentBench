@@ -6,6 +6,9 @@
 __pycache__/
 *.pyc
 .venv/
+.venv-langgraph/
+.venv-langflow/
+.langflow/
 .env
 /mvp/.env
 
@@ -28,6 +31,13 @@ __pycache__/
 
 # SysON local database
 /tools/syson/data/
+
+# PURE full documents stay local; excerpts in bench/ are the cited samples
+/datasets/pure/
+
+# pinned OpenCode binary, recreated from tools/opencode/VERSION
+/tools/opencode/opencode
+/tools/opencode/*.tar.gz
 
 # local model / checkpoint state
 *.sqlite-wal

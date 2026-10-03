@@ -1,0 +1,17 @@
+# Written before the candidate is scored. The budget is designed to fail.
+task_id: PWR-01
+package: PowerCheck
+status: single-author
+second_reviewer: waived-by-user-2026-10-02
+must_exist:
+  - {kind: PartUsage, qualified_name: PowerCheck::usv}
+  - {kind: PartUsage, qualified_name: PowerCheck::usv::eoCamera}
+  - {kind: PartUsage, qualified_name: PowerCheck::usv::computer}
+  - {kind: AttributeUsage, qualified_name: PowerCheck::usv::powerLimitW}
+  - {kind: AttributeUsage, qualified_name: PowerCheck::usv::eoCamera::drawW}
+  - {kind: AttributeUsage, qualified_name: PowerCheck::usv::computer::drawW}
+must_preserve:
+  - {qualified_name: PowerCheck::usv::powerLimitW, value: 60.0}
+checks_expected:
+  - {id: R-POWER-001, status: FAIL, total_w: 66.0, limit_w: 60.0}
+decision_required: false

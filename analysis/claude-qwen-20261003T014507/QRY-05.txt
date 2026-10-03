@@ -1,0 +1,1 @@
+{"powerLimitW": 60.0, "uplinkMbps": 8.0, "storageGB": 128.0}

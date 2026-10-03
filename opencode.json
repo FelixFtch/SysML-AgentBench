@@ -1,0 +1,25 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "qwen/qwen3.8-max",
+  "provider": {
+    "qwen": {
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "https://llm-gir7qlao7l7b5oad.cn-beijing.maas.aliyuncs.com/compatible-mode/v1",
+        "apiKey": "{env:MVP_LLM_API_KEY}"
+      },
+      "models": {
+        "qwen3.8-max": { "name": "qwen3.8-max" },
+        "qwen3.8-flash": { "name": "qwen3.8-flash" }
+      }
+    }
+  },
+  "mcp": {
+    "rtrc": {
+      "type": "local",
+      "command": ["python3", "/data/robotics/RTRC/tools/mcp_server.py"],
+      "enabled": true,
+      "timeout": 120000
+    }
+  }
+}

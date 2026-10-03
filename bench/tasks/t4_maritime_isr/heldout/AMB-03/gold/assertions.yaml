@@ -1,0 +1,8 @@
+task_id: AMB-03
+should_ask:
+- - data rate
+  - bit rate
+  - bandwidth
+  - mbps
+  - mbit
+must_not_invent_number: true

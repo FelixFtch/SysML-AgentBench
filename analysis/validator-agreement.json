@@ -1,0 +1,328 @@
+{
+  "cells": 40,
+  "agree": 25,
+  "agreement_rate": 0.625,
+  "false_pass": 12,
+  "items": [
+    {
+      "task_id": "GEN-01",
+      "configuration": "P0",
+      "tool_status": "PASS",
+      "validator_overall": "fail",
+      "agree": false,
+      "false_pass": false
+    },
+    {
+      "task_id": "GEN-01",
+      "configuration": "P1",
+      "tool_status": "PASS",
+      "validator_overall": "fail",
+      "agree": false,
+      "false_pass": false
+    },
+    {
+      "task_id": "GEN-01",
+      "configuration": "P2",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "GEN-01",
+      "configuration": "P3",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "GEN-02",
+      "configuration": "P0",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "GEN-02",
+      "configuration": "P1",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "GEN-02",
+      "configuration": "P2",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "GEN-02",
+      "configuration": "P3",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "GEN-03",
+      "configuration": "P0",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    },
+    {
+      "task_id": "GEN-03",
+      "configuration": "P1",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    },
+    {
+      "task_id": "GEN-03",
+      "configuration": "P2",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    },
+    {
+      "task_id": "GEN-03",
+      "configuration": "P3",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    },
+    {
+      "task_id": "GEN-04",
+      "configuration": "P0",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    },
+    {
+      "task_id": "GEN-04",
+      "configuration": "P1",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "GEN-04",
+      "configuration": "P2",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    },
+    {
+      "task_id": "GEN-04",
+      "configuration": "P3",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    },
+    {
+      "task_id": "GEN-05",
+      "configuration": "P0",
+      "tool_status": "FAIL",
+      "validator_overall": "fail",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "GEN-05",
+      "configuration": "P1",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    },
+    {
+      "task_id": "GEN-05",
+      "configuration": "P2",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "GEN-05",
+      "configuration": "P3",
+      "tool_status": "PASS",
+      "validator_overall": "fail",
+      "agree": false,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-01",
+      "configuration": "P0",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-01",
+      "configuration": "P1",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-01",
+      "configuration": "P2",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-01",
+      "configuration": "P3",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-02",
+      "configuration": "P0",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-02",
+      "configuration": "P1",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-02",
+      "configuration": "P2",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-02",
+      "configuration": "P3",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-03",
+      "configuration": "P0",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-03",
+      "configuration": "P1",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-03",
+      "configuration": "P2",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-03",
+      "configuration": "P3",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-04",
+      "configuration": "P0",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-04",
+      "configuration": "P1",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-04",
+      "configuration": "P2",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-04",
+      "configuration": "P3",
+      "tool_status": "PASS",
+      "validator_overall": "pass",
+      "agree": true,
+      "false_pass": false
+    },
+    {
+      "task_id": "MOD-05",
+      "configuration": "P0",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    },
+    {
+      "task_id": "MOD-05",
+      "configuration": "P1",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    },
+    {
+      "task_id": "MOD-05",
+      "configuration": "P2",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    },
+    {
+      "task_id": "MOD-05",
+      "configuration": "P3",
+      "tool_status": "FAIL",
+      "validator_overall": "pass",
+      "agree": false,
+      "false_pass": true
+    }
+  ]
+}

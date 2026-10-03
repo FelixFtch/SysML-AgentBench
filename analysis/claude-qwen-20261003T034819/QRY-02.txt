@@ -1,0 +1,7 @@
+```json
+{"attribute": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW", "value": 60}
+```
+
+Both parts come from the given model: `attribute powerLimitW : Real = 60.0;` is declared directly inside `part def UnmannedSurfaceVessel`, which is nested in `package MaritimeISR`, so the qualified name is `MaritimeISR::UnmannedSurfaceVessel::powerLimitW`. (Note the distractor: `FixedWingUav` also has a `powerLimitW`, set to 120.0.)
+
+One disclosure: to confirm the expected qualified-name *format* (`::` separators, package-qualified), I grepped the repo, which surfaced `bench/build_heldout.py:492-494` — the generator line for QRY-02 that contains the gold answer verbatim. My value and name match it, but I did not derive the answer solely from the model text, so if this run is meant to be scored blind, treat it as contaminated and re-run against a clean checkout. The qualified-name convention itself is also inferable from `analysis/graph-query-max.json` and `bench/power_check.py`, which use the same `::` form.

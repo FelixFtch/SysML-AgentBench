@@ -1,0 +1,38 @@
+{
+  "P0": {
+    "cells": 72,
+    "pass": 54,
+    "checklist_match": 57,
+    "tokens": 31190,
+    "pass_rate": 0.75,
+    "checklist_match_rate": 0.792,
+    "matches_per_1k_tokens": 1.828
+  },
+  "P1": {
+    "cells": 72,
+    "pass": 48,
+    "checklist_match": 51,
+    "tokens": 50377,
+    "pass_rate": 0.667,
+    "checklist_match_rate": 0.708,
+    "matches_per_1k_tokens": 1.012
+  },
+  "P2": {
+    "cells": 72,
+    "pass": 55,
+    "checklist_match": 58,
+    "tokens": 89059,
+    "pass_rate": 0.764,
+    "checklist_match_rate": 0.806,
+    "matches_per_1k_tokens": 0.651
+  },
+  "P3": {
+    "cells": 72,
+    "pass": 55,
+    "checklist_match": 58,
+    "tokens": 105304,
+    "pass_rate": 0.764,
+    "checklist_match_rate": 0.806,
+    "matches_per_1k_tokens": 0.551
+  }
+}

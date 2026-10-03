@@ -1,0 +1,16 @@
+task_id: GEN-04
+package: ShoreArchive
+status: single-author
+must_exist:
+- qualified_name: ShoreArchive::shore
+- qualified_name: ShoreArchive::shore::fromCommand
+- qualified_name: ShoreArchive::shore::archive
+- qualified_name: ShoreArchive::shore::backhaulMbps
+- qualified_name: ShoreArchive::shore::archiveDays
+- qualified_name: ShoreArchive::ShoreArchiveRetention
+must_connect: []
+must_preserve:
+- qualified_name: ShoreArchive::shore::backhaulMbps
+  value: 50.0
+- qualified_name: ShoreArchive::shore::archiveDays
+  value: 30.0

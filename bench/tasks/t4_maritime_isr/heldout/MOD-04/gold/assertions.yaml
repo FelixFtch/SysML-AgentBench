@@ -1,0 +1,10 @@
+task_id: MOD-04
+package: RadioHealth
+status: single-author
+must_exist:
+- qualified_name: RadioHealth::usv::radio::health
+- qualified_name: RadioHealth::usv::uplinkMbps
+must_connect: []
+must_preserve:
+- qualified_name: RadioHealth::usv::uplinkMbps
+  value: 8.0

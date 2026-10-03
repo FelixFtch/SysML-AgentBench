@@ -56,7 +56,7 @@ def generate_once(requirements: str, package_name: str) -> dict:
     if key:
         headers["Authorization"] = "Bearer " + key
     request = urllib.request.Request(url, data=body, headers=headers, method="POST")
-    with urllib.request.urlopen(request, timeout=180) as response:
+    with urllib.request.urlopen(request, timeout=360) as response:
         completion = json.loads(response.read(4_000_000))
     message = completion["choices"][0]["message"]
     source = _extract_sysml(message.get("content") or "")

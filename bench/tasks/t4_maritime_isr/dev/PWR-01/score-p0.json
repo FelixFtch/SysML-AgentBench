@@ -1,0 +1,14 @@
+{
+  "task_id": "PWR-01",
+  "role": "p0",
+  "provider_model": "qwen3.8-flash",
+  "engine_run": "20261002T233348-89c0fbc7",
+  "sysml_status": "PASS",
+  "engineering_status": "FAIL",
+  "status": "FAIL",
+  "check": "R-POWER-001",
+  "total_w": 66.0,
+  "limit_w": 60.0,
+  "checks_match": true,
+  "evidence": "bench/tasks/t4_maritime_isr/dev/PWR-01/walk/p0.json"
+}

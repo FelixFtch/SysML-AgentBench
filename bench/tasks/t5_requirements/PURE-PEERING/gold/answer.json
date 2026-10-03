@@ -1,0 +1,6 @@
+{
+  "requirements": [
+    "If a resource fails, its service information is removed from SR and the resource ID counter is decremented.",
+    "If the user requests experience service timeout (threshold), initiation request is cancelled."
+  ]
+}

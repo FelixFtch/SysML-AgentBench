@@ -1,0 +1,4 @@
+task_id: RT-02
+must_mention:
+- power limit
+- '60'

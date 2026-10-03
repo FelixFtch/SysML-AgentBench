@@ -1,0 +1,8 @@
+id: RT-05
+type: RT
+scenario_family: t4_maritime_isr
+split: heldout
+package: RoundTripFusion
+synthetic: true
+status: single-author
+second_reviewer: pending

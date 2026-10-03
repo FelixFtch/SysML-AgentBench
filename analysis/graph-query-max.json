@@ -1,0 +1,82 @@
+[
+  {
+    "task_id": "QRY-01",
+    "model": "qwen3.8-max",
+    "status": "PASS",
+    "retrieved": "PartUsage MaritimeISR::commandShip\nPartUsage MaritimeISR::CommandShip::fusion\nPartDefinition MaritimeISR::CommandShip\nPortUsage MaritimeISR::CommandShip::toShore\nAttributeUsage MaritimeISR::CommandShip::fusionLatencyS 2.0\nPortUsage MaritimeISR::CommandShip::fromUav\nPortUsage MaritimeISR::CommandShip::fromUsv",
+    "answer": "{\"platforms\":[\"MaritimeISR::usv\",\"MaritimeISR::uav\",\"MaritimeISR::commandShip\",\"MaritimeISR::shore\"]}",
+    "usage": {
+      "prompt_tokens": 172,
+      "total_tokens": 203,
+      "completion_tokens": 31,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 172
+      }
+    }
+  },
+  {
+    "task_id": "QRY-02",
+    "model": "qwen3.8-max",
+    "status": "PASS",
+    "retrieved": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0\nPartDefinition MaritimeISR::UnmannedSurfaceVessel\nAttributeUsage MaritimeISR::UnmannedSurfaceVessel::storageGB 128.0\nAttributeUsage MaritimeISR::UnmannedSurfaceVessel::uplinkMbps 8.0\nAttributeUsage MaritimeISR::FixedWingUav::powerLimitW 120.0\nPartDefinition MaritimeISR::FixedWingUav",
+    "answer": "{\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60.0}",
+    "usage": {
+      "prompt_tokens": 188,
+      "total_tokens": 216,
+      "completion_tokens": 28,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 188
+      }
+    }
+  },
+  {
+    "task_id": "QRY-03",
+    "model": "qwen3.8-max",
+    "status": "FAIL",
+    "retrieved": "PartUsage MaritimeISR::commandShip\nPartUsage MaritimeISR::CommandShip::fusion\nPartDefinition MaritimeISR::CommandShip\nPortUsage MaritimeISR::CommandShip::toShore\nAttributeUsage MaritimeISR::CommandShip::fusionLatencyS 2.0\nPortUsage MaritimeISR::CommandShip::fromUav\nPortUsage MaritimeISR::CommandShip::fromUsv",
+    "answer": "{\"connections\":0}",
+    "usage": {
+      "prompt_tokens": 149,
+      "total_tokens": 154,
+      "completion_tokens": 5,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 149
+      }
+    }
+  },
+  {
+    "task_id": "QRY-04",
+    "model": "qwen3.8-max",
+    "status": "PASS",
+    "retrieved": "PartDefinition MaritimeISR::FixedWingUav\nPartUsage MaritimeISR::FixedWingUav::processor\nAttributeUsage MaritimeISR::FixedWingUav::powerLimitW 120.0\nAttributeUsage MaritimeISR::FixedWingUav::downlinkMbps 20.0\nPartUsage MaritimeISR::FixedWingUav::searchRadar\nPartUsage MaritimeISR::FixedWingUav::radio\nPartUsage MaritimeISR::FixedWingUav::eoCamera\nPartDefinition MaritimeISR::Radar",
+    "answer": "{\"parts\":[\"MaritimeISR::FixedWingUav::processor\",\"MaritimeISR::FixedWingUav::searchRadar\",\"MaritimeISR::FixedWingUav::radio\",\"MaritimeISR::FixedWingUav::eoCamera\"]}",
+    "usage": {
+      "prompt_tokens": 192,
+      "total_tokens": 246,
+      "completion_tokens": 54,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 192
+      }
+    }
+  },
+  {
+    "task_id": "QRY-05",
+    "model": "qwen3.8-max",
+    "status": "PASS",
+    "retrieved": "PartDefinition MaritimeISR::UnmannedSurfaceVessel\nPartUsage MaritimeISR::UnmannedSurfaceVessel::eoCamera\nAttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0\nAttributeUsage MaritimeISR::UnmannedSurfaceVessel::uplinkMbps 8.0\nPartUsage MaritimeISR::UnmannedSurfaceVessel::ais\nAttributeUsage MaritimeISR::UnmannedSurfaceVessel::storageGB 128.0\nPartUsage MaritimeISR::UnmannedSurfaceVessel::radio\nPartUsage MaritimeISR::UnmannedSurfaceVessel::irCamera",
+    "answer": "{\"powerLimitW\":60.0,\"uplinkMbps\":8.0,\"storageGB\":128.0}",
+    "usage": {
+      "prompt_tokens": 221,
+      "total_tokens": 248,
+      "completion_tokens": 27,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 221
+      }
+    }
+  }
+]

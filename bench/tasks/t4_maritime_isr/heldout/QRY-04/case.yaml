@@ -1,0 +1,8 @@
+id: QRY-04
+type: QRY
+scenario_family: t4_maritime_isr
+split: heldout
+package: MaritimeISR
+synthetic: true
+status: single-author
+second_reviewer: pending

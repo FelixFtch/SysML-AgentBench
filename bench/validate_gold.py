@@ -32,11 +32,9 @@ def main() -> None:
         model = next((task / "gold" / "reference").glob("*.sysml"))
         validated = run_submitted_model([model], case["package"], label=f"gold-{item['id']}")
         scored = score_run(Path(validated["run_dir"]), task / "gold" / "assertions.yaml")
-        ok = scored["structure_pass"] and validated["sysml"]["status"] == "PASS"
+        ok = scored["structure_pass"] and validated["sysml"]["status"] == "PASS" and scored["status"] == "PASS"
         if item["id"] == "MOD-05":
-            ok = ok and scored["status"] == "FAIL" and scored["checks_match"] and scored["engineering_status"] == "FAIL"
-        elif scored["status"] == "FAIL":
-            ok = False
+            ok = ok and scored["checks_match"] and scored["engineering_status"] == "FAIL"
         print(item["id"], validated["sysml"]["status"], scored["status"], scored["engineering_status"],
               "structure", scored["structure_pass"])
         if not ok:

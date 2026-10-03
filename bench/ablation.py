@@ -30,16 +30,18 @@ def _tokens(task_id: str, configuration: str, repeat: int) -> int:
 
 
 def main() -> None:
+    from bench.rescore import apply, load
+    table = load()
     rows = []
     for path in RUNS:
-        rows.extend(json.loads(line) for line in path.read_text(encoding="utf-8").splitlines())
-    buckets = defaultdict(lambda: {"cells": 0, "pass": 0, "checklist_match": 0, "tokens": 0})
+        rows.extend(apply("flash", json.loads(line), table) for line in path.read_text(encoding="utf-8").splitlines())
+    buckets = defaultdict(lambda: {"cells": 0, "pass": 0, "archived_pass": 0, "checklist_match": 0, "tokens": 0})
     for row in rows:
         item = buckets[row["configuration"]]
         item["cells"] += 1
-        matched = row["status"] == "PASS" or (row["task_id"] == "MOD-05" and row.get("checks_match"))
         item["pass"] += row["status"] == "PASS"
-        item["checklist_match"] += bool(matched)
+        item["archived_pass"] += row.get("archived_status", row["status"]) == "PASS"
+        item["checklist_match"] += row["status"] == "PASS"
         item["tokens"] += _tokens(row["task_id"], row["configuration"], row["repeat"])
     summary = {}
     for name in ("P0", "P1", "P2", "P3"):

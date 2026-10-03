@@ -7,10 +7,6 @@
 {"task_id": "GEN-04", "type": "GEN", "configuration": "P3", "repeat": 1, "class": "syntax-real-or-import", "detail": "Couldn't resolve reference to Type 'Real'."}
 {"task_id": "GEN-05", "type": "GEN", "configuration": "P0", "repeat": 1, "class": "syntax-connection", "detail": "Must have at least two related elements"}
 {"task_id": "GEN-05", "type": "GEN", "configuration": "P1", "repeat": 1, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P0", "repeat": 1, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P1", "repeat": 1, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P2", "repeat": 1, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P3", "repeat": 1, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
 {"task_id": "QRY-01", "type": "QRY", "configuration": "P1", "repeat": 1, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"usv\", \"uav\", \"commandShip\", \"shore\"]}}"}
 {"task_id": "QRY-01", "type": "QRY", "configuration": "P2", "repeat": 1, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"usv\", \"uav\", \"commandShip\", \"shore\"]}}"}
 {"task_id": "QRY-02", "type": "QRY", "configuration": "P2", "repeat": 1, "class": "query-renamed", "detail": "{\"expected\": {\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60}, \"actual\": {\"attribute\": \"MaritimeISR::usv.powerLimitW\", \"value\": 60.0}}"}
@@ -33,10 +29,6 @@
 {"task_id": "GEN-04", "type": "GEN", "configuration": "P3", "repeat": 2, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
 {"task_id": "GEN-05", "type": "GEN", "configuration": "P0", "repeat": 2, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
 {"task_id": "GEN-05", "type": "GEN", "configuration": "P1", "repeat": 2, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P0", "repeat": 2, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P1", "repeat": 2, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P2", "repeat": 2, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P3", "repeat": 2, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
 {"task_id": "QRY-01", "type": "QRY", "configuration": "P0", "repeat": 2, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"usv\", \"uav\", \"commandShip\", \"shore\"]}}"}
 {"task_id": "QRY-01", "type": "QRY", "configuration": "P1", "repeat": 2, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"MaritimeISR.usv\", \"MaritimeISR.uav\", \"MaritimeISR.commandShip\", \"MaritimeISR.shore\"]}}"}
 {"task_id": "QRY-01", "type": "QRY", "configuration": "P3", "repeat": 2, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"usv\", \"uav\", \"commandShip\", \"shore\"]}}"}
@@ -59,10 +51,6 @@
 {"task_id": "GEN-04", "type": "GEN", "configuration": "P3", "repeat": 3, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
 {"task_id": "GEN-05", "type": "GEN", "configuration": "P0", "repeat": 3, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
 {"task_id": "GEN-05", "type": "GEN", "configuration": "P1", "repeat": 3, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P0", "repeat": 3, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P1", "repeat": 3, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P2", "repeat": 3, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
-{"task_id": "MOD-05", "type": "MOD", "configuration": "P3", "repeat": 3, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
 {"task_id": "QRY-01", "type": "QRY", "configuration": "P0", "repeat": 3, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"MaritimeISR.usv\", \"MaritimeISR.uav\", \"MaritimeISR.commandShip\", \"MaritimeISR.shore\"]}}"}
 {"task_id": "QRY-01", "type": "QRY", "configuration": "P1", "repeat": 3, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"usv\", \"uav\", \"commandShip\", \"shore\"]}}"}
 {"task_id": "QRY-02", "type": "QRY", "configuration": "P3", "repeat": 3, "class": "query-renamed", "detail": "{\"expected\": {\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60}, \"actual\": {\"attribute\": \"MaritimeISR::usv.powerLimitW\", \"value\": 60.0}}"}

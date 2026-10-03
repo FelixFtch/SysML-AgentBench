@@ -41,8 +41,8 @@ def main() -> None:
     fig, axes = plt.subplots(1, 2, figsize=(9.2, 4.2))
     colors = [PALETTE["blue_main"], PALETTE["red_strong"], PALETTE["teal"], PALETTE["green_3"]]
     for ax, values, ylabel, title in (
-        (axes[0], match, "Checklist match (%)", "Match rate"),
-        (axes[1], yield_, "Matches per 1,000 tokens", "Token yield"),
+        (axes[0], match, "Pass rate, current scorer (%)", "Pass rate"),
+        (axes[1], yield_, "Passes per 1,000 tokens", "Token yield"),
     ):
         bars = ax.bar(names, values, color=colors, width=0.72)
         ax.set_ylabel(ylabel)

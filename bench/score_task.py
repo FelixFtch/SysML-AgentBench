@@ -3,6 +3,11 @@
 The checklist is the ground truth. The official parser export is the only model
 read. When the checklist names an engineering check, that check's PASS or FAIL
 is the engineering result.
+
+`status` is the task verdict: every required name and connection is present, no
+number was invented, every value the task said to keep is unchanged, and every
+engineering check came out the way the checklist expects. `engineering_status`
+is the design verdict on its own.
 """
 from __future__ import annotations
 
@@ -130,9 +135,11 @@ def score_run(run_dir: Path, assertions_path: Path) -> dict:
                 "limit_w": measured.get("limit_w"),
                 "draws_w": measured.get("draws_w"),
             })
-    status = engineering if checks else ("PASS" if structure_pass else "FAIL")
+    checks_match = all(item["match"] for item in checks) if checks else None
     if checks and engineering == "UNKNOWN":
         status = "UNKNOWN"
+    else:
+        status = "PASS" if structure_pass and not preserve_misses and checks_match is not False else "FAIL"
     result = {
         "run_dir": str(run_dir),
         "sysml_status": json.loads((sysml / "validation.json").read_text(encoding="utf-8")).get("status"),
@@ -142,7 +149,7 @@ def score_run(run_dir: Path, assertions_path: Path) -> dict:
         "must_connect": {"hit": len(connected), "expected": len(connected) + len(disconnected), "missing": disconnected},
         "must_preserve": {"hit": len(preserved), "expected": len(preserved) + len(preserve_misses), "missing": preserve_misses},
         "checks": checks,
-        "checks_match": all(item["match"] for item in checks) if checks else None,
+        "checks_match": checks_match,
         "invented_numbers": invented,
         "structure_pass": structure_pass and not preserve_misses,
         "pass": status == "PASS",

@@ -44,10 +44,12 @@ def _text_answer(task_id: str, configuration: str, repeat: int) -> str | None:
 
 
 def main() -> None:
+    from bench.rescore import apply, load
     from bench.score_answer import score_answer
+    table = load()
     rows = []
     for path in RUNS:
-        rows.extend(json.loads(line) for line in path.read_text(encoding="utf-8").splitlines())
+        rows.extend(apply("flash", json.loads(line), table) for line in path.read_text(encoding="utf-8").splitlines())
     labeled = []
     for row in rows:
         if row["status"] != "FAIL":
@@ -55,10 +57,7 @@ def main() -> None:
         kind = row["type"]
         label = "unclassified"
         detail = ""
-        if row["task_id"] == "MOD-05" and row.get("sysml_status") == "PASS" and row.get("checks_match"):
-            label = "designed-budget-fail"
-            detail = "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."
-        elif kind in {"GEN", "MOD"} and row.get("sysml_status") == "FAIL":
+        if kind in {"GEN", "MOD"} and row.get("sysml_status") == "FAIL":
             messages = _diagnostics(row.get("engine_run") or "")
             label = _syntax_class(messages)
             detail = messages[0] if messages else "Official validation failed."

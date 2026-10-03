@@ -1,0 +1,9 @@
+Counting the `connect` statements in the given model, three have an endpoint on `commandShip`:
+
+- `connect usv.radio.toShore to commandShip.fromUsv;`
+- `connect uav.radio.toShore to commandShip.fromUav;`
+- `connect commandShip.toShore to shore.fromCommand;`
+
+```json
+{"connections": 3}
+```

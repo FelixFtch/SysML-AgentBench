@@ -1,0 +1,4 @@
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P-CODE-2", "provider_model": "qwen3.8-max", "status": "PASS", "sysml_status": "PASS", "engineering_status": "UNKNOWN", "returncode": 0}
+{"task_id": "MOD-01", "type": "MOD", "configuration": "P-CODE-2", "provider_model": "qwen3.8-max", "status": "PASS", "sysml_status": "PASS", "engineering_status": "UNKNOWN", "returncode": 0}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P-CODE-2", "provider_model": "qwen3.8-max", "status": "FAIL", "sysml_status": "PASS", "engineering_status": "FAIL", "returncode": 0}
+{"task_id": "QRY-02", "type": "QRY", "configuration": "P-CODE-2", "provider_model": "qwen3.8-max", "status": "PASS", "sysml_status": null, "engineering_status": "PASS", "returncode": 0}

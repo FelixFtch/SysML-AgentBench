@@ -1,0 +1,11 @@
+id: PWR-01
+type: GEN
+scenario_family: t4_maritime_isr
+split: dev
+package: PowerCheck
+synthetic: true
+decision_required: false
+frozen_at: null
+note: >
+  Development case. The three stated watts sum to 66, above the 60 W limit.
+  The engineering check is therefore FAIL. The limit must stay 60.

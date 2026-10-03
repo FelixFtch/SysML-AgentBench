@@ -1,0 +1,21 @@
+task_id: GEN-02
+package: UavSearch
+status: single-author
+must_exist:
+- qualified_name: UavSearch::Radar
+- qualified_name: UavSearch::Camera
+- qualified_name: UavSearch::Processor
+- qualified_name: UavSearch::Radio
+- qualified_name: UavSearch::uav
+- qualified_name: UavSearch::uav::searchRadar
+- qualified_name: UavSearch::uav::eoCamera
+- qualified_name: UavSearch::uav::processor
+- qualified_name: UavSearch::uav::radio
+must_connect:
+- - UavSearch::uav::searchRadar::tracks
+  - UavSearch::uav::processor::trackIn
+- - UavSearch::uav::eoCamera::imagery
+  - UavSearch::uav::processor::imageryIn
+- - UavSearch::uav::processor::uplink
+  - UavSearch::uav::radio::fromProcessor
+must_preserve: []

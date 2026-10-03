@@ -1,0 +1,18 @@
+Restatement, based only on `bench/tasks/t4_maritime_isr/heldout/RT-05/input/model.sysml`:
+
+**Requirements as stated in the model**
+
+- The system under description is a package named `RoundTripFusion`, which privately imports `ScalarValues::*`.
+- There is a part called `commandShip`.
+- The `commandShip` provides a port named `fromUsv` and a port named `fromUav`.
+- The `commandShip` has an attribute `fusionLatencyS` of type `Real` with a default value of `2.0`.
+- The model declares a requirement definition named `Fusion`, documented as: fusion latency is 2 seconds, and the command ship accepts two uplinks.
+
+**What the model does not say** (relevant to the round trip, since these are easy to smuggle in)
+
+- It does not state that `fusionLatencyS` is measured in seconds, nor that it must equal 2.0. The type is a plain `Real`; "seconds" appears only in the attribute name and the requirement doc. No constraint or unit is attached.
+- It does not say the two ports are the "two uplinks" of the `Fusion` requirement. The count happens to match, but the model declares no direction, type, or purpose for `fromUsv`/`fromUav`, and never names USV or UAV as anything beyond the port identifiers.
+- It does not relate `Fusion` to `commandShip` at all. There is no `satisfy`, no ownership of the requirement by the part, and no usage of `Fusion` anywhere — the requirement definition is declared and then left unconnected.
+- "2 seconds" in the doc and "2.0" on the attribute are never linked by the model; asserting they refer to the same quantity is a reading, not a stated fact.
+
+The only genuinely normative content is the `Fusion` doc string; everything else is structure with default values.

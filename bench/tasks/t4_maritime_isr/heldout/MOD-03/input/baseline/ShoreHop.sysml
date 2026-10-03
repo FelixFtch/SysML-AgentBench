@@ -1,0 +1,12 @@
+package ShoreHop {
+    port def LinkPort;
+    part def Radio { port fromProcessor : LinkPort; port toShore : LinkPort; }
+    part def Processor { port uplink : LinkPort; }
+    part def ShoreStation { port fromVessel : LinkPort; }
+    part vessel {
+        part processor : Processor;
+        part radio : Radio;
+    }
+    part shore : ShoreStation;
+    connect vessel.processor.uplink to vessel.radio.fromProcessor;
+}

@@ -1,0 +1,20 @@
+## What the model actually contains
+
+- **Package** `RoundTripArchive`, with a `private import ScalarValues::*` (which is what makes `Real` usable here).
+- **Part usage** `shore` with two attributes, both typed `Real` and both given *default values*: `backhaulMbps = 50.0`, `archiveDays = 30.0`.
+- **Requirement definition** `Archive`, whose only content is a `doc` comment: *"The shore archive keeps tracks for 30 days on a 50 Mbit/s backhaul."*
+
+## Restated in sentences
+
+1. The shore archive keeps tracks for 30 days.
+2. The backhaul serving the shore archive is 50 Mbit/s.
+3. These same two quantities are carried on the `shore` part as attributes: the backhaul rate defaults to 50.0 (`backhaulMbps`) and the archive duration defaults to 30.0 (`archiveDays`).
+
+## What I am deliberately not claiming
+
+Staying inside the model means leaving these out, since nothing in it supplies them:
+
+- **No normative modality.** Nothing says "shall"; the requirement is stated descriptively in a doc comment, and the two numbers on `shore` are default values, not constraints or bounds. So the model does not say whether 30 days is a minimum retention, an exact retention, or a ceiling, nor whether 50 Mbit/s is a floor, a cap, or a nominal figure.
+- **No declared units.** The units appear only in an identifier (`...Mbps`) and in prose (`Mbit/s`, `days`); both attributes are plain `Real`.
+- **No linkage.** `Archive` has no subject, assumptions, constraints, or `require`/satisfy relationships; its connection to `shore` exists only through the words "the shore archive" in the doc comment.
+- **No content about the tracks.** The model never says what a track is, where tracks come from, how many there are, or how the archive is used — and there are no other requirements, parts, or verification statements anywhere in the package.

@@ -1,0 +1,7 @@
+task_id: AMB-04
+should_ask:
+- - unit
+  - mbit
+  - mbps
+  - mhz
+must_not_invent_number: true

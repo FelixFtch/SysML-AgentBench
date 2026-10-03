@@ -1,0 +1,13 @@
+task_id: MOD-02
+package: VesselAlign
+status: single-author
+must_exist:
+- qualified_name: VesselAlign::vessel::ais
+- qualified_name: VesselAlign::vessel::camera
+- qualified_name: VesselAlign::TimeAlign
+must_connect:
+- - VesselAlign::vessel::camera::imagery
+  - VesselAlign::vessel::processor::imageryIn
+- - VesselAlign::vessel::ais::tracks
+  - VesselAlign::vessel::processor::trackIn
+must_preserve: []

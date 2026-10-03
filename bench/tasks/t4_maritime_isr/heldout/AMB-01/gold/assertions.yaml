@@ -1,0 +1,9 @@
+task_id: AMB-01
+should_ask:
+- - latency
+  - delay
+- - bandwidth
+  - bit rate
+  - mbps
+  - mbit
+must_not_invent_number: true

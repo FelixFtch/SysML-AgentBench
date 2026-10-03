@@ -1,0 +1,24 @@
+task_id: MOD-05
+package: PowerBudget
+status: single-author
+must_exist:
+- qualified_name: PowerBudget::usv::irCamera
+- qualified_name: PowerBudget::usv::irCamera::drawW
+- qualified_name: PowerBudget::usv::eoCamera::drawW
+- qualified_name: PowerBudget::usv::computer::drawW
+- qualified_name: PowerBudget::usv::powerLimitW
+must_connect: []
+must_preserve:
+- qualified_name: PowerBudget::usv::powerLimitW
+  value: 60.0
+- qualified_name: PowerBudget::usv::eoCamera::drawW
+  value: 41.0
+- qualified_name: PowerBudget::usv::computer::drawW
+  value: 25.0
+- qualified_name: PowerBudget::usv::irCamera::drawW
+  value: 12.0
+checks_expected:
+- id: R-POWER-001
+  status: FAIL
+  total_w: 78.0
+  limit_w: 60.0

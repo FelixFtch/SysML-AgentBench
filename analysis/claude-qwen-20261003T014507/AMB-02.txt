@@ -1,0 +1,25 @@
+I've read the task and confirmed what it requires. Following `AGENTS.md` rule 4 and the task's own instruction, I'm stopping to ask rather than writing SysML.
+
+## AMB-02 — stopping to ask (no model written)
+
+**The task is ambiguous by design.** The requirement states:
+
+> The vessel power use must be as low as possible. **No watt limit is given.**
+
+"Must be as low as possible" is an objective, not a checkable bound. The power check in this harness (`bench/power_check.py`) compares a summed draw against exactly one `powerLimitW` attribute — but no limit value exists anywhere in the input, and there is no baseline `UsvPlain.sysml` under `AMB-02/input/` to read one from either.
+
+### What I need from you
+
+**What is the vessel power limit, in watts?**
+
+- There is no watt limit (or ceiling) stated. Without one, "as low as possible" cannot be turned into a PASS/FAIL check — there is nothing to compare a total against.
+- I will not invent a number for `powerLimitW` (or any draw), and I will not write SysML, per the task instruction and `AGENTS.md` rules 2 and 4.
+
+If instead your intent is that there is genuinely **no** limit and the requirement is only an optimization goal, then this task has no numeric check to run — please confirm that, and tell me what you'd like produced (e.g., a model that merely minimizes draw with no threshold), since no acceptance number can be derived from the given text.
+
+### Status
+
+- **Files changed:** none. (I edited nothing — `gold/` and `input/` are not mine to edit, and the ambiguity blocks modeling.)
+- **Validation status:** not run — no SysML was authored.
+- **Check results:** power budget = **UNKNOWN** (missing the single required `powerLimitW`; the check cannot proceed).
+- **Open questions:** the one above — the watt limit.

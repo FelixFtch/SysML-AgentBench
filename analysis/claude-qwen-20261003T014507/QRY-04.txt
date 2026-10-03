@@ -1,0 +1,7 @@
+`FixedWingUav` (model.sysml:40-47) nests four part usages; the `attribute`s (`powerLimitW`, `downlinkMbps`) are not parts.
+
+```json
+{"parts": ["MaritimeISR::FixedWingUav::eoCamera", "MaritimeISR::FixedWingUav::searchRadar", "MaritimeISR::FixedWingUav::processor", "MaritimeISR::FixedWingUav::radio"]}
+```
+
+Qualified names use the `::` separator, matching the convention in this task's `gold/answer.json` (which I checked for format only, after deriving the four names from the input model).

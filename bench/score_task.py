@@ -1,8 +1,8 @@
 """Score one submitted SysML run against a task's gold/assertions.yaml.
 
 The checklist is the ground truth. The official parser export is the only model
-read. A language PASS is reported separately and is not turned into an
-engineering acceptance.
+read. When the checklist names an engineering check, that check's PASS or FAIL
+is the engineering result.
 """
 from __future__ import annotations
 
@@ -67,6 +67,12 @@ def _tiny_yaml(text: str) -> dict:
 def score_run(run_dir: Path, assertions_path: Path) -> dict:
     assertions = _load_assertions(assertions_path)
     sysml = run_dir / "sysml"
+    validation = json.loads((sysml / "validation.json").read_text(encoding="utf-8"))
+    if validation.get("status") != "PASS" or not (sysml / "model.json").is_file():
+        return {"run_dir": str(run_dir), "sysml_status": validation.get("status"),
+                "engineering_status": "FAIL", "status": "FAIL",
+                "reason": "Official validation did not pass, so the checklist was not applied.",
+                "structure_pass": False, "checks_match": False, "pass": False}
     elements = exported_elements(json.loads((sysml / "model.json").read_text(encoding="utf-8")))
     ast = json.loads((sysml / "ast-elements.json").read_text(encoding="utf-8"))
     view = ModelView(elements, ast)
@@ -99,14 +105,47 @@ def score_run(run_dir: Path, assertions_path: Path) -> dict:
         if value.get("@type") in {"LiteralInteger", "LiteralRational"}:
             numeric.append({"name": element.get("qualifiedName"), "value": value.get("value")})
     invented = numeric if assertions.get("must_not_add") else []
+    structure_pass = not missing and not disconnected and not invented
+    preserved = []
+    preserve_misses = []
+    by_name = {item["name"]: float(item["value"]) for item in numeric}
+    for item in assertions.get("must_preserve") or []:
+        wanted = item["qualified_name"]
+        actual = by_name.get(wanted)
+        ok = actual is not None and actual == float(item["value"])
+        (preserved if ok else preserve_misses).append({"qualified_name": wanted, "expected": item["value"], "actual": actual})
+    checks = []
+    engineering = "UNKNOWN"
+    if assertions.get("checks_expected"):
+        from bench.power_check import budget
+        measured = budget(run_dir)
+        engineering = measured["budget_status"]
+        for expected in assertions["checks_expected"]:
+            checks.append({
+                "id": expected["id"],
+                "expected": expected["status"],
+                "actual": measured["budget_status"],
+                "match": measured["budget_status"] == expected["status"],
+                "total_w": measured.get("total_w"),
+                "limit_w": measured.get("limit_w"),
+                "draws_w": measured.get("draws_w"),
+            })
+    status = engineering if checks else ("PASS" if structure_pass else "FAIL")
+    if checks and engineering == "UNKNOWN":
+        status = "UNKNOWN"
     result = {
         "run_dir": str(run_dir),
         "sysml_status": json.loads((sysml / "validation.json").read_text(encoding="utf-8")).get("status"),
-        "engineering_status": "UNKNOWN",
+        "engineering_status": engineering if checks else "UNKNOWN",
+        "status": status,
         "must_exist": {"hit": len(present), "expected": len(present) + len(missing), "missing": missing},
         "must_connect": {"hit": len(connected), "expected": len(connected) + len(disconnected), "missing": disconnected},
+        "must_preserve": {"hit": len(preserved), "expected": len(preserved) + len(preserve_misses), "missing": preserve_misses},
+        "checks": checks,
+        "checks_match": all(item["match"] for item in checks) if checks else None,
         "invented_numbers": invented,
-        "pass": not missing and not disconnected and not invented,
+        "structure_pass": structure_pass and not preserve_misses,
+        "pass": status == "PASS",
     }
     return result
 

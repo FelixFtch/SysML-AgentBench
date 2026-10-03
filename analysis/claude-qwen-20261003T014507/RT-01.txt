@@ -1,0 +1,17 @@
+## Restated requirements
+
+The model contains one requirement definition, `Share`, inside the package `RoundTripShare`:
+
+1. **Share** — The unmanned surface vessel sends camera imagery to the shore.
+
+That is the complete set of requirements stated in the model. `Share` is declared as a `requirement def` (a definition, not a usage), and its only content is the documentation text above.
+
+## Explicitly not stated in the model
+
+To keep the restatement faithful, these are absent rather than implied:
+
+- No `subject` declaration — the vessel is named in the doc text but not bound as the requirement's subject.
+- No named recipient system or part for "the shore."
+- No timing, rate, latency, bandwidth, resolution, or image-format properties.
+- No verification method, no assumptions, no constraints (`require ... satisfy`, `assume`, `frame`), and no refinement or containment relationships.
+- No other requirements, parts, attributes, or connections anywhere in `RoundTripShare`.

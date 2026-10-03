@@ -1,0 +1,4 @@
+task_id: RT-03
+must_mention:
+- radar
+- command ship

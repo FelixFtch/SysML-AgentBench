@@ -1,0 +1,18 @@
+task_id: MOD-01
+package: UsvPlain
+status: single-author
+must_exist:
+- qualified_name: UsvPlain::usv::irCamera
+- qualified_name: UsvPlain::usv::eoCamera
+- qualified_name: UsvPlain::usv::ais
+- qualified_name: UsvPlain::usv::powerLimitW
+must_connect:
+- - UsvPlain::usv::irCamera::imagery
+  - UsvPlain::usv::processor::imageryIn
+- - UsvPlain::usv::eoCamera::imagery
+  - UsvPlain::usv::processor::imageryIn
+- - UsvPlain::usv::ais::tracks
+  - UsvPlain::usv::processor::trackIn
+must_preserve:
+- qualified_name: UsvPlain::usv::powerLimitW
+  value: 60.0

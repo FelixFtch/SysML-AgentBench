@@ -1,0 +1,7 @@
+{
+  "task_id": "PWR-01",
+  "author": "single-author",
+  "second_reviewer": "waived-by-user-2026-10-02",
+  "expected_engineering_status": "FAIL",
+  "reason": "41.0 + 25.0 = 66.0, and the limit stays 60.0. Official SysML acceptance does not change this FAIL."
+}

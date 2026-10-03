@@ -1,0 +1,16 @@
+The four top-level part usages in `package MaritimeISR` are the platform instances (everything else is either a `part def` or a nested part usage inside a def):
+
+```json
+{"platforms": ["MaritimeISR::usv", "MaritimeISR::uav", "MaritimeISR::commandShip", "MaritimeISR::shore"]}
+```
+
+Qualified with `::` per SysML v2 naming, in declaration order:
+
+| Usage | Type |
+|---|---|
+| `MaritimeISR::usv` | `UnmannedSurfaceVessel` |
+| `MaritimeISR::uav` | `FixedWingUav` |
+| `MaritimeISR::commandShip` | `CommandShip` |
+| `MaritimeISR::shore` | `ShoreStation` |
+
+Answered from the model text as given — I didn't open `bench/tasks/t4_maritime_isr/heldout/QRY-01/` to check against the gold file, since reading it would contaminate the heldout task.

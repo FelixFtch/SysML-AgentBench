@@ -1,0 +1,17 @@
+## Requirements restated
+
+1. **The unmanned surface vessel's power limit is 60 W.** This is the only requirement in the model — `requirement def KeepPower` carries it as documentation text.
+
+2. **A part named `usv` declares a power-limit value of 60.0.** It has one attribute, `powerLimitW`, typed `Real`, with a default value of `60.0`. The `Real` type comes from the package's private import of `ScalarValues`.
+
+That is the whole content. The model is one package (`RoundTripPower`) containing one part usage and one requirement definition.
+
+## What the model does *not* say
+
+Stated plainly, because these are the gaps a reader is most likely to fill in by assumption:
+
+- **Nothing connects `KeepPower` to `usv`.** There is no `satisfy`, no requirement usage, no `assume`/`require` constraint. `KeepPower` is only *defined*; it is never instantiated or applied to the part. The correspondence between the requirement's prose and the part's attribute rests entirely on the shared value (60) and the naming (`usv`, `powerLimitW`), not on any declared relationship.
+- **The 60 W figure is stated twice but enforced nowhere.** `60.0` is a default value on the attribute, not a bound. There is no `<=`, no constraint expression, no `:>>` defaulting relationship — nothing that would make a different value a violation.
+- **No unit is attached to the attribute.** "W" appears only in the attribute *name* and in the documentation prose; `powerLimitW : Real = 60.0` is a bare real number as far as the type system is concerned.
+- **`usv` is a part usage, not a part definition**, and it has no declared type, no supertype, and no other features.
+- **"Limit" is the documentation's word.** The model does not express whether 60 W is a maximum, a budget, a rated value, or an allocation — only that it is the limit, per the prose.

@@ -1,0 +1,76 @@
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P0", "repeat": 1, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P1", "repeat": 1, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P2", "repeat": 1, "class": "syntax-real-or-import", "detail": "Couldn't resolve reference to Type 'Real'."}
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P3", "repeat": 1, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P0", "repeat": 1, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P2", "repeat": 1, "class": "syntax-other", "detail": "no viable alternative at input 'def'"}
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P3", "repeat": 1, "class": "syntax-real-or-import", "detail": "Couldn't resolve reference to Type 'Real'."}
+{"task_id": "GEN-05", "type": "GEN", "configuration": "P0", "repeat": 1, "class": "syntax-connection", "detail": "Must have at least two related elements"}
+{"task_id": "GEN-05", "type": "GEN", "configuration": "P1", "repeat": 1, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P0", "repeat": 1, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P1", "repeat": 1, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P2", "repeat": 1, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P3", "repeat": 1, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "QRY-01", "type": "QRY", "configuration": "P1", "repeat": 1, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"usv\", \"uav\", \"commandShip\", \"shore\"]}}"}
+{"task_id": "QRY-01", "type": "QRY", "configuration": "P2", "repeat": 1, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"usv\", \"uav\", \"commandShip\", \"shore\"]}}"}
+{"task_id": "QRY-02", "type": "QRY", "configuration": "P2", "repeat": 1, "class": "query-renamed", "detail": "{\"expected\": {\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60}, \"actual\": {\"attribute\": \"MaritimeISR::usv.powerLimitW\", \"value\": 60.0}}"}
+{"task_id": "QRY-02", "type": "QRY", "configuration": "P3", "repeat": 1, "class": "query-renamed", "detail": "{\"expected\": {\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60}, \"actual\": {\"attribute\": \"MaritimeISR::usv.powerLimitW\", \"value\": 60.0}}"}
+{"task_id": "QRY-04", "type": "QRY", "configuration": "P0", "repeat": 1, "class": "query-renamed", "detail": "{\"expected\": {\"parts\": [\"MaritimeISR::FixedWingUav::eoCamera\", \"MaritimeISR::FixedWingUav::searchRadar\", \"MaritimeISR::FixedWingUav::processor\", \"MaritimeISR::FixedWingUav::radio\"]}, \"actual\": {\"parts\": [\"MaritimeISR.FixedWingUav.eoCamera\","}
+{"task_id": "QRY-04", "type": "QRY", "configuration": "P3", "repeat": 1, "class": "query-renamed", "detail": "{\"expected\": {\"parts\": [\"MaritimeISR::FixedWingUav::eoCamera\", \"MaritimeISR::FixedWingUav::searchRadar\", \"MaritimeISR::FixedWingUav::processor\", \"MaritimeISR::FixedWingUav::radio\"]}, \"actual\": {\"parts\": [\"FixedWingUav::eoCamera\", \"FixedWing"}
+{"task_id": "AMB-01", "type": "AMB", "configuration": "P1", "repeat": 1, "class": "missed-topic", "detail": "[[\"bandwidth\", \"bit rate\", \"mbps\", \"mbit\"]]"}
+{"task_id": "AMB-01", "type": "AMB", "configuration": "P2", "repeat": 1, "class": "no-question", "detail": "[]"}
+{"task_id": "AMB-04", "type": "AMB", "configuration": "P1", "repeat": 1, "class": "no-question", "detail": "[]"}
+{"task_id": "RT-05", "type": "RT", "configuration": "P1", "repeat": 1, "class": "missing-phrase", "detail": "[\"2 seconds\", \"two uplinks\"]"}
+{"task_id": "GEN-01", "type": "GEN", "configuration": "P0", "repeat": 2, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
+{"task_id": "GEN-01", "type": "GEN", "configuration": "P2", "repeat": 2, "class": "syntax-other", "detail": "Couldn't resolve reference to Type 'PartUsage'."}
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P0", "repeat": 2, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P1", "repeat": 2, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P2", "repeat": 2, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P3", "repeat": 2, "class": "syntax-real-or-import", "detail": "Couldn't resolve reference to Type 'Real'."}
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P0", "repeat": 2, "class": "syntax-real-or-import", "detail": "Couldn't resolve reference to Type 'Real'."}
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P1", "repeat": 2, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P2", "repeat": 2, "class": "syntax-real-or-import", "detail": "Couldn't resolve reference to Type 'Real'."}
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P3", "repeat": 2, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-05", "type": "GEN", "configuration": "P0", "repeat": 2, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
+{"task_id": "GEN-05", "type": "GEN", "configuration": "P1", "repeat": 2, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P0", "repeat": 2, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P1", "repeat": 2, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P2", "repeat": 2, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P3", "repeat": 2, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "QRY-01", "type": "QRY", "configuration": "P0", "repeat": 2, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"usv\", \"uav\", \"commandShip\", \"shore\"]}}"}
+{"task_id": "QRY-01", "type": "QRY", "configuration": "P1", "repeat": 2, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"MaritimeISR.usv\", \"MaritimeISR.uav\", \"MaritimeISR.commandShip\", \"MaritimeISR.shore\"]}}"}
+{"task_id": "QRY-01", "type": "QRY", "configuration": "P3", "repeat": 2, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"usv\", \"uav\", \"commandShip\", \"shore\"]}}"}
+{"task_id": "QRY-02", "type": "QRY", "configuration": "P0", "repeat": 2, "class": "query-renamed", "detail": "{\"expected\": {\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60}, \"actual\": {\"attribute\": \"UnmannedSurfaceVessel.powerLimitW\", \"value\": 60.0}}"}
+{"task_id": "QRY-02", "type": "QRY", "configuration": "P2", "repeat": 2, "class": "query-renamed", "detail": "{\"expected\": {\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60}, \"actual\": {\"attribute\": \"MaritimeISR::usv.powerLimitW\", \"value\": 60.0}}"}
+{"task_id": "QRY-02", "type": "QRY", "configuration": "P3", "repeat": 2, "class": "query-renamed", "detail": "{\"expected\": {\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60}, \"actual\": {\"attribute\": \"MaritimeISR::usv::powerLimitW\", \"value\": 60.0}}"}
+{"task_id": "QRY-04", "type": "QRY", "configuration": "P1", "repeat": 2, "class": "query-renamed", "detail": "{\"expected\": {\"parts\": [\"MaritimeISR::FixedWingUav::eoCamera\", \"MaritimeISR::FixedWingUav::searchRadar\", \"MaritimeISR::FixedWingUav::processor\", \"MaritimeISR::FixedWingUav::radio\"]}, \"actual\": {\"parts\": [\"MaritimeISR.FixedWingUav.eoCamera\","}
+{"task_id": "AMB-02", "type": "AMB", "configuration": "P2", "repeat": 2, "class": "missed-topic", "detail": "[[\"watt\", \"power limit\", \"how many watts\"]]"}
+{"task_id": "RT-05", "type": "RT", "configuration": "P1", "repeat": 2, "class": "missing-phrase", "detail": "[\"2 seconds\", \"two uplinks\"]"}
+{"task_id": "GEN-01", "type": "GEN", "configuration": "P1", "repeat": 3, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
+{"task_id": "GEN-02", "type": "GEN", "configuration": "P1", "repeat": 3, "class": "syntax-other", "detail": "no viable alternative at input 'uav'"}
+{"task_id": "GEN-02", "type": "GEN", "configuration": "P3", "repeat": 3, "class": "syntax-other", "detail": "A port must be typed by port definitions."}
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P0", "repeat": 3, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P1", "repeat": 3, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P2", "repeat": 3, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-03", "type": "GEN", "configuration": "P3", "repeat": 3, "class": "syntax-real-or-import", "detail": "no viable alternative at input 'LinkPort'"}
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P0", "repeat": 3, "class": "syntax-real-or-import", "detail": "Couldn't resolve reference to Type 'Real'."}
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P1", "repeat": 3, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P2", "repeat": 3, "class": "syntax-real-or-import", "detail": "Couldn't resolve reference to Type 'Real'."}
+{"task_id": "GEN-04", "type": "GEN", "configuration": "P3", "repeat": 3, "class": "syntax-real-or-import", "detail": "mismatched input 'import' expecting '}'"}
+{"task_id": "GEN-05", "type": "GEN", "configuration": "P0", "repeat": 3, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
+{"task_id": "GEN-05", "type": "GEN", "configuration": "P1", "repeat": 3, "class": "syntax-connection", "detail": "no viable alternative at input '.'"}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P0", "repeat": 3, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P1", "repeat": 3, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P2", "repeat": 3, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "MOD-05", "type": "MOD", "configuration": "P3", "repeat": 3, "class": "designed-budget-fail", "detail": "41 + 25 + 12 = 78 > 60. The checklist expected FAIL."}
+{"task_id": "QRY-01", "type": "QRY", "configuration": "P0", "repeat": 3, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"MaritimeISR.usv\", \"MaritimeISR.uav\", \"MaritimeISR.commandShip\", \"MaritimeISR.shore\"]}}"}
+{"task_id": "QRY-01", "type": "QRY", "configuration": "P1", "repeat": 3, "class": "query-renamed", "detail": "{\"expected\": {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}, \"actual\": {\"platforms\": [\"usv\", \"uav\", \"commandShip\", \"shore\"]}}"}
+{"task_id": "QRY-02", "type": "QRY", "configuration": "P3", "repeat": 3, "class": "query-renamed", "detail": "{\"expected\": {\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60}, \"actual\": {\"attribute\": \"MaritimeISR::usv.powerLimitW\", \"value\": 60.0}}"}
+{"task_id": "QRY-03", "type": "QRY", "configuration": "P2", "repeat": 3, "class": "query-wrong-number", "detail": "{\"expected\": {\"connections\": 3}, \"actual\": {\"connections\": 2}}"}
+{"task_id": "AMB-01", "type": "AMB", "configuration": "P0", "repeat": 3, "class": "missed-topic", "detail": "[[\"bandwidth\", \"bit rate\", \"mbps\", \"mbit\"]]"}
+{"task_id": "AMB-01", "type": "AMB", "configuration": "P1", "repeat": 3, "class": "missed-topic", "detail": "[[\"bandwidth\", \"bit rate\", \"mbps\", \"mbit\"]]"}
+{"task_id": "AMB-01", "type": "AMB", "configuration": "P2", "repeat": 3, "class": "no-question", "detail": "[]"}
+{"task_id": "AMB-01", "type": "AMB", "configuration": "P3", "repeat": 3, "class": "missed-topic", "detail": "[[\"bandwidth\", \"bit rate\", \"mbps\", \"mbit\"]]"}
+{"task_id": "AMB-02", "type": "AMB", "configuration": "P1", "repeat": 3, "class": "missed-topic", "detail": "[[\"watt\", \"power limit\", \"how many watts\"]]"}
+{"task_id": "AMB-04", "type": "AMB", "configuration": "P3", "repeat": 3, "class": "no-question", "detail": "[]"}
+{"task_id": "RT-05", "type": "RT", "configuration": "P1", "repeat": 3, "class": "missing-phrase", "detail": "[\"2 seconds\", \"two uplinks\"]"}

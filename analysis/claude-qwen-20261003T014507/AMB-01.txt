@@ -1,0 +1,48 @@
+I've read the task input and the repo conventions (`AGENTS.md`, `case.yaml`, and the sibling AMB cases). Stopping here as instructed — no SysML written, no value invented.
+
+## What AMB-01 states
+
+- Tracks must be shared **from the vessel to the shore**.
+- The sharing must be **"in real time"**.
+
+## Why no check can be written
+
+"Real time" is a qualitative term. Any validator check over it has to compare a measured number against a stated limit, and this task states no limit. Two independent numbers are missing, plus their units:
+
+- **Latency** — there is no end-to-end delay bound, so nothing can be compared against a measured or declared delay. The unit is also unstated (s vs. ms changes the check by 1000×).
+- **Bandwidth** — there is no offered data rate for the track stream and no link capacity, so there is neither a demand nor a ceiling to relate. Unstated unit again (Mbps vs. kbps).
+
+Without those, a SysML model would carry attributes whose values I would have to make up, and the resulting check would pass or fail on my invention rather than on the requirement.
+
+## Questions
+
+**Latency**
+1. What is the numeric end-to-end delay bound for a track reaching the shore, and in what unit?
+2. From which event is that delay measured — sensor detection, track formation at the vessel processor, or transmission from the vessel radio?
+3. Does the bound cover the whole vessel→shore path, or only one hop? "Vessel to shore" does not say whether an intermediate relay is in the path; if one is, does its processing time count against the bound?
+4. Is the bound a per-track maximum, a mean, or a percentile?
+
+**Bandwidth**
+5. What data rate must the track stream be carried at (track update rate × bytes per track), and in what unit?
+6. What is the vessel→shore link capacity, and in what unit?
+7. Do the bandwidth figures cover tracks only, or tracks plus imagery and other traffic sharing the link?
+
+**Scope, which affects both checks**
+8. Which tracks are in scope — the vessel's own sensor tracks only, or tracks from multiple platforms?
+9. Is "real time" meant as a **staleness bound** (a track at the shore is no older than N) or an **update rate** (a fresh track every N)? These produce different attributes and different checks.
+10. Is loss or interruption in scope? If so, what is the maximum permitted gap or drop rate?
+
+## Note on where I did *not* get numbers
+
+I checked whether the missing values are defined elsewhere in the repo. The frozen scenario reference model does carry latency and bandwidth attributes, but they are ground truth for other cases, not inputs to AMB-01, and AMB-01's own input states no such numbers. I have not adopted any of them, and I am not proposing candidate values above — the numbers need to come from you.
+
+## Status
+
+| Item | State |
+|---|---|
+| Files changed | none |
+| SysML written | none |
+| Validator run | not run — nothing to validate |
+| Checks evaluated | none — insufficient stated values |
+
+Give me answers for at least questions 1, 5, and 6 (with units) and I'll model it and run the official validator. If you'd rather relax the requirement instead — for example, dropping the latency check and modeling track sharing structurally only — say so and I'll propose that change for your approval rather than applying it myself.

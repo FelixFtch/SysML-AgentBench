@@ -1,0 +1,8 @@
+id: MOD-02
+type: MOD
+scenario_family: t4_maritime_isr
+split: heldout
+package: VesselAlign
+synthetic: true
+status: single-author
+second_reviewer: pending

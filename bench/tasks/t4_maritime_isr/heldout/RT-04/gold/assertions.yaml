@@ -1,0 +1,4 @@
+task_id: RT-04
+must_mention:
+- 30 days
+- '50'

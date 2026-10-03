@@ -1,0 +1,12 @@
+task_id: MOD-03
+package: ShoreHop
+status: single-author
+must_exist:
+- qualified_name: ShoreHop::vessel::radio
+- qualified_name: ShoreHop::shore
+must_connect:
+- - ShoreHop::vessel::processor::uplink
+  - ShoreHop::vessel::radio::fromProcessor
+- - ShoreHop::vessel::radio::toShore
+  - ShoreHop::shore::fromVessel
+must_preserve: []

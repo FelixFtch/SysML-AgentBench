@@ -1,0 +1,23 @@
+task_id: GEN-01
+package: UsvLink
+status: single-author
+must_exist:
+- qualified_name: UsvLink::ImageryPort
+- qualified_name: UsvLink::LinkPort
+- qualified_name: UsvLink::Camera
+- qualified_name: UsvLink::Processor
+- qualified_name: UsvLink::Radio
+- qualified_name: UsvLink::CommandShip
+- qualified_name: UsvLink::usv
+- qualified_name: UsvLink::usv::camera
+- qualified_name: UsvLink::usv::processor
+- qualified_name: UsvLink::usv::radio
+- qualified_name: UsvLink::commandShip
+must_connect:
+- - UsvLink::usv::camera::imagery
+  - UsvLink::usv::processor::imageryIn
+- - UsvLink::usv::processor::uplink
+  - UsvLink::usv::radio::fromProcessor
+- - UsvLink::usv::radio::toShore
+  - UsvLink::commandShip::fromUsv
+must_preserve: []

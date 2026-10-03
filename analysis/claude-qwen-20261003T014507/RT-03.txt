@@ -1,0 +1,23 @@
+I read the case files (`case.yaml`, `input/model.sysml`, `input/requirements.md`) and deliberately did **not** open `gold/assertions.yaml` — that's the answer key for a heldout case, and reading it would invalidate the round-trip result.
+
+## RT-03 restatement
+
+The model contains a single package, `RoundTripRadar`, which defines one requirement.
+
+**RadarShare** — The UAV's radar shares tracks with the command ship.
+
+That is the entirety of what the model asserts. Spelled out:
+
+1. The requirement is named `RadarShare` and is declared as a `requirement def` (a definition, not a usage of one).
+2. Its only content is documentation text: the UAV radar shares tracks with the command ship.
+3. Two parties are involved — a UAV radar and a command ship — and what passes between them is tracks.
+
+**Not stated anywhere in the model** (so not restatable without inventing facts):
+
+- No `subject` — the model never says which system or block is required to satisfy this, nor whether the obligation falls on the UAV, the radar, or the link.
+- No directionality or mechanism for the sharing (one-way or bidirectional, push or pull, what link or protocol).
+- No definition of what a "track" is, and no attributes, constraints, or numeric parameters — no rate, latency, capacity, accuracy, or format.
+- No `assume`, `frame`, refinement, sub-requirement decomposition, or `verify`/validation case.
+- No statement of why the sharing is needed, or any rationale beyond the doc string itself.
+
+The `synthetic: true` flag in `case.yaml` and the header's "not an RTX specification" caveat both hold: the model is a minimal one-requirement stub, so a faithful restatement is correspondingly short. Any longer answer would be padding it with domain assumptions.

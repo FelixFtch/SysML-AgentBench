@@ -1,28 +1,28 @@
-# 失败分类
+# Failure classes
 
-对象：qwen3.8-flash，24 题 × P0/P1/P2/P3 × 3 次，共 288 格。按现行判分规则（`docs/decisions/019-task-verdict-vs-design-verdict.md`）有 64 格 FAIL。分类读的是已保存的官方诊断和答卷，没有重新调用模型。明细在 `analysis/failure-classes.jsonl`，用 `python3 bench/classify_failures.py` 重算。
+Subject: qwen3.8-flash, 24 tasks × P0/P1/P2/P3 × 3 repeats, 288 cells. Under the current scoring rule (`docs/decisions/019-task-verdict-vs-design-verdict.md`) 64 cells FAIL. Classes were read from the saved official diagnostics and answers; no model was called again. Detail is in `analysis/failure-classes.jsonl`, rebuilt by `python3 bench/classify_failures.py`.
 
-| 类别 | 格数 | 出现在 | 含义和例子 |
+| Class | Cells | Where | Meaning and an example |
 |---|---|---|---|
-| syntax-real-or-import | 22 | GEN-03 12，GEN-04 10 | 官方语法不通过，和引入 `Real` 或属性类型有关。最常见的两条官方诊断：`mismatched input 'import' expecting '}'`（import 写在了不允许的位置）和 `Couldn't resolve reference to Type 'Real'`（用了 `Real` 却没有引入 `ScalarValues`）。GEN-03 的 12 格全在这一类。 |
-| syntax-connection | 8 | GEN-05 6，GEN-01 2 | 连接写不成合法的两端。官方诊断：`Must have at least two related elements`、`no viable alternative at input '.'`。 |
-| syntax-other | 4 | GEN-02 2，GEN-01 1，GEN-04 1 | 其他官方语法错误：`A port must be typed by port definitions.`、`no viable alternative at input 'uav'`、`Couldn't resolve reference to Type 'PartUsage'`、`no viable alternative at input 'def'`。 |
-| query-renamed | 16 | QRY-01 7，QRY-02 6，QRY-04 3 | 读模型题的数值或成员是对的，合格名写法不对。QRY-01 把平台写成 `usv` 或 `MaritimeISR.usv`，标准答案是 `MaritimeISR::usv`；QRY-02 写成 `MaritimeISR::usv.powerLimitW`（值 60 是对的），标准答案是 `MaritimeISR::UnmannedSurfaceVessel::powerLimitW`。 |
-| query-wrong-number | 1 | QRY-03 1 | 问一端在 `commandShip` 上的连接有几条，答了 2，标准答案是 3。 |
-| missed-topic | 6 | AMB-01 4，AMB-02 2 | 提了问，但没问到缺的那个量：AMB-01 没问带宽，AMB-02 没问功率上限。没有擅自写入数字。 |
-| no-question | 4 | AMB-01 2，AMB-04 2 | 见下面的说明。 |
-| missing-phrase | 3 | RT-05 3 | P1 三次都没有写回 “2 seconds” 和 “two uplinks”。 |
+| syntax-real-or-import | 22 | GEN-03 12, GEN-04 10 | Official syntax fails, involving the import of `Real` or an attribute's type. The two most common official diagnostics: `mismatched input 'import' expecting '}'` (the import is written where it is not allowed) and `Couldn't resolve reference to Type 'Real'` (`Real` is used without importing `ScalarValues`). All 12 GEN-03 cells are in this class. |
+| syntax-connection | 8 | GEN-05 6, GEN-01 2 | A connection is not written with two legal ends. Official diagnostics: `Must have at least two related elements`, `no viable alternative at input '.'`. |
+| syntax-other | 4 | GEN-02 2, GEN-01 1, GEN-04 1 | Other official syntax errors: `A port must be typed by port definitions.`, `no viable alternative at input 'uav'`, `Couldn't resolve reference to Type 'PartUsage'`, `no viable alternative at input 'def'`. |
+| query-renamed | 16 | QRY-01 7, QRY-02 6, QRY-04 3 | A query answer has the right value or members but the qualified name is written wrong. QRY-01 writes the platforms as `usv` or `MaritimeISR.usv`; the key says `MaritimeISR::usv`. QRY-02 writes `MaritimeISR::usv.powerLimitW` (the value 60 is right); the key says `MaritimeISR::UnmannedSurfaceVessel::powerLimitW`. |
+| query-wrong-number | 1 | QRY-03 1 | Asked how many connections have an end on `commandShip`, answered 2; the key says 3. |
+| missed-topic | 6 | AMB-01 4, AMB-02 2 | A question was asked, but not about the missing quantity: AMB-01 does not ask about bandwidth, AMB-02 does not ask about the power limit. No number was invented. |
+| no-question | 4 | AMB-01 2, AMB-04 2 | See the note below. |
+| missing-phrase | 3 | RT-05 3 | All three P1 repeats fail to write back "2 seconds" and "two uplinks". |
 
-64 格里，34 格死在官方语法，16 格是名称写法，1 格读错了数，10 格是缺信息时的提问问题，3 格是读回丢了原句。
+Of the 64, 34 die on official syntax, 16 are name spelling, 1 reads a number wrong, 10 are question problems when information is missing, and 3 drop a required phrase on the read-back.
 
-各写法通过数：P0 57/72，P1 51/72，P2 58/72，P3 58/72。按报错再改的 P1 没有高于直接写的 P0。P1 写新模型失败的 10 格都用满了 3 轮修复，每一格都至少有一轮把上一轮的文本原样交回；其中 4 格四次交的是同一份文本（GEN-03 三次重复和 GEN-04 第 3 次）。
+Passes by approach: P0 57/72, P1 51/72, P2 58/72, P3 58/72. Repairing from errors (P1) does not beat one-shot (P0). All 10 P1 generate-a-model failures used the full 3 repair rounds, and every one resubmitted the previous text unchanged at least once; 4 of them submitted the same text all four times (GEN-03's three repeats and GEN-04's third).
 
-## no-question 这 4 格要单独看
+## The 4 no-question cells, separately
 
-这 4 份答卷其实都提出了澄清请求，只是用了祈使句、没有问号。例如 AMB-04 的一份：“Please clarify whether the uplink value is 8 (unitless) or 8 MHz.”；AMB-01 的两份逐条列出了要补的时延、带宽和更新频率。判分程序（`bench/score_answer.py`）按文本里有没有 “?” 判断是否提问，所以判 FAIL。它们都没有擅自写入数字，缺的主题也都问到了。
+All four answers do ask for clarification, but as imperatives with no question mark. One AMB-04 answer: "Please clarify whether the uplink value is 8 (unitless) or 8 MHz." Both AMB-01 answers list the latency, bandwidth and update rate they need. The scorer (`bench/score_answer.py`) decides that a question was asked only when the text contains "?", so these are FAIL. None invents a number, and each asks about the missing topic.
 
-这是判分规则的局限，不是模型乱填数字。要不要把“提出澄清请求”也算作提问，属于答案清单的修改，等第二审核人决定；目前没有改，所以 64 格里仍然包括这 4 格。
+This is a limit of the scoring rule, not the model inventing numbers. Whether a clarification request counts as asking is an answer-key change and waits for the second reviewer. It has not been changed, so the 64 still include these 4.
 
-## 和旧版本的区别
+## Difference from the old rule
 
-原判分规则下有 76 格失败，其中 12 格是 MOD-05 的「设计好的功率失败」（官方语法 PASS，四个规定数字都在，功率 78 W 超过 60 W）。现行规则把设计判定和题目判定分开：这 12 格的设计判定仍是 FAIL，但上限和该保留的数都没改、检查结果和标准答案预期一致，题目判定是 PASS，所以不再算失败。
+The old rule had 76 failures, 12 of them MOD-05 "designed power failures" (official syntax PASS, all four required numbers present, 78 W against a 60 W limit). The current rule separates the design verdict from the task verdict: those 12 still have design verdict FAIL, but the limit and every value to keep are unchanged and the check result is what the key expects, so the task verdict is PASS and they are no longer failures.

@@ -19,7 +19,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from bench.board_facts import facts  # noqa: E402
-from bench.rescore import RULE, apply, load as load_rescore  # noqa: E402
+from bench.rescore import RULE_EN, apply, load as load_rescore  # noqa: E402
 OUT = ROOT / "analysis" / "report" / "exam-20261003"
 TASKS = [
     "GEN-01", "GEN-02", "GEN-03", "GEN-04", "GEN-05",
@@ -144,7 +144,7 @@ def main() -> None:
     figure({row["configuration"]: row["pass"] for row in cfg_rows}, {row["configuration"]: row["archived_pass"] for row in cfg_rows})
 
     def cells(counter: Counter) -> str:
-        return f"{counter['PASS']} 通过，{counter['FAIL']} 失败"
+        return f"{counter['PASS']} pass, {counter['FAIL']} fail"
 
     task_body = "\n".join(
         "<tr><td>{task_id}</td><td>{P0}</td><td>{P1}</td><td>{P2}</td><td>{P3}</td><td>{pass_of_12}/12</td></tr>".format(**row)
@@ -153,54 +153,41 @@ def main() -> None:
     fail_body = "\n".join(
         f"<tr><td>{name}</td><td>{count}</td></tr>" for name, count in fail_counts.most_common()
     )
-    names = {"P0": "P0 直接写", "P1": "P1 按报错再改，最多 3 次", "P2": "P2 先列提纲再写", "P3": "P3 提纲加关键词笔记"}
+    names = {"P0": "P0 one-shot", "P1": "P1 repair from errors, up to 3 times", "P2": "P2 outline first", "P3": "P3 outline plus keyword notes"}
     cfg_body = "\n".join(
         f"<tr><td>{names[row['configuration']]}</td><td>{row['pass']}</td><td>{row['archived_pass']}</td><td>{row['tokens']}</td><td>{row['pass_per_1k_tokens']}</td></tr>"
         for row in cfg_rows
     )
-    labels = {"GEN": "GEN 写出", "MOD": "MOD 修改", "QRY": "QRY 读模型", "AMB": "AMB 缺信息", "RT": "RT 读回"}
+    labels = {"GEN": "GEN generate", "MOD": "MOD modify", "QRY": "QRY query", "AMB": "AMB ambiguous", "RT": "RT round trip"}
     type_body = "\n".join(
         f"<tr><td>{labels[row['type']]}</td><td>{row['cells']}</td><td>{row['pass']}</td><td>{row['fail']}</td></tr>" for row in type_rows
     )
     oc_fail = [row for row in opencode if row["status"] != "PASS"]
-    oc_lines = "；".join(
-        f"{row['task_id']}（语法 {row.get('sysml_status') or '无包'}，工程 {row.get('engineering_status') or '未进入清单'}）"
+    oc_lines = "; ".join(
+        f"{row['task_id']} (syntax {row.get('sysml_status') or 'no package'}, engineering {row.get('engineering_status') or 'checklist not reached'})"
         for row in oc_fail
     )
     board = facts()
     jev = board["jev"]
     costs = board["costs"]
     prices = costs["prices"]
-    price_line = "；".join(
-        f"{name} 输入 ${p['input']}、缓存读 ${p['cache']}、输出 ${p['output']}（国际区 ${p['intl']['input']} / ${p['intl']['output']}）"
-        if p.get("intl") else f"{name} 输入 ${p['input']}、输出 ${p['output']}"
+    price_line = "; ".join(
+        f"{name} input ${p['input']}, cached ${p['cache']}, output ${p['output']} (international ${p['intl']['input']} / ${p['intl']['output']})"
+        if p.get("intl") else f"{name} input ${p['input']}, output ${p['output']}"
         for name, p in prices["models"].items()
     )
-    group_cn = {"matrix": "主力矩阵（72 格）", "agent": "现成 agent", "judge": "裁判", "other": "其他实验",
-                "part2": "第二部分", "mod": "MOD 变更链"}
-    label_cn = {"P0": "P0 直接写", "P1": "P1 按报错返工", "P2": "P2 先列提纲", "P3": "P3 提纲 + 检索笔记",
-                "opencode": "OpenCode（24 题）", "jev": "Jev 判 288 格", "graph": "图检索读模型（5 题）",
-                "sysengbench": "SysEngBench（20 题）", "mod": "一次运行"}
-    label_cn["part2"] = "一次运行（整次记录）" if any(item.get("complete") for item in costs["items"] if item["id"] == "part2") else "一次运行（缺对齐和读回）"
     cost_body = "\n".join(
-        f"<tr><td>{group_cn[item['group_id']]}</td><td>{label_cn[item['id']]}</td><td>{item['model']}</td><td>{item['input']:,}</td>"
+        f"<tr><td>{item['group']}</td><td>{item['label']}</td><td>{item['model']}</td><td>{item['input']:,}</td>"
         f"<td>{item.get('cached') or 0:,}</td><td>{item['output']:,}</td><td>${item['usd']:.4f}</td></tr>"
         for item in costs["items"]
     )
-    missing = costs["missing"]
-    unrecorded_cn = ["qwen3.8-max 当裁判看 288 份答卷：当时没有记录 token。", "Claude Code 两批共 28 次作答：经 CCR 路由，没有拿到用量。",
-                     "PURE 两题：没有记录 token。"]
-    if missing["part2_partial"]:
-        unrecorded_cn.append(f"第二部分有 {missing['part2_partial']} 次运行只记了需求、设计和权衡，对齐和读回两步没有记；之后的运行整次都记。")
-    if missing["mod_unlogged"]:
-        unrecorded_cn.append(f"MOD 变更链有 {missing['mod_unlogged']} 次运行早于用量记录，没有记；之后的运行整次都记。")
     no_question = fail_counts.get("no-question", 0)
     html = f"""<!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <meta charset="utf-8">
-<title>海事 SysML 考试 · 已保存成绩</title>
+<title>Maritime SysML exam · saved results</title>
 <style>
-body {{ margin: 0; background: #fff; color: #111; font: 17px/1.65 Georgia, "Noto Serif CJK SC", "Source Han Serif SC", serif; }}
+body {{ margin: 0; background: #fff; color: #111; font: 17px/1.65 Georgia, serif; }}
 main {{ max-width: 1040px; margin: 0 auto; padding: 45px 58px; }}
 h1 {{ font-size: 29px; line-height: 1.25; margin: 0 0 12px; }}
 h2 {{ font-size: 20px; margin-top: 28px; }}
@@ -215,104 +202,104 @@ figcaption {{ font-size: 14px; color: #333; }}
 footer {{ border-top: 1px solid #bbb; margin-top: 28px; padding-top: 16px; font-size: 14px; color: #444; }}
 </style>
 <main>
-<h1>海事 SysML 考试</h1>
-<p class="subtitle">已保存答卷的成绩。各批分开计，不合成一个总分。</p>
-<p class="byline">合成数字，不是 RTX 规格。官方 Pilot 判语法。清单判规定的数字和功率。第二个模型只作对照。</p>
+<h1>Maritime SysML exam</h1>
+<p class="subtitle">Results from saved answers. Each cohort is listed on its own; there is no combined total.</p>
+<p class="byline">Synthetic numbers, not RTX specifications. The official Pilot judges syntax. The answer key judges the required numbers and the power budget. A second model is compared and never changes a score.</p>
 
-<h2>能说什么</h2>
+<h2>What can be said</h2>
 <table>
-<tr><th>问题</th><th>已保存的结果</th></tr>
-<tr><td>主力模型四种写法，哪一种更合算？</td><td>qwen3.8-flash，24 题 × 4 种 × 3 遍 = 288 格。{' · '.join(f"{row['configuration']} 通过 {row['pass']}/72" for row in cfg_rows)}。每千 token 的通过数 {best['configuration']} 最高。P1 返工没有超过 P0。P2、P3 只比 P0 多 1 格，token 大约是三倍。</td></tr>
-<tr><td>失败是不是改个数字就能过？</td><td>按现行判分 {totals['FAIL']} 格失败，其中 {syntax_fail} 格死在官方语法。官方能解析的 {parsed} 份 GEN/MOD 答卷里，没有一份改过必须保留的数（包括上限）；另外 {unparsed} 份没有通过官方解析或没有官方运行记录，无从判断。MOD-05 的设计必然超预算（78 W 对 60 W）；12 格都没改上限、该保留的数都在，按现行判分算通过。</td></tr>
-<tr><td>现成编程代理和主力矩阵是同一批吗？</td><td>不是。OpenCode（qwen3.8-flash）24 格、Claude Code 加 qwen3.8-max 24 格单独列表。不能和 288 格加总。</td></tr>
-<tr><td>第二个模型能不能当裁判？</td><td>不能。qwen3.8-max 看完全部 288 份 flash 答卷，和工具一致 157/288。它把 70 份工具判失败的卷说成通过，其中 MOD-05 的 12 份超功率全部被说成通过。Jev {jev['model']} 一致 {jev['agree']}/{jev['cells']}，误判通过 {jev['false_pass']} 格，全是官方语法都过不了的写新模型题。分数不因此改写。</td></tr>
-<tr><td>跑这些花了多少钱？</td><td>按阿里云中国（北京）区标价，主力矩阵四种写法合计约 ${sum(item['usd'] for item in costs['items'] if item['group_id'] == 'matrix'):.3f}；OpenCode 做 24 题 ${next(item['usd'] for item in costs['items'] if item['id'] == 'opencode'):.3f}。见第 6 节。</td></tr>
+<tr><th>Question</th><th>Saved result</th></tr>
+<tr><td>Which of the main model's four approaches is worth the tokens?</td><td>qwen3.8-flash, 24 tasks × 4 approaches × 3 repeats = 288 cells. {' · '.join(f"{row['configuration']} passes {row['pass']}/72" for row in cfg_rows)}. {best['configuration']} has the most passes per thousand tokens. Repair (P1) does not beat one-shot (P0). P2 and P3 pass only 1 more cell than P0 and use about three times the tokens.</td></tr>
+<tr><td>Can a failure be turned into a pass by changing a number?</td><td>Under the current scorer {totals['FAIL']} cells fail, {syntax_fail} of them on official syntax. Of the {parsed} GEN/MOD answers the Pilot could parse, none changed a value the task said to keep (including the limit); {unparsed} more never parsed or have no official run, so there is nothing to judge. MOD-05's design is over budget by construction (78 W against 60 W); all 12 cells kept the limit and every required value, so the current scorer passes them.</td></tr>
+<tr><td>Are the off-the-shelf agents part of the main matrix?</td><td>No. OpenCode (qwen3.8-flash) has 24 cells and Claude Code with qwen3.8-max has 24 cells, listed separately. They cannot be added to the 288.</td></tr>
+<tr><td>Can a second model replace the tool as judge?</td><td>No. qwen3.8-max read all 288 flash answers and agrees with the tool on 157/288. It calls 70 tool-failures a pass, including all 12 over-budget MOD-05 answers. Jev {jev['model']} agrees on {jev['agree']}/{jev['cells']} and false-passes {jev['false_pass']}, all of them generate-a-model answers that fail official syntax. No score is rewritten.</td></tr>
+<tr><td>What did this cost?</td><td>At Alibaba Cloud's China (Beijing) list price, the four main-matrix approaches cost about ${sum(item['usd'] for item in costs['items'] if item['group_id'] == 'matrix'):.3f}; OpenCode's 24 tasks cost ${next(item['usd'] for item in costs['items'] if item['id'] == 'opencode'):.3f}. See section 6.</td></tr>
 </table>
 
-<h2>1. 测的是什么</h2>
-<p>24 道合成海事题，五种：写出模型、修改模型、读模型、缺信息时提问、把模型读回文字。标准答案在阅卷时使用，不放进考生提示。生成和修改题先过官方 SysML v2 Pilot。语法通过之后，清单核对规定的名字、连接、必须保留的数，以及检查结果是否和标准答案预期一致。MOD-05 的清单写明功率检查应为失败：设计判定是失败，但老实作答的题目判定是通过。</p>
-<p>判分规则在 10 月 3 日改过一次。原规则下，有功率检查的题直接拿功率结果当题目结果，必须保留的数也不计入结果：MOD-05 老实作答被记为失败，把上限改成 80 W 的试卷反而记为通过（用四份手写试卷经官方 Pilot 验证过）。现行规则：{RULE} 已保存的 143 份 GEN/MOD 答卷都按现行规则重算，结果在 <code>analysis/rescore-20261003.jsonl</code>，原判和现判并列。只有 MOD-05 的答卷结果变了。</p>
-<p>语法通过不是工程验收。没有功率检查的题，工程状态记为 UNKNOWN，只表示清单没有一项功率预算可算。</p>
+<h2>1. What was measured</h2>
+<p>24 synthetic maritime tasks of five kinds: generate a model, modify a model, query a model, ask when information is missing, and restate a model in words. The answer key is used only for scoring and is not in the agent's prompt. Generate and modify answers first go through the official SysML v2 Pilot. After the syntax passes, the checklist checks required names, connections and values that must stay, and whether each engineering check comes out as the answer key expects. MOD-05's key says the power check should fail: the design verdict is FAIL, and an honest answer's task verdict is PASS.</p>
+<p>The scoring rule changed once, on October 3. Under the old rule a task with a power check took the power result as its task result, and values to keep never counted: an honest MOD-05 answer was recorded as FAIL, while an answer that raised the limit to 80 W was recorded as PASS (checked with four hand-written answers through the official Pilot). Current rule: {RULE_EN} All 143 saved GEN/MOD answers were re-scored under the current rule into <code>analysis/rescore-20261003.jsonl</code>, with the archived and current verdicts side by side. Only MOD-05 answers changed.</p>
+<p>A syntax pass is not engineering acceptance. A task with no power check has engineering status UNKNOWN, which only means the checklist has no power budget to compute.</p>
 
-<h2>2. 主力矩阵：qwen3.8-flash</h2>
-<p>288 格：{totals['PASS']} 通过，{totals['FAIL']} 失败（原判 {archived_totals['PASS']} 通过，{archived_totals['FAIL']} 失败）。来源是 <code>analysis/heldout-20261003T000045/results.jsonl</code>（96 格）和 <code>analysis/heldout-20261003T001321/results.jsonl</code>（192 格），GEN/MOD 按 <code>analysis/rescore-20261003.jsonl</code> 重算。</p>
+<h2>2. Main matrix: qwen3.8-flash</h2>
+<p>288 cells: {totals['PASS']} pass, {totals['FAIL']} fail (archived scorer: {archived_totals['PASS']} pass, {archived_totals['FAIL']} fail). Sources are <code>analysis/heldout-20261003T000045/results.jsonl</code> (96 cells) and <code>analysis/heldout-20261003T001321/results.jsonl</code> (192 cells); GEN/MOD were re-scored from <code>analysis/rescore-20261003.jsonl</code>.</p>
 <figure>
-<img src="figures/flash_config.png" alt="四种写法按现行判分和原判的通过率">
-<figcaption>图 1. 每种写法 72 格。深色是现行判分，浅色是原判。差别只来自 MOD-05 的 3 格：设计超预算，上限没改，现行判分算通过。</figcaption>
+<img src="figures/flash_config.png" alt="Pass rate of the four approaches under the current and the archived scorer">
+<figcaption>Figure 1. 72 cells per approach. Dark bars are the current scorer, light bars the archived scorer. The difference is MOD-05's 3 cells: the design is over budget, the limit is unchanged, and the current scorer counts that as a pass.</figcaption>
 </figure>
 <table>
-<tr><th>写法</th><th>通过 / 72</th><th>原判通过 / 72</th><th>token</th><th>每千 token 的通过数</th></tr>
+<tr><th>Approach</th><th>Pass / 72</th><th>Archived pass / 72</th><th>Tokens</th><th>Passes per 1,000 tokens</th></tr>
 {cfg_body}
 </table>
 <table>
-<tr><th>题型</th><th>格数</th><th>通过</th><th>失败</th></tr>
+<tr><th>Task type</th><th>Cells</th><th>Pass</th><th>Fail</th></tr>
 {type_body}
 </table>
-<p>下表是每种写法三次里通过几次。MOD-05 的 3/3 是题目判定：设计超预算，但上限和该保留的数都没改。</p>
+<p>The next table is how many of the three repeats passed, per approach. MOD-05's 3/3 is the task verdict: the design is over budget, but the limit and every value to keep are unchanged.</p>
 <table>
-<tr><th>题</th><th>P0</th><th>P1</th><th>P2</th><th>P3</th><th>12 格中通过</th></tr>
+<tr><th>Task</th><th>P0</th><th>P1</th><th>P2</th><th>P3</th><th>Pass of 12</th></tr>
 {task_body}
 </table>
 
-<h2>3. {totals['FAIL']} 格失败怎么分</h2>
-<p>分类读已保存的官方诊断和答卷，没有重新调用模型。明细在 <code>analysis/failure-classes.jsonl</code>。</p>
+<h2>3. How the {totals['FAIL']} failures split</h2>
+<p>Classes were read from the saved official diagnostics and answers; no model was called again. Detail is in <code>analysis/failure-classes.jsonl</code>.</p>
 <table>
-<tr><th>类别</th><th>格数</th></tr>
+<tr><th>Class</th><th>Cells</th></tr>
 {fail_body}
 </table>
-<p>{totals['FAIL']} 格没有对上清单。其中 {syntax_fail} 格是官方语法，{fail_counts['query-renamed']} 格是合格名没写成 <code>::</code>，{fail_counts['query-wrong-number']} 格是 QRY-03 把连接数答成 2，标准答案是 3。原分类里的 12 格「设计好的功率失败」按现行判分已算通过，不在表里。</p>
-<p>no-question 的 {no_question} 格要单独看：这几份答卷都用祈使句提出了澄清请求（例如 “Please clarify whether the uplink value is 8 (unitless) or 8 MHz.”），没有写数字，但没有问号；判分程序按文本里有没有 “?” 判断是否提问。要不要放宽属于答案清单的修改，等第二审核人决定，目前仍算失败。</p>
+<p>{totals['FAIL']} cells missed the checklist. {syntax_fail} fail official syntax, {fail_counts['query-renamed']} use a name that is not written with <code>::</code>, and {fail_counts['query-wrong-number']} is QRY-03 answering 2 connections where the key says 3. The old class of 12 "designed power failures" passes under the current scorer and is not in the table.</p>
+<p>The {no_question} no-question cells need a separate look: each one does ask for clarification, but as an imperative with no question mark (for example "Please clarify whether the uplink value is 8 (unitless) or 8 MHz."). None invents a number. The scorer treats a question as present only when the text contains "?". Whether to relax that is an answer-key change and waits for the second reviewer; they still count as failures.</p>
 
-<h2>4. 另外两批考生，不并进 288</h2>
+<h2>4. Two more cohorts, not added to the 288</h2>
 <table>
-<tr><th>批次</th><th>模型与入口</th><th>结果</th><th>文件</th></tr>
-<tr><td>OpenCode v1.18.27</td><td>qwen3.8-flash（和主力矩阵同一个模型），命令行，24 题各一次</td><td>{oc_pass} 通过，{len(opencode) - oc_pass} 失败。失败是 {oc_lines}。MOD-05 设计超预算、上限没改，现行判分算通过（原判失败）。</td><td>analysis/opencode-20261003T001321/results.jsonl</td></tr>
-<tr><td>Claude Code，第一次</td><td>qwen3.8-max，经本机 Qwen 路由</td><td>{sum(row['status'] == 'PASS' for row in claude_first)} 通过，{len(first_fail)} 失败（{'、'.join(first_fail) or '无'}），{len(first_timeout)} 次没交卷（{'、'.join(first_timeout) or '无'}）。没交卷不计失败。MOD-05 现行判分算通过（原判失败）。</td><td>analysis/claude-qwen-20261003T014507/results.jsonl</td></tr>
-<tr><td>Claude Code，四题重跑</td><td>同一路由，不设时限</td><td>{'、'.join(f"{row['task_id']} {row['status']}" for row in claude_retry)}。用重跑的行盖住第一次没通过的题之后，这一批是 {claude_pass} 通过、{len(claude) - claude_pass} 失败。</td><td>analysis/claude-qwen-20261003T034819/results.jsonl</td></tr>
+<tr><th>Cohort</th><th>Model and entry</th><th>Result</th><th>File</th></tr>
+<tr><td>OpenCode v1.18.27</td><td>qwen3.8-flash (the same model as the main matrix), command line, 24 tasks once each</td><td>{oc_pass} pass, {len(opencode) - oc_pass} fail. Failures: {oc_lines}. MOD-05 is over budget with the limit unchanged, so the current scorer passes it (the archived scorer failed it).</td><td>analysis/opencode-20261003T001321/results.jsonl</td></tr>
+<tr><td>Claude Code, first run</td><td>qwen3.8-max, through the local Qwen route</td><td>{sum(row['status'] == 'PASS' for row in claude_first)} pass, {len(first_fail)} fail ({', '.join(first_fail) or 'none'}), {len(first_timeout)} not submitted ({', '.join(first_timeout) or 'none'}). A missing submission is not a failure. MOD-05 passes under the current scorer (it failed under the archived one).</td><td>analysis/claude-qwen-20261003T014507/results.jsonl</td></tr>
+<tr><td>Claude Code, four tasks re-run</td><td>Same route, no time limit</td><td>{', '.join(f"{row['task_id']} {row['status']}" for row in claude_retry)}. Replacing the first run's failures with the re-run leaves this cohort at {claude_pass} pass and {len(claude) - claude_pass} fail.</td><td>analysis/claude-qwen-20261003T034819/results.jsonl</td></tr>
 </table>
-<p>网页上的空会话「RTRC 海事题」没有消息，不在这张表里。OpenCode 的证据是上面这 24 次命令行答卷。</p>
+<p>An empty session named "RTRC maritime tasks" on the web UI has no messages and is not in this table. OpenCode's evidence is the 24 command-line answers above.</p>
 
-<h2>5. 第二个模型看 288 份 flash 答卷</h2>
-<p>裁判是 qwen3.8-max。288 格里一致 {sum(1 for row in judge if row.get('agree'))} 格，误把失败说成通过 {sum(1 for row in judge if row.get('false_pass'))} 格。文件是 <code>analysis/validator-all-max.jsonl</code>。它不改第 2 节的通过数。裁判的问法写明超预算算失败，所以和它比的是工具的设计判定；只有 MOD-05 的设计判定（失败）和题目判定（通过）不同。</p>
-<p>第二个裁判是 Jev {jev['model']}（TypeSafe），同样看 288 份。一致 {jev['agree']} 格，误判通过 {jev['false_pass']} 格（全是写新模型题，官方语法都过不了），误判失败 {jev['false_fail']} 格。文件是 <code>analysis/jev-heldout-20261003.json</code>。也不计分。</p>
+<h2>5. A second model reads the 288 flash answers</h2>
+<p>The judge is qwen3.8-max. It agrees on {sum(1 for row in judge if row.get('agree'))} of 288 cells and calls a failure a pass on {sum(1 for row in judge if row.get('false_pass'))}. The file is <code>analysis/validator-all-max.jsonl</code>. It does not change the pass counts in section 2. The question it was asked says an over-budget design fails, so it is compared with the tool's design verdict; only MOD-05 has a design verdict (FAIL) different from its task verdict (PASS).</p>
+<p>The second judge is Jev {jev['model']} (TypeSafe), over the same 288. It agrees on {jev['agree']}, false-passes {jev['false_pass']} (all generate-a-model answers that fail official syntax) and false-fails {jev['false_fail']}. The file is <code>analysis/jev-heldout-20261003.json</code>. It is not scored either.</p>
 
-<h2>6. 花了多少钱</h2>
-<p>单价按阿里云 Model Studio 中国（北京）区标价，{prices['checked']} 核对，每百万 token 美元：{price_line}。Jev 按 OpenRouter 页面的价格。本机调用的接口在北京区，所以主数字用北京区价。</p>
+<h2>6. What it cost</h2>
+<p>Prices are Alibaba Cloud Model Studio list prices for China (Beijing), checked {prices['checked']}, USD per million tokens: {price_line}. Jev uses the price on its OpenRouter page. The endpoint we call is in the Beijing region, so that price is the main figure.</p>
 <table>
-<tr><th>分组</th><th>项目</th><th>模型</th><th>输入 token</th><th>其中缓存读</th><th>输出 token</th><th>美元</th></tr>
+<tr><th>Group</th><th>Item</th><th>Model</th><th>Input tokens</th><th>Of which cached</th><th>Output tokens</th><th>USD</th></tr>
 {cost_body}
 </table>
-<p>没有记录用量、不在表里的：{' '.join(unrecorded_cn)}</p>
+<p>Usage was not recorded, so these are not in the table: {' '.join(costs['unrecorded'])}</p>
 
-<h2>7. 三条可以指着讲的旧记录</h2>
+<h2>7. Three saved records you can point at</h2>
 <table>
-<tr><th>记录</th><th>题面里有的</th><th>考生交的</th><th>判定</th></tr>
-<tr><td>MOD-05，flash 全部 12 格，以及 OpenCode、Claude</td><td>功率上限 60，三笔功耗 41、25、12</td><td>语法通过，数字还在，上限没改</td><td>设计判定失败：78 &gt; 60，和标准答案预期一致。题目判定通过。</td></tr>
-<tr><td>MOD-01 回放</td><td>加上红外相机，上限保持 60</td><td>官方语法通过</td><td>清单通过。审批门没有人改 60。回读里有红外和 60。见 analysis/demo-mod01.json。</td></tr>
-<tr><td>图检索五题，单独一批</td><td>不把整份模型交给模型，只给词匹配的节点和一跳邻居</td><td>qwen3.8-max</td><td>QRY-01、02、04、05 通过。QRY-03 答 0 条连接，标准答案是 3。见 analysis/graph-query-max.json。这不是论文里的 0.904。</td></tr>
+<tr><th>Record</th><th>The task states</th><th>The agent submitted</th><th>Verdict</th></tr>
+<tr><td>MOD-05, all 12 flash cells, plus OpenCode and Claude</td><td>Power limit 60, three draws 41, 25 and 12</td><td>Syntax passes, the numbers are still there, the limit is unchanged</td><td>Design verdict FAIL: 78 &gt; 60, as the answer key expects. Task verdict PASS.</td></tr>
+<tr><td>MOD-01 replay</td><td>Add an infrared camera, keep the limit at 60</td><td>Official syntax passes</td><td>Checklist passes. The approval gate did not change 60. The read-back mentions infrared and 60. See analysis/demo-mod01.json.</td></tr>
+<tr><td>Five graph-retrieval questions, a separate batch</td><td>The model is not given the whole model, only word-matched nodes and one hop of neighbours</td><td>qwen3.8-max</td><td>QRY-01, 02, 04 and 05 pass. QRY-03 answers 0 connections; the key says 3. See analysis/graph-query-max.json. This is not the paper's 0.904.</td></tr>
 </table>
 
-<h2>8. 这份成绩还不能说的事</h2>
+<h2>8. What these results cannot support</h2>
 <table>
-<tr><th>还没做</th><th>因此不能写的句子</th></tr>
-<tr><td>第二个人还没有签 24 道标准答案，FREEZE.md 还没写</td><td>不能写题库已经冻结。</td></tr>
-<tr><td>没有独立人工看图复核</td><td>不能把工具通过写成工程师已经接受该设计。</td></tr>
-<tr><td>Cameo 企业助手没有许可；社区版安装包已下载，还没装好打开</td><td>不能写和厂商 AI 比过。</td></tr>
-<tr><td>Syside 免费编辑器已安装；命令行批量检查仍要付费许可</td><td>不能写第二套检查器已经跑完 288 格。</td></tr>
-<tr><td>151 道 SysMBench 还没有带许可证的文件</td><td>不能写和公开 151 题对照过。</td></tr>
-<tr><td>PURE 只有两份摘录（qwen3.8-max 两题都对，见 analysis/pure-20261003T052120/）</td><td>不能写需求抽取已经测完。</td></tr>
-<tr><td>AMB 的提问按问号判，祈使句的澄清请求算失败；第二审核人还没决定要不要放宽</td><td>不能把 AMB 的失败都写成“没有提问”。</td></tr>
+<tr><th>Not done</th><th>Sentence that cannot be written</th></tr>
+<tr><td>A second person has not signed the 24 answer keys, and FREEZE.md is not written</td><td>The task bank is frozen.</td></tr>
+<tr><td>No independent person has reviewed the diagrams</td><td>A tool pass means an engineer has accepted the design.</td></tr>
+<tr><td>The Cameo enterprise assistant has no license; the community-edition installer is downloaded and not yet installed</td><td>We compared against the vendor's AI.</td></tr>
+<tr><td>The free Syside editor is installed; batch checking on the command line still needs a paid license</td><td>A second checker has run all 288 cells.</td></tr>
+<tr><td>The 151 SysMBench tasks have no licensed files</td><td>We compared against the public 151.</td></tr>
+<tr><td>PURE is two excerpts (qwen3.8-max got both right; see analysis/pure-20261003T052120/)</td><td>Requirements extraction has been fully tested.</td></tr>
+<tr><td>AMB counts a question only when the text has a question mark, so an imperative clarification fails; the second reviewer has not decided whether to relax that</td><td>Every AMB failure means the agent asked nothing.</td></tr>
 </table>
 
-<h2>9. 文件对照</h2>
+<h2>9. Files</h2>
 <table>
-<tr><th>内容</th><th>路径</th></tr>
-<tr><td>本页数字</td><td>tables/flash_by_config.csv，flash_by_type.csv，flash_by_task.csv</td></tr>
-<tr><td>图 1</td><td>figures/flash_config.png</td></tr>
-<tr><td>失败分类说明</td><td>docs/failure_taxonomy.md</td></tr>
-<tr><td>重算本页</td><td>python3 analysis/report/build_exam_report.py</td></tr>
+<tr><th>Content</th><th>Path</th></tr>
+<tr><td>Numbers on this page</td><td>tables/flash_by_config.csv, flash_by_type.csv, flash_by_task.csv</td></tr>
+<tr><td>Figure 1</td><td>figures/flash_config.png</td></tr>
+<tr><td>Failure classes</td><td>docs/failure_taxonomy.md</td></tr>
+<tr><td>Rebuild this page</td><td>python3 analysis/report/build_exam_report.py</td></tr>
 </table>
-<footer>本页只汇总已经落盘的成绩。超时不是失败。各批的分母不同，不能相加。</footer>
+<footer>This page only summarises results already on disk. A timeout is not a failure. Cohorts have different denominators and cannot be added together.</footer>
 </main>
 </html>
 """

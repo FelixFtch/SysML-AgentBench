@@ -1,0 +1,5 @@
+configuration,cells,pass,fail,archived_pass,tokens,pass_per_1k_tokens
+P0,72,57,15,54,31190,1.828
+P1,72,51,21,48,50377,1.012
+P2,72,58,14,55,89059,0.651
+P3,72,58,14,55,105304,0.551

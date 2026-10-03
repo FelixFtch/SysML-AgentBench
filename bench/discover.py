@@ -35,29 +35,29 @@ STOPWORDS = {"and", "the", "for", "with", "over", "one", "from", "that", "this",
 # Synthetic device catalogue for the design space and the trade-off step. Not a bill of materials, not RTX data.
 CATALOG = {
     "slots": {
-        "visible_camera": {"label": "可见光相机", "options": {
-            "eo_std": {"label": "标准", "drawW": 41},
-            "eo_lite": {"label": "低功耗", "drawW": 28}}},
-        "ir_camera": {"label": "红外相机", "options": {
-            "ir_std": {"label": "标准", "drawW": 12},
-            "ir_lite": {"label": "低功耗", "drawW": 7},
-            "ir_none": {"label": "暂不加", "drawW": 0}}},
-        "computer": {"label": "边缘计算机", "options": {
-            "edge_std": {"label": "标准", "drawW": 25},
-            "edge_low": {"label": "低功耗", "drawW": 14}}},
-        "uplink": {"label": "上行链路", "options": {
-            "cell_8": {"label": "蜂窝", "uplinkMbps": 8},
-            "cell_20": {"label": "蜂窝增强", "uplinkMbps": 20}}},
-        "storage": {"label": "本地存储", "options": {
+        "visible_camera": {"label": "Visible camera", "options": {
+            "eo_std": {"label": "standard", "drawW": 41},
+            "eo_lite": {"label": "low power", "drawW": 28}}},
+        "ir_camera": {"label": "Infrared camera", "options": {
+            "ir_std": {"label": "standard", "drawW": 12},
+            "ir_lite": {"label": "low power", "drawW": 7},
+            "ir_none": {"label": "none for now", "drawW": 0}}},
+        "computer": {"label": "Edge computer", "options": {
+            "edge_std": {"label": "standard", "drawW": 25},
+            "edge_low": {"label": "low power", "drawW": 14}}},
+        "uplink": {"label": "Uplink", "options": {
+            "cell_8": {"label": "cellular", "uplinkMbps": 8},
+            "cell_20": {"label": "cellular plus", "uplinkMbps": 20}}},
+        "storage": {"label": "Local storage", "options": {
             "ssd_128": {"label": "128 GB", "storageGB": 128},
             "ssd_256": {"label": "256 GB", "storageGB": 256}}},
     },
     "params": {
-        "powerLimitW": {"label": "功率上限", "unit": "W", "choices": [60], "fixed": True},
-        "dataRateMbps": {"label": "记录速率", "unit": "Mbps", "choices": [6, 12, 18]},
-        "retentionHours": {"label": "原件保留", "unit": "h", "choices": [4, 8]},
-        "uploadMbps": {"label": "上传速率", "unit": "Mbps", "choices": [2, 6, 12, 18],
-                        "note": "低于记录速率就是只传预览"},
+        "powerLimitW": {"label": "Power limit", "unit": "W", "choices": [60], "fixed": True},
+        "dataRateMbps": {"label": "Recording rate", "unit": "Mbps", "choices": [6, 12, 18]},
+        "retentionHours": {"label": "Keep originals", "unit": "h", "choices": [4, 8]},
+        "uploadMbps": {"label": "Upload rate", "unit": "Mbps", "choices": [2, 6, 12, 18],
+                        "note": "below the recording rate means only a preview is uploaded"},
     },
     "default": {"visible_camera": "eo_std", "ir_camera": "ir_std", "computer": "edge_std", "uplink": "cell_8",
                 "storage": "ssd_128", "dataRateMbps": 18, "retentionHours": 8, "uploadMbps": 18},
@@ -121,7 +121,7 @@ def propose_tradeoffs(brief: str, failing: list[str]) -> dict:
     parsed = extract_json(reply["text"])
     proposals = parsed.get("proposals") if isinstance(parsed, dict) else None
     if not isinstance(proposals, list):
-        raise ValueError("模型没有返回方案列表")
+        raise ValueError("The model returned no list of proposals")
     cleaned = []
     for item in proposals[:4]:
         choice = item.get("choice") or {}
@@ -134,7 +134,7 @@ def propose_tradeoffs(brief: str, failing: list[str]) -> dict:
                     valid = False
             except (TypeError, ValueError):
                 valid = False
-        entry = {"title": item.get("title") or "方案", "rationale": item.get("rationale") or "", "choice": choice, "valid": valid}
+        entry = {"title": item.get("title") or "Proposal", "rationale": item.get("rationale") or "", "choice": choice, "valid": valid}
         if valid:
             entry["budgets"] = budgets(choice)
             entry["feasible"] = all(entry["budgets"][key]["status"] == "PASS" for key in ("power", "link", "store"))
@@ -158,7 +158,7 @@ def _library():
     from bench.graph_query import build_graph, maritime_parse, official_parse
     cards, neighbors, kinds = build_graph(maritime_parse(), "MaritimeISR::")
     source_of = {ident: "MaritimeISR" for ident in cards}
-    sources = [{"name": "MaritimeISR", "label": "已有海事模型 MaritimeISR",
+    sources = [{"name": "MaritimeISR", "label": "Existing maritime model MaritimeISR",
                 "path": "scenario/maritime-isr/MaritimeISR.sysml", "cards": len(cards)}]
     for entry in load_memory():
         saved = Path(entry["run_dir"])
@@ -167,14 +167,14 @@ def _library():
             continue
         run_dir = official_parse(saved, [source] if source else [], entry["package"])
         extra_cards, extra_neighbors, extra_kinds = build_graph(run_dir, entry["package"] + "::")
-        tag = f"已批准 {entry['run_id']}·{entry['design']}"
+        tag = f"approved {entry['run_id']}·{entry['design']}"
         for ident, text in extra_cards.items():
             cards[ident] = text
             source_of[ident] = tag
         for ident, near in extra_neighbors.items():
             neighbors.setdefault(ident, set()).update(near)
         kinds.update(extra_kinds)
-        sources.append({"name": tag, "label": f"已批准设计 {entry['run_id']} · {entry['design']}",
+        sources.append({"name": tag, "label": f"Approved design {entry['run_id']} · {entry['design']}",
                         "path": str(run_dir.relative_to(ROOT)), "cards": len(extra_cards)})
     return cards, neighbors, kinds, source_of, sources
 
@@ -233,7 +233,7 @@ def retrieve_existing(brief: str, limit: int = 12) -> dict:
         "cards": prompt_cards,
         "numbers": numbers,
         "path": "reuse" if numbers else "new",
-        "note": "已有模型里找到可复用的数值，走复用路径。" if numbers else "已有模型里没有相关数值，走新建路径。",
+        "note": "Reusable values found in existing models: reuse path." if numbers else "No related values in existing models: new-design path.",
     }
 
 
@@ -254,7 +254,7 @@ def write_requirements(brief: str) -> dict:
     parsed = extract_json(reply["text"])
     requirements = parsed.get("requirements") if isinstance(parsed, dict) else None
     if not isinstance(requirements, list):
-        raise ValueError("模型没有返回需求列表")
+        raise ValueError("The model returned no list of requirements")
     questions = parsed.get("questions") if isinstance(parsed, dict) else []
     allowed = numbers_in(brief)
     unsourced = []
@@ -304,11 +304,11 @@ def write_design(brief: str, requirements: list[dict], package: str, variant: st
     ]
     reply = chat(messages)
     parts = [
-        {"key": "rules", "label": "规范", "paper": "p3", "text": DESIGN_RULES},
-        {"key": "contract", "label": "模板 · 属性合同", "paper": "p3", "text": contract},
-        {"key": "examples", "label": "示例 · 检索到的已有元素", "paper": "p2", "text": notes or "(没有检索结果)"},
-        {"key": "task", "label": "简报 + 需求", "paper": "", "text": f"{brief}\n\n{listing}"},
-        {"key": "variant", "label": "这一套的变体要求", "paper": "", "text": variant},
+        {"key": "rules", "label": "Rules", "paper": "p3", "text": DESIGN_RULES},
+        {"key": "contract", "label": "Template · attribute contract", "paper": "p3", "text": contract},
+        {"key": "examples", "label": "Examples · retrieved existing elements", "paper": "p2", "text": notes or "(no retrieval results)"},
+        {"key": "task", "label": "Brief + requirements", "paper": "", "text": f"{brief}\n\n{listing}"},
+        {"key": "variant", "label": "What this variant must do", "paper": "", "text": variant},
     ]
     return {"text": reply["text"], "model": reply.get("model"), "usage": reply.get("usage"), "messages": messages, "prompt_parts": parts}
 
@@ -357,30 +357,30 @@ def simulate(numbers: dict, connections: list, requirements: list[dict]) -> list
     if limits and draws:
         limit = next(iter(limits.values()))
         total = sum(draws.values())
-        checks.append({"id": "POWER", "label": "功率合计对上限", "formula": "所有 drawW 相加 ≤ powerLimitW",
+        checks.append({"id": "POWER", "label": "Total power vs limit", "formula": "sum of all drawW ≤ powerLimitW",
                        "status": "PASS" if total <= limit else "FAIL", "actual": total, "limit": limit, "unit": "W"})
     else:
-        checks.append({"id": "POWER", "label": "功率合计对上限", "formula": "所有 drawW 相加 ≤ powerLimitW", "status": "UNKNOWN",
-                       "detail": "模型里没有同时写出 powerLimitW 和 drawW。"})
+        checks.append({"id": "POWER", "label": "Total power vs limit", "formula": "sum of all drawW ≤ powerLimitW", "status": "UNKNOWN",
+                       "detail": "The model does not state both powerLimitW and drawW."})
     uplink, upload, rate = tail("uplinkMbps"), tail("uploadMbps"), tail("dataRateMbps")
     sent = upload or rate
     if uplink and sent:
         link = next(iter(uplink.values()))
         need = sum(sent.values())
-        checks.append({"id": "LINK", "label": "上传对上行", "formula": ("uploadMbps" if upload else "dataRateMbps") + " ≤ uplinkMbps",
+        checks.append({"id": "LINK", "label": "Upload vs uplink", "formula": ("uploadMbps" if upload else "dataRateMbps") + " ≤ uplinkMbps",
                        "status": "PASS" if need <= link else "FAIL", "actual": need, "limit": link, "unit": "Mbps"})
     else:
-        checks.append({"id": "LINK", "label": "上传对上行", "formula": "uploadMbps（没有就用 dataRateMbps）≤ uplinkMbps", "status": "UNKNOWN",
-                       "detail": "模型里没有同时写出 uplinkMbps 和上传速率。"})
+        checks.append({"id": "LINK", "label": "Upload vs uplink", "formula": "uploadMbps (or dataRateMbps) ≤ uplinkMbps", "status": "UNKNOWN",
+                       "detail": "The model does not state both uplinkMbps and an upload rate."})
     storage, hours = tail("storageGB"), tail("retentionHours")
     if storage and hours and rate:
         need_gb = sum(rate.values()) * next(iter(hours.values())) * 3600 / 8000
         cap = next(iter(storage.values()))
-        checks.append({"id": "STORE", "label": "记录容量", "formula": "dataRateMbps × retentionHours × 3600 ÷ 8000 ≤ storageGB",
+        checks.append({"id": "STORE", "label": "Recording storage", "formula": "dataRateMbps × retentionHours × 3600 ÷ 8000 ≤ storageGB",
                        "status": "PASS" if need_gb <= cap else "FAIL", "actual": round(need_gb, 2), "limit": cap, "unit": "GB"})
     else:
-        checks.append({"id": "STORE", "label": "记录容量", "formula": "dataRateMbps × retentionHours × 3600 ÷ 8000 ≤ storageGB", "status": "UNKNOWN",
-                       "detail": "需要 dataRateMbps、retentionHours、storageGB 三个数。"})
+        checks.append({"id": "STORE", "label": "Recording storage", "formula": "dataRateMbps × retentionHours × 3600 ÷ 8000 ≤ storageGB", "status": "UNKNOWN",
+                       "detail": "Needs dataRateMbps, retentionHours and storageGB."})
     covered = 0
     for item in requirements:
         quantity = item.get("quantity") or {}
@@ -393,9 +393,9 @@ def simulate(numbers: dict, connections: list, requirements: list[dict]) -> list
         item["in_model"] = ok
         covered += 1 if ok else 0
     with_quantity = sum(1 for item in requirements if (item.get("quantity") or {}).get("name"))
-    checks.append({"id": "TRACE", "label": "带数字的需求写进了模型", "formula": "每条需求的属性名和数值都能在解析结果里找到",
-                   "status": "PASS" if covered == with_quantity else "FAIL", "actual": covered, "limit": with_quantity, "unit": "条"})
-    checks.append({"id": "CONNECT", "label": "连接条数", "status": "INFO", "actual": len(connections), "unit": "条"})
+    checks.append({"id": "TRACE", "label": "Numbered requirements in the model", "formula": "each requirement's attribute name and value appear in the official parse",
+                   "status": "PASS" if covered == with_quantity else "FAIL", "actual": covered, "limit": with_quantity, "unit": "reqs"})
+    checks.append({"id": "CONNECT", "label": "Connections", "status": "INFO", "actual": len(connections), "unit": "links"})
     return checks
 
 
@@ -406,7 +406,7 @@ def align(stamp: str, design: dict, design_path: Path, retrieval: dict) -> dict:
     existing = sorted({node["name"] for node in retrieval.get("nodes", []) if node.get("source") == "MaritimeISR" and node.get("name")})
     elements = design.get("elements") or []
     if not existing:
-        return {"mappings": [], "verified": 0, "proposed": 0, "note": "检索里没有 MaritimeISR 的元素，跳过对齐。"}
+        return {"mappings": [], "verified": 0, "proposed": 0, "note": "Retrieval found no MaritimeISR elements; alignment skipped."}
     reply = chat([
         {"role": "system", "content": (
             "Propose semantic mappings between elements of a new SysML design and elements of an existing model. "
@@ -426,7 +426,7 @@ def align(stamp: str, design: dict, design_path: Path, retrieval: dict) -> dict:
                         "ok": left in design_set and right in existing_set})
     result = {"mappings": checked, "verified": sum(1 for row in checked if row["ok"]), "proposed": len(checked),
               "existing_names": existing, "model": reply.get("model"),
-              "note": "映射只是提议。代码核对两边名字，官方 Pilot 再解析对齐包。两份源模型都不改。采用与否由人定。"}
+              "note": "Mappings are proposals. Code checks both names exist, then the official Pilot parses the alignment package. Neither source model is edited. A person decides whether to adopt them."}
     ok_rows = [row for row in checked if row["ok"]]
     if not ok_rows:
         return result
@@ -459,14 +459,14 @@ def read_back(source: str) -> dict:
 def approval_block(record: dict, design: dict) -> str:
     """Empty string when the design may be approved into memory, otherwise the reason it may not."""
     if (record.get("requirements") or {}).get("unsourced"):
-        return "需求里有简报没写的数字，不能入库。"
+        return "The requirements contain numbers that are not in the brief; it cannot go into memory."
     if design.get("sysml_status") != "PASS":
-        return "官方语法没过，不能入库。"
+        return "The official parse did not pass; it cannot go into memory."
     status = {check["id"]: check for check in design.get("checks") or []}
     for key in GATED_CHECKS:
         check = status.get(key) or {}
         if check.get("status") != "PASS":
-            return f"{check.get('label', key)}没有通过（{check.get('status', '缺')}），不能入库。"
+            return f"The {key} check did not pass ({check.get('status', 'missing')}); it cannot go into memory."
     return ""
 
 
@@ -474,7 +474,7 @@ def keep_source(run_id: str, key: str, run_dir: Path) -> Path:
     """Copy the parsed design file next to the memory file; mvp/runs/ is not in git."""
     original = run_dir / "model" / f"Design{key}.sysml"
     if not original.is_file():
-        raise ValueError("找不到这套设计的源文件。")
+        raise ValueError("The source file of this design was not found.")
     copy = MEMORY.parent / "designs" / f"{run_id}-{key}" / original.name
     copy.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(original, copy)
@@ -483,19 +483,19 @@ def keep_source(run_id: str, key: str, run_dir: Path) -> Path:
 
 def approve(run_id: str, key: str) -> dict:
     if not re.fullmatch(r"\d{8}T\d{6}", run_id or ""):
-        raise ValueError("运行编号不对。")
+        raise ValueError("Invalid run id.")
     path = ROOT / "analysis" / f"discover-{run_id}.json"
     if not path.is_file():
-        raise ValueError("没有这次运行。")
+        raise ValueError("No such run.")
     record = json.loads(path.read_text(encoding="utf-8"))
     design = next((item for item in record.get("designs", []) if item.get("key") == key), None)
     if not design:
-        raise ValueError("没有这套设计。")
+        raise ValueError("No such design.")
     reason = approval_block(record, design)
     if reason:
         raise ValueError(reason)
     if any(entry["run_id"] == run_id and entry["design"] == key for entry in load_memory()):
-        raise ValueError("这套设计已经入库。")
+        raise ValueError("This design is already in memory.")
     source = keep_source(run_id, key, Path(design["run_dir"]))
     entry = {"run_id": run_id, "design": key, "package": f"Design{key}", "run_dir": design["run_dir"],
              "source": str(source.relative_to(ROOT)),
@@ -521,7 +521,7 @@ def _validate_design(key: str, written: dict, folder: Path, progress) -> dict:
     path = folder / f"Design{key}.sysml"
     validated = None
     while True:
-        progress("syntax", "run", f"官方 Pilot 解析设计 {key}，第 {len(attempts) + 1} 次。")
+        progress("syntax", "run", f"Official Pilot parses design {key}, attempt {len(attempts) + 1}.")
         try:
             source = extract_sysml(text)
         except ValueError:
@@ -533,7 +533,7 @@ def _validate_design(key: str, written: dict, folder: Path, progress) -> dict:
             diagnostics = [{"line": item.get("line"), "message": item.get("message", "")} for item in validated["sysml"].get("diagnostics", [])[:6]]
         else:
             status = "FAIL"
-            diagnostics = [{"line": None, "message": "模型输出里没有 SysML 包。"}]
+            diagnostics = [{"line": None, "message": "The model output contains no SysML package."}]
         sha = hashlib.sha256(source.encode()).hexdigest()[:12]
         attempts.append({"attempt": len(attempts) + 1, "status": status, "diagnostics": diagnostics, "sha": sha,
                          "same_as_previous": bool(attempts) and attempts[-1]["sha"] == sha,
@@ -541,7 +541,7 @@ def _validate_design(key: str, written: dict, folder: Path, progress) -> dict:
                          "text": (source or text)[:4000]})
         if status == "PASS" or len(attempts) >= 3:
             break
-        progress("repair", "run", f"设计 {key}：把第 {len(attempts)} 次的官方报错原文发回模型，只修语法，数字不变。")
+        progress("repair", "run", f"Design {key}: the official errors from attempt {len(attempts)} go back to the model verbatim; fix syntax only, keep the numbers.")
         text = repair_design(written["messages"], text, [item["message"] for item in diagnostics])["text"]
     design = {"key": key, "source": source, "sysml_status": status, "attempts": attempts,
               "repair_rounds": len(attempts) - 1, "diagnostics": [item["message"] for item in attempts[-1]["diagnostics"]],
@@ -559,29 +559,29 @@ def run(brief: str, progress) -> dict:
     folder = ROOT / "mvp" / "exam-inbox" / f"discover-{stamp}"
     folder.mkdir(parents=True)
     record = {"id": stamp, "brief": brief, "synthetic": True}
-    progress("brief", "pass", "简报已记录。这是 agent 拿到的全部输入。")
+    progress("brief", "pass", "Brief recorded. This is everything the agent receives.")
 
-    progress("retrieve", "run", "在记忆库里按简报的词找元素，再取一跳邻居。")
+    progress("retrieve", "run", "Search memory for elements matching the brief's words, then take one hop of neighbours.")
     try:
         record["retrieval"] = retrieve_existing(brief)
         found = record["retrieval"]
-        progress("retrieve", "pass", f"记忆库 {found['library_size']} 张卡，命中 {len(found['nodes'])} 个元素，其中 {len(found['numbers'])} 个带数值。{found['note']}")
+        progress("retrieve", "pass", f"Memory has {found['library_size']} cards; {len(found['nodes'])} elements matched, {len(found['numbers'])} with values. {found['note']}")
     except Exception as exc:
         record["retrieval"] = {"nodes": [], "edges": [], "cards": [], "numbers": {}, "path": "new", "sources": [],
-                               "error": f"{type(exc).__name__}: {exc}", "note": "检索没有完成。"}
-        progress("retrieve", "fail", "检索没有完成。")
+                               "error": f"{type(exc).__name__}: {exc}", "note": "Retrieval did not finish."}
+        progress("retrieve", "fail", "Retrieval did not finish.")
 
-    progress("requirements", "run", "模型把简报拆成编号需求。")
+    progress("requirements", "run", "The model splits the brief into numbered requirements.")
     req = write_requirements(brief)
     record["requirements"] = req
-    progress("requirements", "pass", f"{len(req['requirements'])} 条需求，{len(req['questions'])} 个提问。")
+    progress("requirements", "pass", f"{len(req['requirements'])} requirements, {len(req['questions'])} questions.")
     progress("source", "fail" if req["unsourced"] else "pass",
-             f"{len(req['unsourced'])} 条需求带了简报里没有的数字。" if req["unsourced"] else "需求里的每个数字都在简报里。")
+             f"{len(req['unsourced'])} requirements carry numbers that are not in the brief." if req["unsourced"] else "Every number in the requirements is in the brief.")
 
     designs = []
     for key, variant in (("A", "Design A: the straightforward allocation that follows the brief literally."),
                          ("B", "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A.")):
-        progress("design", "run", f"模型写设计 {key}。提示里有规范、属性合同和检索到的已有元素。")
+        progress("design", "run", f"The model writes design {key}. The prompt holds the rules, the attribute contract and the retrieved elements.")
         written = write_design(brief, req["requirements"], f"Design{key}", variant, record["retrieval"].get("cards"))
         design = _validate_design(key, written, folder, progress)
         if design["sysml_status"] == "PASS":
@@ -589,19 +589,19 @@ def run(brief: str, progress) -> dict:
             design.update({"numbers": numbers, "connections": connections, "elements": names,
                            "checks": simulate(numbers, connections, [dict(item) for item in req["requirements"]])})
         else:
-            design["checks"] = [{"id": "SYNTAX", "label": "官方语法", "status": "FAIL", "detail": "语法没过，没有核算。"}]
+            design["checks"] = [{"id": "SYNTAX", "label": "Official syntax", "status": "FAIL", "detail": "The parse failed, so nothing was computed."}]
         designs.append(design)
         progress("syntax", "pass" if design["sysml_status"] == "PASS" else "fail",
-                 f"设计 {key}：官方 Pilot {design['sysml_status']}，共解析 {len(design['attempts'])} 次。")
+                 f"Design {key}: official Pilot {design['sysml_status']} after {len(design['attempts'])} parse(s).")
     record["designs"] = designs
-    progress("design", "pass", "两套设计都写完了。")
+    progress("design", "pass", "Both designs are written.")
     syntax_ok = all(item["sysml_status"] == "PASS" for item in designs)
-    progress("syntax", "pass" if syntax_ok else "fail", "两套设计都过了官方 Pilot。" if syntax_ok else "有设计没过官方 Pilot。")
+    progress("syntax", "pass" if syntax_ok else "fail", "Both designs pass the official Pilot." if syntax_ok else "A design failed the official Pilot.")
     rounds = sum(item["repair_rounds"] for item in designs)
     progress("repair", "skip" if not rounds else ("pass" if syntax_ok else "fail"),
-             f"一共返工 {rounds} 次。" if rounds else "两套都一次通过，没有返工。")
+             f"{rounds} repair round(s) in total." if rounds else "Both passed on the first attempt; no repair.")
 
-    progress("align", "run", "模型提设计 A 和 MaritimeISR 之间的映射，代码核对两端，Pilot 解析对齐包。")
+    progress("align", "run", "The model proposes mappings between design A and MaritimeISR; code checks both ends; the Pilot parses the alignment package.")
     first = designs[0]
     if first["sysml_status"] == "PASS" and record["retrieval"].get("nodes"):
         try:
@@ -609,48 +609,49 @@ def run(brief: str, progress) -> dict:
             package = record["alignment"].get("package") or {}
             ok = bool(record["alignment"]["verified"]) and package.get("sysml_status") == "PASS"
             progress("align", "pass" if ok else "fail",
-                     f"提了 {record['alignment']['proposed']} 条映射，两端都存在 {record['alignment']['verified']} 条，对齐包官方 Pilot {package.get('sysml_status', '没生成')}。等人审。")
+                     f"{record['alignment']['proposed']} mappings proposed, {record['alignment']['verified']} with both ends present; alignment package official Pilot {package.get('sysml_status', 'not generated')}. Waiting for a person to review.")
         except Exception as exc:
             record["alignment"] = {"mappings": [], "verified": 0, "proposed": 0, "error": f"{type(exc).__name__}: {exc}"}
-            progress("align", "fail", "映射没有生成。")
+            progress("align", "fail", "No mappings were generated.")
     else:
-        record["alignment"] = {"mappings": [], "verified": 0, "proposed": 0, "note": "设计 A 语法没过或没有检索结果，跳过对齐。"}
-        progress("align", "skip", "跳过对齐。")
+        record["alignment"] = {"mappings": [], "verified": 0, "proposed": 0, "note": "Design A failed the parse or retrieval found nothing; alignment skipped."}
+        progress("align", "skip", "Alignment skipped.")
 
-    progress("simulate", "run", "按官方解析出的数字核算功率、上传、容量和追溯。")
+    progress("simulate", "run", "Compute power, upload, storage and traceability from the officially parsed numbers.")
     failing = sorted({check["label"] for design in designs for check in design.get("checks", []) if check["status"] == "FAIL"})
-    progress("simulate", "fail" if failing else "pass", ("失败项：" + "、".join(failing)) if failing else "四项核算全部通过。")
+    progress("simulate", "fail" if failing else "pass", ("Failing: " + ", ".join(failing)) if failing else "All four budget checks pass.")
 
     if failing:
-        progress("tradeoff", "run", "模型只从器件目录里挑选，提出替代方案。")
+        progress("tradeoff", "run", "The model proposes alternatives, choosing only from the parts catalog.")
         try:
             record["tradeoffs"] = propose_tradeoffs(brief, failing)
             feasible = sum(1 for item in record["tradeoffs"]["proposals"] if item.get("feasible"))
-            progress("tradeoff", "pass" if feasible else "fail", f"{len(record['tradeoffs']['proposals'])} 个方案，代码按目录重算后可行 {feasible} 个。")
+            progress("tradeoff", "pass" if feasible else "fail", f"{len(record['tradeoffs']['proposals'])} proposals; {feasible} feasible when code recomputes them from the catalog.")
         except Exception as exc:
             record["tradeoffs"] = {"proposals": [], "error": f"{type(exc).__name__}: {exc}"}
-            progress("tradeoff", "fail", "方案没有生成。")
+            progress("tradeoff", "fail", "No proposals were generated.")
     else:
         record["tradeoffs"] = {"proposals": []}
-        progress("tradeoff", "skip", "核算全过，不需要权衡。")
+        progress("tradeoff", "skip", "All checks pass; no trade-off needed.")
 
-    progress("readback", "run", "模型只看自己写的模型，把它读回成句子。")
+    progress("readback", "run", "The model reads only its own model and restates it as sentences.")
     brief_numbers = numbers_in(brief)
     for design in designs:
         if design["sysml_status"] == "PASS":
             design["read_back"] = read_back(design["source"])["text"]
             design["read_back_numbers"] = {value: value in numbers_in(design["read_back"]) for value in sorted(brief_numbers, key=float)}
-    progress("readback", "pass", "读回完成，代码核对了简报里的每个数字。")
+    progress("readback", "pass", "Read-back done; code checked every number from the brief.")
 
     eligible = [design["key"] for design in designs if not approval_block(record, design)]
     if req["unsourced"]:
-        gate = {"answer": "needs-person", "eligible": [], "effect": "需求里出现了简报没有的数字。不能入库，等人补数。"}
+        gate = {"answer": "needs-person", "eligible": [], "effect": "The requirements contain numbers that are not in the brief. Nothing can go into memory until a person supplies them."}
     elif eligible:
         gate = {"answer": "awaiting-person", "eligible": eligible,
-                "effect": f"设计 {'、'.join(eligible)} 四项核算全过，可以由人批准入库。脚本不替人选。"}
+                "effect": f"{'Designs' if len(eligible) > 1 else 'Design'} {', '.join(eligible)} {'pass' if len(eligible) > 1 else 'passes'} all four checks "
+                          "and may be approved into memory by a person. The script does not choose."}
     else:
         gate = {"answer": "awaiting-person", "eligible": [],
-                "effect": "两套设计都有核算失败项，不能入库。可以选一个权衡方案，回到设计空间再交给 agent。"}
+                "effect": "Both designs fail a check, so neither can go into memory. Pick a trade-off, go back to the design space, and give it to the agent again."}
     record["gate"] = gate
     record["usage"] = usage_summary(calls)
     progress("gate", "pass" if eligible else "fail", gate["effect"])

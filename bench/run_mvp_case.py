@@ -70,7 +70,7 @@ def main() -> None:
         source = ""
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     solved = {"text": written["text"], "run_dir": None, "sysml_status": "FAIL"}
-    diagnostics = [{"line": None, "message": "模型输出里没有 SysML 包。"}] if not source else []
+    diagnostics = [{"line": None, "message": "The model output contains no SysML package."}] if not source else []
     if source:
         scratch = ROOT / "mvp" / "exam-inbox" / f"mvp-case-{stamp}-{task_id}"
         scratch.mkdir(parents=True)
@@ -93,14 +93,14 @@ def main() -> None:
         mentioned = {value: value in said for value in sorted({f"{float(raw):g}" for raw in LITERAL.findall(source)}, key=float)}
     record = {
         "id": stamp,
-        "title": f"{task_id} 变更：模型改已有模型，官方工具评，再读回文字",
+        "title": f"{task_id} change: the model edits an existing model, the official tool judges it, then it is read back as text",
         "synthetic": True,
         "task_id": task_id,
         "configuration": "P0",
         "model": written.get("model"),
         "requirements": prompt,
         "baseline": baseline,
-        "gold_note": "标准答案在阅卷时才打开，没有放进两次模型调用。",
+        "gold_note": "The answer key is opened only for scoring; neither model call saw it.",
         "answer": source or written["text"],
         "sysml_status": solved["sysml_status"],
         "diagnostics": diagnostics,
@@ -122,13 +122,13 @@ def main() -> None:
         "safety": {
             "file": "scenario/maritime-isr/hazards.sysml",
             "kept": "LossOfSeparation" in hazards and "HazardTrackNotShared" in hazards,
-            "note": "这两条危险需求没有交给模型改写。语法能解析它们，不算安全通过。",
+            "note": "These two hazard requirements were not given to the model to rewrite. That they parse is not a safety pass.",
         },
-        "interoperability": "这一例的模型用官方 SysML v2 文本交给 Pilot。它没有再测船、无人机、指挥船之间的链路。",
+        "interoperability": "This model goes to the Pilot as official SysML v2 text. It does not test the links between vessel, UAV and command ship.",
         "reliability": {
             "this_run": scored.get("status"),
             "archived": _archived(task_id),
-            "note": "同一道题在主力矩阵里的 12 次存档（按现行判分），用来看判定稳不稳。这一次新写的卷单独计。",
+            "note": "The same task's 12 archived main-matrix cells (current scorer), to see whether the verdict is stable. This new run counts separately.",
         },
     }
     out = ROOT / "analysis" / f"mvp-case-{stamp}-{task_id}"

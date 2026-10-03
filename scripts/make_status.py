@@ -23,7 +23,7 @@ def _usd(value: float) -> str:
 def main() -> None:
     from bench.board_facts import facts
     f = facts()
-    costs = {item["label"]: item for item in f["costs"]["items"]}
+    costs = {item["id"]: item for item in f["costs"]["items"]}
     lines = [
         "# STATUS",
         "",
@@ -48,9 +48,8 @@ def main() -> None:
         "| Configuration | PASS | FAIL | Tokens | Cost (USD, cn-beijing list price) |",
         "|---|---|---|---|---|",
     ]
-    labels = {"P0": "P0 直接写", "P1": "P1 按报错返工", "P2": "P2 先列提纲", "P3": "P3 提纲 + 检索笔记"}
     for row in f["configs"]:
-        cost = costs.get(labels[row["id"]], {})
+        cost = costs.get(row["id"], {})
         lines.append(f"| {row['id']} | {row['pass']} | {row['n'] - row['pass']} | {row['tokens']:,} | {_usd(cost.get('usd', 0))} |")
     lines += ["", "| Task type | PASS | Cells |", "|---|---|---|"]
     for kind in ("GEN", "MOD", "QRY", "AMB", "RT"):
@@ -64,7 +63,7 @@ def main() -> None:
     for name, count in Counter(item["class"] for item in failures).most_common():
         lines.append(f"| {name} | {count} |")
     lines += ["", "Details: `docs/failure_taxonomy.md`, `analysis/failure-classes.jsonl`.", ""]
-    oc = costs.get(next((label for label in costs if label.startswith("OpenCode")), ""), {})
+    oc = costs.get("opencode", {})
     lines += [
         "## Off-the-shelf agents (separate cohorts, not added to the 288)",
         "",

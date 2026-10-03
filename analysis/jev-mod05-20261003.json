@@ -1,0 +1,158 @@
+{
+  "summary": {
+    "cells": 12,
+    "agree": 12,
+    "false_pass": 0,
+    "model": "jev-1.13.0",
+    "usage": {
+      "input_tokens": 1919,
+      "output_tokens": 210
+    }
+  },
+  "cells": [
+    {
+      "id": "c0",
+      "repeat": 1,
+      "configuration": "P0",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.06,
+      "jev_pass": false,
+      "agree": true
+    },
+    {
+      "id": "c1",
+      "repeat": 1,
+      "configuration": "P1",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.06,
+      "jev_pass": false,
+      "agree": true
+    },
+    {
+      "id": "c2",
+      "repeat": 1,
+      "configuration": "P2",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.06,
+      "jev_pass": false,
+      "agree": true
+    },
+    {
+      "id": "c3",
+      "repeat": 1,
+      "configuration": "P3",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.06,
+      "jev_pass": false,
+      "agree": true
+    },
+    {
+      "id": "c4",
+      "repeat": 2,
+      "configuration": "P0",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.06,
+      "jev_pass": false,
+      "agree": true
+    },
+    {
+      "id": "c5",
+      "repeat": 2,
+      "configuration": "P1",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.06,
+      "jev_pass": false,
+      "agree": true
+    },
+    {
+      "id": "c6",
+      "repeat": 2,
+      "configuration": "P2",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.07,
+      "jev_pass": false,
+      "agree": true
+    },
+    {
+      "id": "c7",
+      "repeat": 2,
+      "configuration": "P3",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.06,
+      "jev_pass": false,
+      "agree": true
+    },
+    {
+      "id": "c8",
+      "repeat": 3,
+      "configuration": "P0",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.05,
+      "jev_pass": false,
+      "agree": true
+    },
+    {
+      "id": "c9",
+      "repeat": 3,
+      "configuration": "P1",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.06,
+      "jev_pass": false,
+      "agree": true
+    },
+    {
+      "id": "c10",
+      "repeat": 3,
+      "configuration": "P2",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.06,
+      "jev_pass": false,
+      "agree": true
+    },
+    {
+      "id": "c11",
+      "repeat": 3,
+      "configuration": "P3",
+      "tool": "FAIL",
+      "sysml": "PASS",
+      "engineering": "FAIL",
+      "chars": 297,
+      "jev_p_pass": 0.06,
+      "jev_pass": false,
+      "agree": true
+    }
+  ]
+}

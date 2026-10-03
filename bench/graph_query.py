@@ -25,25 +25,36 @@ HELD = ROOT / "bench" / "tasks" / "t4_maritime_isr" / "heldout"
 
 
 def _graph():
-    elements = exported_elements(json.loads((PARSE / "sysml" / "model.json").read_text(encoding="utf-8")))
-    ast = json.loads((PARSE / "sysml" / "ast-elements.json").read_text(encoding="utf-8"))
+    cards, neighbors, _kinds = build_graph(PARSE, "MaritimeISR::")
+    return cards, neighbors
+
+
+def build_graph(parse_dir: Path, prefix: str):
+    """Element cards and one-hop links from one official parse.
+
+    Returns cards (id -> text), neighbors (id -> ids) and kinds ((a, b) -> "owner" | "connect").
+    """
+    elements = exported_elements(json.loads((parse_dir / "sysml" / "model.json").read_text(encoding="utf-8")))
+    ast = json.loads((parse_dir / "sysml" / "ast-elements.json").read_text(encoding="utf-8"))
     view = ModelView(elements, ast)
-    by_id = {element["@id"]: element for element in elements}
     neighbors = {element["@id"]: set() for element in elements}
+    kinds = {}
     for element in elements:
         owner = (element.get("owner") or {}).get("@id")
         if owner in neighbors:
             neighbors[element["@id"]].add(owner)
             neighbors[owner].add(element["@id"])
+            kinds[(element["@id"], owner)] = kinds[(owner, element["@id"])] = "owner"
         for ref in element.get("relatedFeature") or []:
             other = ref.get("@id")
             if other in neighbors:
                 neighbors[element["@id"]].add(other)
                 neighbors[other].add(element["@id"])
+                kinds[(element["@id"], other)] = kinds[(other, element["@id"])] = "connect"
     cards = {}
     for element in elements:
         name = element.get("qualifiedName")
-        if not name or not name.startswith("MaritimeISR::"):
+        if not name or not name.startswith(prefix):
             continue
         bits = [element.get("@type", ""), name]
         if element.get("@type") == "AttributeUsage":
@@ -55,7 +66,7 @@ def _graph():
             ends = [view.reference_name(ref["@id"]) or "" for ref in element.get("relatedFeature") or []]
             bits.append(" ".join(ends))
         cards[element["@id"]] = " ".join(bits)
-    return cards, neighbors
+    return cards, neighbors, kinds
 
 
 def retrieve(question: str, cards: dict, neighbors: dict, limit: int = 8) -> list[str]:

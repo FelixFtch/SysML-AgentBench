@@ -1,0 +1,64 @@
+{
+  "id": "20261003T063238",
+  "title": "海事功率变更：模型写 SysML，官方工具评，再读回文字",
+  "synthetic": true,
+  "task_id": "MOD-05",
+  "configuration": "P0",
+  "model": "qwen3.8-max",
+  "requirements": "# MOD-05 — synthetic, not an RTX specification\n\nPackage name stays PowerBudget. Edit the baseline.\n\nAdd part irCamera inside usv with attribute drawW equal to 12.0.\nKeep powerLimitW equal to 60.0, eoCamera.drawW equal to 41.0, and computer.drawW equal to 25.0.\nDo not change 60 to make the power sum fit.\n\n\nBaseline file PowerBudget.sysml:\n```sysml\npackage PowerBudget {\n    private import ScalarValues::*;\n    part usv {\n        attribute powerLimitW : Real = 60.0;\n        part eoCamera { attribute drawW : Real = 41.0; }\n        part computer { attribute drawW : Real = 25.0; }\n    }\n}\n```",
+  "gold_note": "标准答案在阅卷时才打开，没有放进两次模型调用。",
+  "answer": "package PowerBudget {\n    private import ScalarValues::*;\n    part usv {\n        attribute powerLimitW : Real = 60.0;\n        part eoCamera { attribute drawW : Real = 41.0; }\n        part computer { attribute drawW : Real = 25.0; }\n        part irCamera { attribute drawW : Real = 12.0; }\n    }\n}\n",
+  "sysml_status": "PASS",
+  "status": "FAIL",
+  "engineering_status": "FAIL",
+  "checks": [
+    {
+      "id": "R-POWER-001",
+      "expected": "FAIL",
+      "actual": "FAIL",
+      "match": true,
+      "total_w": 78.0,
+      "limit_w": 60.0,
+      "draws_w": {
+        "PowerBudget::usv::eoCamera::drawW": 41.0,
+        "PowerBudget::usv::computer::drawW": 25.0,
+        "PowerBudget::usv::irCamera::drawW": 12.0
+      }
+    }
+  ],
+  "must_preserve": {
+    "hit": 4,
+    "expected": 4,
+    "missing": []
+  },
+  "run_dir": "/data/robotics/RTRC/mvp/runs/20261003T063238-1a7488bb",
+  "approval": {
+    "triggered": false,
+    "answer": "not-requested",
+    "effect": "No requirement change was requested. The engineering check result stands."
+  },
+  "limit_in_model": "60.0",
+  "round_trip": "The usv part has a powerLimitW attribute equal to 60.0.\nThe eoCamera part has a drawW attribute equal to 41.0.\nThe computer part has a drawW attribute equal to 25.0.\nThe irCamera part has a drawW attribute equal to 12.0.",
+  "round_trip_mentions": {
+    "60": true,
+    "41": true,
+    "25": true,
+    "12": true,
+    "power": true
+  },
+  "safety": {
+    "file": "scenario/maritime-isr/hazards.sysml",
+    "kept": true,
+    "note": "这两条危险需求没有交给模型改写。语法能解析它们，不算安全通过。"
+  },
+  "interoperability": "这一例的模型用官方 SysML v2 文本交给 Pilot。它没有再测船、无人机、指挥船之间的链路。",
+  "reliability": {
+    "this_run": "FAIL",
+    "archived_mod05": {
+      "PASS": 0,
+      "FAIL": 12,
+      "other": 0
+    },
+    "note": "同一道题的已归档重复用来看判定稳不稳。这一次新写的卷单独计。"
+  }
+}

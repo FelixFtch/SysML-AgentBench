@@ -1,0 +1,154 @@
+{
+  "ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "n": 20,
+  "correct": 20,
+  "model": "jev-1.13.0",
+  "usage": {
+    "input_tokens": 3453,
+    "output_tokens": 874
+  },
+  "rows": [
+    {
+      "id": 1,
+      "jev": "B",
+      "gold": "B",
+      "correct": true
+    },
+    {
+      "id": 2,
+      "jev": "C",
+      "gold": "C",
+      "correct": true
+    },
+    {
+      "id": 3,
+      "jev": "B",
+      "gold": "B",
+      "correct": true
+    },
+    {
+      "id": 4,
+      "jev": "C",
+      "gold": "C",
+      "correct": true
+    },
+    {
+      "id": 5,
+      "jev": "B",
+      "gold": "B",
+      "correct": true
+    },
+    {
+      "id": 6,
+      "jev": "A",
+      "gold": "A",
+      "correct": true
+    },
+    {
+      "id": 7,
+      "jev": "B",
+      "gold": "B",
+      "correct": true
+    },
+    {
+      "id": 8,
+      "jev": "C",
+      "gold": "C",
+      "correct": true
+    },
+    {
+      "id": 9,
+      "jev": "A",
+      "gold": "A",
+      "correct": true
+    },
+    {
+      "id": 10,
+      "jev": "B",
+      "gold": "B",
+      "correct": true
+    },
+    {
+      "id": 11,
+      "jev": "B",
+      "gold": "B",
+      "correct": true
+    },
+    {
+      "id": 12,
+      "jev": "B",
+      "gold": "B",
+      "correct": true
+    },
+    {
+      "id": 13,
+      "jev": "A",
+      "gold": "A",
+      "correct": true
+    },
+    {
+      "id": 14,
+      "jev": "B",
+      "gold": "B",
+      "correct": true
+    },
+    {
+      "id": 15,
+      "jev": "B",
+      "gold": "B",
+      "correct": true
+    },
+    {
+      "id": 16,
+      "jev": "A",
+      "gold": "A",
+      "correct": true
+    },
+    {
+      "id": 17,
+      "jev": "A",
+      "gold": "A",
+      "correct": true
+    },
+    {
+      "id": 18,
+      "jev": "A",
+      "gold": "A",
+      "correct": true
+    },
+    {
+      "id": 19,
+      "jev": "A",
+      "gold": "A",
+      "correct": true
+    },
+    {
+      "id": 20,
+      "jev": "C",
+      "gold": "C",
+      "correct": true
+    }
+  ],
+  "note": "题号先写在 sysengbench-ids.txt。这是选择题，不并进海事主表。"
+}

@@ -1,0 +1,7 @@
+id: PURE-PEERING
+type: QRY
+scenario_family: t5_requirements
+split: side
+synthetic: false
+status: single-author
+second_reviewer: pending

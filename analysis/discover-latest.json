@@ -1,0 +1,774 @@
+{
+  "id": "20261003T192328",
+  "brief": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 256 GB of storage. Imagery is uploaded to shore at 18 Mbps over one 20 Mbps uplink.",
+  "synthetic": true,
+  "retrieval": {
+    "sources": [
+      {
+        "name": "MaritimeISR",
+        "label": "已有海事模型 MaritimeISR",
+        "path": "scenario/maritime-isr/MaritimeISR.sysml",
+        "cards": 53
+      },
+      {
+        "name": "已批准 20261003T144529·A",
+        "label": "已批准设计 20261003T144529 · A",
+        "path": "mvp/runs/20261003T144549-729f1302",
+        "cards": 41
+      },
+      {
+        "name": "已批准 20261003T150116·A",
+        "label": "已批准设计 20261003T150116 · A",
+        "path": "mvp/runs/20261003T150134-3563f91d",
+        "cards": 42
+      }
+    ],
+    "library_size": 136,
+    "query_words": [
+      "camera",
+      "carries",
+      "computer",
+      "drawing",
+      "edge",
+      "harbor",
+      "hours",
+      "imagery",
+      "infrared",
+      "limit",
+      "locally",
+      "mbps",
+      "patrol",
+      "power",
+      "recorded",
+      "shore",
+      "storage",
+      "surface",
+      "unmanned",
+      "uplink",
+      "uploaded",
+      "vessel",
+      "visible",
+      "7",
+      "8",
+      "14",
+      "18",
+      "20",
+      "28",
+      "60",
+      "256"
+    ],
+    "words": [
+      "camera",
+      "computer",
+      "edge",
+      "hours",
+      "imagery",
+      "infrared",
+      "limit",
+      "mbps",
+      "power",
+      "shore",
+      "storage",
+      "surface",
+      "unmanned",
+      "uplink",
+      "vessel",
+      "visible",
+      "7",
+      "8",
+      "14",
+      "18",
+      "20",
+      "28",
+      "60",
+      "256"
+    ],
+    "nodes": [
+      {
+        "id": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+        "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0",
+        "type": "AttributeUsage",
+        "name": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW",
+        "short": "powerLimitW",
+        "value": 60.0,
+        "role": "seed",
+        "score": 6,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "929a8e3a-153e-45dc-8702-1c52db4057f4",
+        "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::uplinkMbps 8.0",
+        "type": "AttributeUsage",
+        "name": "MaritimeISR::UnmannedSurfaceVessel::uplinkMbps",
+        "short": "uplinkMbps",
+        "value": 8.0,
+        "role": "seed",
+        "score": 6,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "2080dfab-4f19-4dd7-b457-c229a225d944",
+        "text": "AttributeUsage DesignA::Vessel::edgeComputer::drawW 14",
+        "type": "AttributeUsage",
+        "name": "DesignA::Vessel::edgeComputer::drawW",
+        "short": "drawW",
+        "value": 14.0,
+        "role": "seed",
+        "score": 4,
+        "source": "已批准 20261003T150116·A"
+      },
+      {
+        "id": "2cec9268-bf21-4a16-8807-bc82f6d329bd",
+        "text": "AttributeUsage DesignA::Vessel::infraredCamera::drawW 7",
+        "type": "AttributeUsage",
+        "name": "DesignA::Vessel::infraredCamera::drawW",
+        "short": "drawW",
+        "value": 7.0,
+        "role": "seed",
+        "score": 4,
+        "source": "已批准 20261003T150116·A"
+      },
+      {
+        "id": "e45964fc-9f09-4c8d-8b5c-d4d997e14d84",
+        "text": "PartDefinition MaritimeISR::UnmannedSurfaceVessel",
+        "type": "PartDefinition",
+        "name": "MaritimeISR::UnmannedSurfaceVessel",
+        "short": "UnmannedSurfaceVessel",
+        "role": "neighbor",
+        "via": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+        "score": 3,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "efef450e-885e-441b-887c-415bebbd22f0",
+        "text": "PartUsage DesignA::Vessel::edgeComputer",
+        "type": "PartUsage",
+        "name": "DesignA::Vessel::edgeComputer",
+        "short": "edgeComputer",
+        "role": "neighbor",
+        "via": "2080dfab-4f19-4dd7-b457-c229a225d944",
+        "score": 3,
+        "source": "已批准 20261003T150116·A"
+      },
+      {
+        "id": "dcbc114e-2bc9-4333-9117-d241e57aa371",
+        "text": "PartUsage DesignA::Vessel::infraredCamera",
+        "type": "PartUsage",
+        "name": "DesignA::Vessel::infraredCamera",
+        "short": "infraredCamera",
+        "role": "neighbor",
+        "via": "2cec9268-bf21-4a16-8807-bc82f6d329bd",
+        "score": 3,
+        "source": "已批准 20261003T150116·A"
+      }
+    ],
+    "edges": [
+      {
+        "from": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+        "to": "e45964fc-9f09-4c8d-8b5c-d4d997e14d84",
+        "kind": "owner"
+      },
+      {
+        "from": "2080dfab-4f19-4dd7-b457-c229a225d944",
+        "to": "efef450e-885e-441b-887c-415bebbd22f0",
+        "kind": "owner"
+      },
+      {
+        "from": "2cec9268-bf21-4a16-8807-bc82f6d329bd",
+        "to": "dcbc114e-2bc9-4333-9117-d241e57aa371",
+        "kind": "owner"
+      }
+    ],
+    "cards": [
+      "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0",
+      "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::uplinkMbps 8.0",
+      "[已批准 20261003T150116·A] AttributeUsage DesignA::Vessel::edgeComputer::drawW 14",
+      "[已批准 20261003T150116·A] AttributeUsage DesignA::Vessel::infraredCamera::drawW 7",
+      "PartDefinition MaritimeISR::UnmannedSurfaceVessel",
+      "[已批准 20261003T150116·A] PartUsage DesignA::Vessel::edgeComputer",
+      "[已批准 20261003T150116·A] PartUsage DesignA::Vessel::infraredCamera"
+    ],
+    "numbers": {
+      "MaritimeISR::UnmannedSurfaceVessel::powerLimitW": 60.0,
+      "MaritimeISR::UnmannedSurfaceVessel::uplinkMbps": 8.0,
+      "DesignA::Vessel::edgeComputer::drawW": 14.0,
+      "DesignA::Vessel::infraredCamera::drawW": 7.0
+    },
+    "path": "reuse",
+    "note": "已有模型里找到可复用的数值，走复用路径。"
+  },
+  "requirements": {
+    "requirements": [
+      {
+        "id": "R1",
+        "text": "The vessel total power draw shall not exceed the vessel power limit of 60 W.",
+        "quantity": {
+          "name": "powerLimitW",
+          "value": 60,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R2",
+        "text": "The visible camera shall draw 28 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 28,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R3",
+        "text": "The edge computer shall draw 14 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 14,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R4",
+        "text": "The infrared camera shall draw 7 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 7,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R5",
+        "text": "Imagery shall be recorded locally at a data rate of 18 Mbps.",
+        "quantity": {
+          "name": "dataRateMbps",
+          "value": 18,
+          "unit": "Mbps"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R6",
+        "text": "Imagery shall be retained for 8 hours.",
+        "quantity": {
+          "name": "retentionHours",
+          "value": 8,
+          "unit": "hours"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R7",
+        "text": "The system shall provide 256 GB of storage for local recording.",
+        "quantity": {
+          "name": "storageGB",
+          "value": 256,
+          "unit": "GB"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R8",
+        "text": "Imagery shall be uploaded to shore at 18 Mbps.",
+        "quantity": {
+          "name": "uploadMbps",
+          "value": 18,
+          "unit": "Mbps"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R9",
+        "text": "The uplink capacity to shore shall be 20 Mbps.",
+        "quantity": {
+          "name": "uplinkMbps",
+          "value": 20,
+          "unit": "Mbps"
+        },
+        "unsourced_numbers": []
+      }
+    ],
+    "questions": [],
+    "unsourced": [],
+    "model": "qwen3.8-max",
+    "usage": {
+      "prompt_tokens": 272,
+      "total_tokens": 614,
+      "completion_tokens": 342,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 272
+      }
+    }
+  },
+  "designs": [
+    {
+      "key": "A",
+      "source": "package DesignA {\n    private import ScalarValues::*;\n\n    requirement def R1 { doc /* R1: The vessel total power draw shall not exceed the vessel power limit of 60 W. */ }\n    requirement def R2 { doc /* R2: The visible camera shall draw 28 W. */ }\n    requirement def R3 { doc /* R3: The edge computer shall draw 14 W. */ }\n    requirement def R4 { doc /* R4: The infrared camera shall draw 7 W. */ }\n    requirement def R5 { doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */ }\n    requirement def R6 { doc /* R6: Imagery shall be retained for 8 hours. */ }\n    requirement def R7 { doc /* R7: The system shall provide 256 GB of storage for local recording. */ }\n    requirement def R8 { doc /* R8: Imagery shall be uploaded to shore at 18 Mbps. */ }\n    requirement def R9 { doc /* R9: The uplink capacity to shore shall be 20 Mbps. */ }\n\n    port def DataPort;\n    port def PowerPort;\n\n    part def VisibleCamera {\n        port dataOut : DataPort;\n        port powerIn : PowerPort;\n    }\n\n    part def InfraredCamera {\n        port dataOut : DataPort;\n        port powerIn : PowerPort;\n    }\n\n    part def EdgeComputer {\n        port dataIn1 : DataPort;\n        port dataIn2 : DataPort;\n        port dataOut : DataPort;\n        port powerIn : PowerPort;\n    }\n\n    part def Storage {\n        port dataIn : DataPort;\n    }\n\n    part def Uplink {\n        port dataIn : DataPort;\n    }\n\n    part def Vessel {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 256;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 20;\n\n        part visibleCamera : VisibleCamera {\n            attribute drawW : Real = 28;\n        }\n\n        part infraredCamera : InfraredCamera {\n            attribute drawW : Real = 7;\n        }\n\n        part edgeComputer : EdgeComputer {\n            attribute drawW : Real = 14;\n        }\n\n        part storage : Storage;\n\n        part uplink : Uplink;\n\n        connect visibleCamera.dataOut to edgeComputer.dataIn1;\n        connect infraredCamera.dataOut to edgeComputer.dataIn2;\n        connect edgeComputer.dataOut to storage.dataIn;\n        connect edgeComputer.dataOut to uplink.dataIn;\n    }\n\n    part vessel : Vessel;\n}\n",
+      "sysml_status": "PASS",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "PASS",
+          "diagnostics": [],
+          "sha": "65af3c981c38",
+          "same_as_previous": false,
+          "run_id": "20261003T192346-19c0ab44",
+          "text": "package DesignA {\n    private import ScalarValues::*;\n\n    requirement def R1 { doc /* R1: The vessel total power draw shall not exceed the vessel power limit of 60 W. */ }\n    requirement def R2 { doc /* R2: The visible camera shall draw 28 W. */ }\n    requirement def R3 { doc /* R3: The edge computer shall draw 14 W. */ }\n    requirement def R4 { doc /* R4: The infrared camera shall draw 7 W. */ }\n    requirement def R5 { doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */ }\n    requirement def R6 { doc /* R6: Imagery shall be retained for 8 hours. */ }\n    requirement def R7 { doc /* R7: The system shall provide 256 GB of storage for local recording. */ }\n    requirement def R8 { doc /* R8: Imagery shall be uploaded to shore at 18 Mbps. */ }\n    requirement def R9 { doc /* R9: The uplink capacity to shore shall be 20 Mbps. */ }\n\n    port def DataPort;\n    port def PowerPort;\n\n    part def VisibleCamera {\n        port dataOut : DataPort;\n        port powerIn : PowerPort;\n    }\n\n    part def InfraredCamera {\n        port dataOut : DataPort;\n        port powerIn : PowerPort;\n    }\n\n    part def EdgeComputer {\n        port dataIn1 : DataPort;\n        port dataIn2 : DataPort;\n        port dataOut : DataPort;\n        port powerIn : PowerPort;\n    }\n\n    part def Storage {\n        port dataIn : DataPort;\n    }\n\n    part def Uplink {\n        port dataIn : DataPort;\n    }\n\n    part def Vessel {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 256;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 20;\n\n        part visibleCamera : VisibleCamera {\n            attribute drawW : Real = 28;\n        }\n\n        part infraredCamera : InfraredCamera {\n            attribute drawW : Real = 7;\n        }\n\n        part edgeComputer : EdgeComputer {\n            attribute drawW : Real = 14;\n        }\n\n        part storage : Storage;\n\n        part uplink : Uplink;\n\n        connect visibleCamera.dataOut to edgeComputer.dataIn1;\n        connect infraredCamera.dataOut to edgeComputer.dataIn2;\n        connect edgeComputer.dataOut to storage.dataIn;\n        connect edgeComputer.dataOut to uplink.dataIn;\n    }\n\n    part vessel : Vessel;\n}\n"
+        }
+      ],
+      "repair_rounds": 0,
+      "diagnostics": [],
+      "run_dir": "/data/robotics/RTRC/mvp/runs/20261003T192346-19c0ab44",
+      "model": "qwen3.8-max",
+      "usage": {
+        "prompt_tokens": 899,
+        "total_tokens": 1551,
+        "completion_tokens": 652,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 899
+        }
+      },
+      "prompt_parts": [
+        {
+          "key": "rules",
+          "label": "规范",
+          "paper": "p3",
+          "text": "You write SysML v2 textual notation.\nRules:\n- Output one fenced code block tagged sysml, and no prose before or after it.\n- The file contains exactly one package whose name is given in the task.\n- Import ScalarValues only when you use Real.\n- Use only names the task requires. Do not invent numeric limits.\n- Do not change a number the task tells you to keep.\n- The first line inside the package is exactly: private import ScalarValues::*;\n- Declare attributes as `attribute name : Real = 12.0;` inside part usages, not part definitions, so values are literals.\n"
+        },
+        {
+          "key": "contract",
+          "label": "模板 · 属性合同",
+          "paper": "p3",
+          "text": "attribute powerLimitW : Real = 60;  // R1\nattribute drawW : Real = 28;  // R2\nattribute drawW : Real = 14;  // R3\nattribute drawW : Real = 7;  // R4\nattribute dataRateMbps : Real = 18;  // R5\nattribute retentionHours : Real = 8;  // R6\nattribute storageGB : Real = 256;  // R7\nattribute uploadMbps : Real = 18;  // R8\nattribute uplinkMbps : Real = 20;  // R9"
+        },
+        {
+          "key": "examples",
+          "label": "示例 · 检索到的已有元素",
+          "paper": "p2",
+          "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0\nAttributeUsage MaritimeISR::UnmannedSurfaceVessel::uplinkMbps 8.0\n[已批准 20261003T150116·A] AttributeUsage DesignA::Vessel::edgeComputer::drawW 14\n[已批准 20261003T150116·A] AttributeUsage DesignA::Vessel::infraredCamera::drawW 7\nPartDefinition MaritimeISR::UnmannedSurfaceVessel\n[已批准 20261003T150116·A] PartUsage DesignA::Vessel::edgeComputer\n[已批准 20261003T150116·A] PartUsage DesignA::Vessel::infraredCamera"
+        },
+        {
+          "key": "task",
+          "label": "简报 + 需求",
+          "paper": "",
+          "text": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 256 GB of storage. Imagery is uploaded to shore at 18 Mbps over one 20 Mbps uplink.\n\nR1: The vessel total power draw shall not exceed the vessel power limit of 60 W.\nR2: The visible camera shall draw 28 W.\nR3: The edge computer shall draw 14 W.\nR4: The infrared camera shall draw 7 W.\nR5: Imagery shall be recorded locally at a data rate of 18 Mbps.\nR6: Imagery shall be retained for 8 hours.\nR7: The system shall provide 256 GB of storage for local recording.\nR8: Imagery shall be uploaded to shore at 18 Mbps.\nR9: The uplink capacity to shore shall be 20 Mbps."
+        },
+        {
+          "key": "variant",
+          "label": "这一套的变体要求",
+          "paper": "",
+          "text": "Design A: the straightforward allocation that follows the brief literally."
+        }
+      ],
+      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261003T192328/DesignA.sysml",
+      "numbers": {
+        "DesignA::Vessel::dataRateMbps": 18.0,
+        "DesignA::Vessel::powerLimitW": 60.0,
+        "DesignA::Vessel::visibleCamera::drawW": 28.0,
+        "DesignA::Vessel::retentionHours": 8.0,
+        "DesignA::Vessel::uploadMbps": 18.0,
+        "DesignA::Vessel::uplinkMbps": 20.0,
+        "DesignA::Vessel::storageGB": 256.0,
+        "DesignA::Vessel::infraredCamera::drawW": 7.0,
+        "DesignA::Vessel::edgeComputer::drawW": 14.0
+      },
+      "connections": [
+        [
+          "DesignA::Vessel::edgeComputer.dataOut",
+          "DesignA::Vessel::uplink.dataIn"
+        ],
+        [
+          "DesignA::Vessel::edgeComputer.dataOut",
+          "DesignA::Vessel::storage.dataIn"
+        ],
+        [
+          "DesignA::Vessel::visibleCamera.dataOut",
+          "DesignA::Vessel::edgeComputer.dataIn1"
+        ],
+        [
+          "DesignA::Vessel::infraredCamera.dataOut",
+          "DesignA::Vessel::edgeComputer.dataIn2"
+        ]
+      ],
+      "elements": [
+        "DesignA",
+        "DesignA::DataPort",
+        "DesignA::EdgeComputer",
+        "DesignA::EdgeComputer::dataIn1",
+        "DesignA::EdgeComputer::dataIn2",
+        "DesignA::EdgeComputer::dataOut",
+        "DesignA::EdgeComputer::powerIn",
+        "DesignA::InfraredCamera",
+        "DesignA::InfraredCamera::dataOut",
+        "DesignA::InfraredCamera::powerIn",
+        "DesignA::PowerPort",
+        "DesignA::R1",
+        "DesignA::R2",
+        "DesignA::R3",
+        "DesignA::R4",
+        "DesignA::R5",
+        "DesignA::R6",
+        "DesignA::R7",
+        "DesignA::R8",
+        "DesignA::R9",
+        "DesignA::Storage",
+        "DesignA::Storage::dataIn",
+        "DesignA::Uplink",
+        "DesignA::Uplink::dataIn",
+        "DesignA::Vessel",
+        "DesignA::Vessel::dataRateMbps",
+        "DesignA::Vessel::edgeComputer",
+        "DesignA::Vessel::edgeComputer::drawW",
+        "DesignA::Vessel::infraredCamera",
+        "DesignA::Vessel::infraredCamera::drawW",
+        "DesignA::Vessel::powerLimitW",
+        "DesignA::Vessel::retentionHours",
+        "DesignA::Vessel::storage",
+        "DesignA::Vessel::storageGB",
+        "DesignA::Vessel::uplink",
+        "DesignA::Vessel::uplinkMbps",
+        "DesignA::Vessel::uploadMbps",
+        "DesignA::Vessel::visibleCamera",
+        "DesignA::Vessel::visibleCamera::drawW",
+        "DesignA::VisibleCamera",
+        "DesignA::VisibleCamera::dataOut",
+        "DesignA::VisibleCamera::powerIn",
+        "DesignA::vessel",
+        "ScalarValues",
+        "ScalarValues::Real"
+      ],
+      "checks": [
+        {
+          "id": "POWER",
+          "label": "功率合计对上限",
+          "formula": "所有 drawW 相加 ≤ powerLimitW",
+          "status": "PASS",
+          "actual": 49.0,
+          "limit": 60.0,
+          "unit": "W"
+        },
+        {
+          "id": "LINK",
+          "label": "上传对上行",
+          "formula": "uploadMbps ≤ uplinkMbps",
+          "status": "PASS",
+          "actual": 18.0,
+          "limit": 20.0,
+          "unit": "Mbps"
+        },
+        {
+          "id": "STORE",
+          "label": "记录容量",
+          "formula": "dataRateMbps × retentionHours × 3600 ÷ 8000 ≤ storageGB",
+          "status": "PASS",
+          "actual": 64.8,
+          "limit": 256.0,
+          "unit": "GB"
+        },
+        {
+          "id": "TRACE",
+          "label": "带数字的需求写进了模型",
+          "formula": "每条需求的属性名和数值都能在解析结果里找到",
+          "status": "PASS",
+          "actual": 9,
+          "limit": 9,
+          "unit": "条"
+        },
+        {
+          "id": "CONNECT",
+          "label": "连接条数",
+          "status": "INFO",
+          "actual": 4,
+          "unit": "条"
+        }
+      ],
+      "read_back": "The vessel total power draw shall not exceed the vessel power limit of 60 W.\nThe visible camera shall draw 28 W.\nThe edge computer shall draw 14 W.\nThe infrared camera shall draw 7 W.\nImagery shall be recorded locally at a data rate of 18 Mbps.\nImagery shall be retained for 8 hours.\nThe system shall provide 256 GB of storage for local recording.\nImagery shall be uploaded to shore at 18 Mbps.\nThe uplink capacity to shore shall be 20 Mbps.",
+      "read_back_numbers": {
+        "7": true,
+        "8": true,
+        "14": true,
+        "18": true,
+        "20": true,
+        "28": true,
+        "60": true,
+        "256": true
+      }
+    },
+    {
+      "key": "B",
+      "source": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel total power draw shall not exceed the vessel power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 28 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 14 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 7 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Imagery shall be retained for 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: The system shall provide 256 GB of storage for local recording. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity to shore shall be 20 Mbps. */\n    }\n\n    part def VesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 256;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 20;\n\n        port def PowerPortDef;\n        port def SharedDataPortDef;\n        port def RecordPortDef;\n        port def UplinkPortDef;\n\n        part visibleCamera {\n            attribute drawW : Real = 28;\n            port powerIn : PowerPortDef;\n            port dataOut : SharedDataPortDef;\n        }\n\n        part infraredCamera {\n            attribute drawW : Real = 7;\n            port powerIn : PowerPortDef;\n            port dataOut : SharedDataPortDef;\n        }\n\n        part recorder {\n            port sharedDataIn : SharedDataPortDef;\n            port recordOut : RecordPortDef;\n        }\n\n        part edgeComputer {\n            attribute drawW : Real = 14;\n            port powerIn : PowerPortDef;\n            port recordIn : RecordPortDef;\n            port uplinkOut : UplinkPortDef;\n        }\n\n        connect visibleCamera.powerIn to infraredCamera.powerIn;\n        connect infraredCamera.powerIn to edgeComputer.powerIn;\n\n        connect visibleCamera.dataOut to recorder.sharedDataIn;\n        connect infraredCamera.dataOut to recorder.sharedDataIn;\n\n        connect recorder.recordOut to edgeComputer.recordIn;\n    }\n\n    part vessel : VesselDef;\n}\n",
+      "sysml_status": "PASS",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "PASS",
+          "diagnostics": [],
+          "sha": "16f4bad93834",
+          "same_as_previous": false,
+          "run_id": "20261003T192404-106c4ab1",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel total power draw shall not exceed the vessel power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 28 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 14 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 7 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Imagery shall be retained for 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: The system shall provide 256 GB of storage for local recording. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity to shore shall be 20 Mbps. */\n    }\n\n    part def VesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 256;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 20;\n\n        port def PowerPortDef;\n        port def SharedDataPortDef;\n        port def RecordPortDef;\n        port def UplinkPortDef;\n\n        part visibleCamera {\n            attribute drawW : Real = 28;\n            port powerIn : PowerPortDef;\n            port dataOut : SharedDataPortDef;\n        }\n\n        part infraredCamera {\n            attribute drawW : Real = 7;\n            port powerIn : PowerPortDef;\n            port dataOut : SharedDataPortDef;\n        }\n\n        part recorder {\n            port sharedDataIn : SharedDataPortDef;\n            port recordOut : RecordPortDef;\n        }\n\n        part edgeComputer {\n            attribute drawW : Real = 14;\n            port powerIn : PowerPortDef;\n            port recordIn : RecordPortDef;\n            port uplinkOut : UplinkPortDef;\n        }\n\n        connect visibleCamera.powerIn to infraredCamera.powerIn;\n        connect infraredCamera.powerIn to edgeComputer.powerIn;\n\n        connect visibleCamera.dataOut to recorder.sharedDataIn;\n        connect infraredCamera.dataOut to recorder.sharedDataIn;\n\n        connect recorder.recordOut to edgeComputer.recordIn;\n    }\n\n    part vessel : VesselDef;\n}\n"
+        }
+      ],
+      "repair_rounds": 0,
+      "diagnostics": [],
+      "run_dir": "/data/robotics/RTRC/mvp/runs/20261003T192404-106c4ab1",
+      "model": "qwen3.8-max",
+      "usage": {
+        "prompt_tokens": 932,
+        "total_tokens": 1589,
+        "completion_tokens": 657,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 932
+        }
+      },
+      "prompt_parts": [
+        {
+          "key": "rules",
+          "label": "规范",
+          "paper": "p3",
+          "text": "You write SysML v2 textual notation.\nRules:\n- Output one fenced code block tagged sysml, and no prose before or after it.\n- The file contains exactly one package whose name is given in the task.\n- Import ScalarValues only when you use Real.\n- Use only names the task requires. Do not invent numeric limits.\n- Do not change a number the task tells you to keep.\n- The first line inside the package is exactly: private import ScalarValues::*;\n- Declare attributes as `attribute name : Real = 12.0;` inside part usages, not part definitions, so values are literals.\n"
+        },
+        {
+          "key": "contract",
+          "label": "模板 · 属性合同",
+          "paper": "p3",
+          "text": "attribute powerLimitW : Real = 60;  // R1\nattribute drawW : Real = 28;  // R2\nattribute drawW : Real = 14;  // R3\nattribute drawW : Real = 7;  // R4\nattribute dataRateMbps : Real = 18;  // R5\nattribute retentionHours : Real = 8;  // R6\nattribute storageGB : Real = 256;  // R7\nattribute uploadMbps : Real = 18;  // R8\nattribute uplinkMbps : Real = 20;  // R9"
+        },
+        {
+          "key": "examples",
+          "label": "示例 · 检索到的已有元素",
+          "paper": "p2",
+          "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0\nAttributeUsage MaritimeISR::UnmannedSurfaceVessel::uplinkMbps 8.0\n[已批准 20261003T150116·A] AttributeUsage DesignA::Vessel::edgeComputer::drawW 14\n[已批准 20261003T150116·A] AttributeUsage DesignA::Vessel::infraredCamera::drawW 7\nPartDefinition MaritimeISR::UnmannedSurfaceVessel\n[已批准 20261003T150116·A] PartUsage DesignA::Vessel::edgeComputer\n[已批准 20261003T150116·A] PartUsage DesignA::Vessel::infraredCamera"
+        },
+        {
+          "key": "task",
+          "label": "简报 + 需求",
+          "paper": "",
+          "text": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 256 GB of storage. Imagery is uploaded to shore at 18 Mbps over one 20 Mbps uplink.\n\nR1: The vessel total power draw shall not exceed the vessel power limit of 60 W.\nR2: The visible camera shall draw 28 W.\nR3: The edge computer shall draw 14 W.\nR4: The infrared camera shall draw 7 W.\nR5: Imagery shall be recorded locally at a data rate of 18 Mbps.\nR6: Imagery shall be retained for 8 hours.\nR7: The system shall provide 256 GB of storage for local recording.\nR8: Imagery shall be uploaded to shore at 18 Mbps.\nR9: The uplink capacity to shore shall be 20 Mbps."
+        },
+        {
+          "key": "variant",
+          "label": "这一套的变体要求",
+          "paper": "",
+          "text": "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A."
+        }
+      ],
+      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261003T192328/DesignB.sysml",
+      "numbers": {
+        "DesignB::VesselDef::dataRateMbps": 18.0,
+        "DesignB::VesselDef::uplinkMbps": 20.0,
+        "DesignB::VesselDef::powerLimitW": 60.0,
+        "DesignB::VesselDef::infraredCamera::drawW": 7.0,
+        "DesignB::VesselDef::visibleCamera::drawW": 28.0,
+        "DesignB::VesselDef::retentionHours": 8.0,
+        "DesignB::VesselDef::storageGB": 256.0,
+        "DesignB::VesselDef::edgeComputer::drawW": 14.0,
+        "DesignB::VesselDef::uploadMbps": 18.0
+      },
+      "connections": [
+        [
+          "DesignB::VesselDef::infraredCamera.dataOut",
+          "DesignB::VesselDef::recorder.sharedDataIn"
+        ],
+        [
+          "DesignB::VesselDef::visibleCamera.dataOut",
+          "DesignB::VesselDef::recorder.sharedDataIn"
+        ],
+        [
+          "DesignB::VesselDef::infraredCamera.powerIn",
+          "DesignB::VesselDef::edgeComputer.powerIn"
+        ],
+        [
+          "DesignB::VesselDef::recorder.recordOut",
+          "DesignB::VesselDef::edgeComputer.recordIn"
+        ],
+        [
+          "DesignB::VesselDef::visibleCamera.powerIn",
+          "DesignB::VesselDef::infraredCamera.powerIn"
+        ]
+      ],
+      "elements": [
+        "DesignB",
+        "DesignB::R1",
+        "DesignB::R2",
+        "DesignB::R3",
+        "DesignB::R4",
+        "DesignB::R5",
+        "DesignB::R6",
+        "DesignB::R7",
+        "DesignB::R8",
+        "DesignB::R9",
+        "DesignB::VesselDef",
+        "DesignB::VesselDef::PowerPortDef",
+        "DesignB::VesselDef::RecordPortDef",
+        "DesignB::VesselDef::SharedDataPortDef",
+        "DesignB::VesselDef::UplinkPortDef",
+        "DesignB::VesselDef::dataRateMbps",
+        "DesignB::VesselDef::edgeComputer",
+        "DesignB::VesselDef::edgeComputer::drawW",
+        "DesignB::VesselDef::edgeComputer::powerIn",
+        "DesignB::VesselDef::edgeComputer::recordIn",
+        "DesignB::VesselDef::edgeComputer::uplinkOut",
+        "DesignB::VesselDef::infraredCamera",
+        "DesignB::VesselDef::infraredCamera::dataOut",
+        "DesignB::VesselDef::infraredCamera::drawW",
+        "DesignB::VesselDef::infraredCamera::powerIn",
+        "DesignB::VesselDef::powerLimitW",
+        "DesignB::VesselDef::recorder",
+        "DesignB::VesselDef::recorder::recordOut",
+        "DesignB::VesselDef::recorder::sharedDataIn",
+        "DesignB::VesselDef::retentionHours",
+        "DesignB::VesselDef::storageGB",
+        "DesignB::VesselDef::uplinkMbps",
+        "DesignB::VesselDef::uploadMbps",
+        "DesignB::VesselDef::visibleCamera",
+        "DesignB::VesselDef::visibleCamera::dataOut",
+        "DesignB::VesselDef::visibleCamera::drawW",
+        "DesignB::VesselDef::visibleCamera::powerIn",
+        "DesignB::vessel",
+        "ScalarValues",
+        "ScalarValues::Real"
+      ],
+      "checks": [
+        {
+          "id": "POWER",
+          "label": "功率合计对上限",
+          "formula": "所有 drawW 相加 ≤ powerLimitW",
+          "status": "PASS",
+          "actual": 49.0,
+          "limit": 60.0,
+          "unit": "W"
+        },
+        {
+          "id": "LINK",
+          "label": "上传对上行",
+          "formula": "uploadMbps ≤ uplinkMbps",
+          "status": "PASS",
+          "actual": 18.0,
+          "limit": 20.0,
+          "unit": "Mbps"
+        },
+        {
+          "id": "STORE",
+          "label": "记录容量",
+          "formula": "dataRateMbps × retentionHours × 3600 ÷ 8000 ≤ storageGB",
+          "status": "PASS",
+          "actual": 64.8,
+          "limit": 256.0,
+          "unit": "GB"
+        },
+        {
+          "id": "TRACE",
+          "label": "带数字的需求写进了模型",
+          "formula": "每条需求的属性名和数值都能在解析结果里找到",
+          "status": "PASS",
+          "actual": 9,
+          "limit": 9,
+          "unit": "条"
+        },
+        {
+          "id": "CONNECT",
+          "label": "连接条数",
+          "status": "INFO",
+          "actual": 5,
+          "unit": "条"
+        }
+      ],
+      "read_back": "The vessel total power draw shall not exceed the vessel power limit of 60 W.\nThe visible camera shall draw 28 W.\nThe edge computer shall draw 14 W.\nThe infrared camera shall draw 7 W.\nImagery shall be recorded locally at a data rate of 18 Mbps.\nImagery shall be retained for 8 hours.\nThe system shall provide 256 GB of storage for local recording.\nImagery shall be uploaded to shore at 18 Mbps.\nThe uplink capacity to shore shall be 20 Mbps.",
+      "read_back_numbers": {
+        "7": true,
+        "8": true,
+        "14": true,
+        "18": true,
+        "20": true,
+        "28": true,
+        "60": true,
+        "256": true
+      }
+    }
+  ],
+  "alignment": {
+    "mappings": [
+      {
+        "design": "DesignA::Vessel",
+        "existing": "MaritimeISR::UnmannedSurfaceVessel",
+        "reason": "Both represent the primary vessel/unmanned surface vehicle system in their respective models.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true
+      },
+      {
+        "design": "DesignA::Vessel::powerLimitW",
+        "existing": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW",
+        "reason": "Both define the power limit attribute (in Watts) for the vessel.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true
+      },
+      {
+        "design": "DesignA::Vessel::uplinkMbps",
+        "existing": "MaritimeISR::UnmannedSurfaceVessel::uplinkMbps",
+        "reason": "Both define the uplink capacity attribute (in Mbps) for the vessel.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true
+      },
+      {
+        "design": "DesignA::vessel",
+        "existing": "MaritimeISR::UnmannedSurfaceVessel",
+        "reason": "The part usage 'vessel' is an instance of Vessel, semantically corresponding to the UnmannedSurfaceVessel in the existing model.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true
+      }
+    ],
+    "verified": 4,
+    "proposed": 4,
+    "existing_names": [
+      "MaritimeISR::UnmannedSurfaceVessel",
+      "MaritimeISR::UnmannedSurfaceVessel::powerLimitW",
+      "MaritimeISR::UnmannedSurfaceVessel::uplinkMbps"
+    ],
+    "model": "qwen3.8-max",
+    "note": "映射只是提议。代码核对两边名字，官方 Pilot 再解析对齐包。两份源模型都不改。采用与否由人定。",
+    "package": {
+      "name": "AlignA_20261003T192328",
+      "source": "package AlignA_20261003T192328 {\n    doc /* Alignment package written by the agent. Neither source model is edited. */\n    dependency map1 from DesignA::Vessel to MaritimeISR::UnmannedSurfaceVessel;\n    dependency map2 from DesignA::Vessel::powerLimitW to MaritimeISR::UnmannedSurfaceVessel::powerLimitW;\n    dependency map3 from DesignA::Vessel::uplinkMbps to MaritimeISR::UnmannedSurfaceVessel::uplinkMbps;\n    dependency map4 from DesignA::vessel to MaritimeISR::UnmannedSurfaceVessel;\n}\n",
+      "files": [
+        "MaritimeISR.sysml",
+        "DesignA.sysml",
+        "AlignA_20261003T192328.sysml"
+      ],
+      "sysml_status": "PASS",
+      "run_id": "20261003T192415-df060582",
+      "diagnostics": []
+    }
+  },
+  "tradeoffs": {
+    "proposals": []
+  },
+  "gate": {
+    "answer": "awaiting-person",
+    "eligible": [
+      "A",
+      "B"
+    ],
+    "effect": "设计 A、B 四项核算全过，可以由人批准入库。脚本不替人选。"
+  },
+  "usage": {
+    "calls": 6,
+    "by_model": {
+      "qwen3.8-max": {
+        "calls": 6,
+        "prompt_tokens": 4634,
+        "completion_tokens": 2117,
+        "cached_tokens": 0
+      }
+    }
+  }
+}

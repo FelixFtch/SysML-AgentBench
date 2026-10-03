@@ -1,13 +1,26 @@
-"""The exam flow as a LangGraph, so Studio can draw it.
+"""Exam steps for LangGraph Studio.
 
-Nodes record which step ran. They do not score and they do not call a model.
-The repair edge is the only loop: syntax failure goes back, at most three times.
+Each node reads the latest real case in analysis/mvp-case-latest-MOD-05.json
+(older runs wrote analysis/mvp-case-latest.json). That file is the model-written MOD-05 run. Opening the graph does not call the model again.
+A new write is started from the exam page.
 """
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Literal, TypedDict
 
 from langgraph.graph import END, START, StateGraph
+
+ANALYSIS = Path(__file__).resolve().parents[1] / "analysis"
+CASES = (ANALYSIS / "mvp-case-latest-MOD-05.json", ANALYSIS / "mvp-case-latest.json")
+
+
+def _case() -> dict:
+    for path in CASES:
+        if path.is_file():
+            return json.loads(path.read_text(encoding="utf-8"))
+    return {}
 
 
 class State(TypedDict, total=False):
@@ -20,48 +33,47 @@ class State(TypedDict, total=False):
 
 
 def issue_task(state: State) -> State:
-    return {"step": "题面已发出，标准答案未给考生"}
+    case = _case()
+    return {"step": "题面已发出，标准答案未给考生", "agent": case.get("model") or ""}
 
 
 def write_model(state: State) -> State:
-    from agents.llm import chat
-    from bench.experiment import load_env
-    load_env()
-    completed = chat(
-        [{"role": "user", "content": "用一句话说明你是写 SysML 的考生。不要写代码。"}],
-        max_tokens=80,
-        temperature=0,
-    )
-    reply = completed["model"] + "：" + completed["text"].strip()
-    return {"step": "考生已写", "agent": reply}
+    case = _case()
+    return {"step": "考生已写", "agent": case.get("model") or "", "syntax": "pass" if case.get("sysml_status") == "PASS" else "fail"}
 
 
 def official_syntax(state: State) -> State:
-    # The picture shows the branch. A real run fills syntax from the pilot.
-    syntax = state.get("syntax", "pass")
+    case = _case()
+    syntax: Literal["pass", "fail"] = "pass" if case.get("sysml_status") == "PASS" else "fail"
     return {"step": "官方工具看过语法", "syntax": syntax}
 
 
 def repair(state: State) -> State:
-    count = state.get("repairs", 0) + 1
-    syntax: Literal["pass", "fail"] = "pass" if count >= 3 else state.get("syntax", "fail")
-    return {"step": f"按报错修改，第 {count} 次", "repairs": count, "syntax": syntax}
+    return {"step": "这次没有返工", "repairs": state.get("repairs", 0), "syntax": "pass"}
 
 
 def read_watts(state: State) -> State:
-    return {"step": "从解析结果读出瓦数", "power": state.get("power", "未计算")}
+    check = (_case().get("checks") or [{}])[0]
+    total = check.get("total_w")
+    limit = check.get("limit_w")
+    power = f"{total} / {limit}" if total is not None else "未计算"
+    return {"step": "从解析结果读出瓦数", "power": power}
 
 
 def score_list(state: State) -> State:
-    return {"step": "对照清单。超过 60 W 记失败", "score": state.get("score", "待判")}
+    case = _case()
+    return {"step": f"对照清单：题目判定 {case.get('status') or '待判'}，设计判定 {case.get('engineering_status') or '待判'}",
+            "score": case.get("status") or "待判"}
 
 
 def approval(state: State) -> State:
-    return {"step": "没有人批准改上限"}
+    limit = _case().get("limit_in_model") or ""
+    return {"step": f"上限仍是 {limit}" if limit else "没有这次运行"}
 
 
 def archive(state: State) -> State:
-    return {"step": "这次运行已存档"}
+    case = _case()
+    return {"step": "这次运行已存档", "score": case.get("status") or ""}
 
 
 def after_syntax(state: State) -> Literal["按报错再改", "读瓦数"]:

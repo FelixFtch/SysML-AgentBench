@@ -23,6 +23,8 @@ __pycache__/
 /mvp/runs/
 /mvp/app/data/
 /mvp/agent-runs/
+/mvp/exam-inbox/
+/mvp/toolchain/runs/
 /mvp/verification/*/
 /runs/*
 !/runs/.gitkeep

@@ -1,0 +1,21 @@
+{
+  "task_id": "PURE-PEERING",
+  "provider_model": "qwen3.8-max",
+  "status": "PASS",
+  "answer": "{\"requirements\":[\"If a resource fails, its service information is removed from SR and the resource ID counter is decremented.\",\"If the user requests experience service timeout (threshold), initiation request is cancelled.\"]}",
+  "score": {
+    "status": "PASS",
+    "expected": {
+      "requirements": [
+        "If a resource fails, its service information is removed from SR and the resource ID counter is decremented.",
+        "If the user requests experience service timeout (threshold), initiation request is cancelled."
+      ]
+    },
+    "actual": {
+      "requirements": [
+        "If a resource fails, its service information is removed from SR and the resource ID counter is decremented.",
+        "If the user requests experience service timeout (threshold), initiation request is cancelled."
+      ]
+    }
+  }
+}

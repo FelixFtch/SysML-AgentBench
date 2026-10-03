@@ -1,0 +1,155 @@
+{
+  "id": "20261003T074616",
+  "brief": "A harbor patrol unmanned surface vessel carries a visible camera drawing 41 W and an edge computer drawing 25 W. Add an infrared camera drawing 12 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 128 GB of storage and shared to shore over one 8 Mbps uplink.",
+  "synthetic": true,
+  "requirements": {
+    "requirements": [
+      {
+        "id": "R1",
+        "text": "The vessel total power draw shall not exceed the vessel power limit of 60 W.",
+        "quantity": {
+          "name": "powerLimitW",
+          "value": 60,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R2",
+        "text": "The visible camera shall draw 41 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 41,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R3",
+        "text": "The edge computer shall draw 25 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 25,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R4",
+        "text": "The infrared camera shall draw 12 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 12,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R5",
+        "text": "Imagery shall be recorded locally at a data rate of 18 Mbps.",
+        "quantity": {
+          "name": "dataRateMbps",
+          "value": 18,
+          "unit": "Mbps"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R6",
+        "text": "Local imagery recording shall be retained for 8 hours.",
+        "quantity": {
+          "name": "retentionHours",
+          "value": 8,
+          "unit": "h"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R7",
+        "text": "Local storage capacity shall be 128 GB.",
+        "quantity": {
+          "name": "storageGB",
+          "value": 128,
+          "unit": "GB"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R8",
+        "text": "Imagery shall be shared to shore over one uplink at 8 Mbps.",
+        "quantity": {
+          "name": "uplinkMbps",
+          "value": 8,
+          "unit": "Mbps"
+        },
+        "unsourced_numbers": []
+      }
+    ],
+    "questions": [
+      "Does the 128 GB storage capacity satisfy the required retention of 18 Mbps imagery for 8 hours?"
+    ],
+    "unsourced": [],
+    "model": "qwen3.8-max",
+    "usage": {
+      "prompt_tokens": 235,
+      "total_tokens": 564,
+      "completion_tokens": 329,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 235
+      }
+    }
+  },
+  "designs": [
+    {
+      "key": "A",
+      "source": "package DesignA {\n    import ScalarValues::*;\n\n    port def PowerPort;\n    port def DataPort;\n    port def UplinkPort;\n\n    part def VisibleCamera {\n        attribute power_draw : Real = 41.0;\n        port pwr : PowerPort;\n        port data_out : DataPort;\n    }\n\n    part def InfraredCamera {\n        attribute power_draw : Real = 12.0;\n        port pwr : PowerPort;\n        port data_out : DataPort;\n    }\n\n    part def EdgeComputer {\n        attribute power_draw : Real = 25.0;\n        port pwr : PowerPort;\n        port cam_in1 : DataPort;\n        port cam_in2 : DataPort;\n        port storage_out : DataPort;\n        port uplink_out : UplinkPort;\n    }\n\n    part def LocalStorage {\n        attribute capacity : Real = 128.0;\n        port data_in : DataPort;\n    }\n\n    part def Uplink {\n        attribute count : Real = 1.0;\n        port data_in : UplinkPort;\n    }\n\n    part def Vessel {\n        attribute power_limit : Real = 60.0;\n        attribute record_data_rate : Real = 18.0;\n        attribute retention_duration : Real = 8.0;\n        attribute share_data_rate : Real = 8.0;\n\n        part vc : VisibleCamera;\n        part ic : InfraredCamera;\n        part ec : EdgeComputer;\n        part ls : LocalStorage;\n        part ul : Uplink;\n\n        connect vc.data_out to ec.cam_in1;\n        connect ic.data_out to ec.cam_in2;\n        connect ec.storage_out to ls.data_in;\n        connect ec.uplink_out to ul.data_in;\n    }\n\n    requirement def R1 {\n        doc /* R1: The vessel total power draw shall not exceed the vessel power limit of 60 W. */\n    }\n\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n\n    requirement def R6 {\n        doc /* R6: Local imagery recording shall be retained for 8 hours. */\n    }\n\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n\n    requirement def R8 {\n        doc /* R8: Imagery shall be shared to shore over one uplink at 8 Mbps. */\n    }\n\n    satisfy R1 by Vessel::power_limit;\n    satisfy R2 by Vessel::vc.power_draw;\n    satisfy R3 by Vessel::ec.power_draw;\n    satisfy R4 by Vessel::ic.power_draw;\n    satisfy R5 by Vessel::record_data_rate;\n    satisfy R6 by Vessel::retention_duration;\n    satisfy R7 by Vessel::ls.capacity;\n    satisfy R8 by Vessel::share_data_rate;\n}\n",
+      "sysml_status": "FAIL",
+      "run_dir": "/data/robotics/RTRC/mvp/runs/20261003T074639-438eebfc",
+      "diagnostics": [
+        "mismatched input 'import' expecting '}'",
+        "no viable alternative at input '::'",
+        "extraneous input '}' expecting EOF",
+        "Couldn't resolve reference to Type 'Real'.",
+        "Couldn't resolve reference to Type 'Real'.",
+        "Couldn't resolve reference to Type 'Real'."
+      ],
+      "model": "qwen3.8-max",
+      "checks": [
+        {
+          "id": "SYNTAX",
+          "label": "官方语法",
+          "status": "FAIL",
+          "detail": "语法没过，没有核算。"
+        }
+      ]
+    },
+    {
+      "key": "B",
+      "source": "package DesignB {\n    import ScalarValues::*;\n\n    port def PowerPort;\n    port def DataPort;\n\n    part def VisibleCamera {\n        attribute visible_camera_power : Real = 41.0;\n        port pwr : PowerPort;\n        port data_out : DataPort;\n    }\n\n    part def EdgeComputer {\n        attribute edge_computer_power : Real = 25.0;\n        port pwr : PowerPort;\n        port data_in : DataPort;\n        port storage_port : DataPort;\n        port uplink_port : DataPort;\n    }\n\n    part def InfraredCamera {\n        attribute infrared_camera_power : Real = 12.0;\n        port pwr : PowerPort;\n        port data_out : DataPort;\n    }\n\n    part def LocalStorage {\n        attribute local_storage_capacity : Real = 128.0;\n        port data_port : DataPort;\n    }\n\n    part def Uplink {\n        attribute uplink_data_rate : Real = 8.0;\n        port data_port : DataPort;\n    }\n\n    part def Vessel {\n        attribute vessel_power_limit : Real = 60.0;\n        attribute recording_data_rate : Real = 18.0;\n        attribute recording_duration : Real = 8.0;\n\n        part visible_cam : VisibleCamera;\n        part edge_comp : EdgeComputer;\n        part ir_cam : InfraredCamera;\n        part storage : LocalStorage;\n        part uplink_sys : Uplink;\n\n        connect visible_cam.pwr to edge_comp.pwr;\n        connect ir_cam.pwr to edge_comp.pwr;\n        connect visible_cam.data_out to edge_comp.data_in;\n        connect edge_comp.storage_port to storage.data_port;\n        connect edge_comp.uplink_port to uplink_sys.data_port;\n    }\n\n    requirement def R1 {\n        doc /* R1: The vessel total power draw shall not exceed the vessel power limit of 60 W. */\n    }\n\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n\n    requirement def R6 {\n        doc /* R6: Local imagery recording shall be retained for 8 hours. */\n    }\n\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n\n    requirement def R8 {\n        doc /* R8: Imagery shall be shared to shore over one uplink at 8 Mbps. */\n    }\n}\n",
+      "sysml_status": "FAIL",
+      "run_dir": "/data/robotics/RTRC/mvp/runs/20261003T074654-d252c482",
+      "diagnostics": [
+        "mismatched input 'import' expecting '}'",
+        "no viable alternative at input '::'",
+        "extraneous input '}' expecting EOF",
+        "Couldn't resolve reference to Type 'Real'.",
+        "Couldn't resolve reference to Type 'Real'.",
+        "Couldn't resolve reference to Type 'Real'."
+      ],
+      "model": "qwen3.8-max",
+      "checks": [
+        {
+          "id": "SYNTAX",
+          "label": "官方语法",
+          "status": "FAIL",
+          "detail": "语法没过，没有核算。"
+        }
+      ]
+    }
+  ],
+  "gate": {
+    "answer": "awaiting-person",
+    "effect": "两套设计都已核算。采用哪一套由人决定，脚本不替人选。"
+  }
+}

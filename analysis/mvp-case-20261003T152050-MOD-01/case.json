@@ -1,0 +1,61 @@
+{
+  "id": "20261003T152050",
+  "title": "MOD-01 变更：模型改已有模型，官方工具评，再读回文字",
+  "synthetic": true,
+  "task_id": "MOD-01",
+  "configuration": "P0",
+  "model": "qwen3.8-max",
+  "requirements": "# MOD-01 — synthetic, not an RTX specification\n\nPackage name stays UsvPlain. Edit the baseline.\n\nAdd part usage irCamera of Camera inside usv. Connect usv.irCamera.imagery to usv.processor.imageryIn.\nKeep the existing camera, AIS, and radio connections. Keep powerLimitW equal to 60.0.\nDo not add other numbers.\n\n\nBaseline file UsvPlain.sysml:\n```sysml\npackage UsvPlain {\n    private import ScalarValues::*;\n    port def ImageryPort;\n    port def TrackPort;\n    port def LinkPort;\n    part def Camera { port imagery : ImageryPort; }\n    part def AisReceiver { port tracks : TrackPort; }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n        port uplink : LinkPort;\n    }\n    part def Radio { port fromProcessor : LinkPort; port toShore : LinkPort; }\n    part usv {\n        part eoCamera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 60.0;\n    }\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.ais.tracks to usv.processor.trackIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n}\n```",
+  "baseline": "package UsvPlain {\n    private import ScalarValues::*;\n    port def ImageryPort;\n    port def TrackPort;\n    port def LinkPort;\n    part def Camera { port imagery : ImageryPort; }\n    part def AisReceiver { port tracks : TrackPort; }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n        port uplink : LinkPort;\n    }\n    part def Radio { port fromProcessor : LinkPort; port toShore : LinkPort; }\n    part usv {\n        part eoCamera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 60.0;\n    }\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.ais.tracks to usv.processor.trackIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n}\n",
+  "gold_note": "标准答案在阅卷时才打开，没有放进两次模型调用。",
+  "answer": "package UsvPlain {\n    private import ScalarValues::*;\n    port def ImageryPort;\n    port def TrackPort;\n    port def LinkPort;\n    part def Camera { port imagery : ImageryPort; }\n    part def AisReceiver { port tracks : TrackPort; }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n        port uplink : LinkPort;\n    }\n    part def Radio { port fromProcessor : LinkPort; port toShore : LinkPort; }\n    part usv {\n        part eoCamera : Camera;\n        part irCamera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 60.0;\n    }\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.irCamera.imagery to usv.processor.imageryIn;\n    connect usv.ais.tracks to usv.processor.trackIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n}\n",
+  "sysml_status": "PASS",
+  "diagnostics": [],
+  "status": "PASS",
+  "engineering_status": "UNKNOWN",
+  "checks": [],
+  "checks_match": null,
+  "must_exist": {
+    "hit": 4,
+    "expected": 4,
+    "missing": []
+  },
+  "must_connect": {
+    "hit": 3,
+    "expected": 3,
+    "missing": []
+  },
+  "must_preserve": {
+    "hit": 1,
+    "expected": 1,
+    "missing": []
+  },
+  "invented_numbers": [],
+  "run_dir": "/data/robotics/RTRC/mvp/runs/20261003T152051-f4ec8ba5",
+  "approval": {
+    "triggered": false,
+    "answer": "not-requested",
+    "effect": "No requirement change was requested. The engineering check result stands."
+  },
+  "limit_in_model": "60",
+  "limit_in_baseline": "60",
+  "round_trip": "The package UsvPlain privately imports ScalarValues.\nImageryPort is a port definition.\nTrackPort is a port definition.\nLinkPort is a port definition.\nCamera is a part definition containing an imagery port of type ImageryPort.\nAisReceiver is a part definition containing a tracks port of type TrackPort.\nProcessor is a part definition containing an imageryIn port of type ImageryPort, a trackIn port of type TrackPort, and an uplink port of type LinkPort.\nRadio is a part definition containing a fromProcessor port of type LinkPort and a toShore port of type LinkPort.\nusv is a part containing an eoCamera part of type Camera, an irCamera part of type Camera, an ais part of type AisReceiver, a processor part of type Processor, and a radio part of type Radio.\nusv has an attribute powerLimitW of type Real equal to 60.0.\nusv.eoCamera.imagery is connected to usv.processor.imageryIn.\nusv.irCamera.imagery is connected to usv.processor.imageryIn.\nusv.ais.tracks is connected to usv.processor.trackIn.\nusv.processor.uplink is connected to usv.radio.fromProcessor.",
+  "round_trip_mentions": {
+    "60": true
+  },
+  "safety": {
+    "file": "scenario/maritime-isr/hazards.sysml",
+    "kept": true,
+    "note": "这两条危险需求没有交给模型改写。语法能解析它们，不算安全通过。"
+  },
+  "interoperability": "这一例的模型用官方 SysML v2 文本交给 Pilot。它没有再测船、无人机、指挥船之间的链路。",
+  "reliability": {
+    "this_run": "PASS",
+    "archived": {
+      "PASS": 12,
+      "FAIL": 0,
+      "other": 0
+    },
+    "note": "同一道题在主力矩阵里的 12 次存档（按现行判分），用来看判定稳不稳。这一次新写的卷单独计。"
+  }
+}

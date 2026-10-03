@@ -1,0 +1,19 @@
+{
+  "task_id": "PURE-EIRENE",
+  "provider_model": "qwen3.8-max",
+  "status": "PASS",
+  "answer": "{\"requirements\": [\"The EIRENE System Requirements Specification defines the set of requirements which a railway radio system shall comply with in order to ensure interoperability between national railways.\"]}",
+  "score": {
+    "status": "PASS",
+    "expected": {
+      "requirements": [
+        "The EIRENE System Requirements Specification defines the set of requirements which a railway radio system shall comply with in order to ensure interoperability between national railways."
+      ]
+    },
+    "actual": {
+      "requirements": [
+        "The EIRENE System Requirements Specification defines the set of requirements which a railway radio system shall comply with in order to ensure interoperability between national railways."
+      ]
+    }
+  }
+}

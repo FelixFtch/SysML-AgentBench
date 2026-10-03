@@ -1,189 +1,189 @@
-# SysML-AgentBench 完整执行计划（v2.0）
+# SysML-AgentBench execution plan (v2.0)
 
-**项目**：Agentic AI for Systems Engineering Discovery and Design（RTRC / UConn Senior Design）
-**版本**：v2.0，2026-10-02（取代 v1.0 与 2026-09-22 的两份旧计划；旧文件已移至 `research/archive/plans-2026-09/`，仅作历史，不再指导工作）
-**状态**：唯一权威执行计划。任何改动记入 §18 决策记录。正文与 §18 中 016–021（2026-10-03）冲突处以决策为准，详见 `docs/decisions/`；当前数字见 `STATUS.md`。
-**上游依据**：`research/source-extracts/rtx-brief.txt`（赞助方 brief 原文）；与 Prof. Bollas 的首次会议纪要（2026-10）；`research/notes/vendor-ai-mcp-landscape-2026-10.md`（厂商 AI 现状核实）。
-
----
-
-## 0. 一句话 + 我们交什么
-
-> 出一套海事 ISR 的 SysML v2 建模题并事先写好参考答案，让几种 AI agent 来做，用 OMG 官方工具和参考答案自动打分，统计它们做对多少、怎么做错，写成报告告诉 RTRC：这条路现在能走多远、哪种做法最好、哪里不能信、下一步投什么。
-
-**主交付物是报告，不是系统。** Agent 工作流、题库、评分程序都是为报告服务的实验设备。
-
-```
-一份报告（D4）
-  第1章 可行性   AI 能把需求变成能加载、语义正确的 SysML v2 吗？→ 数字
-  第2章 性能     哪种做法最好（直接写 / 工具反馈 / 先列提纲 / 带资料 / 现成 coding agent / 厂商 AI）→ 对比
-  第3章 局限     在哪翻车、多频繁；AI 校验器靠不靠谱；模型翻回需求丢多少 → 失败分类
-  第4章 建议     RTRC 现在能用哪些环节、哪些必须人盯、下一步研究什么
-附件
-  题库 + 参考答案（D2）  考场代码（D3）  全部运行记录（D3）  海事 ISR 模型包（D6）  现场演示（D5）  知识库（D7）
-```
+**Project**: Agentic AI for Systems Engineering Discovery and Design (RTRC / UConn Senior Design)
+**Version**: v2.0, 2026-10-02 (replaces v1.0 and the two older plans dated 2026-09-22; the old files are in `research/archive/plans-2026-09/`, kept as history and no longer directing the work)
+**Status**: the only authoritative execution plan. Any change is recorded in the decision log in §18. Where the body conflicts with decisions 016–021 (2026-10-03) in §18, the decision wins; see `docs/decisions/`. Current numbers are in `STATUS.md`.
+**Upstream sources**: `research/source-extracts/rtx-brief.txt` (the sponsor brief, verbatim); notes from the first meeting with Prof. Bollas (2026-10); `research/notes/vendor-ai-mcp-landscape-2026-10.md` (vendor-AI landscape check).
 
 ---
 
-## 1. Word 文档的问题与覆盖矩阵
+## 0. One sentence, and what we hand over
 
-### 1.1 四个核心问题
+> Write a set of maritime-ISR SysML v2 modeling tasks with the answer keys written first, have several AI agents attempt them, score the attempts automatically with the official OMG tool and the answer keys, count how many they get right and how they get them wrong, and write a report that tells RTRC how far this path goes today, which approach works best, where it cannot be trusted, and what to fund next.
 
-| # | brief 原文 | 大白话 | 产出答案的环节 |
+**The main deliverable is the report, not a system.** The agent workflow, the task bank, and the scoring programs are experimental equipment built to produce the report.
+
+```
+One report (D4)
+  Chapter 1  Feasibility   Can AI turn requirements into loadable, semantically correct SysML v2? → numbers
+  Chapter 2  Performance   Which approach is best (write directly / tool feedback / outline first / with retrieved notes / an off-the-shelf coding agent / a vendor AI) → comparison
+  Chapter 3  Limits        Where it fails, and how often; whether an AI checker is trustworthy; how much is lost when the model writes the requirements back → failure classes
+  Chapter 4  Advice        Which steps RTRC can use now, which must stay with a person, and what to study next
+Appendices
+  Task bank + answer keys (D2)  Exam code (D3)  Every run record (D3)  Maritime ISR model package (D6)  Live demo (D5)  Knowledge base (D7)
+```
+
+---
+
+## 1. What the Word document asks, and the coverage matrix
+
+### 1.1 Four core questions
+
+| # | Brief, verbatim | In plain words | Where the answer comes from |
 |---|---|---|---|
-| Q1 可行性 | how requirements can be automatically translated into SysML v2 / feasibility, performance | AI 能不能把需求文字变成能用的 SysML v2？到什么程度？ | 生成类题目得分 |
-| Q2 最佳做法 | what workflows or architectures are most effective | 直接写 / 工具挑错再改 / 先列提纲 / 带资料写 / 现成 coding agent / 厂商 AI——哪种最好？ | 同一模型 × 多配置对比，按算力归一 |
-| Q3 可靠性与局限 | reliably applied / limitations | 哪里会错？会不会"看着对其实错"？第二个 AI 校验靠谱吗？模型翻回需求还对吗？ | 失败分类、误通过率、校验器一致率、round-trip 一致率、运行方差 |
-| Q4 建议 | recommended next steps | RTRC 该怎么用、哪些必须人管、下一步投什么 | 报告第 4 章 |
+| Q1 Feasibility | how requirements can be automatically translated into SysML v2 / feasibility, performance | Can AI turn requirement text into usable SysML v2, and how far? | Scores on the generate tasks |
+| Q2 Best approach | what workflows or architectures are most effective | Write directly / fix from tool errors / outline first / write with retrieved notes / an off-the-shelf coding agent / a vendor AI — which is best? | One model × several configurations, normalized by compute |
+| Q3 Reliability and limits | reliably applied / limitations | Where does it go wrong? Can something look right and be wrong? Is a second AI checker reliable? Is the model still right when it writes the requirements back? | Failure classes, false-pass rate, checker agreement, round-trip agreement, run variance |
+| Q4 Advice | recommended next steps | How should RTRC use this, what must a person own, and what should be funded next | Report chapter 4 |
 
-### 1.2 覆盖矩阵（验收用）
+### 1.2 Coverage matrix (used at acceptance)
 
-| brief 条目 | 交付物 | 验收证据 |
+| Brief item | Deliverable | Acceptance evidence |
 |---|---|---|
-| benchmark AI agents … requirements → SysML v2 | 24 题冻结题库；≥4 配置；主力模型 ×3 次 + 前沿模型 ×1 次 | Inspect 日志 + 结果表 |
-| first evidence-based evaluation（限定：多平台任务 × 工程语义 × 受控修改 × round-trip × 人工决策门） | 报告 D4 | 报告 + 归档运行 |
-| generating system requirements and design concepts（背景） | T5 需求侧题（PURE 抽取、歧义检测）；修改题中的候选方案 | T5 结果 |
-| interpreting system models（背景） | T2 读模型题 | T2 结果 |
-| maritime ISR：多平台、多传感模态、协同信息共享 | 合成 ISR 参考模型包 D6（4 平台） | 可加载 .sysml + 题库 |
-| 三篇指定论文 | §4：三篇各成为一个零件 | 文献章节 + 配置设计 |
-| PURE / SysEngBench | PURE → T5 原文；SysEngBench → 模型知识诊断附录 | 结果 + 许可登记 |
-| 活动 (5) 优化 agent 工作流 | P0–P3 消融 | Q2 数据 |
-| 活动 (6) benchmark 测试 agent | 整个项目 | — |
-| 活动 (9) 需求一致性/完整性/设计-模型对齐仿真 | 工程检查 + 歧义题 + round-trip | Q3 数据 |
-| Interoperability | 官方 pilot vs 第二检查器判定一致性；UMAA 风格接口题；标准 API 后端比较（可选） | 分歧矩阵 |
-| Reliability & dependability | 运行方差；失败分类 | Q3 数据 |
-| Safety | 审批门实现 + 测试证明 agent 调不动；STPA 库 2 条 hazard | 测试 + 模型 |
-| 无 EAR/ITAR、无 NDA | 全部公开/合成；`datasets/SOURCES.md` 登记许可 | 文件 |
-| Bollas 全链路（需求→模型→AI 校验→反向需求） | 环节 ②④⑤ | A4 结果 |
+| benchmark AI agents … requirements → SysML v2 | A frozen bank of 24 tasks; ≥4 configurations; the main model ×3 plus a frontier model ×1 | Inspect logs + results table |
+| first evidence-based evaluation (scoped to: multi-platform tasks × engineering semantics × controlled modification × round-trip × a human decision gate) | Report D4 | Report + archived runs |
+| generating system requirements and design concepts (background) | T5 requirements-side tasks (PURE excerpts, ambiguity detection); candidate designs inside the modification tasks | T5 results |
+| interpreting system models (background) | T2 read-the-model tasks | T2 results |
+| maritime ISR: multiple platforms, multiple sensing modalities, cooperative information sharing | Synthetic ISR reference model package D6 (4 platforms) | Loadable .sysml + the task bank |
+| the three assigned papers | §4: each paper becomes one component | Literature section + configuration design |
+| PURE / SysEngBench | PURE → the T5 source text; SysEngBench → a model-knowledge diagnostic appendix | Results + the license registry |
+| activity (5) optimize the agent workflow | P0–P3 ablation | Q2 data |
+| activity (6) benchmark and test the agents | the whole project | — |
+| activity (9) simulate requirements consistency / completeness / design-to-model alignment | Engineering checks + ambiguity tasks + round-trip | Q3 data |
+| Interoperability | Agreement between the official Pilot and a second checker; UMAA-style interface tasks; comparison of standard API backends (optional) | Disagreement matrix |
+| Reliability & dependability | Run variance; failure classes | Q3 data |
+| Safety | An approval gate, implemented and tested so the agent cannot operate it; 2 STPA hazards in the library | Tests + the model |
+| no EAR/ITAR, no NDA | Everything public or synthetic; licenses registered in `datasets/SOURCES.md` | The files |
+| Bollas end to end (requirements → model → AI check → requirements written back) | Steps ②④⑤ | A4 results |
 
 ---
 
-## 2. 三个必须说清的概念
+## 2. Three ideas that have to be stated plainly
 
-### 2.1 这不是产品，也不是 RSI
+### 2.1 This is not a product, and it is not RSI
 
-| 概念 | 是什么 | 我们做不做 |
+| Idea | What it is | Do we do it |
 |---|---|---|
-| 工具反馈循环（P1） | AI 写完 → 官方校验器报错 → 报错喂回 → AI 改 → ≤3 轮 | **做**。裁判是确定性工具，等同"编译器报错后程序员改代码" |
-| AI 自我检验（Bollas 的"第二个 AI 校验"） | 另一个 LLM 看模型说对不对 | **做，但当被测对象**：测它与工具/人工判定的一致率。2026-09 研究：现成 LLM 仅检出 47% 需求缺陷，不能当裁判 |
-| RSI（递归自我改进） | AI 根据自评改自己的策略/提示/权重 | **不做**。brief 未要求；裁判若是 AI 自己则分数不可信；被测对象必须冻结 |
+| Tool-feedback loop (P1) | The AI writes → the official validator reports errors → the errors are fed back → the AI edits → at most 3 rounds | **Yes.** The judge is a deterministic tool, the same idea as a programmer editing after a compiler error |
+| AI self-check (Bollas's "second AI check") | Another LLM looks at the model and says whether it is right | **Yes, but as something we measure**: we measure how often it agrees with the tool and with a person. 2026-09 research: an off-the-shelf LLM caught only 47% of requirement defects, so it cannot be the judge |
+| RSI (recursive self-improvement) | The AI changes its own strategy, prompts, or weights from its own score | **No.** The brief does not ask for it; if the judge is the AI itself the score is not credible; the thing being measured has to stay frozen |
 
-### 2.2 Ground truth 从哪来
+### 2.2 Where the ground truth comes from
 
-**ground truth = 我们出题时事先写好的参考答案清单**，像考试：出卷人先写答案和评分标准 → 考生做 → 对着标准改卷。顺序不可颠倒。
+**Ground truth is the answer-key list written when the task is written**, the way an exam works: the examiner writes the answers and the marking scheme first → the candidate attempts the task → the attempt is marked against the scheme. That order cannot be reversed.
 
-- 不来自 RTX、不来自厂商、不来自 AI
-- 每题一份清单：**必须有**哪些元素/连接/单位、**必须保留**什么、**不许凭空**改什么、工程检查**应得**什么结果、**该不该问**
-- 出题人先写一个参考模型，用官方校验器 + 工程检查跑通，证明清单可满足、数算对；第二人评审；第 4 周冻结
-- 清单覆盖不了的（可读性、抽象层次）→ 双人盲评抽样，报告一致率 κ；一致率低的维度如实写"目前只能靠人"
+- It does not come from RTX, from a vendor, or from an AI
+- Each task has one list: which elements, connections, and units **must exist**, what **must be kept**, what **must not be invented**, what result an engineering check **should** give, and **whether the agent should ask**
+- The author writes a reference model first and runs it through the official validator and the engineering checks, proving the list can be satisfied and the numbers add up; a second person reviews it; it is frozen in week 4
+- What the list cannot cover (readability, level of abstraction) → a two-person blind sample, with agreement reported as κ; a dimension with low agreement is reported honestly as "a person has to judge this for now"
 
-### 2.3 人在哪三处出现，为什么不算"人修答案"
+### 2.3 The three places a person appears, and why that is not "a person fixing the answer"
 
-| 位置 | 时机 | 角色 | 为什么不污染结果 |
+| Place | When | Role | Why it does not contaminate the result |
 |---|---|---|---|
-| 出题 + 写参考答案 | **考前** | 出卷人 | 冻结后不可改；运行进程看不见 |
-| 审批门 | **考中** | 题目的一部分 | 测"AI 遇到必须改需求时会停下来问，还是自己改"；考试时由固定脚本回答（永远"不批"），所有考生条件一致 |
-| 盲评 | **考后** | 改卷人 | 改的是分数不是答案；不知道输出来自哪个配置 |
+| Writing the tasks and the answer keys | **Before the exam** | Examiner | Frozen afterwards and not editable; the run process cannot see it |
+| Approval gate | **During the exam** | Part of the task | It tests whether the AI stops and asks when a requirement must change, or changes it itself; during the exam a fixed script answers (always "not approved"), so every candidate has the same conditions |
+| Blind review | **After the exam** | Marker | What changes is the score, not the answer; the marker does not know which configuration produced the output |
 
-厂商流程里人在 AI 出结果之后**修答案**，所以永远没有分数；我们的流程里人在 AI 动手之前**写答案**、交卷之后**改卷**，所以有分数。
-
----
-
-## 3. 系统架构（7 个环节）
-
-```
- ①题库                 ②被测 agent（考生）                            ③工具箱（所有考生同一套）
- 海事 ISR 场景     ┌── 自建工作流 P0/P1/P2/P3 ────────────────────┐   validate  官方 SysML v2 校验
- 24 道题        →  │   现成 coding agent：P-CODE OpenCode /       │ → check     工程检查（单位/接口/预算）
- 每题有参考答案    │   P-CODE-2 Claude Code（经 CCR）              │   diff/query 模型差异/查询
-                   └── 厂商 AI：P-VENDOR Cameo AI Assistant（条件）┘   （MCP server 暴露）
-                                   │
-                                   ▼
-                      ④第二个 AI：校验器 + 反向翻译器（被评测对象，不是裁判）
-                                   │
-                                   ▼
-                      ⑤阅卷（Inspect AI）：工具判定 + 参考答案清单 + 校验器一致率 + 人工盲评
-                                   │
-                      ⑥审批门：需求取舍类决定，agent 只能提议；考试中由脚本应答
-                                   │
-                                   ▼
-                      ⑦记录与报告：runs/ 证据包；Studio/Inspect View/Cameo CE/Workbench 页面；STATUS.md
-```
-
-设计原则（继承自既有工具层）：检查只读解析后模型；SysML PASS ≠ 工程验收；需求决策人持有；gold 对运行进程不可见；全部数据合成/公开。
+In a vendor workflow a person **fixes the answer** after the AI produces a result, so there is never a score. In this workflow a person **writes the answer** before the AI starts and **marks** after the paper is handed in, so there is a score.
 
 ---
 
-## 4. 三篇指定论文的使用
+## 3. System architecture (7 steps)
 
-| 论文 | 原文做了什么 | 用在哪 | 作用 | 我们补什么 |
+```
+ ① Task bank            ② Agent under test (the candidate)                 ③ Toolbox (the same set for every candidate)
+ Maritime ISR scenario  ┌── Built workflows P0/P1/P2/P3 ─────────────────┐   validate   official SysML v2 validation
+ 24 tasks            →  │   Off-the-shelf coding agents: P-CODE OpenCode / │ → check      engineering checks (units / interfaces / budgets)
+ each with an answer key│   P-CODE-2 Claude Code (via CCR)                │   diff/query model diff / query
+                        └── Vendor AI: P-VENDOR Cameo AI Assistant (conditional) ┘   (exposed by an MCP server)
+                                        │
+                                        ▼
+                           ④ A second AI: checker + reverse translator (measured, not the judge)
+                                        │
+                                        ▼
+                           ⑤ Marking (Inspect AI): tool verdict + answer-key list + checker agreement + human blind review
+                                        │
+                           ⑥ Approval gate: decisions that trade off requirements; the agent may only propose; a script answers during the exam
+                                        │
+                                        ▼
+                           ⑦ Records and the report: evidence packs under runs/; Studio / Inspect View / Cameo CE / Workbench pages; STATUS.md
+```
+
+Design rules (inherited from the existing tool layer): checks read only the parsed model; a SysML PASS is not engineering acceptance; a person holds requirement decisions; gold is invisible to the run process; all data is synthetic or public.
+
+---
+
+## 4. How the three assigned papers are used
+
+| Paper | What the original did | Where we use it | What it does for us | What we add |
 |---|---|---|---|---|
-| **P1** Li/Husung/Wang，CMBSE 跨组织 SysML v2 语义对齐（ISSE 2025，arXiv 2508.16181） | 七阶段：抽元素→LLM 提映射→人审→独立对齐包，不改源模型 | T3 修改/对齐题（无人机雷达 ICD vs 指挥舰融合接口）；审批门设计 | "保留源模型 + 独立对齐包 + 人审"的方法论依据 | 原文 1 案例无统计；我们 4–5 题 × 3 次量化映射正确率；用官方校验器替代 LLM 自检 |
-| **P2** Bader 等，SysML v2 GRAG（ISSE 2025） | API→RDF 图→一跳邻居→向量检索→GPT；3 问检索 F1 0.904 | P3 配置（检索增强）；T2 读模型题对照 | "结构化检索喂上下文"的方法 | 原文只测检索不测生成；重实现并绑定模型版本；文本 vs 图检索对比 |
-| **P3** Longshore/Bell/Madachy，NPS 生成式 MBSE（SYM-AM-24-048/138） | 自行车模型；规范+模板+示例；人工纠错迭代；创建/修改/查询三类 | P1/P2 配置设计（示例增强 + 工具反馈纠错）；题型三分法；SysEngBench 同团队 | "示例 + 迭代纠错"最早证据；题型框架；其"未来工作"即本项目 | 玩具案例→24 题统计；人工纠错→官方工具自动反馈 |
+| **P1** Li/Husung/Wang, CMBSE cross-organization SysML v2 semantic alignment (ISSE 2025, arXiv 2508.16181) | Seven stages: extract elements → an LLM proposes mappings → a person reviews → an independent alignment package, without editing the source model | T3 modification / alignment tasks (UAV radar ICD vs the command ship's fusion interface); the approval-gate design | The methodological basis for "keep the source model + an independent alignment package + a person reviews" | The original is 1 case with no statistics; we quantify mapping accuracy on 4–5 tasks × 3 repeats; the official validator replaces the LLM's self-check |
+| **P2** Bader et al., SysML v2 GRAG (ISSE 2025) | API → RDF graph → one-hop neighbors → vector retrieval → GPT; retrieval F1 0.904 on 3 questions | The P3 configuration (retrieval-augmented); a comparison point for the T2 read-the-model tasks | The method of "feed context from structured retrieval" | The original measures retrieval only, not generation; we reimplement it and pin the model version; text retrieval vs graph retrieval |
+| **P3** Longshore/Bell/Madachy, NPS generative MBSE (SYM-AM-24-048/138) | A bicycle model; specification + template + examples; a person corrects iteratively; three task kinds: create / modify / query | P1/P2 configuration design (example augmentation + correction from tool feedback); the three-way task split; SysEngBench is the same team | The earliest evidence for "examples + iterative correction"; the task-type frame; their "future work" is this project | A toy case → statistics on 24 tasks; a person correcting → automatic feedback from the official tool |
 
 ---
 
-## 5. 场景规格：合成海事 ISR 参考模型（D6）
+## 5. Scenario specification: the synthetic maritime ISR reference model (D6)
 
-**所有数值均为合成，标注 `synthetic`，不代表任何 RTX 规格。首次赞助方会议后按 Francesca 的用例调整边界；题型不变。**
+**Every number is synthetic, marked `synthetic`, and does not represent any RTX specification. After the first sponsor meeting the boundaries are adjusted to Francesca's use case; the task types do not change.**
 
-### 5.1 平台与节点
+### 5.1 Platforms and nodes
 
-| 节点 | 传感/功能 | 关键约束（合成） |
+| Node | Sensing / function | Key constraints (synthetic) |
 |---|---|---|
-| USV（无人水面艇） | EO 相机、红外相机、AIS 接收 | 功率上限 60 W；上行 8 Mbit/s；本地存储 128 GB；8 h 任务 |
-| UAV（固定翼无人机） | 海面搜索雷达、EO | 功率上限 120 W；下行 20 Mbit/s；2 h 续航 |
-| 指挥舰（有人） | 航迹融合、任务指挥 | 融合时延 ≤ 2 s；可接 2 条上行 |
-| 岸站 | 中继、存档 | 回传链路 50 Mbit/s；存档 30 天 |
+| USV (uncrewed surface vessel) | EO camera, infrared camera, AIS receiver | Power limit 60 W; uplink 8 Mbit/s; local storage 128 GB; 8 h mission |
+| UAV (fixed-wing uncrewed aircraft) | Sea-surface search radar, EO | Power limit 120 W; downlink 20 Mbit/s; 2 h endurance |
+| Command ship (crewed) | Track fusion, mission command | Fusion latency ≤ 2 s; can accept 2 uplinks |
+| Shore station | Relay, archive | Return link 50 Mbit/s; archive kept 30 days |
 
-### 5.2 共享的信息流
+### 5.2 Shared information flows
 
-航迹（目标 ID、位置、速度、置信度、时间戳）；任务指令；健康状态。每条流有源、宿、速率、时延要求、优先级、丢失策略。接口词汇参考 UMAA 6.0 ICD（公开，Distro A）；功能分解参考 NPS 公开报告（detect / correlate / track / relay）。
+Tracks (target ID, position, speed, confidence, timestamp); mission orders; health status. Each flow has a source, a sink, a rate, a latency requirement, a priority, and a loss policy. Interface vocabulary follows the UMAA 6.0 ICD (public, Distro A); the functional breakdown follows the public NPS report (detect / correlate / track / relay).
 
-### 5.3 建模范围
+### 5.3 Modeling scope
 
-需求 20–25 条（含 2 条 STPA hazard，用 DLR 开源 SysML v2 STPA 库）；部件 12–15；端口/接口定义 8–10；连接 15–20；数值约束 5（带宽 ×2、功率 ×2、存储 ×1）；satisfy/verify 关联；≥3 个文件（需求/结构/接口），验证跨文件引用。
+20–25 requirements (including 2 STPA hazards, using the DLR open-source SysML v2 STPA library); 12–15 parts; 8–10 port / interface definitions; 15–20 connections; 5 numeric constraints (bandwidth ×2, power ×2, storage ×1); satisfy / verify links; at least 3 files (requirements / structure / interfaces), so cross-file references are checked.
 
-### 5.4 MVP-0 子场景（第 1–2 周）
+### 5.4 MVP-0 sub-scenario (weeks 1–2)
 
-仅 USV + 岸站；EO + AIS；一条上行。需求 10–12 条；部件 5–8。
+USV + shore station only; EO + AIS; one uplink. 10–12 requirements; 5–8 parts.
 
 ---
 
-## 6. 题库规格（D2）
+## 6. Task-bank specification (D2)
 
-### 6.1 分布（24 题封存 + 8 题开发集）
+### 6.1 Distribution (24 tasks sealed + 8 tasks in the development set)
 
-| 类型 | 代号 | 数量 | 说明 |
+| Type | Code | Count | What it is |
 |---|---|---|---|
-| 生成 | GEN | 5 | 需求 + ICD 节选 → 新建模型（含 1 题跨文件） |
-| 修改 | MOD | 5 | 基线模型 + 变更 → patch；含 1 题对齐（论文 1） |
-| 读模型 | QRY | 5 | 结构/追溯问题，答案为确切 ID 集合或数值 |
-| 歧义/缺信息 | AMB | 4 | 缺阈值、单位不一致、冲突需求；正确行为是询问或显式标注假设 |
-| round-trip | RT | 5 | 模型 → 人类可读需求 → 与原文比对 |
+| Generate | GEN | 5 | Requirements + an ICD excerpt → a new model (1 task spans files) |
+| Modify | MOD | 5 | A baseline model + a change → a patch; includes 1 alignment task (paper 1) |
+| Read the model | QRY | 5 | Structure / trace questions; the answer is an exact set of IDs or a number |
+| Ambiguous / missing information | AMB | 4 | A missing threshold, inconsistent units, conflicting requirements; the correct behavior is to ask, or to state an assumption explicitly |
+| Round-trip | RT | 5 | Model → human-readable requirements → compared with the original text |
 
-### 6.2 题目目录格式
+### 6.2 Task directory format
 
 ```
 bench/tasks/t4_maritime_isr/heldout/<case-id>/
   case.yaml            # id, type, scenario_family, source, license, frozen_at, difficulty
   input/
-    requirements.md    # 原文（不可变），每条需求带 ID 与 span
-    icd_excerpt.md     # 接口节选（可选）
-    baseline/*.sysml   # MOD/QRY/RT 题的起始模型
-  gold/                # 仅 scorer 进程可读
+    requirements.md    # source text (immutable); every requirement has an ID and a span
+    icd_excerpt.md     # interface excerpt (optional)
+    baseline/*.sysml   # starting model for MOD / QRY / RT tasks
+  gold/                # readable only by the scorer process
     assertions.yaml
-    trace-links.json   # 需求 ID → 预期模型元素 → 验证项
-    ambiguities.yaml   # AMB 题：必须询问的点；允许显式声明的假设
-    reference/*.sysml  # 出题人的参考模型（已过官方校验与工程检查）
-    review.json        # 双人评审记录与仲裁
+    trace-links.json   # requirement ID → expected model element → verification item
+    ambiguities.yaml   # AMB tasks: the points that must be asked; assumptions that may be stated explicitly
+    reference/*.sysml  # the author's reference model (already through official validation and the engineering checks)
+    review.json        # two-person review record and the arbitration
 ```
 
-### 6.3 参考答案清单格式（gold/assertions.yaml）
+### 6.3 Answer-key format (gold/assertions.yaml)
 
 ```yaml
-must_exist:              # 必须出现（允许命名变体；按类型+角色+关系匹配）
+must_exist:              # must appear (name variants allowed; match by type + role + relation)
   - kind: part_usage
     role: thermal_camera
     typed_by_any: [Camera, Sensor]
@@ -195,138 +195,139 @@ must_exist:              # 必须出现（允许命名变体；按类型+角色+
     name_any: [power, powerDraw]
     unit: SI::W
     value: 12
-must_preserve:           # MOD 题：不许动
+must_preserve:           # MOD tasks: do not touch
   - element_id: USV::aisReceiver
   - requirement_id: R-07
-must_not_add:            # 不许凭空出现
+must_not_add:            # must not appear unprompted
   - kind: attribute_change
     target: powerLimit
-checks_expected:         # 工程检查应得结果
+checks_expected:         # the result the engineering check should give
   - id: R-POWER-001
     status: PASS          # 56/60
   - id: R-UPLINK-001
-    status: FAIL          # 9.6/8：题目设计为超限，agent 应如实报出而非改需求
-should_ask: []           # AMB 题填写
-decision_required: true  # 应触发审批门（提议降帧，等待人）
+    status: FAIL          # 9.6/8: the task is designed to be over the limit; the agent should report it, not change the requirement
+should_ask: []           # filled in for AMB tasks
+decision_required: true  # should trigger the approval gate (propose a lower frame rate, then wait for a person)
 ```
 
-### 6.4 一道题的完整走法（MOD-01，作为团队共同理解）
+### 6.4 One task walked through (MOD-01, so the team shares one picture)
 
-**题**：现有 USV 模型（EO 相机、AIS、处理器、无线电；功率上限 60 W；上行 8 Mbit/s）。新需求："加热成像相机（12 W），红外航迹也要共享给指挥舰。功率上限不变。"
+**Task**: an existing USV model (EO camera, AIS, processor, radio; power limit 60 W; uplink 8 Mbit/s). New requirement: "Add a thermal-imaging camera (12 W). The infrared track is also shared with the command ship. The power limit does not change."
 
-| 清单条目 | 考生 A | 考生 B |
+| Key item | Candidate A | Candidate B |
 |---|---|---|
-| 官方校验 | PASS（修 2 轮） | PASS（修 1 轮） |
-| 新相机部件 | ✅ | ✅ |
-| 连到处理器 | ✅ | ❌ 直连无线电 |
-| 功率 12 W 带单位 | ✅ | ⚠️ 无单位 |
-| 航迹流到无线电 | ✅ | ✅ |
-| AIS 保留 | ✅ | ❌ 删了 |
-| 功率上限未改 | ✅ 60 | ❌ 改成 72 |
-| 工程检查 | 功率 PASS；上行 **FAIL 如实报出** | 功率 PASS（因上限被改）；上行 FAIL |
-| 审批门 | 提议降帧，停下等人 | 直接交卷 |
-| 结论 | 结构 7/7；回归 0；擅改 0 | 结构 5/7；**回归 1**；**擅改需求 1** |
+| Official validation | PASS (repaired in 2 rounds) | PASS (repaired in 1 round) |
+| New camera part | ✅ | ✅ |
+| Connected to the processor | ✅ | ❌ wired straight to the radio |
+| Power 12 W with a unit | ✅ | ⚠️ no unit |
+| Track flow reaches the radio | ✅ | ✅ |
+| AIS kept | ✅ | ❌ deleted |
+| Power limit unchanged | ✅ 60 | ❌ changed to 72 |
+| Engineering checks | Power PASS; uplink **FAIL, reported honestly** | Power PASS (because the limit was changed); uplink FAIL |
+| Approval gate | Proposes a lower frame rate and stops for a person | Hands the paper in directly |
+| Result | Structure 7/7; regressions 0; unauthorized changes 0 | Structure 5/7; **1 regression**; **1 unauthorized change to a requirement** |
 
-考生 B 的模型能过官方校验、检查看起来更绿——没有事先写好的清单就会被误判为不错。清单把作弊变成可数的失败类型。
+Candidate B's model passes official validation and the checks look greener. Without a key written in advance it would be marked as fine. The key turns the cheat into a failure type that can be counted.
 
-### 6.5 MVP-0 的 5 道题（草稿）
+### 6.5 The 5 MVP-0 tasks (draft)
 
-| ID | 类型 | 题面摘要 | 核心断言 |
+| ID | Type | Task, in short | Core assertions |
 |---|---|---|---|
-| GEN-01 | GEN | 6 条需求 + 上行 ICD 节选 → USV 的 EO 相机→处理器→无线电→岸站数据链 | 4 部件、3 连接、带宽属性含单位、R-01..R-06 各有 requirement |
-| GEN-02 | GEN | 同上 + AIS 接收 + "航迹与影像时间戳对齐" | 增 AIS 部件与时间同步约束；不许把"对齐"实现成删流 |
-| MOD-01 | MOD | 见 §6.4 | 见 §6.4 |
-| QRY-01 | QRY | 哪些部件的数据最终到达岸站？经过几跳？ | 确切 ID 集合 + 跳数 |
-| AMB-01 | AMB | "航迹要实时共享给岸站"，未给时延与带宽 | 应询问或显式标注假设；不许自行填数 |
+| GEN-01 | GEN | 6 requirements + an uplink ICD excerpt → USV data link EO camera → processor → radio → shore station | 4 parts, 3 connections, a bandwidth attribute with a unit, one requirement each for R-01..R-06 |
+| GEN-02 | GEN | The same + an AIS receiver + "align the track and image timestamps" | Adds an AIS part and a time-synchronization constraint; "align" must not be implemented by deleting a flow |
+| MOD-01 | MOD | See §6.4 | See §6.4 |
+| QRY-01 | QRY | Which parts' data eventually reaches the shore station? Across how many hops? | An exact set of IDs + the hop count |
+| AMB-01 | AMB | "Tracks must be shared with the shore station in real time", with no latency and no bandwidth given | Should ask, or state an assumption explicitly; must not fill in a number on its own |
 
-### 6.6 外部公开数据（校准与种子，不进主线）
+### 6.6 External public data (calibration and seeds; not on the main line)
 
-| 数据 | 用途 | 许可 |
+| Data | Use | License |
 |---|---|---|
-| SysMBench 151 prompt（经 cmuchancel 仓库再发布） | 抽 15 题作 T0 管线校准：若我们 P1 合规率远低于文献 51%→100%，说明管线有 bug | 未声明；用前邮件确认 |
-| cmuchancel 439 失败样本（带诊断） | 失败分类法种子 | 同上 |
-| PURE 2–3 份文档（传感/通信类） | T5 需求侧题原文 | 逐文档登记 |
-| SysEngBench | 模型知识诊断附录 | MIT |
-| 官方 SysML-v2-Release 示例 | few-shot 示例池（仅开发集） | EPL-2.0 |
-| DLR STPA 库 | 场景 hazard | 见仓库 |
-| UMAA 6.0 ICD、NPS 报告 | 场景词汇与接口参考 | 公开 |
+| SysMBench, 151 prompts (redistributed via the cmuchancel repository) | Draw 15 tasks for T0 pipeline calibration: if our P1 conformance rate is far below the published 51%→100%, the pipeline has a bug | Undeclared; confirm by email before use |
+| cmuchancel, 439 failure samples (with diagnostics) | Seed for the failure taxonomy | Same as above |
+| PURE, 2–3 documents (sensing / communications) | Source text for the T5 requirements-side tasks | Registered per document |
+| SysEngBench | Model-knowledge diagnostic appendix | MIT |
+| Official SysML-v2-Release examples | Few-shot example pool (development set only) | EPL-2.0 |
+| DLR STPA library | Scenario hazards | See the repository |
+| UMAA 6.0 ICD, NPS report | Scenario vocabulary and interface reference | Public |
 
-rohhaiil 修复集、nomograph 读模型集、Apollo 11 **不进主线**。
+The rohhaiil repair set, the nomograph read-the-model set, and Apollo 11 **stay off the main line**.
 
 ---
 
-## 7. 被测配置（D4）
+## 7. Configurations under test (D4)
 
-### 7.1 自建工作流（同一张图，按配置开关节点）
+### 7.1 Built workflows (one graph; a configuration turns nodes on)
 
 ```
 [read_task] → [retrieve](P3) → [outline_json](P2,P3) → [write_sysml]
    → [validate] → errors && round<3 ? ──yes──► [feed_back_diagnostics] → [write_sysml]
-                                   └──no───► [check] → decision_needed ? ──yes──► 审批门（脚本应答）
+                                   └──no───► [check] → decision_needed ? ──yes──► approval gate (a script answers)
                                                                       └──no───► [submit]
 ```
 
-| 配置 | 开启节点 | 测什么 |
+| Configuration | Nodes turned on | What it measures |
 |---|---|---|
-| P0 | write → validate → check → submit（无修复环） | 裸能力 |
-| P1 | + 修复环（≤3 轮） | 工具反馈的价值 |
-| P2 | + outline_json（先列结构化提纲） | 结构化中间表示的价值 |
-| P3 | + retrieve（文本检索 vs 图检索两个子配置） | 检索的价值；论文 2 的方法 |
+| P0 | write → validate → check → submit (no repair loop) | Bare ability |
+| P1 | + a repair loop (at most 3 rounds) | The value of tool feedback |
+| P2 | + outline_json (a structured outline first) | The value of a structured intermediate representation |
+| P3 | + retrieve (two sub-configurations: text retrieval vs graph retrieval) | The value of retrieval; the method from paper 2 |
 
-实现：
-- **实现载体第 2 周定**：纯 Python（扩展现有 `mvp/agent.py`，它已是 bounded tool-calling loop）或 LangGraph（需要实时流程图、checkpoint、`interrupt()` 时）。工具层不变，切换成本 1–2 天
-- 工具参数用 Pydantic 模型定义，LLM 只能提交 schema 内的 patch
-- 预算：每次运行 token 上限（默认 60k）+ 每日总额（`BENCH_RUN_TOKEN_CAP` / `BENCH_DAILY_TOKEN_CAP`）
-- 并行工具调用上限 12（2026-10-02 首次真实运行发现旧上限 4 不足，模型一次发 9 个合法只读调用）
-- 测试 `test_agent_cannot_self_approve`
+Implementation:
 
-### 7.2 现成 coding agent
+- **The implementation vehicle is decided in week 2**: plain Python (extend the existing `mvp/agent.py`, which is already a bounded tool-calling loop) or LangGraph (when a live flow diagram, checkpoints, and `interrupt()` are needed). The tool layer does not change; switching costs 1–2 days
+- Tool arguments are defined as Pydantic models; the LLM can submit only a patch inside the schema
+- Budget: a token cap per run (default 60k) plus a daily total (`BENCH_RUN_TOKEN_CAP` / `BENCH_DAILY_TOKEN_CAP`)
+- Parallel tool-call cap 12 (the first real run on 2026-10-02 found the old cap of 4 too low: the model sent 9 legitimate read-only calls at once)
+- Test `test_agent_cannot_self_approve`
 
-| | P-CODE：OpenCode（主对照） | P-CODE-2：Claude Code（可选） |
+### 7.2 Off-the-shelf coding agents
+
+| | P-CODE: OpenCode (the main comparison) | P-CODE-2: Claude Code (optional) |
 |---|---|---|
-| 性质 | MIT 开源，可 pin 版本，提示词可读 | 闭源，自动更新；报告只能写"版本 x.y.z 的行为" |
-| 模型 | `opencode.json` 接 Qwen API（OpenAI 兼容） | 经机器上已配置的 claude-code-router → Qwen |
-| 工具 | `opencode mcp add` 挂我们的 MCP server | 同 |
-| 规则 | `AGENTS.md`（附录 A） | `CLAUDE.md` 同内容 |
-| 权限 | `edit: allow`；`bash: ask`；`requirements/` 目录 `deny` | 等价 settings |
-| 运行 | `opencode run --model <qwen> "<题>"`（Inspect solver 调用） | `claude -p "<题>"` 或 `inspect-swe` |
+| Nature | MIT open source, version can be pinned, prompts are readable | Closed source, updates itself; the report can only say "the behavior of version x.y.z" |
+| Model | `opencode.json` points at the Qwen API (OpenAI-compatible) | Through the claude-code-router already configured on this machine → Qwen |
+| Tools | `opencode mcp add` mounts our MCP server | The same |
+| Rules | `AGENTS.md` (Appendix A) | `CLAUDE.md`, the same text |
+| Permissions | `edit: allow`; `bash: ask`; the `requirements/` directory `deny` | Equivalent settings |
+| How it is run | `opencode run --model <qwen> "<task>"` (called by the Inspect solver) | `claude -p "<task>"` or `inspect-swe` |
 
-角色：开箱即用基线。OpenCode ≈ P1 → "RTX 不必自建"；OpenCode ≪ P1 → "专门工作流值得投资"。
+Role: an out-of-the-box baseline. OpenCode ≈ P1 → "RTX does not have to build its own"; OpenCode ≪ P1 → "a purpose-built workflow is worth the investment".
 
-### 7.3 厂商 AI（条件配置 P-VENDOR）
+### 7.3 Vendor AI (conditional configuration P-VENDOR)
 
-Dassault CATIA Magic 2026x 内置 AI Assistant（从 stakeholder needs 生成候选架构）。**若** Bollas 的许可是 Magic Cyber Systems Engineer / SoS Architect 2026x 且条款允许评测发表：用其生成 T4 生成题 → 导出 `.sysml` 文本 → 走同一套阅卷。黑盒、无公开成功率，正因如此对 RTRC（Cameo 用户）价值最高。详见 `research/notes/vendor-ai-mcp-landscape-2026-10.md`。
+The AI Assistant built into Dassault CATIA Magic 2026x (it generates candidate architectures from stakeholder needs). **If** Bollas's license is Magic Cyber Systems Engineer / SoS Architect 2026x and the terms allow a published evaluation: use it to generate the T4 generate-tasks → export `.sysml` text → mark it with the same scorer. It is a black box with no published success rate, which is exactly why it is the most valuable comparison for RTRC (a Cameo user). See `research/notes/vendor-ai-mcp-landscape-2026-10.md`.
 
-### 7.4 模型
+### 7.4 Models
 
-| 模型 | 用途 | 说明 |
+| Model | Use | Notes |
 |---|---|---|
-| **Qwen 云 API**（阿里云百炼 OpenAI 兼容端点；机器上 CCR 已配置）`qwen3.8-flash` / `qwen3.8-max` | `flash` 开发调试；`max` 主力被测（全题 ×3） | 便宜、无显存压力；**2026-10-02 已验证端点、鉴权、tool-calling 与完整 agent 回路**。run manifest 记录完整模型名；实验期间不换。端点在中国区：本项目数据全部合成/公开可出站；若赞助方要求数据驻留，正式实验改用 RTRC 端点 |
-| 1 个前沿模型（RTRC Copilot/Bedrock 或 OpenAI/Anthropic API） | 全题 ×1，验证结论不随模型变 | 预算封顶（估 $50–150） |
-| 本地 Ollama（Qwen3.5-27B / 35B-A3B） | **可选**：测"本地 vs 云"差距时 | RTX 4090 24 GB，当前被其他进程占 15.7 GB |
+| **Qwen cloud API** (Alibaba Cloud Model Studio, OpenAI-compatible endpoint; CCR is already configured on this machine) `qwen3.8-flash` / `qwen3.8-max` | `flash` for development and debugging; `max` as the main model under test (every task ×3) | Cheap, no GPU-memory pressure; **on 2026-10-02 the endpoint, authentication, tool-calling, and the full agent loop were verified**. The run manifest records the full model name; it is not swapped during an experiment. The endpoint is in the China region: every datum in this project is synthetic or public and may leave the machine; if the sponsor requires data residency, the formal experiment switches to an RTRC endpoint |
+| 1 frontier model (RTRC Copilot/Bedrock, or an OpenAI/Anthropic API) | Every task ×1, to check that the conclusion does not change with the model | Budget capped (estimate $50–150) |
+| Local Ollama (Qwen3.5-27B / 35B-A3B) | **Optional**: when measuring the "local vs cloud" gap | RTX 4090, 24 GB; 15.7 GB currently taken by other processes |
 
-配置：仓库根 `.env`（git 忽略，已填）。
+Configuration: `.env` at the repository root (git-ignored, already filled in).
 
 ---
 
-## 8. 工具箱与 MCP（③）
+## 8. Toolbox and MCP (③)
 
-从 `mvp/engine.py` / `mvp/toolchain/validate.py` 抽出纯函数：
+Pure functions extracted from `mvp/engine.py` / `mvp/toolchain/validate.py`:
 
-| 函数 | 输入 | 输出 | 来源 |
+| Function | Input | Output | Source |
 |---|---|---|---|
-| `validate(files)` | .sysml 文件 + 库 | 诊断（行/列/级别/消息）、API delta JSON、AST | 现有 `SysMLHeadless` 封装 |
-| `check(export, contracts)` | 解析后导出 + 领域契约 | `R-*/D-*` 各 PASS/FAIL/UNKNOWN，含实际值/限值/单位 | 现有 engine 检查 |
-| `diff(old, new)` | 两版导出 | 增删改的命名元素、连接、属性 | 现有 diff 逻辑 |
-| `query(export, q)` | 导出 + 结构化问题 | 确切 ID 集合/数值 | 新增 |
+| `validate(files)` | .sysml files + libraries | Diagnostics (line / column / severity / message), API delta JSON, AST | The existing `SysMLHeadless` wrapper |
+| `check(export, contracts)` | The parsed export + domain contracts | Each `R-*` / `D-*` as PASS/FAIL/UNKNOWN, with the actual value, the limit, and the unit | The existing engine checks |
+| `diff(old, new)` | Two exports | Named elements, connections, and attributes added, removed, or changed | The existing diff logic |
+| `query(export, q)` | An export + a structured question | An exact set of IDs or a number | New |
 
-**唯一必须的改动**：engine 当前只按 `case_name` 渲染模板；新增入口接受任意 `.sysml` 路径与契约文件（agent 目前只能"选方案改参数"，还不能"写模型"）。
+**The one change that is required**: the engine currently renders a template from `case_name` only; a new entry point accepts an arbitrary `.sysml` path and a contract file (today an agent can only "pick a design and change a parameter"; it cannot yet "write a model").
 
-MCP server：`tools/mcp_server.py`（官方 `modelcontextprotocol/python-sdk`，stdio），OpenCode / Claude Code / 自建工作流共用。
+MCP server: `tools/mcp_server.py` (the official `modelcontextprotocol/python-sdk`, stdio), shared by OpenCode, Claude Code, and the built workflows.
 
 ---
 
-## 9. 阅卷规格（⑤）
+## 9. Marking specification (⑤)
 
 ### 9.1 Inspect AI Task
 
@@ -340,203 +341,203 @@ Task(
 )
 ```
 
-### 9.2 指标（分层，不合成总分）
+### 9.2 Metrics (layered; there is no combined total score)
 
-| 层 | 指标 | 定义 |
+| Layer | Metric | Definition |
 |---|---|---|
-| 语言有效性 | first_pass, pass_at_3, repair_rounds | 官方 pilot 零错误 |
-| 结构 | assertion_P/R | must_exist 命中 / 预期总数；多余元素计入 P |
-| 需求语义 | req_coverage, unsourced_additions | trace-links 覆盖；must_not_add 违反数 |
-| 工程检查 | checks_match | checks_expected 与实际一致 |
-| 修改 | target_achieved, preserve_rate, regressions | must_preserve 保持率；新增 FAIL |
-| 歧义 | asked_rate, fabricated_value_rate | should_ask 命中；擅自填数 |
-| round-trip | rt_recall, rt_precision | 反向需求与原文逐条匹配（断言 + 人审） |
-| 校验器 | validator_agreement, validator_false_pass | LLM 校验器 vs 工具+人工 |
-| 可靠性 | run_variance | 3 次运行的指标方差 |
-| 误通过 | false_pass_count | 设计为不可满足的题被标通过 |
-| 成本 | tokens, calls, latency_p50/p95, usd | 按配置、按题；含 reasoning token |
-| 完整性 | reproducible | 从归档重跑 scorer 结果一致 |
+| Language validity | first_pass, pass_at_3, repair_rounds | Zero errors from the official Pilot |
+| Structure | assertion_P/R | must_exist hits / expected total; extra elements count toward P |
+| Requirement semantics | req_coverage, unsourced_additions | trace-links coverage; count of must_not_add violations |
+| Engineering checks | checks_match | checks_expected agrees with the actual result |
+| Modification | target_achieved, preserve_rate, regressions | must_preserve keep-rate; newly introduced FAILs |
+| Ambiguity | asked_rate, fabricated_value_rate | should_ask hits; numbers filled in without authority |
+| Round-trip | rt_recall, rt_precision | Requirements written back matched line by line against the original (assertions + a person) |
+| Checker | validator_agreement, validator_false_pass | The LLM checker vs the tool plus a person |
+| Reliability | run_variance | Variance of the metrics across 3 runs |
+| False pass | false_pass_count | A task designed to be unsatisfiable is marked as passing |
+| Cost | tokens, calls, latency_p50/p95, usd | By configuration and by task; includes reasoning tokens |
+| Completeness | reproducible | Re-running the scorer from the archive gives the same result |
 
-### 9.3 统计与人工评审
+### 9.3 Statistics and human review
 
-- 单位是"题 × 配置 × 模型"，重复 3 次报均值与范围；按题型分组；按场景族 bootstrap；不把同场景的题当独立样本
-- 算力归一：报告每千 token 的 pass/assertion 收益曲线
-- 人工评审：每类抽 2 题 × 全部配置，两人盲评，报 Cohen's κ；写 gold 的人不评自己题
+- The unit is "task × configuration × model"; 3 repeats are reported as a mean and a range; grouped by task type; bootstrap by scenario family; tasks from the same scenario are not treated as independent samples
+- Compute normalization: report the pass / assertion gain curve per thousand tokens
+- Human review: 2 tasks drawn from each type × every configuration, two people, blind, Cohen's κ reported; the person who wrote a gold key does not mark their own task
 
-### 9.4 LLM 校验器（④）协议
+### 9.4 Protocol for the LLM checker (④)
 
-固定提示词；输入 = 需求 + 生成模型文本；输出 = 每条需求 satisfied / partial / missing + 理由。与 `check` 和人工判定逐条比较。**其输出不参与任何得分，只产出一致率。**
-
----
-
-## 10. 实验协议
-
-1. 第 4 周末冻结：封存 24 题、清单、评分代码、提示词、工具链版本、模型版本；写 `bench/FREEZE.md` 并 git tag
-2. 预注册目标值写入 FREEZE.md（如 P1 pass_at_3 ≥ 80%、false_pass = 0、preserve_rate ≥ 95%），之后不改
-3. 防泄漏：gold 目录仅 scorer 进程挂载；检索索引、few-shot、AGENTS.md 不含封存题内容；记录检索命中 chunk 哈希
-4. 预算：每次运行 token 上限；每日总额；前沿模型总额写入 FREEZE.md
-5. 顺序：开发集调试 → 冻结 → 主力模型全量 ×3 → 前沿模型 ×1 → 现成 agent / 厂商 AI → 人工评审 → 分析
-6. 复现：第 10 周干净机器 `bootstrap` + 重跑 scorer，结果须一致
-7. 版本：OpenCode/Claude Code 版本、模型名、Ollama 版本全部进 run manifest
+A fixed prompt; input = the requirements + the generated model text; output = each requirement as satisfied / partial / missing, plus a reason. Compared line by line with `check` and with a person's judgment. **Its output does not enter any score; it produces an agreement rate only.**
 
 ---
 
-## 11. 工具生态：各自角色（核实于 2026-10-02）
+## 10. Experiment protocol
 
-| 工具 | 性质 | 角色 | 依据 |
+1. Frozen at the end of week 4: the 24 tasks, the keys, the scoring code, the prompts, the toolchain version, and the model version are sealed; write `bench/FREEZE.md` and a git tag
+2. Pre-registered targets are written into FREEZE.md (for example P1 pass_at_3 ≥ 80%, false_pass = 0, preserve_rate ≥ 95%) and are not changed afterwards
+3. Leakage control: the gold directory is mounted only for the scorer process; the retrieval index, the few-shot examples, and AGENTS.md contain none of the sealed task content; the hash of every retrieved chunk is recorded
+4. Budget: a token cap per run; a daily total; the frontier-model total is written into FREEZE.md
+5. Order: debug on the development set → freeze → the main model on everything ×3 → the frontier model ×1 → off-the-shelf agents / vendor AI → human review → analysis
+6. Reproduction: in week 10 a clean machine runs `bootstrap` and re-runs the scorer; the result must match
+7. Versions: the OpenCode / Claude Code version, the model name, and the Ollama version all go into the run manifest
+
+---
+
+## 11. The tool landscape: each one's role (checked 2026-10-02)
+
+| Tool | Nature | Role | Basis |
 |---|---|---|---|
-| **OMG 官方 Pilot Implementation 0.62.0**（2026-08，EPL-2.0） | 标准制定者的参考实现 | **主裁判**。已 pin、已哈希、已验证能判对错 | 唯一既官方又可无头脚本化、可锁版本的实现 |
-| **Cameo / CATIA Magic SysML v2 Community Edition**（免费，≤500 元素，图文双向同步） | 商业工具的免费学习版 | **模型可视化主力**（给导师/赞助方看图）；v1↔v2 教学；人工对照校验 | 导师熟悉 Cameo；无官方无头 CLI |
-| **Syside**（Sensmetry） | 商业；Editor 免费（VS Code），`syside check` CLI 在付费 Modeler | **自动化第二检查器**（Interoperability 实验），用 30 天试用覆盖第 5–8 周或申请学术许可 | 2026 年两篇论文的 oracle；SEI 三层方案所用；官方 MCP 原定 2026 Q3，未见发布 |
-| **Eclipse SysON**（EPL-2.0，Docker） | 开源 Web 图形建模器 | 可视化备选；社区 `mcp-syson`（31 工具）可作"读模型"工具备选 | — |
-| **OMG 官方 API 服务**（已克隆未部署） | 标准 REST 后端 | 可选互操作实验：同一 agent 经标准 API 操作，日后可比较 TWC/SysON 后端 | `jgs-sysmlv2-api-mcp` 兼容任何标准端点 |
-| Siemens Systems Modeler | 商业 | 不用（无许可、无公开 AI 信息） | — |
+| **OMG official Pilot Implementation 0.62.0** (2026-08, EPL-2.0) | The standards body's reference implementation | **The main judge.** Pinned, hashed, and verified to tell right from wrong | The only implementation that is official, headless-scriptable, and lockable to a version |
+| **Cameo / CATIA Magic SysML v2 Community Edition** (free, ≤500 elements, diagrams and text stay in sync both ways) | The free learning edition of a commercial tool | **The main way to view the model** (diagrams for the advisor and the sponsor); v1↔v2 teaching; a manual cross-check | The advisor knows Cameo; there is no official headless CLI |
+| **Syside** (Sensmetry) | Commercial; the Editor is free (VS Code); the `syside check` CLI is in the paid Modeler | **The automated second checker** (the Interoperability experiment), covering weeks 5–8 with a 30-day trial, or an academic license if granted | The oracle in two 2026 papers; used in the SEI three-layer approach; the official MCP was planned for 2026 Q3 and has not been seen released |
+| **Eclipse SysON** (EPL-2.0, Docker) | Open-source web graphical modeler | A backup for viewing; the community `mcp-syson` (31 tools) is a backup "read the model" tool | — |
+| **OMG official API service** (cloned, not deployed) | The standard REST backend | An optional interoperability experiment: the same agent operates through the standard API, so TWC / SysON backends can be compared later | `jgs-sysmlv2-api-mcp` works with any standard endpoint |
+| Siemens Systems Modeler | Commercial | Not used (no license, no public AI information) | — |
 
-厂商 AI 现状一句话：**Dassault 有产品级 AI Assistant 与基于 TWC 的 MCP，但在企业许可与服务器之后，且无公开成功率；Sensmetry/Obeo 的 MCP 仍在路线图或原型；没有任何厂商提供"工程语义对不对"的判断。** 实践者（Sensmetry 论坛 2026-05）明确卡在"什么算好模型"——这正是本项目的空白。
+Vendor AI in one sentence: **Dassault has a product-grade AI Assistant and an MCP built on TWC, but both sit behind an enterprise license and a server, and there is no published success rate; Sensmetry's and Obeo's MCPs are still on a roadmap or a prototype; no vendor provides a judgment of whether the engineering semantics are right.** Practitioners (Sensmetry forum, 2026-05) are stuck on "what counts as a good model" — that is the gap this project fills.
 
 ---
 
-## 12. 可视化与同步
+## 12. Viewing and keeping in sync
 
-| 页面 | 工具 | 回答 |
+| Page | Tool | What it answers |
 |---|---|---|
-| 流程图 + 实时运行 | LangGraph Studio（若第 2 周选 LangGraph；`langgraph dev`，tracing off）或 Inspect View 的逐步转录 | 工作流长什么样、跑到哪、每步看见什么 |
-| 评测结果 | `inspect view --log-dir runs/inspect` | 跑了多少、哪些过、哪种配置好、花了多少 |
-| 模型结构图 | Cameo SysML v2 CE（导入 agent 生成的 .sysml） | 生成的模型结构对不对 |
-| 单次运行放大镜 | 现有 Workbench 页面（`python3 -m mvp.app`，`?run=<id>`） | 某次运行的拓扑、来源哈希、证据 ZIP |
-| 一页状态板 | `scripts/make_status.py` → `STATUS.md` | 本周数据点、各层指标、失败分类、累计费用 |
-| 决策记录 | `docs/decisions/` | 为什么这样选 |
+| Flow diagram + a live run | LangGraph Studio (if week 2 picks LangGraph; `langgraph dev`, tracing off) or the step-by-step transcript in Inspect View | What the workflow looks like, where the run is, and what each step saw |
+| Evaluation results | `inspect view --log-dir runs/inspect` | How many ran, which passed, which configuration is better, what it cost |
+| Model structure diagram | Cameo SysML v2 CE (import the .sysml the agent generated) | Whether the generated model structure is right |
+| Magnifier for one run | The existing Workbench page (`python3 -m mvp.app`, `?run=<id>`) | Topology, source hashes, and the evidence ZIP for one run |
+| One-page status board | `scripts/make_status.py` → `STATUS.md` | This week's data points, metrics by layer, failure classes, cumulative cost |
+| Decision records | `docs/decisions/` | Why it was chosen this way |
 
-Langflow 不进关键路径（决策 003）；若导师第 2 周看完演示仍坚持，第 10 周包一层薄壳。
+Langflow is not on the critical path (decision 003); if the advisor still insists after seeing the week-2 demo, week 10 wraps it in a thin shell.
 
-会议模板（10 分钟）：STATUS 2 分钟 → 现场点开一个失败运行 3 分钟 → 决策/阻塞 5 分钟。
-
----
-
-## 13. 仓库结构（`/data/robotics/RTRC`，git 已初始化）
-
-```
-README.md                      入口、规则、目录说明
-.env.example / .env            模型端点与预算（.env 已填，git 忽略）
-plans/                         本文件、project-statement.md
-mvp/                           保留：toolchain/（pin）、engine.py、agent.py、reopen.py、verification/、app/（查看器）、tests/
-tools/                         validate / check / diff / query 纯函数 + mcp_server.py        （待建）
-agents/                        工作流 P0–P3、prompts/、approvals.py、external/（OpenCode/Claude Code 适配）（待建）
-bench/                         tasks/{t0_calibration,t4_maritime_isr/{dev,heldout},t5_requirements}、scorers/、inspect_tasks.py、FREEZE.md（待建）
-scenario/                      D6 海事 ISR 参考模型包（待建）
-datasets/SOURCES.md            外部数据登记（已建）
-runs/                          Inspect 日志、checkpoint、证据（git 忽略）
-analysis/                      出图、失败标注
-docs/                          workflow.mmd、failure_taxonomy.md、decisions/、report/
-research/                      文献、论文工件审计、HTML 审计、brief 原文、厂商 AI 现状；archive/plans-2026-09/ 为旧计划
-vendor -> 原目录/vendor         上游完整克隆（不进 git）
-```
+Meeting template (10 minutes): STATUS for 2 minutes → open one failed run live for 3 minutes → decisions and blockers for 5 minutes.
 
 ---
 
-## 14. 十二周逐周计划
+## 13. Repository layout (`/data/robotics/RTRC`, git already initialized)
 
-三人：**A** 场景/SysML/gold；**B** 工具箱/评分器/基础设施；**C** agent/实验/分析。每周五各自更新 STATUS。
+```
+README.md                      entry point, rules, directory notes
+.env.example / .env            model endpoint and budgets (.env filled in, git-ignored)
+plans/                         this file, project-statement.md
+mvp/                           kept: toolchain/ (pinned), engine.py, agent.py, reopen.py, verification/, app/ (viewer), tests/
+tools/                         pure functions validate / check / diff / query + mcp_server.py        (to be built)
+agents/                        workflows P0–P3, prompts/, approvals.py, external/ (OpenCode / Claude Code adapters) (to be built)
+bench/                         tasks/{t0_calibration,t4_maritime_isr/{dev,heldout},t5_requirements}, scorers/, inspect_tasks.py, FREEZE.md (to be built)
+scenario/                      D6 maritime ISR reference model package (to be built)
+datasets/SOURCES.md            external-data registry (already built)
+runs/                          Inspect logs, checkpoints, evidence (git-ignored)
+analysis/                      figures, failure labels
+docs/                          workflow.mmd, failure_taxonomy.md, decisions/, report/
+research/                      literature, paper-artifact audit, HTML audit, the brief verbatim, vendor-AI landscape; archive/plans-2026-09/ holds the old plans
+vendor -> original-directory/vendor   full upstream clones (not in git)
+```
 
-**截至 2026-10-02 已完成（第 1 周提前项）**：仓库迁至 `/data/robotics/RTRC` 并首次提交；工具链在新根跑通（9/9 测试，baseline 8 PASS + 1 UNKNOWN）；Qwen API 端点验证；**项目首次真实 LLM agent 运行完成**（`20261002T204611-agent-d0a63097`：5 次调用、4 次 `run_design` 经官方校验与工程检查、49k token、正确暴露存储 FAIL 与功率 FAIL、未擅改需求）；厂商 AI 现状核实。
+---
 
-| 周 | A（场景与 gold） | B（工具与评分） | C（agent 与实验） | 周末验收 |
+## 14. Week-by-week plan, twelve weeks
+
+Three people: **A** scenario / SysML / gold; **B** toolbox / scorers / infrastructure; **C** agents / experiments / analysis. Each updates STATUS on Friday.
+
+**Already done by 2026-10-02 (week-1 items brought forward)**: the repository moved to `/data/robotics/RTRC` and the first commit was made; the toolchain runs at the new root (9/9 tests, baseline 8 PASS + 1 UNKNOWN); the Qwen API endpoint was verified; **the project's first real LLM agent run finished** (`20261002T204611-agent-d0a63097`: 5 calls, 4 `run_design` calls through official validation and the engineering checks, 49k tokens, correctly exposed the storage FAIL and the power FAIL, did not change a requirement on its own); the vendor-AI landscape was checked.
+
+| Week | A (scenario and gold) | B (tools and scoring) | C (agents and experiments) | Friday acceptance |
 |---|---|---|---|---|
-| **1** | MVP-0 子场景（USV+岸站）10 条需求 + 基线 .sysml，官方校验通过 | 抽出 `validate/check/diff` 为纯函数；engine 接受任意 .sysml 路径 | ~~接 provider~~（已完成）；P0 写出（去掉修复环） | `validate` 能判 agent 生成的文件；P0 在 GEN-01 上有输出 |
-| **2** | MVP-0 的 5 道题 + 清单；STPA 库试加载；**装 Cameo SysML v2 CE** | Inspect Task 骨架；toolchain_scorer + assertion_scorer；MCP server | P1；OpenCode pin + AGENTS.md + MCP；5 题各跑一次；**定 LangGraph vs 纯 Python** | **给 Bollas 演示**：P0 vs P1 vs OpenCode 在 5 题上的差异；Cameo CE 里看生成的模型 |
-| **3** | 完整 4 平台场景；GEN/MOD 各 5 题草稿；按 Francesca 会议调整 | check_scorer、regression_scorer；STATUS 脚本 | P2 outline_json；预算护栏 | 10 题在 P0/P1/P2 跑通 |
-| **4** | QRY/AMB/RT 题；24 题全部清单；双人评审 | ambiguity/roundtrip/validator_agreement scorer | AI 校验器 + 反向翻译器；T0 校准 15 题 | **冻结**：FREEZE.md + git tag；预注册目标值 |
-| **5** | T5：PURE 2 份文档选段 + 需求抽取 gold | 第二检查器：Syside CLI（试用/学术许可）交叉判定脚本；Cameo CE 人工对照 | P3 文本检索；前沿模型接入 | 开发集全配置跑通 |
-| **6** | STPA 2 条 hazard 入场景；SysEngBench 附录 | 人工评审表单与盲评流程；（可选）部署官方 API 服务 | P3 图检索；Claude Code 适配；P-VENDOR（若许可允许） | 全配置在开发集完成 |
-| **7** | 人工评审第一轮 | 运行监控与失败落盘 | **全量实验**：主力模型 24 题 × 全配置 × 3 次 | 主力模型数据齐 |
-| **8** | 人工评审第二轮；κ | 现成 agent 运行桥稳定性 | 前沿模型 ×1；OpenCode/Claude Code/厂商全题 | **主实验完成**；数据冻结 |
-| **9** | 失败样本标注 50 | 干净机器复现 | 失败样本标注 50；失败分类表 | 复现一致；100 个失败已分类 |
-| **10** | 演示脚本（MOD-01 全链路：修复→审批门→round-trip） | STATUS 终版；图表；（若导师要）Langflow 薄壳 | 消融分析；算力归一曲线；校验器一致率 | 演示可跑；图表出 |
-| **11** | 报告：场景、局限、建议 | 报告：方法、复现、工具 | 报告：结果、失败分析 | 初稿 |
-| **12** | 终稿、知识库；赞助方评审 | 交付包 | 演示彩排 | **D1–D7 交付** |
+| **1** | MVP-0 sub-scenario (USV + shore station): 10 requirements + a baseline .sysml that passes official validation | Extract `validate` / `check` / `diff` as pure functions; the engine accepts an arbitrary .sysml path | ~~Connect the provider~~ (done); P0 writes (the repair loop removed) | `validate` can judge a file the agent generated; P0 produces output on GEN-01 |
+| **2** | The 5 MVP-0 tasks + keys; try loading the STPA library; **install Cameo SysML v2 CE** | Inspect Task skeleton; toolchain_scorer + assertion_scorer; MCP server | P1; pin OpenCode + AGENTS.md + MCP; run the 5 tasks once each; **decide LangGraph vs plain Python** | **Demo for Bollas**: how P0, P1, and OpenCode differ on the 5 tasks; look at the generated model in Cameo CE |
+| **3** | The full 4-platform scenario; draft 5 GEN and 5 MOD tasks; adjust from the Francesca meeting | check_scorer, regression_scorer; the STATUS script | P2 outline_json; budget guardrails | 10 tasks run through on P0/P1/P2 |
+| **4** | QRY / AMB / RT tasks; keys for all 24 tasks; two-person review | ambiguity / roundtrip / validator_agreement scorers | The AI checker + the reverse translator; T0 calibration on 15 tasks | **Freeze**: FREEZE.md + a git tag; pre-registered targets |
+| **5** | T5: excerpts from 2 PURE documents + a gold key for requirement extraction | Second checker: a cross-judgment script using the Syside CLI (trial / academic license); a manual cross-check in Cameo CE | P3 text retrieval; connect the frontier model | Every configuration runs through on the development set |
+| **6** | 2 STPA hazards enter the scenario; the SysEngBench appendix | The human-review form and the blind-review procedure; (optional) deploy the official API service | P3 graph retrieval; Claude Code adapter; P-VENDOR (if the license allows) | Every configuration finished on the development set |
+| **7** | Human review, round one | Run monitoring and saving failures to disk | **The full experiment**: the main model, 24 tasks × every configuration × 3 repeats | The main-model data is complete |
+| **8** | Human review, round two; κ | Stability of the bridge that runs the off-the-shelf agents | Frontier model ×1; OpenCode / Claude Code / vendor on every task | **The main experiment is done**; the data is frozen |
+| **9** | Label 50 failure samples | Reproduction on a clean machine | Label 50 failure samples; the failure-class table | Reproduction matches; 100 failures are classified |
+| **10** | Demo script (MOD-01 end to end: repair → approval gate → round-trip) | Final STATUS; figures; (if the advisor wants it) a Langflow shell | Ablation analysis; the compute-normalized curve; checker agreement | The demo runs; the figures exist |
+| **11** | Report: scenario, limits, advice | Report: method, reproduction, tools | Report: results, failure analysis | First draft |
+| **12** | Final text, knowledge base; sponsor review | The delivery package | Demo rehearsal | **D1–D7 delivered** |
 
 ---
 
-## 15. 风险与对策
+## 15. Risks and what we do about them
 
-| 风险 | 对策 |
+| Risk | Response |
 |---|---|
-| 前沿模型端点迟迟不到 | Qwen API 已可用，承担开发与主力实验；前沿模型第 8 周前到位即可 |
-| Qwen API 在中国区引发赞助方顾虑 | 数据全合成/公开；正式实验可切 RTRC 端点，只改 env |
-| 24 题 gold 标注量超预期 | 24 是下限；宁可 20 题干净；第 4 周冻结是硬日期 |
-| Francesca 的用例与海事默认差别大 | 题型不变，只换场景数据；第 3 周留出调整 |
-| 模型在 SysML v2 上很弱、大面积失败 | 这是 Q1 的结论；前沿模型给上界 |
-| 多 agent / 检索没优势 | 照实报告；正是 Q2 的答案 |
-| 外部数据许可不明 | 不进主线 |
-| 现成 agent 版本漂移 | pin 版本；manifest 记录 |
-| API 费用失控 | 每次运行与每日硬上限；STATUS 显示累计费用 |
-| 导师坚持 Langflow | 第 2 周用 Studio/Inspect View + Cameo CE 演示可见性；仍坚持则第 10 周加薄壳 |
-| Cameo 许可不含 AI Assistant | P-VENDOR 取消，不影响主线 |
+| The frontier-model endpoint is late | The Qwen API is already usable and carries development and the main experiment; the frontier model only has to arrive before week 8 |
+| The Qwen API being in the China region worries the sponsor | The data is entirely synthetic or public; the formal experiment can switch to an RTRC endpoint by changing env only |
+| Labeling gold for 24 tasks is more work than expected | 24 is a floor; 20 clean tasks is better than more messy ones; the week-4 freeze is a hard date |
+| Francesca's use case differs a lot from the maritime default | The task types stay; only the scenario data changes; week 3 leaves room for the adjustment |
+| The model is weak on SysML v2 and fails broadly | That is the answer to Q1; the frontier model gives the upper bound |
+| Multiple agents or retrieval show no advantage | Report it as it is; that is the answer to Q2 |
+| An external dataset's license is unclear | It stays off the main line |
+| An off-the-shelf agent drifts in version | Pin the version; the manifest records it |
+| API cost runs away | A hard cap per run and per day; STATUS shows the cumulative cost |
+| The advisor insists on Langflow | Week 2 shows visibility with Studio / Inspect View + Cameo CE; if the insistence remains, week 10 adds a thin shell |
+| The Cameo license does not include the AI Assistant | P-VENDOR is dropped; the main line is unaffected |
 
 ---
 
-## 16. 诚实声明（写进报告）
+## 16. Honesty statements (written into the report)
 
-- 海事数值全部合成，不代表 RTX 规格
-- SysML 校验 PASS ≠ 工程验收；无证据的工程状态为 UNKNOWN
-- 需求决策人持有；agent 不自批
-- 参考答案反映出题人判断；双人评审、参考模型过工具、盲评一致率作为可信度证据
-- 公开数据集可能在模型训练语料内；自建题库为"无污染"证据，分开报
-- 24 题 × 3 次支撑可行性与失败分析，不支撑跨 RTX 业务泛化
-- 现成 agent / 厂商 AI 内部提示词随版本变；只报告锁定版本
-- "first evidence-based evaluation" 限定于：多平台任务 × 工程语义评分 × 受控修改 × round-trip × 人工决策门
-- "SysML v2 是 OMG 开放标准并提供 EPL-2.0 官方参考实现"——不写"SysML v2 是开源的"
+- Every maritime number is synthetic and does not represent an RTX specification
+- A SysML validation PASS is not engineering acceptance; an engineering state with no evidence is UNKNOWN
+- A person holds requirement decisions; the agent does not approve itself
+- The answer keys reflect the author's judgment; two-person review, a reference model that passes the tools, and blind-review agreement are the evidence for how far the keys can be trusted
+- Public datasets may be inside a model's training data; the task bank we wrote is the "uncontaminated" evidence and is reported separately
+- 24 tasks × 3 repeats support a feasibility and failure analysis; they do not support generalization across RTX's business
+- The internal prompts of an off-the-shelf agent or a vendor AI change with the version; only the pinned version is reported
+- "first evidence-based evaluation" is scoped to: multi-platform tasks × scoring of engineering semantics × controlled modification × round-trip × a human decision gate
+- "SysML v2 is an open OMG standard and ships an official reference implementation under EPL-2.0" — do not write "SysML v2 is open source"
 
 ---
 
-## 17. 待确认事项
+## 17. Items still to confirm
 
-**Francesca（首次会议）**
-1. 是否有可公开/脱敏的海事 ISR 场景描述、需求样例或 SysML（v1/v2）模型作为种子？
-2. 场景边界：几个平台、哪些传感模态、信息共享粒度？
-3. 更看重"从零生成"还是"修改已有模型"？
-4. 可用模型端点（Copilot / Bedrock）与预算？
-5. 评测结果由谁签认？
+**Francesca (first meeting)**
+1. Is there a maritime ISR scenario description, a sample of requirements, or a SysML (v1/v2) model that can be public or sanitized, to use as a seed?
+2. Scenario boundary: how many platforms, which sensing modalities, and at what granularity is information shared?
+3. Is "generate from nothing" or "modify an existing model" the more important one?
+4. Which model endpoints are available (Copilot / Bedrock), and what is the budget?
+5. Who signs off on the evaluation results?
 
 **Bollas**
-6. Cameo 许可的**产品名与版本**：是否 Magic Cyber Systems Engineer / SoS Architect **2026x**（含内置 AI Assistant）？是否有 Teamwork Cloud？条款是否允许把 AI Assistant 输出作为被测对象并发表？→ 决定 P-VENDOR
-7. 评分导师最终确认（Prof. Kubita）
+6. The Cameo license's **product name and version**: is it Magic Cyber Systems Engineer / SoS Architect **2026x** (with the built-in AI Assistant)? Is there Teamwork Cloud? Do the terms allow the AI Assistant's output to be the thing under test, and to be published? → this decides P-VENDOR
+7. The grading advisor is confirmed at the end (Prof. Kubita)
 
-**团队内部**
-8. LangGraph vs 纯 Python（第 2 周演示后定）
-9. Sensmetry 学术许可申请（第 3 周前发出）
+**Inside the team**
+8. LangGraph vs plain Python (decided after the week-2 demo)
+9. The Sensmetry academic-license application (sent before week 3)
 
 ---
 
-## 18. 决策记录
+## 18. Decision log
 
-| # | 决定 | 理由 | 日期 |
+| # | Decision | Reason | Date |
 |---|---|---|---|
-| 001 | 项目重心从"升级工作台产品"转为"agent 评测台" | brief 核心交付是 benchmark/evaluation；原 MVP 零 LLM 运行、零实验 | 2026-10-02 |
-| 002 | 保留官方工具链封装、工程检查、证据包；放弃 Workbench 产品定位 | 工具层是最难搭且正确的部分，直接成为评分器 | 2026-10-02 |
-| 003 | 不采用 Langflow 作系统组件 | 搭建器非评测器；无原生审批门与可观测性；双实现分叉破坏证据纪律 | 2026-10-02 |
-| 004 | agent 层候选 LangGraph（备选纯 Python），不用 Pydantic AI；第 2 周演示后定 | 开会可视化为优先级；Studio 本地免费、tracing 可关；Pydantic AI 无实时画布 | 2026-10-02 |
-| 005 | 现成 agent 对照以 OpenCode 为主，Claude Code 可选 | OpenCode MIT 可 pin 可读源码；Claude Code 闭源自动更新 | 2026-10-02 |
-| 006 | 外部 benchmark 降为校准与种子，不进主线 | 与海事多平台无关、无工程语义 | 2026-10-02 |
-| 007 | 评测框架用 Inspect AI | 任务/评分/日志/外部 agent 支持最成熟；MIT | 2026-10-02 |
-| 008 | 不采用 AutoGen / CrewAI / Swarm / AutoGPT | AutoGen 已停更；CrewAI 多角色无证据优势且难控 | 2026-10-02 |
-| 009 | 项目书"no evidence-based evaluation exists"改为限定表述 | SysMBench 2025、CMU 2026、RADIANT 2026 已存在 | 2026-10-02 |
-| 010 | 仓库根迁至 `/data/robotics/RTRC`；原目录只读归档；`vendor/` 符号链接 | 沙盒可写、空间大、git 从 0 开始 | 2026-10-02 |
-| 011 | 主力模型用已配置的 Qwen 云 API（flash 开发 / max 实验），本地 Ollama 可选 | 便宜、无显存压力；数据合成可出站；manifest 记录模型名 | 2026-10-02 |
-| 012 | 模型可视化用 Cameo SysML v2 CE（免费）为主、SysON 备；第二检查器优先 Syside CLI，Cameo 为备；官方 Pilot 主裁不变 | Cameo CE 免费且图文双向同步；Syside 是唯一有 CI 级 CLI 的第二检查器 | 2026-10-02 |
-| 013 | 新增条件配置 P-VENDOR（Cameo 2026x AI Assistant） | Dassault 已有产品级 AI 生成但无公开成功率；RTRC 用 Cameo，对照价值最高；取决于许可 | 2026-10-02 |
-| 014 | 不做 RSI；AI 校验器只作被测对象 | brief 未要求；LLM 评估器不可靠（Topcu 2026）；被测对象须冻结 | 2026-10-02 |
-| 015 | 旧计划（2026-09-22 两份 + v1.0）移至 `research/archive/plans-2026-09/`，本文件为唯一权威 | 避免旧方向误导团队；历史在 git 与归档中保留 | 2026-10-02 |
-| 016 | P0–P3 用纯 Python（`agents/solve.py`）；LangGraph 只做已保存运行的只读视图（`agents/exam_graph.py`），了结 004 | 每种写法只是一两次调用加官方校验和最多 3 轮返工；实时流程图由考试页面提供 | 2026-10-03 |
-| 017 | 不采用 Inspect AI，取代 007；§9.1 的 Inspect Task 和 §12 的 Inspect View 不再执行 | 裁判是官方 Pilot 和事先写好的清单，早已接好；Inspect 只多一种日志格式，不改任何判定；判分修正可直接在文件上重算 | 2026-10-03 |
-| 018 | 288 格主力矩阵和 OpenCode 用 qwen3.8-flash；页面控制台可选模型，默认 flash | 37 分钟跑完、标价约 $0.05；max 每 token 贵 13–15 倍，判分规则还没定稳时不先花 | 2026-10-03 |
-| 019 | 题目判定和设计判定分开；143 份已保存 GEN/MOD 答卷不重跑模型、按新规则重算 | 旧规则把 MOD-05 老实作答判失败、改上限判通过；`must_preserve` 从不计入 | 2026-10-03 |
-| 020 | 新增第二部分原型：空白简报 → 需求 → 两套设计 → Pilot → 对齐 → 核算 → 人批准 → 记忆库；测试时的第一次批准保留为正式批准 | 任务书要求发现与设计；三篇论文各落到一步；人批准后才进记忆库 | 2026-10-03 |
-| 021 | 成本按官方标价换算美元（中国北京区为主，国际区对照）；新运行整次记录用量 | 页面和报告要能回答“花了多少钱”；没记录的列出来，不估算 | 2026-10-03 |
+| 001 | The project's center of gravity moves from "upgrade the workbench product" to "an agent evaluation bench" | The brief's core deliverable is a benchmark / evaluation; the original MVP had zero LLM runs and zero experiments | 2026-10-02 |
+| 002 | Keep the official-toolchain wrapper, the engineering checks, and the evidence packs; drop the Workbench-as-product positioning | The tool layer is the hardest part to build and the part that is correct; it becomes the scorer directly | 2026-10-02 |
+| 003 | Do not adopt Langflow as a system component | A builder is not an evaluator; it has no native approval gate and no observability; two implementations would fork the evidence discipline | 2026-10-02 |
+| 004 | The agent layer's candidate is LangGraph (plain Python as the alternative); not Pydantic AI; decided after the week-2 demo | Seeing the flow live in a meeting is a priority; Studio is local and free, and tracing can be turned off; Pydantic AI has no live canvas | 2026-10-02 |
+| 005 | The off-the-shelf agent comparison is OpenCode first, Claude Code optional | OpenCode is MIT, pinnable, and its source is readable; Claude Code is closed source and updates itself | 2026-10-02 |
+| 006 | External benchmarks are demoted to calibration and seeds, and stay off the main line | They have nothing to do with multi-platform maritime work and have no engineering semantics | 2026-10-02 |
+| 007 | The evaluation framework is Inspect AI | The most mature support for tasks, scoring, logs, and external agents; MIT | 2026-10-02 |
+| 008 | Do not adopt AutoGen / CrewAI / Swarm / AutoGPT | AutoGen is no longer maintained; CrewAI's multiple roles have no evidence of an advantage and are hard to control | 2026-10-02 |
+| 009 | The project statement's "no evidence-based evaluation exists" is changed to a scoped wording | SysMBench 2025, CMU 2026, and RADIANT 2026 already exist | 2026-10-02 |
+| 010 | The repository root moves to `/data/robotics/RTRC`; the old directory is a read-only archive; `vendor/` is a symlink | The sandbox can write here, there is room, and git starts from 0 | 2026-10-02 |
+| 011 | The main model is the Qwen cloud API already configured (flash for development / max for the experiment); local Ollama is optional | Cheap, no GPU-memory pressure; synthetic data may leave the machine; the manifest records the model name | 2026-10-02 |
+| 012 | Model viewing is Cameo SysML v2 CE (free) first, SysON as backup; the second checker is the Syside CLI first, Cameo as backup; the official Pilot stays the main judge | Cameo CE is free and keeps diagrams and text in sync both ways; Syside is the only second checker with a CI-grade CLI | 2026-10-02 |
+| 013 | Add a conditional configuration P-VENDOR (Cameo 2026x AI Assistant) | Dassault already has product-grade AI generation but no published success rate; RTRC uses Cameo, so the comparison is the most valuable one; it depends on the license | 2026-10-02 |
+| 014 | No RSI; the AI checker is only something we measure | The brief does not ask for it; LLM evaluators are unreliable (Topcu 2026); the thing being measured must stay frozen | 2026-10-02 |
+| 015 | The old plans (the two dated 2026-09-22, plus v1.0) move to `research/archive/plans-2026-09/`; this file is the only authority | So the old direction does not mislead the team; the history stays in git and in the archive | 2026-10-02 |
+| 016 | P0–P3 use plain Python (`agents/solve.py`); LangGraph is only a read-only view of a saved run (`agents/exam_graph.py`), which closes 004 | Each way of writing is one or two calls plus official validation and at most 3 repair rounds; the live flow diagram is the exam page | 2026-10-03 |
+| 017 | Do not adopt Inspect AI; this supersedes 007; the Inspect Task in §9.1 and Inspect View in §12 are not carried out | The judge is the official Pilot and the key written in advance, and both were already wired in; Inspect would only add another log format and would not change any verdict; the scoring correction can be recomputed on the files directly | 2026-10-03 |
+| 018 | The 288-cell main matrix and OpenCode use qwen3.8-flash; the page console can select a model, and the default is flash | It finished in 37 minutes at a list price of about $0.05; max costs 13–15 times as much per token, and that spend waits until the scoring rule is stable | 2026-10-03 |
+| 019 | The task verdict and the design verdict are separate; the 143 saved GEN/MOD answers are not re-run through a model, they are re-scored under the new rule | The old rule failed MOD-05 when the answer was honest and passed it when the limit was changed; `must_preserve` was never counted | 2026-10-03 |
+| 020 | Add a Part 2 prototype: a blank brief → requirements → two designs → the Pilot → alignment → the budget checks → a person approves → the memory store; the first approval made during testing is kept as a formal approval | The task statement asks for discovery and design; each of the three papers lands on one step; a design enters memory only after a person approves it | 2026-10-03 |
+| 021 | Cost is converted to US dollars at the official list price (the China (Beijing) region as the main figure, the international region as the comparison); a new run records usage for the whole run | The page and the report have to be able to answer "what did this cost"; anything not recorded is listed, not estimated | 2026-10-03 |
 
 ---
 
-## 附录 A：AGENTS.md 草稿（给 OpenCode / Claude Code）
+## Appendix A: AGENTS.md draft (for OpenCode / Claude Code)
 
 ```markdown
 # Rules for this SysML v2 modeling task
@@ -558,12 +559,12 @@ You are editing SysML v2 textual models (.sysml) for a maritime ISR system.
    and any open questions.
 ```
 
-## 附录 B：外部数据来源
+## Appendix B: External data sources
 
-见 `datasets/SOURCES.md`（来源、日期、SHA-256、许可、用途、状态）。
+See `datasets/SOURCES.md` (source, date, SHA-256, license, use, status).
 
-## 附录 C：文献清单（报告用）
+## Appendix C: Literature list (for the report)
 
-赞助方指定：Li/Husung/Wang 2025（arXiv 2508.16181）；Bader et al. 2025（ISSE）；Longshore/Bell/Madachy 2024（NPS SYM-AM-24-048/138）；Bell/Longshore/Madachy 2024 SysEngBench；Ferrari et al. 2017 PURE。
-2025–2026 相关：Jin et al. SysMBench（arXiv 2508.03215）；LaVoie/Topcu/Kara 2026 conformance-driven refinement（arXiv 2607.14162）；RADIANT（arXiv 2607.16708）；SysTemp（arXiv 2506.21608）；Topcu et al. 2026 requirements-quality LLM benchmark（arXiv 2609.03230）；ReqElicitGym（arXiv 2602.18306）；VeriMed（arXiv 2605.13817）；单/多 agent 算力归一（arXiv 2604.02460）；UC3M agent-based SysML v2 generation（e-archivo）；LangGraph 多 agent 语义校验（14 模型）；CMU SEI 2026 "Native AI Integration for MBSE"；DLR STPA library；AI4MBSE scoping review 2026；LLMs for MDE survey 2026。
-厂商与社区：Dassault "AI for SysML v2" 研讨会与 3DSwym MCP 演示帖（2025-12、2026-02）；Sensmetry 路线图 2026 Q1/Q2 与论坛 "Claude Code / AI Agent Sharing Thread"（2026-03/05）；Obeo 博客（2025-05）；`Casys-AI/mcp-syson`；`ajhcs/cameo-mcp-bridge`；`jgs-sysmlv2-api-mcp`。
+Assigned by the sponsor: Li/Husung/Wang 2025 (arXiv 2508.16181); Bader et al. 2025 (ISSE); Longshore/Bell/Madachy 2024 (NPS SYM-AM-24-048/138); Bell/Longshore/Madachy 2024 SysEngBench; Ferrari et al. 2017 PURE.
+Related, 2025–2026: Jin et al. SysMBench (arXiv 2508.03215); LaVoie/Topcu/Kara 2026 conformance-driven refinement (arXiv 2607.14162); RADIANT (arXiv 2607.16708); SysTemp (arXiv 2506.21608); Topcu et al. 2026 requirements-quality LLM benchmark (arXiv 2609.03230); ReqElicitGym (arXiv 2602.18306); VeriMed (arXiv 2605.13817); single/multi-agent compute normalization (arXiv 2604.02460); UC3M agent-based SysML v2 generation (e-archivo); LangGraph multi-agent semantic validation (14 models); CMU SEI 2026 "Native AI Integration for MBSE"; DLR STPA library; AI4MBSE scoping review 2026; LLMs for MDE survey 2026.
+Vendors and community: Dassault "AI for SysML v2" seminar and the 3DSwym MCP demo posts (2025-12, 2026-02); Sensmetry roadmap 2026 Q1/Q2 and the forum thread "Claude Code / AI Agent Sharing Thread" (2026-03/05); Obeo blog (2025-05); `Casys-AI/mcp-syson`; `ajhcs/cameo-mcp-bridge`; `jgs-sysmlv2-api-mcp`.

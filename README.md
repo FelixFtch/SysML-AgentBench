@@ -14,7 +14,7 @@ Sponsor: RTX Technology Research Center (RTRC). Faculty advisor: Prof. George Bo
 | [`docs/report/D4-初稿.md`](docs/report/D4-初稿.md) | Report draft |
 | [`docs/failure_taxonomy.md`](docs/failure_taxonomy.md) | The 64 failures by class |
 | [`docs/decisions/`](docs/decisions/) | Decision records; 016–021 (2026-10-03) override the plan where they differ |
-| [`plans/SysML_AgentBench_完整执行计划.md`](plans/SysML_AgentBench_完整执行计划.md) | Execution plan v2.0 (Chinese): deliverables, ground-truth method, task suite, schedule, decisions §18 |
+| [`plans/SysML_AgentBench_完整执行计划.md`](plans/SysML_AgentBench_完整执行计划.md) | Execution plan v2.0: deliverables, ground-truth method, task suite, schedule, decisions §18 |
 | [`plans/project-statement.md`](plans/project-statement.md) | Project statement v1.1 for sponsor signature (English) |
 | [`research/source-extracts/rtx-brief.txt`](research/source-extracts/rtx-brief.txt) | Sponsor brief (verbatim) |
 | [`mvp/README.md`](mvp/README.md) | Official toolchain, engine checks and evidence layer, used as the syntax adjudicator |

@@ -1,38 +1,89 @@
 # STATUS
 
-Held-out set: 24 synthetic maritime tasks, single-author answer keys. Official Pilot accepted every GEN and MOD reference model before scoring. MOD-05's reference is an intentional power FAIL (78 W against a 60 W limit).
+Generated 2026-10-03 19:29 UTC by `python3 scripts/make_status.py` from saved results. All maritime numbers are synthetic, not RTX specifications. Official SysML v2 Pilot 0.62 is the syntax adjudicator.
 
-Model: qwen3.8-flash. Three replicates of P0–P3, one pass of pinned OpenCode v1.18.27.
+## Scoring rule (changed 2026-10-03)
 
-## P0–P3, 288 cells
+A task passes when the official parse passes, every required name and connection is present, no number was invented, every value the task said to keep is unchanged, and every engineering check comes out as the answer key expects. Whether the design meets its budget is reported separately as the design verdict.
 
-| Configuration | PASS | FAIL |
+The old rule scored MOD-05 honest answers FAIL and would have scored a raised limit PASS (checked with four hand-written probes). All 143 saved GEN/MOD answers were re-scored from their official parses; 15 changed, all honest MOD-05 answers. Archived results files are unchanged; see `analysis/rescore-20261003.jsonl` and `docs/decisions/019-task-verdict-vs-design-verdict.md`.
+
+## Main matrix: qwen3.8-flash, 24 held-out tasks × P0–P3 × 3 repeats
+
+Total 224/288 PASS (archived rule: 212).
+
+| Configuration | PASS | FAIL | Tokens | Cost (USD, cn-beijing list price) |
+|---|---|---|---|---|
+| P0 | 57 | 15 | 31,190 | $0.00510 |
+| P1 | 51 | 21 | 50,377 | $0.00855 |
+| P2 | 58 | 14 | 89,059 | $0.0160 |
+| P3 | 58 | 14 | 105,304 | $0.0183 |
+
+| Task type | PASS | Cells |
 |---|---|---|
-| P0 | 54 | 18 |
-| P1 | 48 | 24 |
-| P2 | 55 | 17 |
-| P3 | 55 | 17 |
+| GEN | 26 | 60 |
+| MOD | 60 | 60 |
+| QRY | 43 | 60 |
+| AMB | 38 | 48 |
+| RT | 57 | 60 |
 
-| Task type | PASS | FAIL |
-|---|---|---|
-| GEN | 26 | 34 |
-| MOD | 48 | 12 |
-| QRY | 43 | 17 |
-| AMB | 38 | 10 |
-| RT | 57 | 3 |
+Repeat stability: 23 of 96 task × configuration groups gave different results across the three repeats (AMB-01, AMB-02, AMB-04, GEN-01, GEN-02, GEN-04, QRY-01, QRY-02, QRY-03, QRY-04).
 
-MOD-05 is FAIL on all 12 cells. In every cell the official parse passed, the required numbers were present, and the power check was FAIL. That FAIL matches the checklist.
+## Failures (64)
 
-The other 64 FAIL cells are classified in `docs/failure_taxonomy.md`: 34 official syntax failures, 16 renamed query answers, 1 wrong query number, 10 ambiguity misses, 3 missing round-trip phrases. Counting a checklist match on MOD-05, P0 matches 57/72, P1 matches 51/72, P2 matches 58/72, and P3 matches 58/72.
+| Class | Cells |
+|---|---|
+| syntax-real-or-import | 22 |
+| query-renamed | 16 |
+| syntax-connection | 8 |
+| missed-topic | 6 |
+| syntax-other | 4 |
+| no-question | 4 |
+| missing-phrase | 3 |
+| query-wrong-number | 1 |
 
-## OpenCode (P-CODE), 24 cells
+Details: `docs/failure_taxonomy.md`, `analysis/failure-classes.jsonl`.
 
-PASS 20, FAIL 4. MOD-02, MOD-03, and MOD-04 produced no SysML package. MOD-05 parsed, kept every required number, and the power check is FAIL.
+## Off-the-shelf agents (separate cohorts, not added to the 288)
 
-## Week 10–11 additions
+- OpenCode v1.18.27 on qwen3.8-flash: 21/24. MOD-02, MOD-03 and MOD-04 produced no SysML package. Cost $0.1389 for 24 tasks, mostly cached re-reads of the workspace.
+- Claude Code through CCR on qwen3.8-max: 24/24 after re-running the first run's GEN-04 failure and two timeouts (MOD-01, QRY-02). Token use was not recorded.
 
-Rescoring 120 saved GEN/MOD parses matched the archived status with 0 mismatches. Token yield is in `analysis/ablation.json` and `analysis/figures/ablation.png`. The second model agreed with the tool on 25/40 replicate-1 GEN/MOD cells and false-passed 12 failures, including all 4 MOD-05 budget FAILs. MOD-01 replay: checklist PASS, approval gate not triggered, round-trip kept the infrared camera and the 60 W limit (`analysis/demo-mod01.json`). Draft report: `docs/report/D4-初稿.md`.
+## Model judges (not scored)
 
-## Not in this run
+- Jev 1.13: agrees with the tool on 226/288; 32 false passes, all GEN; 30 false fails (mostly AMB).
+- qwen3.8-max: agrees on 157/288; 70 false passes.
+- Both judges were told that an over-budget design does not pass, so they are compared with the design verdict. Only MOD-05 differs between the two verdicts.
 
-A second person has not signed the 24 answer keys. No frontier model, Cameo run, Claude Code full set, or human blind review.
+## Part 2 prototype: blank brief → requirements → two designs → Pilot → alignment → checks → human approval → memory
+
+- `20261003T144105`: designs A PASS, B PASS; alignment package PASS; checks failing LINK, POWER; approved none.
+- `20261003T144529`: designs A PASS, B PASS; alignment package PASS; checks all pass; approved A.
+- `20261003T144850`: designs A PASS, B PASS; alignment package PASS; checks all pass; approved none.
+- `20261003T150116`: designs A PASS, B PASS; alignment package PASS; checks all pass; approved A.
+- `20261003T192328`: designs A PASS, B PASS; alignment package PASS; checks all pass; approved none.
+
+Memory (`analysis/memory/approved.jsonl`): 2 approved designs (20261003T144529 A, 20261003T150116 A). Approved designs are retrieved by the next run.
+
+## MOD change chain (latest run per task, qwen3.8-max)
+
+| Task | Task verdict | Design verdict | Kept values | Read-back numbers |
+|---|---|---|---|---|
+| MOD-01 | PASS | n/a | 1/1 | 1/1 |
+| MOD-02 | PASS | n/a | 0/0 | 0/0 |
+| MOD-03 | PASS | n/a | 0/0 | 0/0 |
+| MOD-04 | PASS | n/a | 1/1 | 1/1 |
+| MOD-05 | PASS | FAIL | 4/4 | 4/4 |
+
+## Cost
+
+Recorded spend at list price (China Beijing region, checked 2026-10-03): about $0.2639. Not recorded: the qwen3.8-max judge over 288 answers; Claude Code's 28 answers through CCR; the two PURE tasks; alignment and read-back calls in 4 Part 2 runs; 5 MOD change runs made before usage logging. Part 2 and MOD runs made after 2026-10-03 19:00 UTC record every call.
+
+## Not done
+
+- Second reviewer for the 24 answer keys; `bench/FREEZE.md` and a freeze tag.
+- Human blind review with Cohen's κ; confidence intervals for the configuration differences.
+- A frontier model and a qwen3.8-max run of the full matrix; graph retrieval as a P3 sub-configuration.
+- Alignment tasks with an answer key (paper 1) and tasks that must trigger the approval gate.
+- Second checker (Syside CLI) and vendor AI (Cameo AI Assistant); SysMBench 151 has no license file.
+- A scored evaluation set for the Part 2 prototype; dynamic simulation beyond static budget checks.

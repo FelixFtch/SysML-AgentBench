@@ -1,0 +1,6 @@
+type,cells,pass,fail
+GEN,60,26,34
+MOD,60,60,0
+QRY,60,43,17
+AMB,48,38,10
+RT,60,57,3

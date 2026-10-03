@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<title>海事 SysML 考试 · 已保存成绩</title>
+<style>
+body { margin: 0; background: #fff; color: #111; font: 17px/1.65 Georgia, "Noto Serif CJK SC", "Source Han Serif SC", serif; }
+main { max-width: 1040px; margin: 0 auto; padding: 45px 58px; }
+h1 { font-size: 29px; line-height: 1.25; margin: 0 0 12px; }
+h2 { font-size: 20px; margin-top: 28px; }
+.subtitle { font-size: 20px; }
+.byline { color: #444; }
+table { border-collapse: collapse; width: 100%; margin: 18px 0; font-size: 15px; }
+th, td { border: 1px solid #d9d9d9; padding: 8px 10px; text-align: left; vertical-align: top; }
+th { background: #f4f7f8; }
+figure { margin: 24px 0; }
+img { width: 100%; height: auto; }
+figcaption { font-size: 14px; color: #333; }
+footer { border-top: 1px solid #bbb; margin-top: 28px; padding-top: 16px; font-size: 14px; color: #444; }
+</style>
+<main>
+<h1>海事 SysML 考试</h1>
+<p class="subtitle">已保存答卷的成绩。各批分开计，不合成一个总分。</p>
+<p class="byline">合成数字，不是 RTX 规格。官方 Pilot 判语法。清单判规定的数字和功率。第二个模型只作对照。</p>
+
+<h2>能说什么</h2>
+<table>
+<tr><th>问题</th><th>已保存的结果</th></tr>
+<tr><td>主力模型四种写法，哪一种更合算？</td><td>qwen3.8-flash，24 题 × 4 种 × 3 遍 = 288 格。P0 通过 57/72 · P1 通过 51/72 · P2 通过 58/72 · P3 通过 58/72。每千 token 的通过数 P0 最高。P1 返工没有超过 P0。P2、P3 只比 P0 多 1 格，token 大约是三倍。</td></tr>
+<tr><td>失败是不是改个数字就能过？</td><td>按现行判分 64 格失败，其中 34 格死在官方语法。官方能解析的 104 份 GEN/MOD 答卷里，没有一份改过必须保留的数（包括上限）；另外 39 份没有通过官方解析或没有官方运行记录，无从判断。MOD-05 的设计必然超预算（78 W 对 60 W）；12 格都没改上限、该保留的数都在，按现行判分算通过。</td></tr>
+<tr><td>现成编程代理和主力矩阵是同一批吗？</td><td>不是。OpenCode（qwen3.8-flash）24 格、Claude Code 加 qwen3.8-max 24 格单独列表。不能和 288 格加总。</td></tr>
+<tr><td>第二个模型能不能当裁判？</td><td>不能。qwen3.8-max 看完全部 288 份 flash 答卷，和工具一致 157/288。它把 70 份工具判失败的卷说成通过，其中 MOD-05 的 12 份超功率全部被说成通过。Jev jev-1.13.0 一致 226/288，误判通过 32 格，全是官方语法都过不了的写新模型题。分数不因此改写。</td></tr>
+<tr><td>跑这些花了多少钱？</td><td>按阿里云中国（北京）区标价，主力矩阵四种写法合计约 $0.048；OpenCode 做 24 题 $0.139。见第 6 节。</td></tr>
+</table>
+
+<h2>1. 测的是什么</h2>
+<p>24 道合成海事题，五种：写出模型、修改模型、读模型、缺信息时提问、把模型读回文字。标准答案在阅卷时使用，不放进考生提示。生成和修改题先过官方 SysML v2 Pilot。语法通过之后，清单核对规定的名字、连接、必须保留的数，以及检查结果是否和标准答案预期一致。MOD-05 的清单写明功率检查应为失败：设计判定是失败，但老实作答的题目判定是通过。</p>
+<p>判分规则在 10 月 3 日改过一次。原规则下，有功率检查的题直接拿功率结果当题目结果，必须保留的数也不计入结果：MOD-05 老实作答被记为失败，把上限改成 80 W 的试卷反而记为通过（用四份手写试卷经官方 Pilot 验证过）。现行规则：题目通过 = 官方语法通过，必须存在的名字和连接都在，没有多写数字，必须保留的数没改，清单里的检查结果和标准答案预期一致。 已保存的 143 份 GEN/MOD 答卷都按现行规则重算，结果在 <code>analysis/rescore-20261003.jsonl</code>，原判和现判并列。只有 MOD-05 的答卷结果变了。</p>
+<p>语法通过不是工程验收。没有功率检查的题，工程状态记为 UNKNOWN，只表示清单没有一项功率预算可算。</p>
+
+<h2>2. 主力矩阵：qwen3.8-flash</h2>
+<p>288 格：224 通过，64 失败（原判 212 通过，76 失败）。来源是 <code>analysis/heldout-20261003T000045/results.jsonl</code>（96 格）和 <code>analysis/heldout-20261003T001321/results.jsonl</code>（192 格），GEN/MOD 按 <code>analysis/rescore-20261003.jsonl</code> 重算。</p>
+<figure>
+<img src="figures/flash_config.png" alt="四种写法按现行判分和原判的通过率">
+<figcaption>图 1. 每种写法 72 格。深色是现行判分，浅色是原判。差别只来自 MOD-05 的 3 格：设计超预算，上限没改，现行判分算通过。</figcaption>
+</figure>
+<table>
+<tr><th>写法</th><th>通过 / 72</th><th>原判通过 / 72</th><th>token</th><th>每千 token 的通过数</th></tr>
+<tr><td>P0 直接写</td><td>57</td><td>54</td><td>31190</td><td>1.828</td></tr>
+<tr><td>P1 按报错再改，最多 3 次</td><td>51</td><td>48</td><td>50377</td><td>1.012</td></tr>
+<tr><td>P2 先列提纲再写</td><td>58</td><td>55</td><td>89059</td><td>0.651</td></tr>
+<tr><td>P3 提纲加关键词笔记</td><td>58</td><td>55</td><td>105304</td><td>0.551</td></tr>
+</table>
+<table>
+<tr><th>题型</th><th>格数</th><th>通过</th><th>失败</th></tr>
+<tr><td>GEN 写出</td><td>60</td><td>26</td><td>34</td></tr>
+<tr><td>MOD 修改</td><td>60</td><td>60</td><td>0</td></tr>
+<tr><td>QRY 读模型</td><td>60</td><td>43</td><td>17</td></tr>
+<tr><td>AMB 缺信息</td><td>48</td><td>38</td><td>10</td></tr>
+<tr><td>RT 读回</td><td>60</td><td>57</td><td>3</td></tr>
+</table>
+<p>下表是每种写法三次里通过几次。MOD-05 的 3/3 是题目判定：设计超预算，但上限和该保留的数都没改。</p>
+<table>
+<tr><th>题</th><th>P0</th><th>P1</th><th>P2</th><th>P3</th><th>12 格中通过</th></tr>
+<tr><td>GEN-01</td><td>2/3</td><td>2/3</td><td>2/3</td><td>3/3</td><td>9/12</td></tr>
+<tr><td>GEN-02</td><td>3/3</td><td>2/3</td><td>3/3</td><td>2/3</td><td>10/12</td></tr>
+<tr><td>GEN-03</td><td>0/3</td><td>0/3</td><td>0/3</td><td>0/3</td><td>0/12</td></tr>
+<tr><td>GEN-04</td><td>0/3</td><td>1/3</td><td>0/3</td><td>0/3</td><td>1/12</td></tr>
+<tr><td>GEN-05</td><td>0/3</td><td>0/3</td><td>3/3</td><td>3/3</td><td>6/12</td></tr>
+<tr><td>MOD-01</td><td>3/3</td><td>3/3</td><td>3/3</td><td>3/3</td><td>12/12</td></tr>
+<tr><td>MOD-02</td><td>3/3</td><td>3/3</td><td>3/3</td><td>3/3</td><td>12/12</td></tr>
+<tr><td>MOD-03</td><td>3/3</td><td>3/3</td><td>3/3</td><td>3/3</td><td>12/12</td></tr>
+<tr><td>MOD-04</td><td>3/3</td><td>3/3</td><td>3/3</td><td>3/3</td><td>12/12</td></tr>
+<tr><td>MOD-05</td><td>3/3</td><td>3/3</td><td>3/3</td><td>3/3</td><td>12/12</td></tr>
+<tr><td>QRY-01</td><td>1/3</td><td>0/3</td><td>2/3</td><td>2/3</td><td>5/12</td></tr>
+<tr><td>QRY-02</td><td>2/3</td><td>3/3</td><td>1/3</td><td>0/3</td><td>6/12</td></tr>
+<tr><td>QRY-03</td><td>3/3</td><td>3/3</td><td>2/3</td><td>3/3</td><td>11/12</td></tr>
+<tr><td>QRY-04</td><td>2/3</td><td>2/3</td><td>3/3</td><td>2/3</td><td>9/12</td></tr>
+<tr><td>QRY-05</td><td>3/3</td><td>3/3</td><td>3/3</td><td>3/3</td><td>12/12</td></tr>
+<tr><td>AMB-01</td><td>2/3</td><td>1/3</td><td>1/3</td><td>2/3</td><td>6/12</td></tr>
+<tr><td>AMB-02</td><td>3/3</td><td>2/3</td><td>2/3</td><td>3/3</td><td>10/12</td></tr>
+<tr><td>AMB-03</td><td>3/3</td><td>3/3</td><td>3/3</td><td>3/3</td><td>12/12</td></tr>
+<tr><td>AMB-04</td><td>3/3</td><td>2/3</td><td>3/3</td><td>2/3</td><td>10/12</td></tr>
+<tr><td>RT-01</td><td>3/3</td><td>3/3</td><td>3/3</td><td>3/3</td><td>12/12</td></tr>
+<tr><td>RT-02</td><td>3/3</td><td>3/3</td><td>3/3</td><td>3/3</td><td>12/12</td></tr>
+<tr><td>RT-03</td><td>3/3</td><td>3/3</td><td>3/3</td><td>3/3</td><td>12/12</td></tr>
+<tr><td>RT-04</td><td>3/3</td><td>3/3</td><td>3/3</td><td>3/3</td><td>12/12</td></tr>
+<tr><td>RT-05</td><td>3/3</td><td>0/3</td><td>3/3</td><td>3/3</td><td>9/12</td></tr>
+</table>
+
+<h2>3. 64 格失败怎么分</h2>
+<p>分类读已保存的官方诊断和答卷，没有重新调用模型。明细在 <code>analysis/failure-classes.jsonl</code>。</p>
+<table>
+<tr><th>类别</th><th>格数</th></tr>
+<tr><td>syntax-real-or-import</td><td>22</td></tr>
+<tr><td>query-renamed</td><td>16</td></tr>
+<tr><td>syntax-connection</td><td>8</td></tr>
+<tr><td>missed-topic</td><td>6</td></tr>
+<tr><td>syntax-other</td><td>4</td></tr>
+<tr><td>no-question</td><td>4</td></tr>
+<tr><td>missing-phrase</td><td>3</td></tr>
+<tr><td>query-wrong-number</td><td>1</td></tr>
+</table>
+<p>64 格没有对上清单。其中 34 格是官方语法，16 格是合格名没写成 <code>::</code>，1 格是 QRY-03 把连接数答成 2，标准答案是 3。原分类里的 12 格「设计好的功率失败」按现行判分已算通过，不在表里。</p>
+<p>no-question 的 4 格要单独看：这几份答卷都用祈使句提出了澄清请求（例如 “Please clarify whether the uplink value is 8 (unitless) or 8 MHz.”），没有写数字，但没有问号；判分程序按文本里有没有 “?” 判断是否提问。要不要放宽属于答案清单的修改，等第二审核人决定，目前仍算失败。</p>
+
+<h2>4. 另外两批考生，不并进 288</h2>
+<table>
+<tr><th>批次</th><th>模型与入口</th><th>结果</th><th>文件</th></tr>
+<tr><td>OpenCode v1.18.27</td><td>qwen3.8-flash（和主力矩阵同一个模型），命令行，24 题各一次</td><td>21 通过，3 失败。失败是 MOD-02（语法 无包，工程 未进入清单）；MOD-03（语法 无包，工程 未进入清单）；MOD-04（语法 无包，工程 未进入清单）。MOD-05 设计超预算、上限没改，现行判分算通过（原判失败）。</td><td>analysis/opencode-20261003T001321/results.jsonl</td></tr>
+<tr><td>Claude Code，第一次</td><td>qwen3.8-max，经本机 Qwen 路由</td><td>21 通过，1 失败（GEN-04），2 次没交卷（MOD-01、QRY-02）。没交卷不计失败。MOD-05 现行判分算通过（原判失败）。</td><td>analysis/claude-qwen-20261003T014507/results.jsonl</td></tr>
+<tr><td>Claude Code，四题重跑</td><td>同一路由，不设时限</td><td>GEN-04 PASS、MOD-01 PASS、MOD-05 PASS、QRY-02 PASS。用重跑的行盖住第一次没通过的题之后，这一批是 24 通过、0 失败。</td><td>analysis/claude-qwen-20261003T034819/results.jsonl</td></tr>
+</table>
+<p>网页上的空会话「RTRC 海事题」没有消息，不在这张表里。OpenCode 的证据是上面这 24 次命令行答卷。</p>
+
+<h2>5. 第二个模型看 288 份 flash 答卷</h2>
+<p>裁判是 qwen3.8-max。288 格里一致 157 格，误把失败说成通过 70 格。文件是 <code>analysis/validator-all-max.jsonl</code>。它不改第 2 节的通过数。裁判的问法写明超预算算失败，所以和它比的是工具的设计判定；只有 MOD-05 的设计判定（失败）和题目判定（通过）不同。</p>
+<p>第二个裁判是 Jev jev-1.13.0（TypeSafe），同样看 288 份。一致 226 格，误判通过 32 格（全是写新模型题，官方语法都过不了），误判失败 30 格。文件是 <code>analysis/jev-heldout-20261003.json</code>。也不计分。</p>
+
+<h2>6. 花了多少钱</h2>
+<p>单价按阿里云 Model Studio 中国（北京）区标价，2026-10-03 核对，每百万 token 美元：qwen3.8-flash 输入 $0.113、缓存读 $0.014、输出 $0.382（国际区 $0.15 / $0.47）；qwen3.8-max 输入 $1.65、缓存读 $0.206、输出 $4.951（国际区 $2.0 / $6.0）；jev-1.13.0 输入 $0.042、输出 $0.0。Jev 按 OpenRouter 页面的价格。本机调用的接口在北京区，所以主数字用北京区价。</p>
+<table>
+<tr><th>分组</th><th>项目</th><th>模型</th><th>输入 token</th><th>其中缓存读</th><th>输出 token</th><th>美元</th></tr>
+<tr><td>主力矩阵（72 格）</td><td>P0 直接写</td><td>qwen3.8-flash</td><td>25,332</td><td>0</td><td>5,858</td><td>$0.0051</td></tr>
+<tr><td>主力矩阵（72 格）</td><td>P1 按报错返工</td><td>qwen3.8-flash</td><td>39,738</td><td>0</td><td>10,639</td><td>$0.0086</td></tr>
+<tr><td>主力矩阵（72 格）</td><td>P2 先列提纲</td><td>qwen3.8-flash</td><td>66,930</td><td>0</td><td>22,129</td><td>$0.0160</td></tr>
+<tr><td>主力矩阵（72 格）</td><td>P3 提纲 + 检索笔记</td><td>qwen3.8-flash</td><td>81,393</td><td>0</td><td>23,911</td><td>$0.0183</td></tr>
+<tr><td>现成 agent</td><td>OpenCode（24 题）</td><td>qwen3.8-flash</td><td>4,938,561</td><td>4,543,744</td><td>80,338</td><td>$0.1389</td></tr>
+<tr><td>裁判</td><td>Jev 判 288 格</td><td>jev-1.13.0</td><td>72,462</td><td>0</td><td>5,506</td><td>$0.0030</td></tr>
+<tr><td>其他实验</td><td>图检索读模型（5 题）</td><td>qwen3.8-max</td><td>922</td><td>0</td><td>145</td><td>$0.0022</td></tr>
+<tr><td>其他实验</td><td>SysEngBench（20 题）</td><td>jev-1.13.0</td><td>3,453</td><td>0</td><td>874</td><td>$0.0001</td></tr>
+<tr><td>第二部分</td><td>一次运行（整次记录）</td><td>qwen3.8-max</td><td>4,634</td><td>0</td><td>2,117</td><td>$0.0181</td></tr>
+<tr><td>MOD 变更链</td><td>一次运行</td><td>qwen3.8-max</td><td>727</td><td>0</td><td>441</td><td>$0.0034</td></tr>
+</table>
+<p>没有记录用量、不在表里的：qwen3.8-max 当裁判看 288 份答卷：当时没有记录 token。 Claude Code 两批共 28 次作答：经 CCR 路由，没有拿到用量。 PURE 两题：没有记录 token。 第二部分有 4 次运行只记了需求、设计和权衡，对齐和读回两步没有记；之后的运行整次都记。 MOD 变更链有 5 次运行早于用量记录，没有记；之后的运行整次都记。</p>
+
+<h2>7. 三条可以指着讲的旧记录</h2>
+<table>
+<tr><th>记录</th><th>题面里有的</th><th>考生交的</th><th>判定</th></tr>
+<tr><td>MOD-05，flash 全部 12 格，以及 OpenCode、Claude</td><td>功率上限 60，三笔功耗 41、25、12</td><td>语法通过，数字还在，上限没改</td><td>设计判定失败：78 &gt; 60，和标准答案预期一致。题目判定通过。</td></tr>
+<tr><td>MOD-01 回放</td><td>加上红外相机，上限保持 60</td><td>官方语法通过</td><td>清单通过。审批门没有人改 60。回读里有红外和 60。见 analysis/demo-mod01.json。</td></tr>
+<tr><td>图检索五题，单独一批</td><td>不把整份模型交给模型，只给词匹配的节点和一跳邻居</td><td>qwen3.8-max</td><td>QRY-01、02、04、05 通过。QRY-03 答 0 条连接，标准答案是 3。见 analysis/graph-query-max.json。这不是论文里的 0.904。</td></tr>
+</table>
+
+<h2>8. 这份成绩还不能说的事</h2>
+<table>
+<tr><th>还没做</th><th>因此不能写的句子</th></tr>
+<tr><td>第二个人还没有签 24 道标准答案，FREEZE.md 还没写</td><td>不能写题库已经冻结。</td></tr>
+<tr><td>没有独立人工看图复核</td><td>不能把工具通过写成工程师已经接受该设计。</td></tr>
+<tr><td>Cameo 企业助手没有许可；社区版安装包已下载，还没装好打开</td><td>不能写和厂商 AI 比过。</td></tr>
+<tr><td>Syside 免费编辑器已安装；命令行批量检查仍要付费许可</td><td>不能写第二套检查器已经跑完 288 格。</td></tr>
+<tr><td>151 道 SysMBench 还没有带许可证的文件</td><td>不能写和公开 151 题对照过。</td></tr>
+<tr><td>PURE 只有两份摘录（qwen3.8-max 两题都对，见 analysis/pure-20261003T052120/）</td><td>不能写需求抽取已经测完。</td></tr>
+<tr><td>AMB 的提问按问号判，祈使句的澄清请求算失败；第二审核人还没决定要不要放宽</td><td>不能把 AMB 的失败都写成“没有提问”。</td></tr>
+</table>
+
+<h2>9. 文件对照</h2>
+<table>
+<tr><th>内容</th><th>路径</th></tr>
+<tr><td>本页数字</td><td>tables/flash_by_config.csv，flash_by_type.csv，flash_by_task.csv</td></tr>
+<tr><td>图 1</td><td>figures/flash_config.png</td></tr>
+<tr><td>失败分类说明</td><td>docs/failure_taxonomy.md</td></tr>
+<tr><td>重算本页</td><td>python3 analysis/report/build_exam_report.py</td></tr>
+</table>
+<footer>本页只汇总已经落盘的成绩。超时不是失败。各批的分母不同，不能相加。</footer>
+</main>
+</html>

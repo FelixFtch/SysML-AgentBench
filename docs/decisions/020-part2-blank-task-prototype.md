@@ -21,6 +21,7 @@ All parts and numbers are synthetic, not RTX specifications.
 
 - The first approval (run 20261003T144529, design A) was made by the assistant while testing the page. The team decided on 2026-10-03 to keep it as a formal approval. The second (20261003T150116, design A) was made from the page.
 - Budgets are static sums, not time-domain simulation.
+- `mvp/runs/` is not in git, so approval copies the parsed design file to `analysis/memory/designs/<run>-<design>/` and records it as `source`. When a saved parse folder is missing (a fresh clone), retrieval has the official Pilot parse the committed `MaritimeISR.sysml` and these sources once and reuses that parse afterwards (`bench/graph_query.py::official_parse`). Checked by hiding all three saved folders: the re-parsed library has the same 136 cards.
 
 ## Status
 

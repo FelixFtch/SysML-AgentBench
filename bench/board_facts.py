@@ -226,8 +226,8 @@ def _costs(flash: list[dict]) -> dict:
 
 def _knowledge() -> dict:
     """Where every prompt's context comes from, with sizes read from disk."""
-    from bench.discover import CATALOG, MARITIME_PARSE, load_memory
-    from bench.graph_query import build_graph
+    from bench.discover import CATALOG, load_memory
+    from bench.graph_query import build_graph, maritime_parse
     from mvp.engine import exported_elements
     held = ROOT / "bench" / "tasks" / "t4_maritime_isr" / "heldout"
     index = [json.loads(line) for line in (held / "index.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
@@ -235,15 +235,16 @@ def _knowledge() -> dict:
     for path in sorted((ROOT / "bench" / "corpus").glob("*.md")):
         chunks = [block for block in path.read_text(encoding="utf-8").split("\n\n") if block.strip()]
         corpus.append({"file": path.name, "chunks": len(chunks)})
-    cards, _neighbors, kinds = build_graph(MARITIME_PARSE, "MaritimeISR::")
-    elements = exported_elements(json.loads((MARITIME_PARSE / "sysml" / "model.json").read_text(encoding="utf-8")))
-    validation = json.loads((MARITIME_PARSE / "sysml" / "validation.json").read_text(encoding="utf-8"))
+    parse = maritime_parse()
+    cards, _neighbors, kinds = build_graph(parse, "MaritimeISR::")
+    elements = exported_elements(json.loads((parse / "sysml" / "model.json").read_text(encoding="utf-8")))
+    validation = json.loads((parse / "sysml" / "validation.json").read_text(encoding="utf-8"))
     memory = load_memory()
     return {
         "tasks": {"n": len(index), "types": dict(Counter(item["type"] for item in index)),
                   "gold": sum(1 for item in index if (ROOT / item["path"] / "gold").is_dir())},
         "corpus": corpus,
-        "maritime": {"file": "scenario/maritime-isr/MaritimeISR.sysml", "parse_run": MARITIME_PARSE.name,
+        "maritime": {"file": "scenario/maritime-isr/MaritimeISR.sysml", "parse_run": parse.name,
                      "elements": len(elements), "cards": len(cards), "links": len(kinds) // 2,
                      "library_files": validation.get("library_resource_count")},
         "memory": {"n": len(memory), "file": "analysis/memory/approved.jsonl",

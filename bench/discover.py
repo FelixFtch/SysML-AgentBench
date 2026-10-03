@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -25,7 +26,6 @@ from agents.solve import SYSML_RULES  # noqa: E402
 from bench.experiment import load_env  # noqa: E402
 
 NUMBER = re.compile(r"(?<![\w.])(\d+(?:\.\d+)?)(?!\w|\.\d)")
-MARITIME_PARSE = ROOT / "mvp" / "runs" / "20261002T231323-aea6edfc"
 MARITIME_FILE = ROOT / "scenario" / "maritime-isr" / "MaritimeISR.sysml"
 MEMORY = ROOT / "analysis" / "memory" / "approved.jsonl"
 GATED_CHECKS = ("POWER", "LINK", "STORE", "TRACE")
@@ -155,15 +155,17 @@ def load_memory() -> list[dict]:
 
 def _library():
     """MaritimeISR's official parse plus every approved design's official parse."""
-    from bench.graph_query import build_graph
-    cards, neighbors, kinds = build_graph(MARITIME_PARSE, "MaritimeISR::")
+    from bench.graph_query import build_graph, maritime_parse, official_parse
+    cards, neighbors, kinds = build_graph(maritime_parse(), "MaritimeISR::")
     source_of = {ident: "MaritimeISR" for ident in cards}
     sources = [{"name": "MaritimeISR", "label": "已有海事模型 MaritimeISR",
                 "path": "scenario/maritime-isr/MaritimeISR.sysml", "cards": len(cards)}]
     for entry in load_memory():
-        run_dir = Path(entry["run_dir"])
-        if not (run_dir / "sysml" / "model.json").is_file():
+        saved = Path(entry["run_dir"])
+        source = ROOT / entry["source"] if entry.get("source") else None
+        if not (saved / "sysml" / "model.json").is_file() and not (source and source.is_file()):
             continue
+        run_dir = official_parse(saved, [source] if source else [], entry["package"])
         extra_cards, extra_neighbors, extra_kinds = build_graph(run_dir, entry["package"] + "::")
         tag = f"已批准 {entry['run_id']}·{entry['design']}"
         for ident, text in extra_cards.items():
@@ -468,6 +470,17 @@ def approval_block(record: dict, design: dict) -> str:
     return ""
 
 
+def keep_source(run_id: str, key: str, run_dir: Path) -> Path:
+    """Copy the parsed design file next to the memory file; mvp/runs/ is not in git."""
+    original = run_dir / "model" / f"Design{key}.sysml"
+    if not original.is_file():
+        raise ValueError("找不到这套设计的源文件。")
+    copy = MEMORY.parent / "designs" / f"{run_id}-{key}" / original.name
+    copy.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(original, copy)
+    return copy
+
+
 def approve(run_id: str, key: str) -> dict:
     if not re.fullmatch(r"\d{8}T\d{6}", run_id or ""):
         raise ValueError("运行编号不对。")
@@ -483,7 +496,9 @@ def approve(run_id: str, key: str) -> dict:
         raise ValueError(reason)
     if any(entry["run_id"] == run_id and entry["design"] == key for entry in load_memory()):
         raise ValueError("这套设计已经入库。")
+    source = keep_source(run_id, key, Path(design["run_dir"]))
     entry = {"run_id": run_id, "design": key, "package": f"Design{key}", "run_dir": design["run_dir"],
+             "source": str(source.relative_to(ROOT)),
              "approved_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "brief": record.get("brief", ""),
              "numbers": design.get("numbers") or {}}
     MEMORY.parent.mkdir(parents=True, exist_ok=True)

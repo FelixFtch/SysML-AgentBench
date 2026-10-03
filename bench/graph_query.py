@@ -6,6 +6,7 @@ the retrieved text replaces the full model in the prompt.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
@@ -21,11 +22,41 @@ from bench.score_answer import score_answer  # noqa: E402
 from mvp.engine import ModelView, exported_elements  # noqa: E402
 
 PARSE = ROOT / "mvp" / "runs" / "20261002T231323-aea6edfc"
+MARITIME_FILE = ROOT / "scenario" / "maritime-isr" / "MaritimeISR.sysml"
 HELD = ROOT / "bench" / "tasks" / "t4_maritime_isr" / "heldout"
 
 
+def official_parse(saved: Path, sources: list[Path], package: str) -> Path:
+    """Folder holding the official parse of `sources`.
+
+    mvp/runs/ is not in git, so on a fresh clone the saved folder is missing. Then an earlier
+    re-parse of the same bytes is reused, or the official Pilot parses the committed files once.
+    """
+    if (saved / "sysml" / "model.json").is_file():
+        return saved
+    digest = hashlib.sha256(b"".join(path.read_bytes() for path in sources)).hexdigest()[:16]
+    label = f"reparse-{package}-{digest}"
+    for result in sorted((ROOT / "mvp" / "runs").glob("*/result.json"), reverse=True):
+        try:
+            data = json.loads(result.read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        if (data.get("case_name") == label and (data.get("sysml") or {}).get("status") == "PASS"
+                and (result.parent / "sysml" / "model.json").is_file()):
+            return result.parent
+    from mvp.engine import run_submitted_model
+    validated = run_submitted_model(sources, package, label=label)
+    if validated["sysml"]["status"] != "PASS":
+        raise RuntimeError(f"Official parse of {package} did not pass: {validated['run_dir']}")
+    return Path(validated["run_dir"])
+
+
+def maritime_parse() -> Path:
+    return official_parse(PARSE, [MARITIME_FILE], "MaritimeISR")
+
+
 def _graph():
-    cards, neighbors, _kinds = build_graph(PARSE, "MaritimeISR::")
+    cards, neighbors, _kinds = build_graph(maritime_parse(), "MaritimeISR::")
     return cards, neighbors
 
 

@@ -10,9 +10,9 @@ Sponsor: RTX Technology Research Center (RTRC). Faculty advisor: Prof. George Bo
 |---|---|
 | [`STATUS.md`](STATUS.md) | **Current numbers**, generated from saved results by `python3 scripts/make_status.py` |
 | `python3 bench/exam_board.py` → http://127.0.0.1:8770/ | Results page and demo: the 288-cell exam cell by cell, live runs, the MOD change chain, the Part 2 prototype, cost |
-| [`analysis/report/exam-20261003/index.html`](analysis/report/exam-20261003/index.html) | Exam report (Chinese), rebuilt by `python3 analysis/report/build_exam_report.py` |
-| [`docs/report/D4-初稿.md`](docs/report/D4-初稿.md) | Report draft (Chinese) |
-| [`docs/failure_taxonomy.md`](docs/failure_taxonomy.md) | The 64 failures by class (Chinese) |
+| [`analysis/report/exam-20261003/index.html`](analysis/report/exam-20261003/index.html) | Exam report, rebuilt by `python3 analysis/report/build_exam_report.py` |
+| [`docs/report/D4-初稿.md`](docs/report/D4-初稿.md) | Report draft |
+| [`docs/failure_taxonomy.md`](docs/failure_taxonomy.md) | The 64 failures by class |
 | [`docs/decisions/`](docs/decisions/) | Decision records; 016–021 (2026-10-03) override the plan where they differ |
 | [`plans/SysML_AgentBench_完整执行计划.md`](plans/SysML_AgentBench_完整执行计划.md) | Execution plan v2.0 (Chinese): deliverables, ground-truth method, task suite, schedule, decisions §18 |
 | [`plans/project-statement.md`](plans/project-statement.md) | Project statement v1.1 for sponsor signature (English) |

@@ -55,3 +55,4 @@ checkpoints.db
 
 # derived vector caches (rebuilt from the cards)
 /analysis/vector-index/*.faiss
+/analysis/vector-index/*.json

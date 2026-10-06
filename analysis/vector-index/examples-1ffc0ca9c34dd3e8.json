@@ -1,8 +1,0 @@
-{
-  "name": "examples",
-  "key": "1ffc0ca9c34dd3e8",
-  "model": "sentence-transformers/all-MiniLM-L6-v2",
-  "cards": 766,
-  "dimension": 384,
-  "metric": "cosine (inner product over unit vectors)"
-}

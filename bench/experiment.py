@@ -61,6 +61,8 @@ def main() -> None:
     parser.add_argument("--repeat-offset", type=int, default=0)
     parser.add_argument("--configs", nargs="*", default=list(CONFIGS))
     parser.add_argument("--tasks", nargs="*", default=[])
+    parser.add_argument("--rounds", type=int, default=None,
+                        help="repair cap for P1-P3 (default BENCH_REPAIR_ROUNDS or 20); P0 never repairs")
     args = parser.parse_args()
     load_env()
     tasks = [json.loads(line) for line in (HELD / "index.jsonl").read_text(encoding="utf-8").splitlines()]
@@ -76,7 +78,7 @@ def main() -> None:
                 task_dir = ROOT / item["path"]
                 record = {"repeat": repeat, "task_id": item["id"], "type": item["type"], "configuration": config}
                 try:
-                    solved = solve(task_dir, config)
+                    solved = solve(task_dir, config, max_rounds=args.rounds)
                     scored = grade(task_dir, solved)
                     record.update({"status": scored["status"], "sysml_status": scored.get("sysml_status"),
                                    "engineering_status": scored.get("engineering_status"),
@@ -84,6 +86,12 @@ def main() -> None:
                                    "checks_match": scored.get("checks_match"),
                                    "engine_run": solved.get("engine_run"),
                                    "repair_rounds": solved.get("repair_rounds"),
+                                   "max_rounds": solved.get("max_rounds"),
+                                   "first_pass_attempt": solved.get("first_pass_attempt"),
+                                   "resubmitted_unchanged": solved.get("resubmitted_unchanged"),
+                                   "attempts": [{key: value for key, value in item.items() if key != "diagnostics"}
+                                                | {"errors": len(item.get("diagnostics") or [])}
+                                                for item in (solved.get("attempts") or [])],
                                    "calls": solved.get("calls")})
                 except Exception as exc:
                     record.update({"status": "FAIL", "error": f"{type(exc).__name__}: {exc}",

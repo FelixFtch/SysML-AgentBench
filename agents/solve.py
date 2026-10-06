@@ -1,10 +1,21 @@
-"""P0–P3 solvers. Gold files are never added to the prompt."""
+"""P0–P3 solvers. Gold files are never added to the prompt.
+
+The approaches are cumulative. P0 writes once and is validated once. P1 adds the
+repair loop: when the official Pilot rejects the model, the complete error list
+goes back to the model in the same conversation, so every earlier version and
+every earlier error list stays visible, until the parse passes or the round cap
+is reached. P2 adds an outline before writing. P3 adds retrieved notes before
+the outline. The round cap is BENCH_REPAIR_ROUNDS (default 20).
+"""
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Callable
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -15,6 +26,10 @@ import yaml  # noqa: E402
 from agents.llm import chat, extract_sysml  # noqa: E402
 
 CORPUS = ROOT / "bench" / "corpus"
+DEFAULT_ROUNDS = int(os.environ.get("BENCH_REPAIR_ROUNDS", "20"))
+REPAIR_NOTE = ("Official validation failed: attempt {attempt}, repair {repair} of at most {cap}. "
+               "The complete error list from the official SysML v2 Pilot follows. Fix the model and "
+               "resubmit the whole file in one fenced sysml block. Do not change numbers the task said to keep.")
 SYSML_RULES = """You write SysML v2 textual notation.
 Rules:
 - Output one fenced code block tagged sysml, and no prose before or after it.
@@ -78,7 +93,96 @@ def _answer(case: dict, prompt: str, *, prefix: list[dict] | None = None) -> dic
     return chat(messages, max_tokens=1500)
 
 
-def solve(task_dir: Path, config: str) -> dict:
+def rounds_for(config: str, max_rounds: int | None = None) -> int:
+    """P0 never repairs. P1, P2 and P3 repair up to the cap."""
+    if config == "P0":
+        return 0
+    return DEFAULT_ROUNDS if max_rounds is None else max_rounds
+
+
+def format_diagnostics(diagnostics: list[dict]) -> str:
+    """Every diagnostic, with its position, in the order the Pilot reported it."""
+    if not diagnostics:
+        return "The official tool returned no diagnostic text; the run did not reach PASS."
+    lines = []
+    for item in diagnostics:
+        where = "no position"
+        if item.get("line") is not None:
+            where = f"line {item['line']}"
+            if item.get("column") is not None:
+                where += f", column {item['column']}"
+        lines.append(f"[{item.get('severity') or 'ERROR'}] {where}: {item.get('message') or ''}")
+    return "\n".join(lines)
+
+
+def validate_with_repair(case: dict, prompt: str, text: str, folder: Path, *, prefix: list[dict] | None,
+                         label: str, max_rounds: int, calls: list[dict],
+                         on_attempt: Callable[[dict, str, str], None] | None = None) -> dict:
+    """Validate one submission with the official Pilot; on failure, repair in one cumulative conversation.
+
+    Attempt 1 is the text already written. Each failed attempt appends the model's text and the full
+    error list to the same message list, so later repairs see every earlier version and every earlier
+    error. Each version and its diagnostics are saved under folder/attempts/. Stops at PASS or when
+    max_rounds repairs have been made.
+    """
+    from mvp.engine import run_submitted_model
+
+    messages = [{"role": "system", "content": SYSML_RULES}]
+    messages.extend(prefix or [])
+    messages.append({"role": "user", "content": prompt})
+    attempts_dir = folder / "attempts"
+    attempts_dir.mkdir(exist_ok=True)
+    attempts: list[dict] = []
+    engine_run = run_dir = None
+    status = None
+    previous_sha = None
+    attempt = 0
+    while True:
+        attempt += 1
+        messages.append({"role": "assistant", "content": text})
+        run_id = None
+        try:
+            source = extract_sysml(text)
+        except ValueError as exc:
+            source = ""
+            status = "FAIL"
+            diagnostics = [{"severity": "ERROR", "line": None, "column": None, "message": str(exc)}]
+        else:
+            path = folder / f"{case['package']}.sysml"
+            path.write_text(source, encoding="utf-8")
+            validated = run_submitted_model([path], case["package"], label=label)
+            engine_run = run_id = validated["run_id"]
+            run_dir = validated["run_dir"]
+            status = validated["sysml"]["status"]
+            diagnostics = [{key: item.get(key) for key in ("severity", "line", "column", "message")}
+                           for item in validated["sysml"].get("diagnostics", [])]
+        sha = hashlib.sha256((source or text).encode("utf-8")).hexdigest()[:12]
+        entry = {"attempt": attempt, "status": status, "run_id": run_id, "sha": sha,
+                 "same_as_previous": previous_sha == sha, "diagnostics": diagnostics}
+        attempts.append(entry)
+        (attempts_dir / f"attempt-{attempt:02d}.sysml").write_text(source or text, encoding="utf-8")
+        (attempts_dir / f"attempt-{attempt:02d}.diagnostics.json").write_text(
+            json.dumps(diagnostics, ensure_ascii=False, indent=2), encoding="utf-8")
+        feedback = format_diagnostics(diagnostics)
+        if on_attempt:
+            on_attempt(entry, text, feedback)
+        previous_sha = sha
+        if status == "PASS" or attempt > max_rounds:
+            break
+        note = REPAIR_NOTE.format(attempt=attempt, repair=attempt, cap=max_rounds)
+        messages.append({"role": "user", "content": note + "\n" + feedback})
+        repaired = chat(messages)
+        calls.append({"step": f"repair-{attempt}", "usage": repaired["usage"], "model": repaired.get("model")})
+        text = repaired["text"]
+    (folder / "conversation.json").write_text(json.dumps(messages, ensure_ascii=False, indent=2), encoding="utf-8")
+    first_pass = next((item["attempt"] for item in attempts if item["status"] == "PASS"), None)
+    return {"text": text, "sysml_status": status, "engine_run": engine_run, "run_dir": run_dir,
+            "attempts": attempts, "repair_rounds": len(attempts) - 1, "max_rounds": max_rounds,
+            "first_pass_attempt": first_pass,
+            "resubmitted_unchanged": sum(1 for item in attempts if item["same_as_previous"])}
+
+
+def solve(task_dir: Path, config: str, *, max_rounds: int | None = None) -> dict:
     case, prompt = _task(task_dir)
     folder = _folder(case["id"], config)
     calls = []
@@ -101,54 +205,19 @@ def solve(task_dir: Path, config: str) -> dict:
     written = _answer(case, prompt, prefix=prefix)
     calls.append({"step": "write", "usage": written["usage"], "model": written["model"]})
     text = written["text"]
-    rounds = 0
-    engine_run = None
-    run_dir = None
-    sysml_status = None
-    if case["type"] in {"GEN", "MOD"} and config == "P1":
-        from mvp.engine import run_submitted_model
-        source = None
-        for attempt in range(4):
-            try:
-                source = extract_sysml(text)
-            except ValueError as exc:
-                diagnostic = str(exc)
-                sysml_status = "FAIL"
-                if attempt == 3:
-                    break
-            else:
-                path = folder / f"{case['package']}.sysml"
-                path.write_text(source, encoding="utf-8")
-                validated = run_submitted_model([path], case["package"], label=f"{config}-{case['id']}")
-                engine_run = validated["run_id"]
-                run_dir = validated["run_dir"]
-                sysml_status = validated["sysml"]["status"]
-                diagnostic = "\n".join(item.get("message", "") for item in validated["sysml"].get("diagnostics", [])[:8])
-                if sysml_status == "PASS" or attempt == 3:
-                    break
-            rounds += 1
-            repaired = chat([
-                {"role": "system", "content": SYSML_RULES},
-                {"role": "user", "content": prompt},
-                {"role": "assistant", "content": text},
-                {"role": "user", "content": "Official validation failed. Fix the model. Do not change numbers the task said to keep.\n" + diagnostic},
-            ])
-            calls.append({"step": f"repair-{rounds}", "usage": repaired["usage"]})
-            text = repaired["text"]
-    elif case["type"] in {"GEN", "MOD"}:
-        from mvp.engine import run_submitted_model
-        source = extract_sysml(text)
-        path = folder / f"{case['package']}.sysml"
-        path.write_text(source, encoding="utf-8")
-        validated = run_submitted_model([path], case["package"], label=f"{config}-{case['id']}")
-        engine_run = validated["run_id"]
-        run_dir = validated["run_dir"]
-        sysml_status = validated["sysml"]["status"]
+    loop = {"sysml_status": None, "engine_run": None, "run_dir": None, "attempts": [], "repair_rounds": 0,
+            "max_rounds": 0, "first_pass_attempt": None, "resubmitted_unchanged": 0}
+    if case["type"] in {"GEN", "MOD"}:
+        loop = validate_with_repair(case, prompt, text, folder, prefix=prefix, label=f"{config}-{case['id']}",
+                                    max_rounds=rounds_for(config, max_rounds), calls=calls)
+        text = loop["text"]
     (folder / "response.txt").write_text(text, encoding="utf-8")
     record = {"configuration": config, "task_id": case["id"], "type": case["type"],
               "provider_model": calls[-1].get("model") or calls[0].get("model"),
-              "calls": calls, "repair_rounds": rounds, "sysml_status": sysml_status,
-              "engine_run": engine_run, "run_dir": run_dir, "response_path": str(folder / "response.txt")}
+              "calls": calls, "repair_rounds": loop["repair_rounds"], "max_rounds": loop["max_rounds"],
+              "first_pass_attempt": loop["first_pass_attempt"], "resubmitted_unchanged": loop["resubmitted_unchanged"],
+              "attempts": loop["attempts"], "sysml_status": loop["sysml_status"],
+              "engine_run": loop["engine_run"], "run_dir": loop["run_dir"], "response_path": str(folder / "response.txt")}
     (folder / "solve.json").write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
     record["text"] = text
     return record

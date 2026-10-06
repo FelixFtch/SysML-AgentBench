@@ -477,8 +477,8 @@ def _prepare_inbox(payload: dict) -> Path:
 
 
 def _execute(task_dir: Path, config: str, job: dict) -> None:
-    from agents.llm import chat, extract_sysml
-    from agents.solve import SYSML_RULES, _answer, _retrieve, _task
+    from agents.llm import chat
+    from agents.solve import _answer, _retrieve, _task
     from bench.experiment import grade, load_env
 
     load_env()
@@ -520,55 +520,41 @@ def _execute(task_dir: Path, config: str, job: dict) -> None:
     rounds = 0
     run_dir = None
     if case["type"] in {"GEN", "MOD"}:
-        from mvp.engine import run_submitted_model
-        attempts = 4 if config == "P1" else 1
-        previous_sha = None
-        for attempt in range(attempts):
-            _phase(job, "Official syntax", f"The official Pilot is parsing model attempt {attempt + 1}.")
-            try:
-                source = extract_sysml(text)
-            except ValueError as exc:
-                syntax = "FAIL"
-                diagnostic = str(exc)
-                entry = {"attempt": attempt + 1, "run_id": None, "status": "FAIL", "sha": "", "same_as_previous": False,
-                         "diagnostics": [{"line": None, "message": diagnostic}], "text": text[:4000]}
-            else:
-                scratch = ROOT / "mvp" / "exam-inbox" / f"live-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}-{case['id']}"
-                scratch.mkdir(parents=True, exist_ok=True)
-                path = scratch / f"{case['package']}.sysml"
-                path.write_text(source, encoding="utf-8")
-                validated = run_submitted_model([path], case["package"], label=f"board-{case['id']}")
-                run_dir = validated["run_dir"]
-                syntax = validated["sysml"]["status"]
-                diagnostic = "\n".join(item.get("message", "") for item in validated["sysml"].get("diagnostics", [])[:8])
-                entry = _attempt(Path(run_dir), attempt + 1, previous_sha)
-                model_dir = Path(run_dir) / "model"
-                files = sorted(model_dir.glob("*.sysml")) if model_dir.is_dir() else []
-                if files:
-                    with JOB_LOCK:
-                        job["answer"] = "\n\n".join(f"# {item.name}\n{_read(item)}" for item in files)
-            previous_sha = entry["sha"]
+        from agents.solve import rounds_for, validate_with_repair
+        cap = rounds_for(config)
+        scratch = ROOT / "mvp" / "exam-inbox" / f"live-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}-{case['id']}"
+        scratch.mkdir(parents=True, exist_ok=True)
+        _phase(job, "Official syntax", "The official Pilot is parsing model attempt 1.")
+
+        def on_attempt(entry: dict, attempt_text: str, feedback: str) -> None:
+            shown = {**entry, "diagnostics": [{"line": item.get("line"), "message": item.get("message") or ""} for item in entry["diagnostics"]],
+                     "text": attempt_text[:4000]}
             with JOB_LOCK:
-                job.setdefault("attempts", []).append(entry)
-            if syntax == "PASS" or attempt == attempts - 1:
-                break
-            rounds += 1
-            _push(job, _step("Official syntax", "fail", diagnostic or "The official parse failed."))
-            _phase(job, "Repair from errors", f"Repair {rounds}: the official errors go back to the model. Numbers stay as in the task.")
-            repaired = chat([
-                {"role": "system", "content": SYSML_RULES},
-                {"role": "user", "content": prompt},
-                {"role": "assistant", "content": text},
-                {"role": "user", "content": "Official validation failed. Fix the model. Do not change numbers the task said to keep.\n" + diagnostic},
-            ])
-            text = repaired["text"]
-            with JOB_LOCK:
-                job["answer"] = text
-            _push(job, _step("Repair from errors", "pass", f"Repair {rounds} returned. Official errors sent back: {(diagnostic or '')[:400]}"))
+                job.setdefault("attempts", []).append(shown)
+                job["answer"] = attempt_text
+            if entry["status"] == "PASS" or entry["attempt"] > cap:
+                return
+            _push(job, _step("Official syntax", "fail", feedback or "The official parse failed."))
+            _phase(job, "Repair from errors", f"Repair {entry['attempt']} of at most {cap}: the complete error list goes back to the model, together with every earlier version. Numbers stay as in the task.")
+
+        loop = validate_with_repair(case, prompt, text, scratch, prefix=prefix, label=f"board-{case['id']}",
+                                    max_rounds=cap, calls=[], on_attempt=on_attempt)
+        text, syntax, run_dir, rounds = loop["text"], loop["sysml_status"], loop["run_dir"], loop["repair_rounds"]
+        with JOB_LOCK:
+            job["answer"] = text
+            job["repair_rounds"] = rounds
+            job["max_rounds"] = cap
+            job["first_pass_attempt"] = loop["first_pass_attempt"]
+        last = loop["attempts"][-1] if loop["attempts"] else {"diagnostics": []}
+        from agents.solve import format_diagnostics
         _push(job, _step("Official syntax", "pass" if syntax == "PASS" else "fail",
-                         "The official Pilot passed it. That only means the syntax is valid." if syntax == "PASS" else (diagnostic or "The official parse failed.")))
+                         "The official Pilot passed it. That only means the syntax is valid." if syntax == "PASS" else format_diagnostics(last["diagnostics"])))
         if rounds == 0:
-            _push(job, _step("Repair from errors", "skip", "No repair this time."))
+            _push(job, _step("Repair from errors", "skip", "No repair this time." if cap else "P0 writes once and is not repaired."))
+        else:
+            _push(job, _step("Repair from errors", "pass" if syntax == "PASS" else "fail",
+                             f"{rounds} repair(s) of at most {cap}; the first passing version was attempt {loop['first_pass_attempt']}." if syntax == "PASS"
+                             else f"{rounds} repair(s) made, the cap of {cap}; the official parse still fails. {loop['resubmitted_unchanged']} resubmission(s) were identical to the previous one."))
     else:
         _push(job, _step("Official syntax", "skip", "This task does not take SysML."))
         _push(job, _step("Repair from errors", "skip", "No syntax repair for this task type."))

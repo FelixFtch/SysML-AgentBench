@@ -313,12 +313,16 @@ def write_design(brief: str, requirements: list[dict], package: str, variant: st
     return {"text": reply["text"], "model": reply.get("model"), "usage": reply.get("usage"), "messages": messages, "prompt_parts": parts}
 
 
-def repair_design(messages: list[dict], previous: str, diagnostics: list[str]) -> dict:
-    follow = messages + [
-        {"role": "assistant", "content": previous},
-        {"role": "user", "content": "The official SysML v2 validator rejected this. Fix only the syntax. Keep every number unchanged.\n" + "\n".join(diagnostics)},
-    ]
-    reply = chat(follow)
+def repair_design(messages: list[dict], previous: str, diagnostics: list[dict], attempt: int, cap: int) -> dict:
+    """One repair turn. `messages` is the cumulative conversation; this call appends the rejected
+    version and the complete error list to it, so every earlier version and error stays visible."""
+    from agents.solve import format_diagnostics
+    messages.append({"role": "assistant", "content": previous})
+    messages.append({"role": "user", "content":
+                     f"The official SysML v2 validator rejected this (attempt {attempt}, repair {attempt} of at most {cap}). "
+                     "The complete error list follows. Fix only the syntax, resubmit the whole package, and keep every number unchanged.\n"
+                     + format_diagnostics(diagnostics)})
+    reply = chat(messages)
     return {"text": reply["text"], "model": reply.get("model"), "usage": reply.get("usage")}
 
 
@@ -515,9 +519,16 @@ def approve(run_id: str, key: str) -> dict:
 
 
 def _validate_design(key: str, written: dict, folder: Path, progress) -> dict:
+    """Official validation with the same repair rule as the exam: the complete error list goes back
+    in one cumulative conversation until the parse passes or DEFAULT_ROUNDS repairs have been made."""
+    from agents.solve import DEFAULT_ROUNDS
     from mvp.engine import run_submitted_model
     text = written["text"]
+    cap = DEFAULT_ROUNDS
+    conversation = list(written["messages"])
     attempts = []
+    attempts_dir = folder / f"attempts-{key}"
+    attempts_dir.mkdir(exist_ok=True)
     path = folder / f"Design{key}.sysml"
     validated = None
     while True:
@@ -530,21 +541,28 @@ def _validate_design(key: str, written: dict, folder: Path, progress) -> dict:
             path.write_text(source, encoding="utf-8")
             validated = run_submitted_model([path], f"Design{key}", label=f"discover-{key}")
             status = validated["sysml"]["status"]
-            diagnostics = [{"line": item.get("line"), "message": item.get("message", "")} for item in validated["sysml"].get("diagnostics", [])[:6]]
+            diagnostics = [{key_: item.get(key_) for key_ in ("severity", "line", "column", "message")}
+                           for item in validated["sysml"].get("diagnostics", [])]
         else:
             status = "FAIL"
-            diagnostics = [{"line": None, "message": "The model output contains no SysML package."}]
+            diagnostics = [{"severity": "ERROR", "line": None, "column": None, "message": "The model output contains no SysML package."}]
         sha = hashlib.sha256(source.encode()).hexdigest()[:12]
-        attempts.append({"attempt": len(attempts) + 1, "status": status, "diagnostics": diagnostics, "sha": sha,
+        number = len(attempts) + 1
+        attempts.append({"attempt": number, "status": status, "diagnostics": diagnostics, "sha": sha,
                          "same_as_previous": bool(attempts) and attempts[-1]["sha"] == sha,
                          "run_id": validated["run_id"] if source and validated else None,
                          "text": (source or text)[:4000]})
-        if status == "PASS" or len(attempts) >= 3:
+        (attempts_dir / f"attempt-{number:02d}.sysml").write_text(source or text, encoding="utf-8")
+        (attempts_dir / f"attempt-{number:02d}.diagnostics.json").write_text(json.dumps(diagnostics, ensure_ascii=False, indent=2), encoding="utf-8")
+        if status == "PASS" or number > cap:
             break
-        progress("repair", "run", f"Design {key}: the official errors from attempt {len(attempts)} go back to the model verbatim; fix syntax only, keep the numbers.")
-        text = repair_design(written["messages"], text, [item["message"] for item in diagnostics])["text"]
+        progress("repair", "run", f"Design {key}: repair {number} of at most {cap}. The complete error list from attempt {number} goes back to the model with every earlier version; fix syntax only, keep the numbers.")
+        text = repair_design(conversation, text, diagnostics, number, cap)["text"]
+    (folder / f"conversation-{key}.json").write_text(json.dumps(conversation, ensure_ascii=False, indent=2), encoding="utf-8")
     design = {"key": key, "source": source, "sysml_status": status, "attempts": attempts,
-              "repair_rounds": len(attempts) - 1, "diagnostics": [item["message"] for item in attempts[-1]["diagnostics"]],
+              "repair_rounds": len(attempts) - 1, "max_rounds": cap,
+              "first_pass_attempt": next((item["attempt"] for item in attempts if item["status"] == "PASS"), None),
+              "diagnostics": [item["message"] for item in attempts[-1]["diagnostics"]],
               "run_dir": validated["run_dir"] if validated else None, "model": written.get("model"),
               "usage": written.get("usage"), "prompt_parts": written.get("prompt_parts"), "path": str(path)}
     return design

@@ -35,3 +35,7 @@ Date: 2026-10-06. Reviewer: the assistant, at the user's request, as the second 
 ## Verdict
 
 The bank is consistent enough to freeze. The two recommendations above are left for the next key revision so that the frozen keys are the ones that were reviewed: MOD-01's key is lenient (it does not check the radio connection the task says to keep), AMB-02's key is strict (it accepts only "watt", "power limit" or "how many watts"; in the 2026-10-06 max batch an answer asking for "a numerical value, limit, or baseline (and its unit)" fails it).
+
+## Revision 2 (2026-10-06, after the batches; decision 028)
+
+By the user's decisions, the next key revision was made the same day: MOD-01's key also requires `UsvPlain::usv::radio` and the link `processor.uplink → radio.fromProcessor` (no saved answer changes verdict); AMB-02's key also accepts "maximum power", "power budget" and "limit" (three saved direct answers change to PASS); the AMB invented-number rule now counts a new number only when the answer also writes SysML (three saved agent answers change to PASS); and every `case.yaml` and key records this review (`status: reviewed`). The references still pass the Pilot and their keys (`bench/validate_gold.py`), and the mechanical checks still pass 27/27 (`analysis/gold-review-20261006T171300.json`).

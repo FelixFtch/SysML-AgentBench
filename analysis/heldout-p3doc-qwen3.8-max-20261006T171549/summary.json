@@ -1,0 +1,16 @@
+{
+  "cells": 81,
+  "counts": {
+    "PASS": 79,
+    "FAIL": 2
+  },
+  "directory": "/data/robotics/RTRC/analysis/heldout-p3doc-qwen3.8-max-20261006T171549",
+  "cohort": "direct",
+  "model": "qwen3.8-max",
+  "configs": [
+    "P3"
+  ],
+  "repeats": 3,
+  "started": "20261006T171549",
+  "note": "P3 rerun under freeze revision 2 (decision 028): retrieval cards carry documentation text. Run by bench/experiment.py --configs P3 --repeats 3 as heldout-qwen3.8-max-20261006T171549 and renamed after it finished."
+}

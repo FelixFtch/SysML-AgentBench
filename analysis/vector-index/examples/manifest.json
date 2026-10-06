@@ -1,5 +1,5 @@
 {
-  "built_at": "2026-10-06T05:43:17.761249+00:00",
+  "built_at": "2026-10-06T17:04:37.567053+00:00",
   "examples_root": "vendor/SysML-v2-Release/sysml/src/examples",
   "license": "EPL-2.0 (SysML-v2-Release)",
   "folders": [
@@ -12,6 +12,7 @@
         "Vehicle Analysis Demo.sysml"
       ],
       "package": "AnalysisAnnotation",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053400-2d07f9bf",
       "cards": 18
@@ -25,6 +26,7 @@
         "AHFSequences.sysml"
       ],
       "package": "AHFNorway",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053420-11769eb0",
       "cards": 163
@@ -37,6 +39,7 @@
         "ProductSelection_UnownedEnds.sysml"
       ],
       "package": "ProductSelection_N_ary_SysML",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053452-cf1e6219",
       "cards": 15
@@ -48,6 +51,7 @@
         "PictureTaking.sysml"
       ],
       "package": "PictureTaking",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053500-b9e9fd38",
       "cards": 9
@@ -59,6 +63,7 @@
         "MedicalDeviceFailure.sysml"
       ],
       "package": "CauseAndEffectExample",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053505-1eba249a",
       "cards": 36
@@ -69,6 +74,7 @@
         "Comments.sysml"
       ],
       "package": "Comments",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053513-48b29252",
       "cards": 4
@@ -79,6 +85,7 @@
         "Flashlight Example.sysml"
       ],
       "package": "Flashlight Example",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053516-a9a4dfed",
       "cards": 46
@@ -93,6 +100,7 @@
         "VehicleGeometryAndCoordinateFrames.sysml"
       ],
       "package": "CarWithEnvelopingShape",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053526-e35f5085",
       "cards": 10
@@ -106,6 +114,7 @@
         "QualifiedNameImportTest.sysml"
       ],
       "package": "AliasImport",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053608-f51afaf3",
       "cards": 5
@@ -117,6 +126,7 @@
         "JohnIndividualExample.sysml"
       ],
       "package": "AnalysisIndividualExample",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053612-f7e7ffbf",
       "cards": 65
@@ -132,6 +142,7 @@
         "ServerSequenceRealization-3.sysml"
       ],
       "package": "ServerSequenceModel",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053620-20e6e756",
       "cards": 29
@@ -144,6 +155,7 @@
         "Vehicles.sysml"
       ],
       "package": "MassConstraintExample",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053701-3dd6f41a",
       "cards": 55
@@ -158,6 +170,7 @@
         "VerificationMetadataExample.sysml"
       ],
       "package": "IssueMetadataExample",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053711-4d28908b",
       "cards": 19
@@ -169,6 +182,7 @@
         "Packets.sysml"
       ],
       "package": "Packet Usage",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053718-7c350b22",
       "cards": 27
@@ -181,6 +195,7 @@
         "VehicleRequirementDerivation.sysml"
       ],
       "package": "HSUVRequirements",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053722-2a379333",
       "cards": 22
@@ -191,6 +206,7 @@
         "RoomModel.sysml"
       ],
       "package": "RoomModel",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053731-f215db8a",
       "cards": 61
@@ -235,6 +251,7 @@
         "ViewTest.sysml"
       ],
       "package": "ActionTest",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053738-e53a3802",
       "cards": 30
@@ -246,6 +263,7 @@
         "EVSample.sysml"
       ],
       "package": "CartSample",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053826-ec4b9890",
       "cards": 43
@@ -256,6 +274,7 @@
         "TimeVaryingAttribute.sysml"
       ],
       "package": "TimeVaryingAttribute",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053843-26bacf5a",
       "cards": 20
@@ -266,6 +285,7 @@
         "VehicleVariabilityModel.sysml"
       ],
       "package": "VehicleVariabilityModel",
+      "reused_parse": true,
       "status": "PASS",
       "run_id": "20261006T053848-3ab6dcde",
       "cards": 74
@@ -279,6 +299,7 @@
         "VehicleUsages.sysml"
       ],
       "package": "SimpleVehicleModel",
+      "reused_parse": true,
       "status": "ERROR",
       "run_id": "20261006T053857-eaa54231",
       "diagnostics": [

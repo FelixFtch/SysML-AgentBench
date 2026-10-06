@@ -156,7 +156,7 @@
  },
  {
   "id": "Arrowhead Framework Example:1c97d162-a955-416b-a084-2115a79d672d",
-  "text": "PartDefinition AHFProfileLib::LocalCloudDesign",
+  "text": "PartDefinition AHFProfileLib::LocalCloudDesign doc: Local Cloud definition",
   "source": "official example · Arrowhead Framework Example"
  },
  {
@@ -176,7 +176,7 @@
  },
  {
   "id": "Arrowhead Framework Example:20cc4c6d-1874-4d63-985a-1b09165b9832",
-  "text": "PartDefinition AHFProfileLib::SysDD",
+  "text": "PartDefinition AHFProfileLib::SysDD doc: System Detailed Description",
   "source": "official example · Arrowhead Framework Example"
  },
  {
@@ -191,7 +191,7 @@
  },
  {
   "id": "Arrowhead Framework Example:26505740-3d3e-4e6f-a25b-11dabde0776b",
-  "text": "PortDefinition AHFProfileLib::SD",
+  "text": "PortDefinition AHFProfileLib::SD doc: Service definition",
   "source": "official example · Arrowhead Framework Example"
  },
  {
@@ -461,7 +461,7 @@
  },
  {
   "id": "Arrowhead Framework Example:76d9c0a1-0e9e-4610-94a3-1ac4f386642d",
-  "text": "Package AHFNorway",
+  "text": "Package AHFNorway doc: This is the Norwegian use-case for Arrowhead Framework",
   "source": "official example · Arrowhead Framework Example"
  },
  {
@@ -526,7 +526,7 @@
  },
  {
   "id": "Arrowhead Framework Example:88405b54-11c9-41fa-81a3-75ce3e31be89",
-  "text": "PartDefinition AHFProfileLib::SysD",
+  "text": "PartDefinition AHFProfileLib::SysD doc: System definitions",
   "source": "official example · Arrowhead Framework Example"
  },
  {
@@ -701,7 +701,7 @@
  },
  {
   "id": "Arrowhead Framework Example:c959bc84-7ee5-4603-a506-bd74859cd310",
-  "text": "PartDefinition AHFProfileLib::SysLocalCloudsDesign",
+  "text": "PartDefinition AHFProfileLib::SysLocalCloudsDesign doc: System of Systems Definition",
   "source": "official example · Arrowhead Framework Example"
  },
  {
@@ -821,7 +821,7 @@
  },
  {
   "id": "Arrowhead Framework Example:e70d6c39-5753-442a-bbf4-85c0d1c6f904",
-  "text": "PortDefinition AHFProfileLib::SDDD",
+  "text": "PortDefinition AHFProfileLib::SDDD doc: Service Definition Design Description",
   "source": "official example · Arrowhead Framework Example"
  },
  {
@@ -831,7 +831,7 @@
  },
  {
   "id": "Arrowhead Framework Example:eb4a5735-ce80-4719-8e8e-12a9d6b55e1e",
-  "text": "Definition AHFNorway::APISService",
+  "text": "Definition AHFNorway::APISService doc: Service design",
   "source": "official example · Arrowhead Framework Example"
  },
  {
@@ -876,12 +876,12 @@
  },
  {
   "id": "Arrowhead Framework Example:f799dc1a-e721-425d-82a2-828c0ce5daeb",
-  "text": "PortDefinition AHFProfileLib::IDD",
+  "text": "PortDefinition AHFProfileLib::IDD doc: Interface Design Description of services",
   "source": "official example · Arrowhead Framework Example"
  },
  {
   "id": "Arrowhead Framework Example:f7f61465-f551-4628-b189-d2a252dedb18",
-  "text": "PortDefinition AHFNorway::APIS_DD",
+  "text": "PortDefinition AHFNorway::APIS_DD doc: Service design description with nested protocol-specific ports",
   "source": "official example · Arrowhead Framework Example"
  },
  {
@@ -891,7 +891,7 @@
  },
  {
   "id": "Arrowhead Framework Example:f9c17b27-c32b-4a71-83b6-5eca1b4d650c",
-  "text": "PartDefinition AHFProfileLib::SysLocalCloudsDD",
+  "text": "PartDefinition AHFProfileLib::SysLocalCloudsDD doc: System of Systems Detailed Description",
   "source": "official example · Arrowhead Framework Example"
  },
  {
@@ -1206,7 +1206,7 @@
  },
  {
   "id": "Comment Examples:941d0ecf-a69b-4969-8155-6337a9729a02",
-  "text": "Package Comments",
+  "text": "Package Comments doc: Documentation about Package Documentation Comment",
   "source": "official example · Comment Examples"
  },
  {
@@ -1221,7 +1221,7 @@
  },
  {
   "id": "Comment Examples:ffd4dcad-4bef-4625-92c2-a8a12653e71e",
-  "text": "PartDefinition Comments::C",
+  "text": "PartDefinition Comments::C doc: Documentation in Part Def",
   "source": "official example · Comment Examples"
  },
  {
@@ -1496,7 +1496,7 @@
  },
  {
   "id": "Geometry Examples:d64a4aa0-75e9-4d1d-b712-bb39d22b796f",
-  "text": "PartDefinition CarWithEnvelopingShape::Car",
+  "text": "PartDefinition CarWithEnvelopingShape::Car doc: Example car with simple enveloping shape that is a solid box",
   "source": "official example · Geometry Examples"
  },
  {

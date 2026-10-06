@@ -1,6 +1,6 @@
 # 027 · Paper 2 replicated on its own EV model: the published notebook passes an empty context; our retrieval matches the fixed pipeline once cards carry documentation
 
-Date: 2026-10-06. Status: accepted (replication recorded; one change proposed, not applied). Affects `bench/replicate_paper2.py` (new). Output: `analysis/paper2-replication-20261006T165238/`.
+Date: 2026-10-06. Status: accepted (replication recorded; the proposed change was applied in freeze revision 2, decision 028). Affects `bench/replicate_paper2.py` (new). Output: `analysis/paper2-replication-20261006T165238/`.
 
 ## What was run
 
@@ -27,6 +27,6 @@ The paper's Table I reports 0.180 / 1.000 / 0.284 at 0.35 and 0.833 / 1.000 / 0.
 3. **Our retrieval answers as well as the fixed pipeline with a tenth of the context, once the cards carry documentation.** Without it, the purpose question fails: the purpose is written only in a `doc` comment, the authors' snippets include comments and our cards do not; the model then says the context does not state the purpose. Label-based recall is low for us on the composition question (we retrieve the three vehicle instances' parts, not the definition's), yet the answer is right, which shows how much these labels decide.
 4. **A correction.** Decision 023 and the docstring of `bench/vector_index.py` describe the authors' index as an L2 search with radius 0.35. The code builds `IndexFlatIP` over unit vectors and normalises the query, so 0.35 is a cosine threshold, close to our 0.30. Decision 023 is corrected; the frozen docstring is corrected at the next freeze.
 
-## Proposed, not applied
+## Proposed, then applied
 
-Add each element's documentation text to its retrieval card (`bench/graph_query.build_graph`). The MaritimeISR model has three `doc` comments and the official-examples library many; the cards carry none of them. Both files are frozen and the P3 cells would retrieve differently, so the change needs a new freeze and a P3 rerun before any score uses it.
+Add each element's documentation text to its retrieval card (`bench/graph_query.build_graph`). The MaritimeISR model has three `doc` comments and the official-examples library fifteen; the cards carried none of them. The user decided to apply it: freeze revision 2 (decision 028) adds the text, rebuilds the examples library and reruns every P3 cell of both direct batches.

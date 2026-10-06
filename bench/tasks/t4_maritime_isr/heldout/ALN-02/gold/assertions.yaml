@@ -1,6 +1,6 @@
 task_id: ALN-02
 package: AlignLink
-status: single-author
+status: reviewed
 sources:
 - ShipLinkIcd.sysml
 - VendorRadioPack.sysml

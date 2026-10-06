@@ -32,6 +32,6 @@ The scorer always lists the sources first, and the direct candidates' repair loo
 
 By the user's decision of 2026-10-06, `./validate` now passes the files in the scorer's order (the file that declares the requested package last), and all 18 ALN runs (9 per agent) were rerun in the same sandbox (`analysis/opencode-jail-aln-qwen3.8-flash-*`, `analysis/claude-jail-aln-qwen3.8-flash-*`). `bench/batches.py` takes the agents' ALN rows from the rerun; the first batch's ALN rows stay on disk and are listed as superseded with the reason and their cost. The Pilot itself is frozen and unchanged.
 
-Rerun result: OpenCode passes 8 of 9 ALN runs (first batch 6), Claude Code 7 of 9 (first batch 1; both failures hit the 900 s limit). Every rerun answer gets the same verdict in both file orders. With the rerun rows, OpenCode passes 77 of 81 runs and Claude Code 76 of 81.
+Rerun result: OpenCode passes 8 of 9 ALN runs (first batch 6), Claude Code 7 of 9 (first batch 1; both failures hit the 900 s limit). Every rerun answer gets the same verdict in both file orders. With the rerun rows, OpenCode passes 77 of 81 runs and Claude Code 76 of 81; after freeze revision 2 re-scored three of their clarifications (decision 028), both pass 78 of 81.
 
 The side benchmarks (`bench/run_side.py`) put SysEngBench (100 questions, seed 20261006, 10 per prompt) and PURE (2 excerpts) to all four candidates, the agents in the same sandbox.

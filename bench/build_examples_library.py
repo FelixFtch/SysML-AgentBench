@@ -9,7 +9,8 @@ rules + template + examples prompt.
 Each example folder is validated as one submission with the official Pilot; folders that pass give one
 card per named element plus the one-hop graph (bench.graph_query.build_graph). Notes from bench/corpus
 become cards without neighbours. Output: analysis/vector-index/examples/{cards.json,neighbors.json,manifest.json}.
-The FAISS index is built lazily by bench.vector_index and is not committed.
+The FAISS index is built lazily by bench.vector_index and is not committed. `--from-runs` rebuilds the cards from
+the official parses recorded in the existing manifest instead of parsing every folder again.
 """
 from __future__ import annotations
 
@@ -63,6 +64,8 @@ def main() -> None:
     neighbors: dict[str, list[str]] = {}
     folders = []
     notes_only = "--notes-only" in sys.argv and (OUT / "cards.json").is_file()
+    saved = {item["folder"]: item.get("run_id") for item in json.loads((OUT / "manifest.json").read_text(encoding="utf-8"))["folders"]} \
+        if "--from-runs" in sys.argv and (OUT / "manifest.json").is_file() else {}
     if notes_only:
         # Keep the parsed example cards; only the notes are rebuilt.
         for row in json.loads((OUT / "cards.json").read_text(encoding="utf-8")):
@@ -82,7 +85,12 @@ def main() -> None:
             entry["reason"] = "no package statement found"
             folders.append(entry)
             continue
-        result = run_submitted_model(files, package, label=f"examples-{folder.name}")
+        run_dir = ROOT / "mvp" / "runs" / (saved.get(folder.name) or "-")
+        if (run_dir / "sysml" / "model.json").is_file():
+            result = {"run_id": run_dir.name, "run_dir": str(run_dir), "sysml": json.loads((run_dir / "sysml" / "result.json").read_text(encoding="utf-8"))}
+            entry["reused_parse"] = True
+        else:
+            result = run_submitted_model(files, package, label=f"examples-{folder.name}")
         entry["status"] = result["sysml"]["status"]
         entry["run_id"] = result["run_id"]
         if entry["status"] == "PASS":
@@ -94,7 +102,7 @@ def main() -> None:
                 key = f"{folder.name}:{ident}"
                 cards[key] = text
                 sources[key] = f"official example · {folder.name}"
-                neighbors[key] = [f"{folder.name}:{other}" for other in folder_neighbors.get(ident, ()) if other in kept]
+                neighbors[key] = sorted(f"{folder.name}:{other}" for other in folder_neighbors.get(ident, ()) if other in kept)
         else:
             entry["diagnostics"] = [item.get("message") for item in result["sysml"].get("diagnostics", [])[:5]]
         folders.append(entry)

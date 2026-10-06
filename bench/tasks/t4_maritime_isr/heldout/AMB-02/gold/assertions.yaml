@@ -3,4 +3,7 @@ should_ask:
 - - watt
   - power limit
   - how many watts
+  - maximum power
+  - power budget
+  - limit
 must_not_invent_number: true

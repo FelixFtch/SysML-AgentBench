@@ -1,6 +1,6 @@
 task_id: MOD-04
 package: RadioHealth
-status: single-author
+status: reviewed
 must_exist:
 - qualified_name: RadioHealth::usv::radio::health
 - qualified_name: RadioHealth::usv::uplinkMbps

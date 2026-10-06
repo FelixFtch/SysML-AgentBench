@@ -29,6 +29,19 @@ class AnswerScoreTests(unittest.TestCase):
         invented = asked + "\n```sysml\nattribute latencyS : Real = 2.0;\n```"
         self.assertEqual(score_answer(HELD / "AMB-01", invented)["status"], "FAIL")
 
+    def test_example_number_in_a_question_without_sysml_is_not_invented(self):
+        asked = "What is the watt limit? Please give it as a number and a unit, e.g. 450 W."
+        scored = score_answer(HELD / "AMB-02", asked)
+        self.assertEqual(scored["status"], "PASS")
+        self.assertEqual(scored["numbers_not_counted"], ["450 W"])
+        assumed = asked + "\n```sysml\nattribute powerLimitW : Real = 450.0;\n```"
+        self.assertEqual(score_answer(HELD / "AMB-02", assumed)["status"], "FAIL")
+
+    def test_amb02_accepts_a_question_about_the_maximum_power(self):
+        asked = "What is the target maximum power consumption value and unit?"
+        self.assertEqual(score_answer(HELD / "AMB-02", asked)["status"], "PASS")
+        self.assertEqual(score_answer(HELD / "AMB-02", "What is the operating voltage of the vessel?")["status"], "FAIL")
+
     def test_round_trip_requires_every_phrase(self):
         self.assertEqual(score_answer(HELD / "RT-03", "The UAV radar shares tracks with the command ship.")["status"], "PASS")
         self.assertEqual(score_answer(HELD / "RT-03", "The UAV has a radar.")["status"], "FAIL")

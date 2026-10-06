@@ -1,0 +1,297 @@
+{
+  "id": "20261006T171300",
+  "tasks": [
+    {
+      "id": "GEN-01",
+      "type": "GEN",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_statement": [],
+      "kept_values_not_in_baseline": [],
+      "engineering": "UNKNOWN"
+    },
+    {
+      "id": "GEN-02",
+      "type": "GEN",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_statement": [],
+      "kept_values_not_in_baseline": [],
+      "engineering": "UNKNOWN"
+    },
+    {
+      "id": "GEN-03",
+      "type": "GEN",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_statement": [],
+      "kept_values_not_in_baseline": [],
+      "engineering": "UNKNOWN"
+    },
+    {
+      "id": "GEN-04",
+      "type": "GEN",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_statement": [],
+      "kept_values_not_in_baseline": [],
+      "engineering": "UNKNOWN"
+    },
+    {
+      "id": "GEN-05",
+      "type": "GEN",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_statement": [],
+      "kept_values_not_in_baseline": [],
+      "engineering": "UNKNOWN"
+    },
+    {
+      "id": "MOD-01",
+      "type": "MOD",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_statement": [],
+      "kept_values_not_in_baseline": [],
+      "engineering": "UNKNOWN"
+    },
+    {
+      "id": "MOD-02",
+      "type": "MOD",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_statement": [],
+      "kept_values_not_in_baseline": [],
+      "engineering": "UNKNOWN"
+    },
+    {
+      "id": "MOD-03",
+      "type": "MOD",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_statement": [],
+      "kept_values_not_in_baseline": [],
+      "engineering": "UNKNOWN"
+    },
+    {
+      "id": "MOD-04",
+      "type": "MOD",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_statement": [],
+      "kept_values_not_in_baseline": [],
+      "engineering": "UNKNOWN"
+    },
+    {
+      "id": "MOD-05",
+      "type": "MOD",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_statement": [],
+      "kept_values_not_in_baseline": [],
+      "engineering": "FAIL"
+    },
+    {
+      "id": "QRY-01",
+      "type": "QRY",
+      "ok": true,
+      "computed": {
+        "platforms": [
+          "MaritimeISR::commandShip",
+          "MaritimeISR::shore",
+          "MaritimeISR::uav",
+          "MaritimeISR::usv"
+        ]
+      },
+      "gold": {
+        "platforms": [
+          "MaritimeISR::usv",
+          "MaritimeISR::uav",
+          "MaritimeISR::commandShip",
+          "MaritimeISR::shore"
+        ]
+      }
+    },
+    {
+      "id": "QRY-02",
+      "type": "QRY",
+      "ok": true,
+      "computed": {
+        "attribute": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW",
+        "value": 60.0
+      },
+      "gold": {
+        "attribute": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW",
+        "value": 60
+      }
+    },
+    {
+      "id": "QRY-03",
+      "type": "QRY",
+      "ok": true,
+      "computed": {
+        "connections": 3
+      },
+      "gold": {
+        "connections": 3
+      }
+    },
+    {
+      "id": "QRY-04",
+      "type": "QRY",
+      "ok": true,
+      "computed": {
+        "parts": [
+          "MaritimeISR::FixedWingUav::eoCamera",
+          "MaritimeISR::FixedWingUav::processor",
+          "MaritimeISR::FixedWingUav::radio",
+          "MaritimeISR::FixedWingUav::searchRadar"
+        ]
+      },
+      "gold": {
+        "parts": [
+          "MaritimeISR::FixedWingUav::eoCamera",
+          "MaritimeISR::FixedWingUav::searchRadar",
+          "MaritimeISR::FixedWingUav::processor",
+          "MaritimeISR::FixedWingUav::radio"
+        ]
+      }
+    },
+    {
+      "id": "QRY-05",
+      "type": "QRY",
+      "ok": true,
+      "computed": {
+        "powerLimitW": 60.0,
+        "uplinkMbps": 8.0,
+        "storageGB": 128.0
+      },
+      "gold": {
+        "powerLimitW": 60,
+        "uplinkMbps": 8,
+        "storageGB": 128
+      }
+    },
+    {
+      "id": "AMB-01",
+      "type": "AMB",
+      "ok": true,
+      "groups": 2,
+      "words_already_quantified_in_statement": [],
+      "must_not_invent_number": true
+    },
+    {
+      "id": "AMB-02",
+      "type": "AMB",
+      "ok": true,
+      "groups": 1,
+      "words_already_quantified_in_statement": [],
+      "must_not_invent_number": true
+    },
+    {
+      "id": "AMB-03",
+      "type": "AMB",
+      "ok": true,
+      "groups": 1,
+      "words_already_quantified_in_statement": [],
+      "must_not_invent_number": true
+    },
+    {
+      "id": "AMB-04",
+      "type": "AMB",
+      "ok": true,
+      "groups": 1,
+      "words_already_quantified_in_statement": [],
+      "must_not_invent_number": true
+    },
+    {
+      "id": "RT-01",
+      "type": "RT",
+      "ok": true,
+      "phrases": [
+        "unmanned surface vessel",
+        "camera",
+        "shore"
+      ],
+      "phrases_not_in_requirement_text": []
+    },
+    {
+      "id": "RT-02",
+      "type": "RT",
+      "ok": true,
+      "phrases": [
+        "power limit",
+        "60"
+      ],
+      "phrases_not_in_requirement_text": []
+    },
+    {
+      "id": "RT-03",
+      "type": "RT",
+      "ok": true,
+      "phrases": [
+        "radar",
+        "command ship"
+      ],
+      "phrases_not_in_requirement_text": []
+    },
+    {
+      "id": "RT-04",
+      "type": "RT",
+      "ok": true,
+      "phrases": [
+        "30 days",
+        "50"
+      ],
+      "phrases_not_in_requirement_text": []
+    },
+    {
+      "id": "RT-05",
+      "type": "RT",
+      "ok": true,
+      "phrases": [
+        "2 seconds",
+        "two uplinks"
+      ],
+      "phrases_not_in_requirement_text": []
+    },
+    {
+      "id": "ALN-01",
+      "type": "ALN",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_sources": [],
+      "must_map": 5
+    },
+    {
+      "id": "ALN-02",
+      "type": "ALN",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_sources": [],
+      "must_map": 9
+    },
+    {
+      "id": "ALN-03",
+      "type": "ALN",
+      "ok": true,
+      "reference_pilot": "PASS",
+      "reference_task_verdict": "PASS",
+      "names_not_in_sources": [],
+      "must_map": 5
+    }
+  ],
+  "all_ok": true
+}

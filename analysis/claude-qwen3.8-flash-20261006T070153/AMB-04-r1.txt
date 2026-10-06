@@ -1,0 +1,15 @@
+I've read the task input (`workspace/input/requirements.md`). Per its own instruction, I'm stopping to ask rather than proceeding — and there is no SysML to write yet. Here's the situation:
+
+**The conflict, as stated in the input:**
+- Sentence A: "the uplink is **8**" — a bare number, no unit.
+- Sentence B: "the uplink is **8 MHz**" — a frequency unit.
+
+**What I need from you to resolve it:**
+
+1. **Which sentence governs, or what is the settled value?** If the intended quantity is a bandwidth, is it 8 MHz? If it's a data rate (a common thing to state as a bare "8" for an uplink), the unit would be something like Mbps — and "8 MHz" would then be a unit error, not a different fact. The two readings aren't reconcilable by arithmetic: a data rate in Mbps cannot be checked against a limit in MHz without more information (modulation, spectral efficiency, etc.).
+
+2. **What is this number needed *for*?** The input says "a number or unit needed for a check" — but the file contains no check, no acceptance criterion, and no source text with the two actual sentences. If those sentences live in a document I should read, please point me at it.
+
+3. **Confirm the deliverable boundary:** I will not write SysML until the unit is settled — is a resolved statement of the requirement (value + unit + what it constrains) all that's needed to unblock, or should I also wait for the check/criterion to be specified?
+
+I have deliberately not picked 8 MHz as the "likely" reading and moved on — that would be inventing a value, which the requirements forbid. Once you confirm the unit and the intended check, I can proceed.

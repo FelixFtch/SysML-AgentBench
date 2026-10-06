@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 178818,
+  "stop_reason": "end_turn",
+  "session_id": "738b0e86-5618-47fd-a3fa-98b3fd0041c1",
+  "total_cost_usd": 0.3990679999999999,
+  "usage": {
+    "input_tokens": 28359,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 285696,
+    "output_tokens": 4577,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 28359,
+      "outputTokens": 4577,
+      "cacheReadInputTokens": 285696,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.3990679999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 14,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**Answer (written to `answer.md`):**\n\n```json\n{\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60.0}\n```\n\nHow I verified it:\n- `input/model.sysml:36` declares `attribute powerLimitW : Real = 60.0;` inside `part def UnmannedSurfaceVessel` — distinct from `FixedWingUav::powerLimitW = 120.0` (line 45).\n- The official Pilot 0.62 validator's parsed model output confirms the qualified name exactly as `MaritimeISR::UnmannedSurfaceVessel::powerLimitW`, with its owned `LiteralRational` bound to the value at line 36 (source text `= 60.0`).\n\nPer task rules:\n- **Files changed:** `answer.md` (new). No model files edited.\n- **Validation status:** `./validate MaritimeISR input/model.sysml` → **PASS**, 0 diagnostics, 0 warnings.\n- **Check results:** requirement `PowerLimitUnchanged` is consistent with the model — the USV limit reads 60 W, unchanged.\n- **Open questions:** none.",
+  "ttft_ms": 4491,
+  "type": "result",
+  "duration_ms": 187847,
+  "uuid": "2cdcde43-79ab-4a04-ad09-f0b0eaf31891",
+  "ttft_stream_ms": 3558,
+  "time_to_request_ms": 46,
+  "first_content_frame_ms": 3558,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

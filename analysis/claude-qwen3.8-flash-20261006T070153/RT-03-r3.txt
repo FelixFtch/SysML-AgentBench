@@ -1,0 +1,7 @@
+**Restated requirements from the model:**
+
+The model `RoundTripRadar` defines one requirement:
+
+- **RadarShare** — The UAV radar shares tracks with the command ship.
+
+That is the only requirement statement present in the model; it carries no subject binding, no verification criteria, no rationale, and no additional constraints beyond the documentation sentence above.

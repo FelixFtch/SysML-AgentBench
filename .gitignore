@@ -56,3 +56,6 @@ checkpoints.db
 # derived vector caches (rebuilt from the cards)
 /analysis/vector-index/*.faiss
 /analysis/vector-index/*.json
+
+# SysEngBench dataset copy (MIT; registered in datasets/SOURCES.md, fetched by bench/run_side.py)
+/analysis/sysengbench/test.csv

@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 123627,
+  "stop_reason": "end_turn",
+  "session_id": "fb988876-bf3d-4801-b240-2db8c7a8325a",
+  "total_cost_usd": 0.246892,
+  "usage": {
+    "input_tokens": 12645,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 157184,
+    "output_tokens": 4203,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 12645,
+      "outputTokens": 4203,
+      "cacheReadInputTokens": 157184,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.246892,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 9,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the task rules:\n\n**Files changed**\n- `FourNode.sysml` (new) — the complete model for package `FourNode`.\n- `answer.md` (new) — write-up with model, traceability table, and validation results.\n\n**Validation status**\n- `./validate FourNode FourNode.sysml` → **PASS** (official SysML v2 Pilot 0.62 validator, `official-pilot-xtext-emf` adapter), 0 diagnostics, 0 warnings, return code 0.\n\n**Check results**\n- Req 1: `port def LinkPort` — present.\n- Req 2: `part def Radio` with `port toCommand : LinkPort` — present.\n- Req 3: `part def ShoreStation` with `port fromCommand : LinkPort` — present.\n- Req 4: part usages `usv` and `uav`, each containing `part radio : Radio` — present.\n- Req 5: `part commandShip` with ports `fromUsv`, `fromUav`, `toShore`, each typed `LinkPort` — present.\n- Req 6: `part shore : ShoreStation` — present.\n- Req 7: all three connections (`usv.radio.toCommand → commandShip.fromUsv`, `uav.radio.toCommand → commandShip.fromUav`, `commandShip.toShore → shore.fromCommand`) — present and linked by the validator.\n- No numeric limits were invented; none appear in the requirements or the model.\n\n**Open questions** — none; the task was fully specified and no failing checks remain.",
+  "ttft_ms": 5350,
+  "type": "result",
+  "duration_ms": 128357,
+  "uuid": "8396553d-9c50-43a1-b200-c12c984727e5",
+  "ttft_stream_ms": 4958,
+  "time_to_request_ms": 66,
+  "first_content_frame_ms": 4958,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

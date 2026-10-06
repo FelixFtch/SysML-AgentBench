@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 257183,
+  "stop_reason": "end_turn",
+  "session_id": "6d0cd401-5752-47fd-aa42-d30dfd45f1ba",
+  "total_cost_usd": 0.495776,
+  "usage": {
+    "input_tokens": 26365,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 394752,
+    "output_tokens": 6663,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 26365,
+      "outputTokens": 6663,
+      "cacheReadInputTokens": 394752,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.495776,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 16,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "The answer is written and verified. Summary:\n\n**Question:** Parsed value of `UnmannedSurfaceVessel` `powerLimitW`\n\n**Answer (in `answer.md`):**\n```json\n{\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60.0}\n```\n\n**How it was verified:**\n- Source: `input/model.sysml:36` — `attribute powerLimitW : Real = 60.0;`\n- Official validator run: `./validate MaritimeISR input/model.sysml` → status **PASS**, `[]` diagnostics, 0 warnings.\n- Cross-checked the parsed model JSON emitted by the validator: the `AttributeUsage` has `qualifiedName: \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\"`, and its `LiteralRational` default-value element carries `\"value\": 60.0` (confirmed by uniqueness against the source file — the UAV's same-named attribute parses separately to 120.0).\n\n**Files changed:** `answer.md` created. No model files edited; nothing under `input/`, `requirements/`, or `gold/` was modified (the validator only wrote its own output under `validation/`).\n\n**Open questions:** none.",
+  "ttft_ms": 10616,
+  "type": "result",
+  "duration_ms": 266809,
+  "uuid": "d594d3ef-b3b2-4158-9908-1038e655bc0f",
+  "ttft_stream_ms": 9402,
+  "time_to_request_ms": 60,
+  "first_content_frame_ms": 9402,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

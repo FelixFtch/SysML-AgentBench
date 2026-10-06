@@ -1,0 +1,5 @@
+Verified against `input/model.sysml:36-38` in the workspace — the `UnmannedSurfaceVessel` definition declares exactly three attributes:
+
+```json
+{"powerLimitW": 60.0, "uplinkMbps": 8.0, "storageGB": 128.0}
+```

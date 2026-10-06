@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 68849,
+  "stop_reason": "end_turn",
+  "session_id": "4339e9f0-4c72-4f26-bb51-fd4dd4bb27b8",
+  "total_cost_usd": 0.13250499999999998,
+  "usage": {
+    "input_tokens": 8272,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 93440,
+    "output_tokens": 1777,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 8272,
+      "outputTokens": 1777,
+      "cacheReadInputTokens": 93440,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.13250499999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Following rule 7:\n\n**Files changed:** `answer.md` (new). No `.sysml` files were edited — the task was a read-and-restate round-trip.\n\n**Validation status:** `./validate RoundTripPower input/model.sysml` → status `PASS`, 0 diagnostics, 0 warnings (official-pilot-xtext-emf, kernel 0.62.0). Notably the validator's own scope note excludes engineering budgets and complete unit/dimension verification, so a PASS says nothing about whether 60 W is correct.\n\n**Check results:** No failing checks — nothing to report verbatim.\n\n**Requirements restated** (exhaustively — the model is small):\n1. Package `RoundTripPower` defines part `usv`.\n2. `usv` has attribute `powerLimitW : Real = 60.0`.\n3. Package defines requirement definition `KeepPower`.\n4. `KeepPower`'s doc states: \"The unmanned surface vessel power limit is 60 W.\"\n\nI also recorded what the model does *not* say, since \"add no facts\" cuts both ways: the unit \"W\" appears only in the doc prose (`powerLimitW` itself carries no unit in the model), and `KeepPower` has no traceability link to `usv`, to `powerLimitW`, or to any assert/satisfy relation.\n\n**Open questions:** none.",
+  "ttft_ms": 6325,
+  "type": "result",
+  "duration_ms": 72574,
+  "uuid": "1800665e-589e-48a0-b095-e8d68eaf6ede",
+  "ttft_stream_ms": 6045,
+  "time_to_request_ms": 48,
+  "first_content_frame_ms": 6045,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

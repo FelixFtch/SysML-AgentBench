@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 82415,
+  "stop_reason": "end_turn",
+  "session_id": "908038fe-6f30-42cc-b4a0-a98cf05f785f",
+  "total_cost_usd": 0.14828599999999997,
+  "usage": {
+    "input_tokens": 8492,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 113152,
+    "output_tokens": 1970,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 8492,
+      "outputTokens": 1970,
+      "cacheReadInputTokens": 113152,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.14828599999999997,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. The task was a read-and-restate exercise; I did not edit the model, so the single validation run stands.\n\n**Files changed**\n- `answer.md` (new) — restatement of the model's requirements, written per AGENTS.md.\n\n**Validation status**\n- `./validate RoundTripArchive input/model.sysml` → official status **PASS** (`adapter: official-pilot-xtext-emf`, kernel 0.62.0, 0 warnings, `diagnostics: []`, return code 0). Model scope note from the tool: official parser/linker and implemented Xtext static checks; excludes engineering budgets and complete unit/dimension verification.\n\n**Check results (verbatim requirement from the model)**\n- Doc on requirement def `Archive`: \"The shore archive keeps tracks for 30 days on a 50 Mbit/s backhaul.\"\n- Backing attributes on part `shore`: `backhaulMbps : Real = 50.0`, `archiveDays : Real = 30.0`.\n\n**Open questions**\n- None. The model contains exactly one requirement sentence and its two supporting attribute values; nothing was added, relaxed, or invented.",
+  "ttft_ms": 9536,
+  "type": "result",
+  "duration_ms": 86550,
+  "uuid": "26c82ecd-ce4d-4e1c-b41f-51e92b6be74a",
+  "ttft_stream_ms": 9132,
+  "time_to_request_ms": 48,
+  "first_content_frame_ms": 9132,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

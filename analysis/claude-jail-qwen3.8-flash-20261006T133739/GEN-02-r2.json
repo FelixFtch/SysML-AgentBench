@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 153664,
+  "stop_reason": "end_turn",
+  "session_id": "cbbdf10a-982b-4a72-af76-9d7102ca237f",
+  "total_cost_usd": 0.286744,
+  "usage": {
+    "input_tokens": 13953,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 203008,
+    "output_tokens": 4619,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 13953,
+      "outputTokens": 4619,
+      "cacheReadInputTokens": 203008,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.286744,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the workspace rules:\n\n**Files changed**\n- `UavSearch.sysml` (new) — complete model: 3 port definitions, 4 part definitions (Radar, Camera, Processor, Radio) with the specified ports, `part uav` containing searchRadar/eoCamera/processor/radio, and the 3 `connect` statements exactly as specified in items 1–7.\n- `answer.md` (new) — the report (model, requirement-coverage table, validation evidence, open questions).\n\n**Validation status**\n- `./validate UavSearch UavSearch.sysml` → official status **PASS**, return code 0.\n\n**Check results**\n- `\"diagnostics\": []` verbatim — zero errors, zero warnings. Evidence preserved in `validation/20261006T100959871938962/` (model.json, ast-elements.json, stdout/stderr logs). Validator: SysML v2 Pilot 2026-08, kernel 0.62.0.\n\n**Open questions**\n- None. No numeric limits, rates, or budgets were invented (none were required), and no files under `requirements/` or `gold/` were touched.",
+  "ttft_ms": 8366,
+  "type": "result",
+  "duration_ms": 159270,
+  "uuid": "cdfa577f-39c3-44e3-bc73-ca880e8bf2f0",
+  "ttft_stream_ms": 8157,
+  "time_to_request_ms": 48,
+  "first_content_frame_ms": 8158,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

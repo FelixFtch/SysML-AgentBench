@@ -1,0 +1,14 @@
+I've read the single input file, `input/requirements.md`, and it contains a deliberate ambiguity that I cannot resolve on my own:
+
+- One statement says the uplink is **8** (no unit).
+- Another says the uplink is **8 MHz**.
+
+These are only consistent if we assume the bare "8" was meant to be "8 MHz" — but that assumption is exactly what the task forbids: the unit is not settled, and the file instructs that a missing or conflicting number/unit must be asked about, not invented, with no SysML written until it is resolved.
+
+**My question:** What is the uplink bandwidth, with its unit?
+
+1. **8 MHz** — the bare "8" was shorthand, and MHz is the correct unit, or
+2. **8 with some other unit** (e.g. 8 Gbps, 8 Msymbol/s, 8 kHz), or
+3. Some different value entirely.
+
+Once you confirm the value and unit, I can proceed. Until then I have written no SysML and invented no number, per the task's rules.

@@ -1,0 +1,7 @@
+**Restated requirements**
+
+The model defines a single requirement, named `Share`, within the package `RoundTripShare`.
+
+1. **Requirement Share** — The unmanned surface vessel sends camera imagery to the shore.
+
+That is the entire requirement content of the model: one requirement definition whose only statement is that the unmanned surface vessel sends camera imagery to the shore. No performance criteria, frequency, format, or other constraints are specified.

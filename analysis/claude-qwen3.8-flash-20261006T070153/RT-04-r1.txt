@@ -1,0 +1,21 @@
+I read `input/model.sysml` (identical to the model given in the task) and `input/requirements.md`. Here is a restatement of the model's requirements in sentences, with nothing added beyond what the model contains:
+
+## Restated requirements
+
+**Archive (requirement definition):**
+- The shore archive keeps tracks for 30 days on a 50 Mbit/s backhaul. (stated directly in the `Archive` requirement definition's documentation)
+
+**Supporting values in the model:**
+- The package `RoundTripArchive` contains a part `shore` with two attributes:
+  - `backhaulMbps` of type `Real`, with value 50.0;
+  - `archiveDays` of type `Real`, with value 30.0.
+- These attribute values match the numbers in the requirement text (50 Mbit/s backhaul, 30 days of retention).
+
+**Model structure (for completeness):**
+- The package privately imports all members of `ScalarValues` (source of the `Real` type).
+- `Archive` is declared as a requirement *definition* (`requirement def`); the model contains no requirement usage or assertion that binds it to any specific subject — only the type definition with its doc comment.
+
+## Notes on faithfulness
+
+- The model asserts exactly two quantitative facts: 30 days retention and 50 Mbit/s backhaul, both located in the `shore` part and echoed in the `Archive` doc.
+- Everything else (what "tracks" are, why the round-trip context matters, hardware specifics) is not stated in the model, so I have not inferred it, per the "synthetic, not an RTX specification" framing in the task.

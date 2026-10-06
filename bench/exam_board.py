@@ -55,41 +55,36 @@ def _requirements(task_id: str) -> str:
     return _read(_task_dir(task_id) / "input" / "requirements.md") or "No task statement file was found."
 
 
-def _agent_dir(config: str, task_id: str, repeat: int) -> Path | None:
-    found = sorted(path for path in (ROOT / "mvp" / "agent-runs").glob(f"*-{config}-{task_id}") if path.is_dir())
-    if 1 <= repeat <= len(found):
-        return found[repeat - 1]
-    return None
+def _validator_runs(workspace: str | None) -> int:
+    """How many times an agent ran ./validate in its sandbox: each call leaves one folder under validation/."""
+    if not workspace:
+        return 0
+    folder = Path(workspace) / "validation"
+    return sum(1 for path in folder.iterdir() if path.is_dir()) if folder.is_dir() else 0
+
+
+def _response_text(row: dict) -> str:
+    """The candidate's full final reply: response.txt of a direct run, answer.md of an agent run."""
+    folder = row.get("_folder")
+    if folder and (Path(folder) / "response.txt").is_file():
+        return _read(Path(folder) / "response.txt", 40000)
+    workspace = row.get("workspace")
+    if workspace and (Path(workspace) / "answer.md").is_file():
+        return _read(Path(workspace) / "answer.md", 40000)
+    return ""
 
 
 def _model_text(row: dict) -> str:
+    response = _response_text(row)
     run = row.get("engine_run")
-    if run:
+    if row.get("type") in {"GEN", "MOD"} and run:
         model = ROOT / "mvp" / "runs" / run / "model"
-        if model.is_dir():
-            files = sorted(model.glob("*.sysml"))
-            if files:
-                return "\n\n".join(f"# {path.name}\n{_read(path)}" for path in files)
-    workspace = row.get("workspace")
-    if workspace:
-        root = Path(workspace)
-        files = sorted(root.rglob("*.sysml"))
-        answer = root / "answer.md"
-        chunks = []
-        if answer.is_file():
-            chunks.append(_read(answer))
-        chunks.extend(f"# {path.name}\n{_read(path)}" for path in files[:3])
-        if chunks:
-            return "\n\n".join(chunks)
-    text_file = row.get("text_file")
-    if text_file:
-        return _read(Path(text_file))
-    folder = row.get("_folder")
-    if folder:
-        response = Path(folder) / "response.txt"
-        if response.is_file():
-            return _read(response)
-    return "The answer text of this cell is not linked to its score row. The verdict still comes from the saved status."
+        files = sorted(model.glob("*.sysml")) if model.is_dir() else []
+        if files:
+            return "\n\n".join(f"# {path.name}\n{_read(path)}" for path in files[-1:])
+    if response:
+        return response
+    return "The answer text of this cell was not found. The verdict still comes from the saved score row."
 
 
 def _watts(text: str) -> list[tuple[str, float]]:
@@ -100,233 +95,142 @@ def _step(title: str, state: str, detail: str) -> dict:
     return {"title": title, "state": state, "detail": detail}
 
 
+STOP_TEXT = {"pass": "the official parse passed", "cap": "the cap of 20 repairs was reached",
+             "identical x3": "three identical resubmissions in a row; the loop stopped"}
+
+
 def _flow(row: dict, answer: str) -> list[dict]:
     kind = row.get("type")
     status = row.get("status")
     syntax = row.get("sysml_status")
     repairs = int(row.get("repair_rounds") or 0)
+    agent = row.get("cohort_id") in {"opencode", "claude"}
+    config = row.get("configuration")
     calls = row.get("calls") or []
-    call_line = ", ".join(item.get("step", "") for item in calls) or "the score row has no per-step call log"
-    steps = [_step("Issue task", "pass", "Task statement sent. The answer key is not in the prompt.")]
-    if status == "TIMEOUT":
-        steps.append(_step("Write answer", "fail", "No answer before the time limit. This cell does not count as a failure."))
-        steps.append(_step("Official syntax", "skip", "No answer, so no syntax verdict."))
-        steps.append(_step("Repair from errors", "skip", "No repair."))
-        steps.append(_step("Read values", "skip", "No answer."))
-        steps.append(_step("Check against key", "skip", "No answer; counts as neither pass nor fail."))
-        steps.append(_step("Approval gate", "skip", "No answer."))
-        steps.append(_step("Archive", "pass", "Timeout recorded."))
-        return steps
-    if kind in {"GEN", "MOD"}:
-        steps.append(_step("Write answer", "pass" if answer else "fail", f"Recorded calls: {call_line}"))
-        if syntax == "PASS":
-            steps.append(_step("Official syntax", "pass", "The official Pilot passed it. That only means the syntax is valid."))
-        elif syntax == "FAIL":
-            steps.append(_step("Official syntax", "fail", "The official Pilot rejected it. The checklist is not applied."))
+    steps = [_step("Issue task", "pass", "Task statement sent. The answer key is not in the prompt" + (" and not in the agent's sandbox." if agent else "."))]
+    if not agent and config == "P3":
+        steps.append(_step("Retrieve notes", "pass", "MiniLM + FAISS over the official-examples library and the notes; up to 3 seeds plus one hop."))
+    if not agent and config in {"P2", "P3"}:
+        steps.append(_step("Outline", "pass", "A JSON outline of parts, ports and connections, written before the answer."))
+    if agent:
+        usage = row.get("usage") or {}
+        turns = usage.get("turns") or usage.get("calls")
+        runs = _validator_runs(row.get("workspace"))
+        wrote = bool(row.get("workspace")) and (Path(row["workspace"]) / "answer.md").is_file()
+        if wrote:
+            steps.append(_step("Write answer", "pass", f"One {row.get('cohort', '')} session in the sandbox: {turns or '?'} model turns, "
+                                                       f"{runs} run(s) of ./validate."))
+        elif str(row.get("returncode")) == "timeout":
+            steps.append(_step("Write answer", "fail", f"The session hit the 900 s limit before writing answer.md, after {runs} run(s) of ./validate."))
         else:
-            steps.append(_step("Official syntax", "fail", "No official syntax result."))
-        if repairs:
-            end = "The last attempt passed." if syntax == "PASS" else "Still failing after three repairs."
-            steps.append(_step("Repair from errors", "pass" if syntax == "PASS" else "fail", f"{repairs} repair round(s). {end}"))
-        else:
-            steps.append(_step("Repair from errors", "skip", "No repair this time."))
+            steps.append(_step("Write answer", "pass", f"No answer.md; the session's final message was scored. {runs} run(s) of ./validate."))
     else:
-        steps.append(_step("Write answer", "pass", f"This task takes text or JSON, not SysML. Calls: {call_line}"))
-        steps.append(_step("Official syntax", "skip", "Query, ambiguity and round-trip tasks are not parsed by the Pilot."))
+        steps.append(_step("Write answer", "pass" if answer else "fail", "Recorded calls: " + (", ".join(item.get("step", "") for item in calls) or "none")))
+    if kind in {"GEN", "MOD", "ALN"}:
+        tries = len(row.get("attempts") or []) or (1 if syntax else 0)
+        if syntax == "PASS":
+            steps.append(_step("Official syntax", "pass", f"The official Pilot passed it ({tries} parse(s)). That only means the syntax is valid."))
+        elif syntax == "FAIL" and (row.get("engine_run") or row.get("attempts")):
+            steps.append(_step("Official syntax", "fail", "The official Pilot rejected the final version. The checklist is not applied."))
+        else:
+            steps.append(_step("Official syntax", "fail", "No official syntax result: no SysML package was submitted."))
+        if agent:
+            steps.append(_step("Repair from errors", "skip", "The agent repairs inside its own session with ./validate; the grader parses only the final answer."))
+        elif config == "P0":
+            steps.append(_step("Repair from errors", "skip", "P0 writes once and is not repaired."))
+        elif repairs:
+            stop = STOP_TEXT.get(row.get("stop_reason") or "", row.get("stop_reason") or "")
+            first = row.get("first_pass_attempt")
+            detail = f"{repairs} repair(s) in one conversation with every earlier version and error list; " + (f"first passing version: attempt {first}." if first else f"stopped: {stop}.")
+            if row.get("resubmitted_unchanged"):
+                detail += f" {row['resubmitted_unchanged']} resubmission(s) were identical to the one before."
+            steps.append(_step("Repair from errors", "pass" if syntax == "PASS" else "fail", detail))
+        else:
+            steps.append(_step("Repair from errors", "skip", "The first version passed; no repair needed."))
+    else:
+        steps.append(_step("Official syntax", "skip", "Query, ambiguity and round-trip answers are JSON or text, not SysML."))
         steps.append(_step("Repair from errors", "skip", "No syntax repair for this task type."))
     numbers = _watts(answer)
     if numbers:
-        shown = ", ".join(f"{name} {value:g}" for name, value in numbers)
-        steps.append(_step("Read values", "pass", f"Read from the answer: {shown}."))
+        steps.append(_step("Read values", "pass", "Read from the answer: " + ", ".join(f"{name} {value:g}" for name, value in numbers) + "."))
     else:
-        steps.append(_step("Read values", "skip", "No Real wattage values in this answer, or its text is not linked."))
+        steps.append(_step("Read values", "skip", "No Real wattage values in this answer."))
     if status == "PASS":
         note = "Matches the answer key."
         if row.get("engineering_status") == "FAIL":
             note = ("Design verdict FAIL: power 41 + 25 + 12 = 78 W against a 60 W limit, as the answer key expects; every kept value is present and the limit is unchanged. Task verdict PASS."
                     if row.get("task_id") == "MOD-05" else "Design verdict FAIL, as the answer key expects. Task verdict PASS.")
-        if row.get("archived_status") and row["archived_status"] != status:
-            note += f" (Archived verdict {row['archived_status']}; re-scored with the current rule.)"
         steps.append(_step("Check against key", "pass", note))
     elif status == "FAIL":
-        steps.append(_step("Check against key", "fail", "Does not match the answer key."))
+        steps.append(_step("Check against key", "fail", row.get("reason") or row.get("error") or "Does not match the answer key."))
     else:
         steps.append(_step("Check against key", "skip", f"Status is {status}."))
-    steps.append(_step("Approval gate", "skip", "This cell's score file has no separate approval record."))
-    steps.append(_step("Archive", "pass", "The score row is in the analysis files."))
+    steps.append(_step("Approval gate", "skip", "No requirement change was requested in this cell."))
+    steps.append(_step("Archive", "pass", f"Score row in analysis/{row.get('batch', '')}/results.jsonl."))
     return steps
 
 
-def _attach_folder(row: dict) -> dict:
-    config = row.get("configuration")
-    repeat = int(row.get("repeat") or 0)
-    if config in {"P0", "P1", "P2", "P3"} and repeat:
-        folder = _agent_dir(config, row["task_id"], repeat)
-        if folder:
-            row = dict(row)
-            row["_folder"] = str(folder)
-    return row
-
-
 def _cells() -> list[dict]:
-    from bench.board_facts import fill_calls
-    from bench.rescore import apply, load
-    table = load()
-    rows = []
-    flash = _lines(ROOT / "analysis/heldout-20261003T000045/results.jsonl")
-    flash += _lines(ROOT / "analysis/heldout-20261003T001321/results.jsonl")
-    for row in fill_calls(flash):
-        rows.append({**apply("flash", row, table), "cohort": "Main matrix", "cohort_id": "flash"})
-    for row in _lines(ROOT / "analysis/opencode-20261003T001321/results.jsonl"):
-        rows.append({**apply("opencode", row, table), "cohort": "OpenCode", "cohort_id": "opencode", "repeat": 1})
-    for row in _lines(ROOT / "analysis/claude-qwen-20261003T014507/results.jsonl"):
-        path = ROOT / "analysis/claude-qwen-20261003T014507" / f"{row['task_id']}.txt"
-        rows.append({**apply("claude1", row, table), "cohort": "Claude first run", "cohort_id": "claude1", "repeat": 1, "text_file": str(path)})
-    for row in _lines(ROOT / "analysis/claude-qwen-20261003T034819/results.jsonl"):
-        path = ROOT / "analysis/claude-qwen-20261003T034819" / f"{row['task_id']}.txt"
-        rows.append({**apply("claude2", row, table), "cohort": "Claude rerun", "cohort_id": "claude2", "repeat": 1, "text_file": str(path)})
-    for index, row in enumerate(rows):
-        row["id"] = f"{row['cohort_id']}:{row.get('repeat')}:{row['task_id']}:{row.get('configuration')}:{index}"
-    return rows
+    from bench.batches import COHORTS, rows
+    cells = []
+    for cohort in COHORTS:
+        for row in rows(cohort):
+            row["id"] = f"{cohort}:{row.get('repeat')}:{row['task_id']}:{row.get('configuration')}"
+            cells.append(row)
+    return cells
 
 
 CELLS = _cells()
 BY_ID = {row["id"]: row for row in CELLS}
 
 
-def _rescored() -> dict:
-    from bench.rescore import load
-    return load()
-
-
-RESCORED = _rescored()
-
-
-def _jev_lookup() -> dict:
-    path = ROOT / "analysis" / "jev-heldout-20261003.json"
-    if not path.is_file():
-        return {}
-    table = {}
-    for item in json.loads(path.read_text(encoding="utf-8")).get("cells") or []:
-        table[(item["task_id"], item["configuration"], int(item["repeat"]))] = item
-    return table
-
-
-def _qwen_lookup() -> dict:
-    table = {}
-    for item in _lines(ROOT / "analysis" / "validator-all-max.jsonl"):
-        table[(item["task_id"], item["configuration"], int(item["repeat"]))] = item
-    return table
-
-
-JEV = _jev_lookup()
-QWEN = _qwen_lookup()
-
-
-def _run_index() -> dict[str, list[tuple[datetime, Path]]]:
-    index: dict[str, list[tuple[datetime, Path]]] = {}
-    runs = ROOT / "mvp" / "runs"
-    if not runs.is_dir():
-        return index
-    for path in runs.iterdir():
-        result = path / "result.json"
-        if not result.is_file():
-            continue
-        try:
-            data = json.loads(result.read_text(encoding="utf-8"))
-            created = datetime.fromisoformat(data["created_at"])
-        except (ValueError, KeyError, TypeError):
-            continue
-        if data.get("case_name"):
-            index.setdefault(data["case_name"], []).append((created, path))
-    for items in index.values():
-        items.sort()
-    return index
-
-
-RUNS_BY_LABEL = _run_index()
-
-
-def _judges(row: dict) -> tuple[dict | None, dict | None]:
-    if row.get("cohort_id") != "flash":
-        return None, None
-    key = (row["task_id"], row.get("configuration"), int(row.get("repeat") or 0))
-    jev = JEV.get(key)
-    qwen = QWEN.get(key)
-    return (
-        {"p_pass": jev.get("jev_p_pass"), "agree": jev.get("agree"), "false_pass": jev.get("false_pass")} if jev else None,
-        {"verdict": qwen.get("validator_overall"), "agree": qwen.get("agree"), "false_pass": qwen.get("false_pass")} if qwen else None,
-    )
-
-
 def _attempt(path: Path, number: int, previous: str | None) -> dict:
     validation = path / "sysml" / "validation.json"
     data = json.loads(validation.read_text(encoding="utf-8")) if validation.is_file() else {}
     files = sorted((path / "model").glob("*.sysml"))
-    text = _read(files[0], 4000) if files else ""
+    text = _read(files[-1], 4000) if files else ""
     sha = hashlib.sha256(text.encode()).hexdigest()[:12]
     return {
         "attempt": number, "run_id": path.name, "status": data.get("status") or "?",
-        "diagnostics": [{"line": item.get("line"), "message": item.get("message", "")} for item in (data.get("diagnostics") or [])[:6]],
+        "diagnostics": [{"line": item.get("line"), "message": item.get("message", "")} for item in (data.get("diagnostics") or [])],
         "sha": sha, "same_as_previous": previous == sha, "text": text,
     }
 
 
 def _attempt_paths(row: dict) -> list[Path]:
-    """Run directories of every official parse behind one archived cell, oldest first. P1 cells have up to four."""
-    if row.get("type") not in {"GEN", "MOD"}:
+    """Run directories of every official parse behind one cell, oldest first: every attempt of a direct cell,
+    the grader's single parse of an agent's final answer."""
+    if row.get("type") not in {"GEN", "MOD", "ALN"}:
         return []
-    config, task = row.get("configuration"), row["task_id"]
-    paths: list[Path] = []
-    if row.get("cohort_id") == "flash":
-        folders = sorted(path for path in AGENT_RUNS.glob(f"*-{config}-{task}") if path.is_dir())
-        repeat = int(row.get("repeat") or 0)
-        if 1 <= repeat <= len(folders):
-            start = datetime.strptime(folders[repeat - 1].name[:15], "%Y%m%dT%H%M%S").replace(tzinfo=timezone.utc)
-            end = (datetime.strptime(folders[repeat].name[:15], "%Y%m%dT%H%M%S").replace(tzinfo=timezone.utc)
-                   if repeat < len(folders) else None)
-            paths = [path for created, path in RUNS_BY_LABEL.get(f"{config}-{task}", [])
-                     if created >= start and (end is None or created < end)]
-    if not paths and row.get("engine_run"):
-        candidate = ROOT / "mvp" / "runs" / row["engine_run"]
-        if candidate.is_dir():
-            paths = [candidate]
-    if not paths:
-        item = RESCORED.get((row.get("cohort_id"), task, config, int(row.get("repeat") or 1))) or {}
-        candidate = ROOT / "mvp" / "runs" / item["run"] if item.get("run") else None
-        if candidate and candidate.is_dir():
-            paths = [candidate]
-    return paths
+    ids = [item.get("run_id") for item in row.get("attempts") or [] if item.get("run_id")] or ([row["engine_run"]] if row.get("engine_run") else [])
+    return [ROOT / "mvp" / "runs" / run for run in ids if (ROOT / "mvp" / "runs" / run).is_dir()]
 
 
 VERDICT_KEYS = ("status", "sysml_status", "engineering_status", "must_exist", "must_connect", "must_preserve",
                 "checks", "checks_match", "invented_numbers", "reason")
 
 
-def _verdict(row: dict, answer: str) -> dict:
-    """What the scorer found in this cell's final answer: missing names and links, changed values, answer fields."""
+def _verdict(row: dict, answer: str, response: str) -> dict:
+    """What the scorer found in this cell's final answer: missing names and links, changed values, mappings, answer fields."""
+    from bench.score_alignment import score_alignment
     from bench.score_answer import score_answer
     from bench.score_task import score_run
     task_dir = HELD / row["task_id"]
     if not (task_dir / "case.yaml").is_file():
         return {}
     try:
-        if row.get("type") in {"GEN", "MOD"}:
+        if row.get("type") in {"GEN", "MOD", "ALN"}:
             paths = _attempt_paths(row)
+            if row.get("type") == "ALN":
+                return score_alignment(paths[-1] if paths else None, task_dir / "gold" / "assertions.yaml", response or answer,
+                                       sysml_status=row.get("sysml_status"))
             if not paths:
-                return {"reason": "The official run folder was not found."}
+                return {"reason": "No official run: the answer had no SysML package."}
             scored = score_run(paths[-1], task_dir / "gold" / "assertions.yaml")
             return {key: scored[key] for key in VERDICT_KEYS if key in scored}
-        return score_answer(task_dir, answer or "")
+        return score_answer(task_dir, response or answer or "")
     except Exception as exc:  # a broken saved answer must not break the page
         return {"reason": f"{type(exc).__name__}: {exc}"}
-
-
-def _repair_rounds(row: dict) -> int | None:
-    """Score rows from the first batch did not record repair rounds; the P1 parse count still shows them."""
-    if row.get("repair_rounds") is not None or row.get("cohort_id") != "flash" or row.get("configuration") != "P1":
-        return row.get("repair_rounds")
-    return max(len(_attempt_paths(row)) - 1, 0)
 
 
 def _attempts(row: dict) -> list[dict]:
@@ -339,57 +243,44 @@ def _attempts(row: dict) -> list[dict]:
 
 
 def _public(row: dict) -> dict:
-    jev, qwen = _judges(row)
     return {
-        "id": row["id"],
-        "cohort": row["cohort"],
-        "cohort_id": row.get("cohort_id"),
-        "task_id": row["task_id"],
-        "type": row.get("type"),
-        "configuration": row.get("configuration"),
-        "repeat": row.get("repeat"),
-        "status": row.get("status"),
-        "archived_status": row.get("archived_status"),
-        "engineering_status": row.get("engineering_status"),
-        "sysml_status": row.get("sysml_status"),
-        "repair_rounds": _repair_rounds(row),
-        "jev": {"agree": jev["agree"], "false_pass": jev["false_pass"]} if jev else None,
-        "qwen": {"agree": qwen["agree"], "false_pass": qwen["false_pass"]} if qwen else None,
+        "id": row["id"], "cohort": row["cohort"], "cohort_id": row.get("cohort_id"), "model": row.get("model"),
+        "task_id": row["task_id"], "type": row.get("type"), "configuration": row.get("configuration"), "repeat": row.get("repeat"),
+        "status": row.get("status"), "engineering_status": row.get("engineering_status"), "sysml_status": row.get("sysml_status"),
+        "repair_rounds": row.get("repair_rounds"), "first_pass_attempt": row.get("first_pass_attempt"),
+        "stop_reason": row.get("stop_reason"), "resubmitted_unchanged": row.get("resubmitted_unchanged"),
     }
 
 
 def _detail(row: dict) -> dict:
-    linked = _attach_folder(row)
-    if linked.get("repair_rounds") is None and _repair_rounds(row):
-        linked = {**linked, "repair_rounds": _repair_rounds(row)}
-    answer = _model_text(linked)
-    outline = ""
-    retrieved = []
-    folder = linked.get("_folder")
+    from bench.batches import usage_of_row
+    from bench.board_facts import _usd
+    response = _response_text(row)
+    answer = _model_text(row)
+    outline, retrieved = "", []
+    folder = row.get("_folder")
     if folder:
         outline = _read(Path(folder) / "outline.txt", 4000)
         notes = Path(folder) / "retrieved.json"
         if notes.is_file():
             retrieved = json.loads(notes.read_text(encoding="utf-8"))
-    jev, qwen = _judges(row)
+    usage = usage_of_row(row)
     calls = row.get("calls") or []
     return {
         **_public(row),
-        "engineering_status": row.get("engineering_status"),
         "requirements": _requirements(row["task_id"]),
         "answer": answer,
         "gold": _gold(row["task_id"]),
         "outline": outline,
         "retrieved": retrieved,
         "attempts": _attempts(row),
-        "tokens": sum((call.get("usage") or {}).get("total_tokens") or 0 for call in calls),
-        "usage": {"input": sum((call.get("usage") or {}).get("prompt_tokens") or 0 for call in calls),
-                  "output": sum((call.get("usage") or {}).get("completion_tokens") or 0 for call in calls)},
+        "tokens": usage["input"] + usage["output"],
+        "usage": {"input": usage["input"], "cached": usage["cached"], "output": usage["output"]},
+        "usd": round(_usd(row.get("model") or "qwen3.8-flash", usage), 6),
         "calls": [call.get("step") for call in calls],
-        "steps": _flow(linked, answer),
-        "verdict": _verdict(row, answer),
-        "jev": jev,
-        "qwen": qwen,
+        "validator_runs": _validator_runs(row.get("workspace")),
+        "steps": _flow(row, answer),
+        "verdict": _verdict(row, answer, response),
     }
 
 
@@ -878,6 +769,11 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main() -> None:
+    from bench.vector_index import check
+    try:
+        check()
+    except (ImportError, OSError, RuntimeError) as exc:
+        raise SystemExit(f"Not starting: P3 and Part 2 retrieval need the pinned MiniLM + FAISS stack. {exc}")
     server = ThreadingHTTPServer(("127.0.0.1", 8770), Handler)
     print("http://127.0.0.1:8770/", flush=True)
     server.serve_forever()

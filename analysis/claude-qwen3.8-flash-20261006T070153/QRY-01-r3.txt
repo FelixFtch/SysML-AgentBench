@@ -1,0 +1,5 @@
+I verified against `input/model.sysml`: the four platform part usages are declared at package level (lines 61–64) — `usv : UnmannedSurfaceVessel`, `uav : FixedWingUav`, `commandShip : CommandShip`, `shore : ShoreStation` — distinct from the nested component usages (eoCamera, processor, fusion, etc.) inside the part definitions.
+
+```json
+{"platforms": ["usv", "uav", "commandShip", "shore"]}
+```

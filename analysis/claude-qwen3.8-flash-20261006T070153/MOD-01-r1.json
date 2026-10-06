@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 6303,
+  "stop_reason": "end_turn",
+  "session_id": "7add0a01-06b8-4908-a295-9d698d2a0a09",
+  "total_cost_usd": 0.032435,
+  "usage": {
+    "input_tokens": 2921,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 15360,
+    "output_tokens": 406,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 2921,
+      "outputTokens": 406,
+      "cacheReadInputTokens": 15360,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.032435,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 1,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage UsvPlain {\n    private import ScalarValues::*;\n    port def ImageryPort;\n    port def TrackPort;\n    port def LinkPort;\n    part def Camera { port imagery : ImageryPort; }\n    part def AisReceiver { port tracks : TrackPort; }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n        port uplink : LinkPort;\n    }\n    part def Radio { port fromProcessor : LinkPort; port toShore : LinkPort; }\n    part usv {\n        part eoCamera : Camera;\n        part irCamera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 60.0;\n    }\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.irCamera.imagery to usv.processor.imageryIn;\n    connect usv.ais.tracks to usv.processor.trackIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n}\n```",
+  "ttft_ms": 4097,
+  "type": "result",
+  "duration_ms": 6368,
+  "uuid": "b49086ad-bcac-4c9b-a4b1-669e8a7c4e23",
+  "ttft_stream_ms": 2560,
+  "time_to_request_ms": 76,
+  "first_content_frame_ms": 2560,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

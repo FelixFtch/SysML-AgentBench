@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 499351,
+  "stop_reason": "end_turn",
+  "session_id": "30442f84-2db5-42e7-9c91-010efb851e95",
+  "total_cost_usd": 0.78472,
+  "usage": {
+    "input_tokens": 24968,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 380160,
+    "output_tokens": 18792,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 24968,
+      "outputTokens": 18792,
+      "cacheReadInputTokens": 380160,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.78472,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 20,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "The dot-separated form fails the official validator (linking errors, e.g. `Couldn't resolve reference to Feature 'UavSensorSpec'.`), so I kept the `::` qualified-name syntax, which is the actual SysML v2 textual notation and validates PASS. `answer.md` is written with exactly one fenced `sysml` block and one fenced `json` block.\n\n**Files changed**\n- `AlignRadar.sysml` (new) — the alignment package\n- `answer.md` (new) — required deliverable (sysml block + json block only)\n- Baseline files under `input/` untouched.\n\n**Validation status**\n- `./validate AlignRadar AlignRadar.sysml input/baseline/UavSensorSpec.sysml input/baseline/RadarVendor.sysml` → **status: PASS**, 0 diagnostics, 0 warnings (Pilot 0.62).\n- Post-link inspection of the emitted model confirms every alias resolves to the intended supplier element (`RadarVendor::RadarModule_def`, `RadarVendor::RadarModule_def::maxRangeKm`, `RadarVendor::GimbalCamera_def`) and both allocations link their source/target ends.\n\n**Check results / mapping decisions**\n- Aliased: `SearchRadar`↔`RadarModule_def`, `rangeKm`↔`maxRangeKm`, `Camera`↔`GimbalCamera_def`.\n- Allocated: `uav::searchRadar`↔`payload::radar`, `uav::eoCamera`↔`payload::gimbal`.\n- Left unmatched: `UavSensorSpec::uav` and `RadarVendor::payload` (aircraft vs. payload mount — different meaning, not forced), `RadarVendor::RadarModule_def::massKg` (no spec counterpart).\n\n**Open questions**\n1. Requirement 3 says \"fully qualified usage paths with dots\" (`UavSensorSpec.uav.searchRadar`), but the official Pilot 0.62 grammar only accepts `::`; the dot form produced the 12 linking errors quoted above. I used `::` to make the model valid — no stated limit was changed. If the dot notation is truly required, the requirement must be relaxed and you should confirm.\n2. I chose to alias the spec attribute `rangeKm` to `maxRangeKm` (same physical quantity, radar range in km). If you consider the naming difference significant, that line can be dropped to the unmatched list.",
+  "ttft_ms": 17273,
+  "type": "result",
+  "duration_ms": 507381,
+  "uuid": "d58a612d-2589-41c1-a76a-abee3e3095f1",
+  "ttft_stream_ms": 16057,
+  "time_to_request_ms": 80,
+  "first_content_frame_ms": 16057,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

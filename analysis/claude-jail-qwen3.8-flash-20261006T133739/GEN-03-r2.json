@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 281782,
+  "stop_reason": "end_turn",
+  "session_id": "eb09c36d-e4da-4460-93df-e2768b5c5d9c",
+  "total_cost_usd": 0.540412,
+  "usage": {
+    "input_tokens": 23480,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 442624,
+    "output_tokens": 8068,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 23480,
+      "outputTokens": 8068,
+      "cacheReadInputTokens": 442624,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.540412,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 21,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the task rules:\n\n**Files changed**\n- `FusionNode.sysml` — new SysML v2 model (the only model file)\n- `answer.md` — new, with the full report\n\n**Validation status**\n`./validate FusionNode FusionNode.sysml` → **PASS**, `diagnostics: []`, `warning_count: 0`, `return_code: 0` (official Pilot 0.62, Xtext/EMF adapter; evidence in `validation/20261006T101146454695405/`).\n\n**Check results**\n- No failing checks — nothing to report verbatim.\n- I cross-checked the official model export: all five requirements are present exactly — `PortDefinition LinkPort`; `PartDefinition Processor` with `PortUsage trackIn` typed by `LinkPort`; `PartUsage commandShip` with `PortUsage fromUsv`/`fromUav` typed by `LinkPort`; nested `PartUsage fusion` typed by `Processor` (owner `commandShip`); `AttributeUsage fusionLatencyS` typed by `Real` with `LiteralRational value: 2.0`. The only number written is the required `2.0`.\n- `stderr.log` contains only 4 lines of log4j tooling warnings from the Pilot implementation (not model diagnostics).\n\n**Open questions**\nNone — the task stated every required value; nothing was invented. One design note: `fusionLatencyS` and `fusion` are nested inside `commandShip` as \"on\"/\"nested\" usages; `private import ScalarValues::*;` was added solely to make `Real` resolve and adds no numbers.",
+  "ttft_ms": 7567,
+  "type": "result",
+  "duration_ms": 286665,
+  "uuid": "13399f85-c7cb-4c40-9fff-3434cb68e75a",
+  "ttft_stream_ms": 7225,
+  "time_to_request_ms": 56,
+  "first_content_frame_ms": 7225,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

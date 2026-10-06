@@ -1,0 +1,94 @@
+{
+  "duration_api_ms": 60292,
+  "stop_reason": "end_turn",
+  "session_id": "8598f0de-a79d-4baf-8b34-e2f0b36accdb",
+  "total_cost_usd": 0.11809,
+  "usage": {
+    "input_tokens": 3973,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 51200,
+    "output_tokens": 2905,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 3973,
+      "outputTokens": 2905,
+      "cacheReadInputTokens": 51200,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.11809,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_8f7ca1de3d4c4aae969d886e",
+      "tool_input": {
+        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T072722-P-CODE-2-GEN-01/workspace && find /data/robotics/RTRC/mvp -maxdepth 2 -name \"*.md\" | head -20",
+        "description": "List workspace contents and find docs"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 3,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage UsvLink {\n\n    port def ImageryPort {\n    }\n\n    port def LinkPort {\n    }\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port uplink : LinkPort;\n    }\n\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def CommandShip {\n        port fromUsv : LinkPort;\n    }\n\n    part usv {\n        part camera : Camera;\n        part processor : Processor;\n        part radio : Radio;\n    }\n\n    part commandShip : CommandShip;\n\n    connect usv.camera.imagery to usv.processor.imageryIn;\n\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n\n    connect usv.radio.toShore to commandShip.fromUsv;\n}\n```",
+  "ttft_ms": 15436,
+  "type": "result",
+  "duration_ms": 60431,
+  "uuid": "236aac8c-f9bb-4e9d-9cb8-8e7f9c7b22ea",
+  "ttft_stream_ms": 5170,
+  "time_to_request_ms": 88,
+  "first_content_frame_ms": 5170,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

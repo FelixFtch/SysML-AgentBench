@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 39958,
+  "stop_reason": "end_turn",
+  "session_id": "df573ff0-7300-4b04-abc9-f3ddd267d9c1",
+  "total_cost_usd": 0.06817,
+  "usage": {
+    "input_tokens": 3879,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 51200,
+    "output_tokens": 927,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 3879,
+      "outputTokens": 927,
+      "cacheReadInputTokens": 51200,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.06817,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 3,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage RadioHealth {\n    private import ScalarValues::*;\n    port def LinkPort;\n    part usv {\n        attribute uplinkMbps : Real = 8.0;\n        part radio { port fromProcessor : LinkPort; port health : LinkPort; }\n    }\n}\n```",
+  "ttft_ms": 5653,
+  "type": "result",
+  "duration_ms": 40091,
+  "uuid": "4145a10c-1017-4352-82a0-7d1049fdd801",
+  "ttft_stream_ms": 2714,
+  "time_to_request_ms": 89,
+  "first_content_frame_ms": 2714,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

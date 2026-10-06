@@ -1,0 +1,16 @@
+I've read the requirements (`input/requirements.md`), and as stated there, the check can't be performed as written — so per the task rules I'm asking rather than inventing a value or producing SysML.
+
+**What's given:**
+- Track retention: 30 days
+- Shore storage: 128 GB
+
+**What's missing:**
+- The **data rate** (or, equivalently, a track size × track frequency budget). Without it, "128 GB for 30 days" cannot be verified — there is no generation number to compare the storage against.
+
+**Questions:**
+
+1. What is the expected data rate at which tracks are written to shore storage, and in what units (e.g., tracks/s, MB/day, kbit/s sustained)? Alternatively, what is the average size per track and the expected track rate?
+2. Is 128 GB decimal (128 × 10⁹ bytes) or binary (128 GiB)? This shifts the margin by ~7%, which may matter for a pass/fail check.
+3. Is storage assumed to be pure accumulation over 30 days, or is there a rollover/deletion policy (i.e., does "keeps tracks for 30 days" mean oldest data is overwritten)? If it rolls over, the check is rate × 30 days ≤ 128 GB; if not, a longer mission horizon would need a different bound.
+
+For reference, the algebra the numbers already constrain: 128 GB over 30 days implies a **maximum sustainable rate of ≈ 49.4 kB/s** (≈ 0.38 Mbit/s, decimal GB; ≈ 53 kB/s if GiB). Any data rate you provide above that threshold fails the check; below it passes. I just need the actual rate to complete it.

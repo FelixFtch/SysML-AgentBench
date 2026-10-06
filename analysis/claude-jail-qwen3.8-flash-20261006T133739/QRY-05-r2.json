@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 84941,
+  "stop_reason": "end_turn",
+  "session_id": "300831d0-116d-4f1c-8998-e8782c2b9163",
+  "total_cost_usd": 0.16791,
+  "usage": {
+    "input_tokens": 11588,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 138240,
+    "output_tokens": 1634,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 11588,
+      "outputTokens": 1634,
+      "cacheReadInputTokens": 138240,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.16791,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 9,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Answer read from `input/model.sysml:36-38` in part definition `UnmannedSurfaceVessel`:\n\n```json\n{\"powerLimitW\": 60.0, \"uplinkMbps\": 8.0, \"storageGB\": 128.0}\n```\n\nFollowing the task rules:\n\n- **Files changed:** only `answer.md` (new). No model files were edited — this was a read-only query.\n- **Validation status:** `./validate MaritimeISR input/model.sysml` → **PASS** (official Pilot 0.62 validator, return code 0).\n- **Check results:** zero diagnostics, zero warnings — nothing failing to report verbatim. (Note the `powerLimitW = 60.0` matches the `PowerLimitUnchanged` requirement; it was left untouched.)\n- **Open questions:** none — all three values were present in the model.",
+  "ttft_ms": 6494,
+  "type": "result",
+  "duration_ms": 92986,
+  "uuid": "c83e68ab-3ffe-4151-bc13-9e965939f663",
+  "ttft_stream_ms": 5721,
+  "time_to_request_ms": 45,
+  "first_content_frame_ms": 5721,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

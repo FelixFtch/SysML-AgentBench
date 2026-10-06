@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 16577,
+  "stop_reason": "end_turn",
+  "session_id": "192b0a8c-3bdf-4132-ae0e-e32df05b1268",
+  "total_cost_usd": 0.033195,
+  "usage": {
+    "input_tokens": 2713,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 15360,
+    "output_tokens": 478,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 2713,
+      "outputTokens": 478,
+      "cacheReadInputTokens": 15360,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.033195,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 1,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**Restated requirements**\n\n- There is a package named `RoundTripFusion`, which privately imports `ScalarValues`.\n- The package defines a part usages named `commandShip`.\n- `commandShip` has two ports: `fromUsv` and `fromUav`.\n- `commandShip` has an attribute `fusionLatencyS` of type `Real` with value `2.0`.\n- The package defines a requirement definition `Fusion`, whose documentation states: fusion latency is 2 seconds and the command ship accepts two uplinks.",
+  "ttft_ms": 15305,
+  "type": "result",
+  "duration_ms": 16659,
+  "uuid": "3dfedaf3-4d1f-4aad-bf29-385ebe48b313",
+  "ttft_stream_ms": 9612,
+  "time_to_request_ms": 83,
+  "first_content_frame_ms": 9612,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

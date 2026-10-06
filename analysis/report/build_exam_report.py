@@ -1,16 +1,17 @@
-"""Build a continuous benchmark report from saved score files.
+"""Build the exam report from the saved results of the frozen 2026-10-06 batches. No model is called.
 
-Cohorts stay separate. The second model does not change a tool score.
-GEN/MOD statuses come from analysis/rescore-20261003.jsonl (current scorer); the archived verdict is shown beside them.
+Four candidates, kept apart: direct qwen3.8-flash and direct qwen3.8-max (27 tasks × P0-P3 × 3), OpenCode and
+Claude Code on qwen3.8-flash in the sandbox (27 × 3). Numbers come from bench.board_facts; failure classes from
+analysis/failure-classes-20261006.jsonl. Output: analysis/report/exam-20261006/ (index.html, figures, CSV).
 """
 from __future__ import annotations
 
 import csv
+import html
 import json
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
-
-import sys
 
 import matplotlib.pyplot as plt
 
@@ -18,174 +19,131 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from bench.batches import COHORTS, TYPES, rows  # noqa: E402
 from bench.board_facts import facts  # noqa: E402
-from bench.rescore import RULE_EN, apply, load as load_rescore  # noqa: E402
-OUT = ROOT / "analysis" / "report" / "exam-20261003"
-TASKS = [
-    "GEN-01", "GEN-02", "GEN-03", "GEN-04", "GEN-05",
-    "MOD-01", "MOD-02", "MOD-03", "MOD-04", "MOD-05",
-    "QRY-01", "QRY-02", "QRY-03", "QRY-04", "QRY-05",
-    "AMB-01", "AMB-02", "AMB-03", "AMB-04",
-    "RT-01", "RT-02", "RT-03", "RT-04", "RT-05",
-]
-CONFIGS = ["P0", "P1", "P2", "P3"]
+
+OUT = ROOT / "analysis" / "report" / "exam-20261006"
+ORDER = ["flash", "max", "opencode", "claude"]
+COLORS = {"flash": "#0F4D92", "max": "#5B8DB8", "opencode": "#2F9C7D", "claude": "#C9792B"}
+NAMES = {"P0": "P0 one-shot", "P1": "P1 repair loop (≤20)", "P2": "P2 outline first + repair", "P3": "P3 retrieval + outline + repair"}
 
 
-def fail_counts_from(rows: list[dict]) -> Counter:
-    return Counter(row["class"] for row in rows)
+def e(value) -> str:
+    return html.escape(str(value))
 
 
-def load(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+def pct(a: int, b: int) -> str:
+    return f"{100 * a / b:.1f}%" if b else "—"
 
 
-def write_csv(path: Path, rows: list[dict]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
-        writer.writeheader()
-        writer.writerows(rows)
-
-
-def figure(current: dict, archived: dict) -> None:
-    names = CONFIGS
-    now = [100 * current[name] / 72 for name in names]
-    before = [100 * archived[name] / 72 for name in names]
-    fig, ax = plt.subplots(figsize=(7.2, 4.2))
-    x = range(len(names))
-    width = 0.36
-    ax.bar([i - width / 2 for i in x], now, width, label="Pass, current scorer", color="#0F4D92")
-    ax.bar([i + width / 2 for i in x], before, width, label="Pass, archived scorer", color="#9BB4C4")
-    ax.set_xticks(list(x), names)
+def figures(C: dict) -> None:
+    fig_dir = OUT / "figures"
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    fig, ax = plt.subplots(figsize=(8.2, 4.2))
+    width = 0.2
+    for index, key in enumerate(ORDER):
+        values = [100 * C[key]["by_type"][kind]["pass"] / C[key]["by_type"][kind]["n"] if C[key]["by_type"][kind]["n"] else 0 for kind in TYPES]
+        ax.bar([i + (index - 1.5) * width for i in range(len(TYPES))], values, width, label=C[key]["label"], color=COLORS[key])
+    ax.set_xticks(range(len(TYPES)), TYPES)
     ax.set_ylim(0, 100)
-    ax.set_ylabel("Percent of 72 cells")
-    ax.legend()
+    ax.set_ylabel("Pass rate (%)")
+    ax.legend(fontsize=8, ncol=4, loc="lower center", bbox_to_anchor=(0.5, 1.01), frameon=False)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     fig.tight_layout()
-    fig_dir = OUT / "figures"
-    fig_dir.mkdir(parents=True, exist_ok=True)
-    fig.savefig(fig_dir / "flash_config.png", dpi=160)
-    fig.savefig(fig_dir / "flash_config.pdf")
+    fig.savefig(fig_dir / "by_type.png", dpi=160)
+    fig.savefig(fig_dir / "by_type.pdf")
+    plt.close(fig)
+    fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.6), sharey=True)
+    for ax, key in zip(axes, ("flash", "max")):
+        configs = C[key]["configs"]
+        x = range(len(configs))
+        ax.bar([i - 0.18 for i in x], [c["syntax_first"] for c in configs], 0.36, label="parses on the first attempt", color="#9BB4C4")
+        ax.bar([i + 0.18 for i in x], [c["syntax_final"] for c in configs], 0.36, label="parses after the repair loop", color=COLORS[key])
+        ax.set_xticks(list(x), [c["id"] for c in configs])
+        ax.set_title(C[key]["label"], fontsize=10)
+        ax.set_ylim(0, 40)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+    axes[0].set_ylabel("SysML answers out of 39")
+    axes[0].legend(fontsize=8, loc="lower left")
+    fig.tight_layout()
+    fig.savefig(fig_dir / "repair.png", dpi=160)
+    fig.savefig(fig_dir / "repair.pdf")
     plt.close(fig)
 
 
+def write_csv(path: Path, table: list[dict]) -> None:
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(table[0]))
+        writer.writeheader()
+        writer.writerows(table)
+
+
 def main() -> None:
-    table = load_rescore()
-    archived = load(ROOT / "analysis/heldout-20261003T000045/results.jsonl")
-    archived += load(ROOT / "analysis/heldout-20261003T001321/results.jsonl")
-    flash = [apply("flash", row, table) for row in archived]
-    opencode = [apply("opencode", row, table) for row in load(ROOT / "analysis/opencode-20261003T001321/results.jsonl")]
-    claude_first = [apply("claude1", row, table) for row in load(ROOT / "analysis/claude-qwen-20261003T014507/results.jsonl")]
-    claude_retry = [apply("claude2", row, table) for row in load(ROOT / "analysis/claude-qwen-20261003T034819/results.jsonl")]
-    judge = load(ROOT / "analysis/validator-all-max.jsonl")
-    ablation = json.loads((ROOT / "analysis/ablation.json").read_text(encoding="utf-8"))
-    now_pass = {(row["task_id"], row["configuration"], row["repeat"]) for row in flash if row["status"] == "PASS"}
-    failures = [row for row in load(ROOT / "analysis/failure-classes.jsonl")
-                if (row["task_id"], row["configuration"], row["repeat"]) not in now_pass]
-
-    by_cfg = {name: Counter(row["status"] for row in flash if row["configuration"] == name) for name in CONFIGS}
-    archived_cfg = {name: Counter(row["status"] for row in archived if row["configuration"] == name) for name in CONFIGS}
-    totals = Counter(row["status"] for row in flash)
-    archived_totals = Counter(row["status"] for row in archived)
-    by_type = defaultdict(Counter)
-    by_task_cfg = defaultdict(Counter)
-    for row in flash:
-        by_type[row["type"]][row["status"]] += 1
-        by_task_cfg[(row["task_id"], row["configuration"])][row["status"]] += 1
-
-    cfg_rows = []
-    for name in CONFIGS:
-        item = ablation[name]
-        cfg_rows.append({
-            "configuration": name,
-            "cells": item["cells"],
-            "pass": by_cfg[name]["PASS"],
-            "fail": item["cells"] - by_cfg[name]["PASS"],
-            "archived_pass": archived_cfg[name]["PASS"],
-            "tokens": item["tokens"],
-            "pass_per_1k_tokens": round(1000 * by_cfg[name]["PASS"] / item["tokens"], 3),
-        })
-    type_rows = []
-    for name in ["GEN", "MOD", "QRY", "AMB", "RT"]:
-        counts = by_type[name]
-        type_rows.append({
-            "type": name,
-            "cells": sum(counts.values()),
-            "pass": counts["PASS"],
-            "fail": counts["FAIL"],
-        })
-    task_rows = []
-    for task in TASKS:
-        record = {"task_id": task}
-        for name in CONFIGS:
-            counts = by_task_cfg[(task, name)]
-            record[name] = f"{counts['PASS']}/3"
-        record["pass_of_12"] = sum(by_task_cfg[(task, name)]["PASS"] for name in CONFIGS)
-        task_rows.append(record)
-
-    claude = {row["task_id"]: row for row in claude_first}
-    claude.update({row["task_id"]: row for row in claude_retry if claude[row["task_id"]]["status"] != "PASS"})
-    first_fail = [row["task_id"] for row in claude_first if row["status"] == "FAIL"]
-    first_timeout = [row["task_id"] for row in claude_first if row["status"] == "TIMEOUT"]
-    claude_pass = sum(row["status"] == "PASS" for row in claude.values())
-    oc_pass = sum(row["status"] == "PASS" for row in opencode)
-    best = max(cfg_rows, key=lambda row: row["pass_per_1k_tokens"])
-    syntax_fail = sum(count for name, count in fail_counts_from(failures).items() if name.startswith("syntax"))
-    parsed = sum(1 for item in table.values() if item.get("sysml_status") == "PASS")
-    unparsed = len(table) - parsed
-    assert not any((item.get("must_preserve") or {}).get("missing") for item in table.values())
-    fail_counts = fail_counts_from(failures)
-
     OUT.mkdir(parents=True, exist_ok=True)
-    write_csv(OUT / "tables/flash_by_config.csv", cfg_rows)
-    write_csv(OUT / "tables/flash_by_type.csv", type_rows)
-    write_csv(OUT / "tables/flash_by_task.csv", task_rows)
-    figure({row["configuration"]: row["pass"] for row in cfg_rows}, {row["configuration"]: row["archived_pass"] for row in cfg_rows})
+    f = facts()
+    C = f["cohorts"]
+    figures(C)
+    per_task = defaultdict(lambda: {key: [0, 0] for key in ORDER})
+    for key in ORDER:
+        for row in rows(key):
+            slot = per_task[row["task_id"]][key]
+            slot[0] += row["status"] == "PASS"
+            slot[1] += 1
+    tasks = sorted(per_task, key=lambda task: (TYPES.index(task.split("-")[0]), task))
+    write_csv(OUT / "per_task.csv", [{"task_id": task, **{f"{key}_pass": per_task[task][key][0] for key in ORDER},
+                                      **{f"{key}_n": per_task[task][key][1] for key in ORDER}} for task in tasks])
+    failures = [json.loads(line) for line in (ROOT / "analysis" / "failure-classes-20261006.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+    fail_counts = {key: Counter(item["class"] for item in failures if item["cohort"] == key) for key in ORDER}
+    all_classes = [name for name, _count in Counter(item["class"] for item in failures).most_common()]
+    flash, mx, oc, cl = (C[key] for key in ORDER)
+    fcfg = {c["id"]: c for c in flash["configs"]}
+    mcfg = {c["id"]: c for c in mx["configs"]}
+    weakest = min((kind for kind in TYPES if flash["by_type"][kind]["n"]), key=lambda kind: flash["by_type"][kind]["pass"] / flash["by_type"][kind]["n"])
+    seb, pure = f["side"]["sysengbench"], f["side"]["pure"]
+    any_seb = next(iter(seb.values()), {})
+    costs = f["costs"]
+    item_of = {item["id"]: item for item in costs["items"]}
 
-    def cells(counter: Counter) -> str:
-        return f"{counter['PASS']} pass, {counter['FAIL']} fail"
+    def agent(c: dict) -> str:
+        return f"{c['pass']}/{c['n']}" + ("" if c["n"] == c["expected"] else f" (of {c['expected']} runs; still running when this page was built)")
 
-    task_body = "\n".join(
-        "<tr><td>{task_id}</td><td>{P0}</td><td>{P1}</td><td>{P2}</td><td>{P3}</td><td>{pass_of_12}/12</td></tr>".format(**row)
-        for row in task_rows
-    )
-    fail_body = "\n".join(
-        f"<tr><td>{name}</td><td>{count}</td></tr>" for name, count in fail_counts.most_common()
-    )
-    names = {"P0": "P0 one-shot", "P1": "P1 repair from errors, up to 3 times", "P2": "P2 outline first", "P3": "P3 outline plus keyword notes"}
-    cfg_body = "\n".join(
-        f"<tr><td>{names[row['configuration']]}</td><td>{row['pass']}</td><td>{row['archived_pass']}</td><td>{row['tokens']}</td><td>{row['pass_per_1k_tokens']}</td></tr>"
-        for row in cfg_rows
-    )
-    labels = {"GEN": "GEN generate", "MOD": "MOD modify", "QRY": "QRY query", "AMB": "AMB ambiguous", "RT": "RT round trip"}
-    type_body = "\n".join(
-        f"<tr><td>{labels[row['type']]}</td><td>{row['cells']}</td><td>{row['pass']}</td><td>{row['fail']}</td></tr>" for row in type_rows
-    )
-    oc_fail = [row for row in opencode if row["status"] != "PASS"]
-    oc_lines = "; ".join(
-        f"{row['task_id']} (syntax {row.get('sysml_status') or 'no package'}, engineering {row.get('engineering_status') or 'checklist not reached'})"
-        for row in oc_fail
-    )
-    board = facts()
-    jev = board["jev"]
-    costs = board["costs"]
-    prices = costs["prices"]
-    price_line = "; ".join(
-        f"{name} input ${p['input']}, cached ${p['cache']}, output ${p['output']} (international ${p['intl']['input']} / ${p['intl']['output']})"
-        if p.get("intl") else f"{name} input ${p['input']}, output ${p['output']}"
-        for name, p in prices["models"].items()
-    )
-    cost_body = "\n".join(
-        f"<tr><td>{item['group']}</td><td>{item['label']}</td><td>{item['model']}</td><td>{item['input']:,}</td>"
-        f"<td>{item.get('cached') or 0:,}</td><td>{item['output']:,}</td><td>${item['usd']:.4f}</td></tr>"
-        for item in costs["items"]
-    )
-    no_question = fail_counts.get("no-question", 0)
-    html = f"""<!doctype html>
+    type_rows = "\n".join(f"<tr><td>{kind}</td>" + "".join(
+        f"<td>{C[key]['by_type'][kind]['pass']}/{C[key]['by_type'][kind]['n']}</td>" if C[key]["by_type"][kind]["n"] else "<td>—</td>" for key in ORDER) + "</tr>"
+        for kind in TYPES)
+    cfg_rows = "\n".join(
+        f"<tr><td>{e(NAMES[c['id']])}</td><td>{c['pass']}/{c['n']}</td><td>{c['syntax_first']} → {c['syntax_final']}</td><td>{c['repairs']}</td>"
+        f"<td>{c['tokens']:,}</td><td>${c['usd']:.4f}</td><td>{mcfg[c['id']]['pass']}/{mcfg[c['id']]['n']}</td><td>${mcfg[c['id']]['usd']:.4f}</td></tr>"
+        for c in flash["configs"])
+    fail_rows = "\n".join(f"<tr><td>{e(name)}</td>" + "".join(f"<td>{fail_counts[key].get(name, 0)}</td>" for key in ORDER) + "</tr>" for name in all_classes)
+    task_rows = "\n".join(f"<tr><td>{task}</td>" + "".join(f"<td>{per_task[task][key][0]}/{per_task[task][key][1]}</td>" if per_task[task][key][1] else "<td>—</td>" for key in ORDER) + "</tr>"
+                          for task in tasks)
+    side_rows = "\n".join(
+        f"<tr><td>{e(C[key]['label'])}</td><td>{(str(seb[key]['correct']) + '/' + str(seb[key]['n'])) if key in seb else '—'}</td>"
+        f"<td>{(str(pure[key]['pass']) + '/' + str(pure[key]['n'])) if key in pure else '—'}</td></tr>" for key in ORDER)
+    cost_rows = "\n".join(
+        f"<tr><td>{e(item['group'])}</td><td>{e(item['label'])}</td><td>{e(item['model'])}</td><td>{item['input']:,}</td><td>{(item.get('cached') or 0):,}</td>"
+        f"<td>{item['output']:,}</td><td>${item['usd']:.4f}</td></tr>" for item in costs["items"])
+    discarded = "\n".join(f"<tr><td>{e(item['label'])}</td><td>{item['pass']}/{item['n']}</td><td>{e(item['reason'])}</td><td>{e(item['dir'])}</td></tr>" for item in f["discarded"])
+    discarded += "".join(f"\n<tr><td>{e(item['label'])}</td><td>{item['pass']}/{item['n']}</td><td>{e(item['reason'])}</td><td>{e(item['dir'])} (replaced by {e(item['rerun_dir'])})</td></tr>"
+                         for item in f["superseded"])
+    agent_rows = "\n".join(
+        f"<tr><td>{e(C[key]['label'])}</td><td>{C[key]['pass']}/{C[key]['n']}</td><td>{C[key]['agent']['timeouts']}</td><td>{C[key]['agent']['no_answer']}</td>"
+        f"<td>{C[key]['agent']['runs_validated']}</td><td>{C[key]['agent']['validate_calls']}</td></tr>" for key in ("opencode", "claude"))
+    order_file = ROOT / "analysis" / "validator-order-20261006.json"
+    order = json.loads(order_file.read_text(encoding="utf-8"))["summary"] if order_file.is_file() else {}
+    order_names = {"flash": "direct flash", "max": "direct max", "opencode": "OpenCode", "claude": "Claude Code",
+                   "opencode-superseded": "OpenCode first batch (superseded)", "claude-superseded": "Claude Code first batch (superseded)",
+                   "gold": "gold packages"}
+    order_line = "; ".join(f"{e(order_names.get(name, name))} {slot['differ']} of {slot['answers']}" for name, slot in order.items()) or "not run yet"
+    prices = costs["prices"]["models"]
+    price_line = "; ".join(f"{name} input ${p['input']}, cached ${p['cache']}, output ${p['output']} per million tokens" for name, p in prices.items())
+    p0, p3, m0 = item_of.get("flash-P0"), item_of.get("flash-P3"), item_of.get("max-P0")
+    page = f"""<!doctype html>
 <html lang="en">
 <meta charset="utf-8">
-<title>Maritime SysML exam · saved results</title>
+<title>Maritime SysML exam, frozen bank, four candidates</title>
 <style>
 body {{ margin: 0; background: #fff; color: #111; font: 17px/1.65 Georgia, serif; }}
 main {{ max-width: 1040px; margin: 0 auto; padding: 45px 58px; }}
@@ -198,112 +156,84 @@ th, td {{ border: 1px solid #d9d9d9; padding: 8px 10px; text-align: left; vertic
 th {{ background: #f4f7f8; }}
 figure {{ margin: 24px 0; }}
 img {{ width: 100%; height: auto; }}
-figcaption {{ font-size: 14px; color: #333; }}
-footer {{ border-top: 1px solid #bbb; margin-top: 28px; padding-top: 16px; font-size: 14px; color: #444; }}
+figcaption {{ font-size: 14px; color: #444; }}
+code {{ font-size: 14px; }}
 </style>
 <main>
 <h1>Maritime SysML exam</h1>
-<p class="subtitle">Results from saved answers. Each cohort is listed on its own; there is no combined total.</p>
-<p class="byline">Synthetic numbers, not RTX specifications. The official Pilot judges syntax. The answer key judges the required numbers and the power budget. A second model is compared and never changes a score.</p>
+<p class="subtitle">27 sealed tasks, four candidates, scored only by the official SysML v2 Pilot and answer keys written in advance</p>
+<p class="byline">RTRC 2706 · UConn Senior Design · synthetic maritime ISR scenario; no number is an RTX specification. Built from saved files by <code>python3 analysis/report/build_exam_report.py</code>.</p>
 
 <h2>What can be said</h2>
 <table>
 <tr><th>Question</th><th>Saved result</th></tr>
-<tr><td>Which of the main model's four approaches is worth the tokens?</td><td>qwen3.8-flash, 24 tasks × 4 approaches × 3 repeats = 288 cells. {' · '.join(f"{row['configuration']} passes {row['pass']}/72" for row in cfg_rows)}. {best['configuration']} has the most passes per thousand tokens. Repair (P1) does not beat one-shot (P0). P2 and P3 pass only 1 more cell than P0 and use about three times the tokens.</td></tr>
-<tr><td>Can a failure be turned into a pass by changing a number?</td><td>Under the current scorer {totals['FAIL']} cells fail, {syntax_fail} of them on official syntax. Of the {parsed} GEN/MOD answers the Pilot could parse, none changed a value the task said to keep (including the limit); {unparsed} more never parsed or have no official run, so there is nothing to judge. MOD-05's design is over budget by construction (78 W against 60 W); all 12 cells kept the limit and every required value, so the current scorer passes them.</td></tr>
-<tr><td>Are the off-the-shelf agents part of the main matrix?</td><td>No. OpenCode (qwen3.8-flash) has 24 cells and Claude Code with qwen3.8-max has 24 cells, listed separately. They cannot be added to the 288.</td></tr>
-<tr><td>Can a second model replace the tool as judge?</td><td>No. qwen3.8-max read all 288 flash answers and agrees with the tool on 157/288. It calls 70 tool-failures a pass, including all 12 over-budget MOD-05 answers. Jev {jev['model']} agrees on {jev['agree']}/{jev['cells']} and false-passes {jev['false_pass']}, all of them generate-a-model answers that fail official syntax. No score is rewritten.</td></tr>
-<tr><td>What did this cost?</td><td>At Alibaba Cloud's China (Beijing) list price, the four main-matrix approaches cost about ${sum(item['usd'] for item in costs['items'] if item['group_id'] == 'matrix'):.3f}; OpenCode's 24 tasks cost ${next(item['usd'] for item in costs['items'] if item['id'] == 'opencode'):.3f}. See section 6.</td></tr>
+<tr><td>How much do the candidates get right without the answer key?</td><td>Direct qwen3.8-flash {flash['pass']}/{flash['n']} ({pct(flash['pass'], flash['n'])}); direct qwen3.8-max {mx['pass']}/{mx['n']} ({pct(mx['pass'], mx['n'])}); OpenCode on flash {agent(oc)}; Claude Code on flash {agent(cl)}. The weakest task type for flash is {weakest}: {flash['by_type'][weakest]['pass']}/{flash['by_type'][weakest]['n']} (max {mx['by_type'][weakest]['pass']}/{mx['by_type'][weakest]['n']}).</td></tr>
+<tr><td>With the same model, do repair, an outline or retrieval help?</td><td>Flash, 81 cells each: P0 {fcfg['P0']['pass']}, P1 {fcfg['P1']['pass']}, P2 {fcfg['P2']['pass']}, P3 {fcfg['P3']['pass']}. The repair loop lifts the official parse from the first attempt to the final one (39 SysML answers each): P1 {fcfg['P1']['syntax_first']} → {fcfg['P1']['syntax_final']}, P2 {fcfg['P2']['syntax_first']} → {fcfg['P2']['syntax_final']}, P3 {fcfg['P3']['syntax_first']} → {fcfg['P3']['syntax_final']}. Max parses 39/39 on the first attempt in every approach.</td></tr>
+<tr><td>Can a model replace the tool as judge?</td><td>Not used. Two model judges were tried on the 2026-10-03 answers and agreed with the tool on 226/288 and 157/288; scores come only from the Pilot and the keys (decision 025).</td></tr>
+<tr><td>Are the agent scores clean?</td><td>The scored agent runs ran in a sandbox that shows only the task input, the rules file and <code>./validate</code>. Two earlier agent batches of the same morning are discarded: OpenCode could read the answer keys, Claude Code had its tools denied. The agents' ALN rows come from a rerun: the first sandboxed batch checked alignment packages with <code>./validate</code> in a file order the official Pilot passes and the scorer's order fails (section 7).</td></tr>
+<tr><td>What did this cost?</td><td>At the China (Beijing) list price the scored batches and the side benchmarks cost ${costs['batch_usd']:.4f}{f'; flash P0 ${p0["usd"]:.4f}, flash P3 ${p3["usd"]:.4f}, max P0 ${m0["usd"]:.4f}' if p0 and p3 and m0 else ''}. Everything recorded, including the discarded runs, about ${costs['recorded_usd']:.4f}.</td></tr>
 </table>
 
 <h2>1. What was measured</h2>
-<p>24 synthetic maritime tasks of five kinds: generate a model, modify a model, query a model, ask when information is missing, and restate a model in words. The answer key is used only for scoring and is not in the agent's prompt. Generate and modify answers first go through the official SysML v2 Pilot. After the syntax passes, the checklist checks required names, connections and values that must stay, and whether each engineering check comes out as the answer key expects. MOD-05's key says the power check should fail: the design verdict is FAIL, and an honest answer's task verdict is PASS.</p>
-<p>The scoring rule changed once, on October 3. Under the old rule a task with a power check took the power result as its task result, and values to keep never counted: an honest MOD-05 answer was recorded as FAIL, while an answer that raised the limit to 80 W was recorded as PASS (checked with four hand-written answers through the official Pilot). Current rule: {RULE_EN} All 143 saved GEN/MOD answers were re-scored under the current rule into <code>analysis/rescore-20261003.jsonl</code>, with the archived and current verdicts side by side. Only MOD-05 answers changed.</p>
-<p>A syntax pass is not engineering acceptance. A task with no power check has engineering status UNKNOWN, which only means the checklist has no power budget to compute.</p>
+<p>27 tasks: generate a model (GEN 5), modify a model (MOD 5), align two models (ALN 3, paper 1), query a model (QRY 5), ask when a number is missing (AMB 4), restate a model as requirements (RT 5). A second reviewer checked every key (<code>bench/tasks/t4_maritime_isr/heldout/REVIEW.md</code>, 27/27 mechanical checks) and the bank, scorers, prompts, retrieval library and toolchain are frozen in <code>bench/FREEZE.md</code> (tag <code>freeze-2026-10-06</code>).</p>
+<p>{e(f['rule'])}</p>
+<p>Direct candidates answer through one conversation per cell. P0 writes once. P1 adds the repair loop: the complete official error list goes back after every earlier version, up to 20 repairs, stopping after three identical resubmissions. P2 writes an outline first; P3 also retrieves official example models and notes with MiniLM + FAISS (paper 2); P2 and P3 repair as P1. The agents get the task input, AGENTS.md and <code>./validate</code> in a bubblewrap sandbox and repair inside their own session; the grader parses only their final answer. The direct prompts carry the SysML rules (and the alignment rules for ALN); the agents do not get them and learn the Pilot's rules only from its diagnostics.</p>
 
-<h2>2. Main matrix: qwen3.8-flash</h2>
-<p>288 cells: {totals['PASS']} pass, {totals['FAIL']} fail (archived scorer: {archived_totals['PASS']} pass, {archived_totals['FAIL']} fail). Sources are <code>analysis/heldout-20261003T000045/results.jsonl</code> (96 cells) and <code>analysis/heldout-20261003T001321/results.jsonl</code> (192 cells); GEN/MOD were re-scored from <code>analysis/rescore-20261003.jsonl</code>.</p>
-<figure>
-<img src="figures/flash_config.png" alt="Pass rate of the four approaches under the current and the archived scorer">
-<figcaption>Figure 1. 72 cells per approach. Dark bars are the current scorer, light bars the archived scorer. The difference is MOD-05's 3 cells: the design is over budget, the limit is unchanged, and the current scorer counts that as a pass.</figcaption>
-</figure>
-<table>
-<tr><th>Approach</th><th>Pass / 72</th><th>Archived pass / 72</th><th>Tokens</th><th>Passes per 1,000 tokens</th></tr>
-{cfg_body}
-</table>
-<table>
-<tr><th>Task type</th><th>Cells</th><th>Pass</th><th>Fail</th></tr>
-{type_body}
-</table>
-<p>The next table is how many of the three repeats passed, per approach. MOD-05's 3/3 is the task verdict: the design is over budget, but the limit and every value to keep are unchanged.</p>
-<table>
-<tr><th>Task</th><th>P0</th><th>P1</th><th>P2</th><th>P3</th><th>Pass of 12</th></tr>
-{task_body}
-</table>
+<h2>2. Four candidates by task type</h2>
+<table><tr><th>Type</th>{''.join(f'<th>{e(C[key]["label"])}</th>' for key in ORDER)}</tr>
+{type_rows}
+<tr><td><b>All</b></td>{''.join(f'<td><b>{C[key]["pass"]}/{C[key]["n"]}</b></td>' for key in ORDER)}</tr></table>
+<figure><img src="figures/by_type.png" alt="Pass rate by task type for the four candidates"><figcaption>Figure 1. Pass rate by task type. Direct candidates: 60 cells per type (36 for ALN, 48 for AMB); agents: 15 runs per type (9 for ALN, 12 for AMB).</figcaption></figure>
+<p>Repeat groups whose three repeats disagree: {', '.join(f"{C[key]['short']} {C[key]['reliability']['flips']}/{C[key]['reliability']['groups']}" for key in ORDER)}.</p>
+<table><tr><th>Agent</th><th>Pass</th><th>Hit the 900 s limit</th><th>No answer.md</th><th>Runs that called ./validate</th><th>./validate calls</th></tr>
+{agent_rows}</table>
 
-<h2>3. How the {totals['FAIL']} failures split</h2>
-<p>Classes were read from the saved official diagnostics and answers; no model was called again. Detail is in <code>analysis/failure-classes.jsonl</code>.</p>
-<table>
-<tr><th>Class</th><th>Cells</th></tr>
-{fail_body}
-</table>
-<p>{totals['FAIL']} cells missed the checklist. {syntax_fail} fail official syntax, {fail_counts['query-renamed']} use a name that is not written with <code>::</code>, and {fail_counts['query-wrong-number']} is QRY-03 answering 2 connections where the key says 3. The old class of 12 "designed power failures" passes under the current scorer and is not in the table.</p>
-<p>The {no_question} no-question cells need a separate look: each one does ask for clarification, but as an imperative with no question mark (for example "Please clarify whether the uplink value is 8 (unitless) or 8 MHz."). None invents a number. The scorer treats a question as present only when the text contains "?". Whether to relax that is an answer-key change and waits for the second reviewer; they still count as failures.</p>
+<h2>3. Approaches with the same model</h2>
+<table><tr><th>Approach</th><th>flash pass</th><th>flash parse 1st → final (of 39)</th><th>flash repairs</th><th>flash tokens</th><th>flash USD</th><th>max pass</th><th>max USD</th></tr>
+{cfg_rows}</table>
+<figure><img src="figures/repair.png" alt="Official parse on the first attempt and after repair"><figcaption>Figure 2. SysML answers (GEN, MOD, ALN; 39 per approach) that pass the official parse on the first attempt and after the repair loop. P0 has no loop.</figcaption></figure>
 
-<h2>4. Two more cohorts, not added to the 288</h2>
-<table>
-<tr><th>Cohort</th><th>Model and entry</th><th>Result</th><th>File</th></tr>
-<tr><td>OpenCode v1.18.27</td><td>qwen3.8-flash (the same model as the main matrix), command line, 24 tasks once each</td><td>{oc_pass} pass, {len(opencode) - oc_pass} fail. Failures: {oc_lines}. MOD-05 is over budget with the limit unchanged, so the current scorer passes it (the archived scorer failed it).</td><td>analysis/opencode-20261003T001321/results.jsonl</td></tr>
-<tr><td>Claude Code, first run</td><td>qwen3.8-max, through the local Qwen route</td><td>{sum(row['status'] == 'PASS' for row in claude_first)} pass, {len(first_fail)} fail ({', '.join(first_fail) or 'none'}), {len(first_timeout)} not submitted ({', '.join(first_timeout) or 'none'}). A missing submission is not a failure. MOD-05 passes under the current scorer (it failed under the archived one).</td><td>analysis/claude-qwen-20261003T014507/results.jsonl</td></tr>
-<tr><td>Claude Code, four tasks re-run</td><td>Same route, no time limit</td><td>{', '.join(f"{row['task_id']} {row['status']}" for row in claude_retry)}. Replacing the first run's failures with the re-run leaves this cohort at {claude_pass} pass and {len(claude) - claude_pass} fail.</td><td>analysis/claude-qwen-20261003T034819/results.jsonl</td></tr>
-</table>
-<p>An empty session named "RTRC maritime tasks" on the web UI has no messages and is not in this table. OpenCode's evidence is the 24 command-line answers above.</p>
+<h2>4. How the failures split</h2>
+<table><tr><th>Class</th>{''.join(f'<th>{e(C[key]["short"])}</th>' for key in ORDER)}</tr>
+{fail_rows}</table>
+<p>Each failing cell gets one class from its saved evidence (<code>bench/classify_failures.py</code>, <code>analysis/failure-classes-20261006.jsonl</code>); <code>docs/failure_taxonomy.md</code> explains the classes with examples.</p>
 
-<h2>5. A second model reads the 288 flash answers</h2>
-<p>The judge is qwen3.8-max. It agrees on {sum(1 for row in judge if row.get('agree'))} of 288 cells and calls a failure a pass on {sum(1 for row in judge if row.get('false_pass'))}. The file is <code>analysis/validator-all-max.jsonl</code>. It does not change the pass counts in section 2. The question it was asked says an over-budget design fails, so it is compared with the tool's design verdict; only MOD-05 has a design verdict (FAIL) different from its task verdict (PASS).</p>
-<p>The second judge is Jev {jev['model']} (TypeSafe), over the same 288. It agrees on {jev['agree']}, false-passes {jev['false_pass']} (all generate-a-model answers that fail official syntax) and false-fails {jev['false_fail']}. The file is <code>analysis/jev-heldout-20261003.json</code>. It is not scored either.</p>
+<h2>5. Per task</h2>
+<table><tr><th>Task</th>{''.join(f'<th>{e(C[key]["short"])}</th>' for key in ORDER)}</tr>
+{task_rows}</table>
 
-<h2>6. What it cost</h2>
-<p>Prices are Alibaba Cloud Model Studio list prices for China (Beijing), checked {prices['checked']}, USD per million tokens: {price_line}. Jev uses the price on its OpenRouter page. The endpoint we call is in the Beijing region, so that price is the main figure.</p>
-<table>
-<tr><th>Group</th><th>Item</th><th>Model</th><th>Input tokens</th><th>Of which cached</th><th>Output tokens</th><th>USD</th></tr>
-{cost_body}
-</table>
-<p>Usage was not recorded, so these are not in the table: {' '.join(costs['unrecorded'])}</p>
+<h2>6. Side benchmarks named in the brief</h2>
+<table><tr><th>Candidate</th><th>SysEngBench</th><th>PURE</th></tr>
+{side_rows}</table>
+<p>SysEngBench (rabell/SysEngBench, MIT): {any_seb.get('questions', 100)} questions fixed with seed 20261006, 10 per prompt, {any_seb.get('repeats', 3)} repeats; always answering B scores {any_seb.get('always_b', '—')}/{any_seb.get('questions', 100)} on this subset. PURE (Zenodo 7118517, CC BY 4.0): two excerpts, three repeats, extracted sentences must equal the key. Neither is added to the exam score.</p>
 
-<h2>7. Three saved records you can point at</h2>
-<table>
-<tr><th>Record</th><th>The task states</th><th>The agent submitted</th><th>Verdict</th></tr>
-<tr><td>MOD-05, all 12 flash cells, plus OpenCode and Claude</td><td>Power limit 60, three draws 41, 25 and 12</td><td>Syntax passes, the numbers are still there, the limit is unchanged</td><td>Design verdict FAIL: 78 &gt; 60, as the answer key expects. Task verdict PASS.</td></tr>
-<tr><td>MOD-01 replay</td><td>Add an infrared camera, keep the limit at 60</td><td>Official syntax passes</td><td>Checklist passes. The approval gate did not change 60. The read-back mentions infrared and 60. See analysis/demo-mod01.json.</td></tr>
-<tr><td>Five graph-retrieval questions, a separate batch</td><td>The model is not given the whole model, only word-matched nodes and one hop of neighbours</td><td>qwen3.8-max</td><td>QRY-01, 02, 04 and 05 pass. QRY-03 answers 0 connections; the key says 3. See analysis/graph-query-max.json. This is not the paper's 0.904.</td></tr>
+<h2>7. Runs that do not count</h2>
+<table><tr><th>Batch</th><th>Score</th><th>Why it does not count</th><th>Folder</th></tr>
+{discarded}
+<tr><td>{e(f['archive']['label'])}</td><td>{f['archive']['pass']}/{f['archive']['n']}</td><td>{e(f['archive']['note'])}</td><td>analysis/heldout-20261003T*</td></tr></table>
+<p>Validator order. The official Pilot 0.62 can give a different verdict for the same files in a different order: an alignment package that writes a nested usage as <code>Pkg::part::sub</code> fails with <code>Must be an accessible feature (use dot notation for nesting)</code> when the source models come first, as in the scorer, and passes when the package comes first. Re-validating every graded ALN answer with the package first changed (<code>bench/check_validator_order.py</code>): {order_line}. <code>./validate</code> now passes the files in the scorer's order (decision 026).</p>
+
+<h2>8. What it cost</h2>
+<p>Prices checked {e(costs['prices']['checked'])}, {e(costs['prices']['region'])}: {e(price_line)}. {e(' '.join(costs['unrecorded']))}</p>
+<table><tr><th>Group</th><th>Item</th><th>Model</th><th>Input tokens</th><th>Of which cached</th><th>Output tokens</th><th>USD</th></tr>
+{cost_rows}</table>
+
+<h2>9. What these results cannot support</h2>
+<table><tr><th>Claim</th><th>Why not</th></tr>
+<tr><td>The models are ready to design maritime systems</td><td>27 synthetic tasks with one author and one reviewer; a Pilot PASS is syntax, and the budgets are static sums.</td></tr>
+<tr><td>One approach is reliably better than another</td><td>Three repeats per cell and repeat groups that disagree; no confidence intervals were computed.</td></tr>
+<tr><td>The agents beat the direct calls in general, or the reverse</td><td>One model (flash), one pinned version of each agent, one sandbox setup, and different help: the direct prompts carry the SysML rules, the agents have the validator in a loop they run themselves. Agents spend many more tokens per answer.</td></tr>
+<tr><td>Alignment pairs are semantically right whenever the Pilot passes</td><td>The Pilot checks that names resolve; the ALN keys and the person in 2.3 decide meaning.</td></tr>
+<tr><td>Results transfer to other model families</td><td>Only Qwen models were run.</td></tr>
 </table>
 
-<h2>8. What these results cannot support</h2>
-<table>
-<tr><th>Not done</th><th>Sentence that cannot be written</th></tr>
-<tr><td>A second person has not signed the 24 answer keys, and FREEZE.md is not written</td><td>The task bank is frozen.</td></tr>
-<tr><td>No independent person has reviewed the diagrams</td><td>A tool pass means an engineer has accepted the design.</td></tr>
-<tr><td>The Cameo enterprise assistant has no license; the community-edition installer is downloaded and not yet installed</td><td>We compared against the vendor's AI.</td></tr>
-<tr><td>The free Syside editor is installed; batch checking on the command line still needs a paid license</td><td>A second checker has run all 288 cells.</td></tr>
-<tr><td>The 151 SysMBench tasks have no licensed files</td><td>We compared against the public 151.</td></tr>
-<tr><td>PURE is two excerpts (qwen3.8-max got both right; see analysis/pure-20261003T052120/)</td><td>Requirements extraction has been fully tested.</td></tr>
-<tr><td>AMB counts a question only when the text has a question mark, so an imperative clarification fails; the second reviewer has not decided whether to relax that</td><td>Every AMB failure means the agent asked nothing.</td></tr>
-</table>
-
-<h2>9. Files</h2>
-<table>
-<tr><th>Content</th><th>Path</th></tr>
-<tr><td>Numbers on this page</td><td>tables/flash_by_config.csv, flash_by_type.csv, flash_by_task.csv</td></tr>
-<tr><td>Figure 1</td><td>figures/flash_config.png</td></tr>
-<tr><td>Failure classes</td><td>docs/failure_taxonomy.md</td></tr>
-<tr><td>Rebuild this page</td><td>python3 analysis/report/build_exam_report.py</td></tr>
-</table>
-<footer>This page only summarises results already on disk. A timeout is not a failure. Cohorts have different denominators and cannot be added together.</footer>
+<h2>10. Files</h2>
+<p>Scored batches: {', '.join(f"<code>analysis/{e(C[key]['batch'])}/results.jsonl</code>" for key in ORDER if C[key]['batch'])}; agents' ALN rows: {', '.join(f"<code>analysis/{e(C[key]['rerun_batch'])}/results.jsonl</code>" for key in ORDER if C[key].get('rerun_batch'))}. Per-task table: <code>per_task.csv</code>. Status page: <code>STATUS.md</code>. Decisions 019 (task vs design verdict), 022 (repair loop), 023 (retrieval), 024 (alignment), 025 (no judges, second review, freeze), 026 (agent sandbox).</p>
+<p>This page only summarises results already on disk; it calls no model.</p>
 </main>
 </html>
 """
-    (OUT / "index.html").write_text(html, encoding="utf-8")
+    (OUT / "index.html").write_text(page, encoding="utf-8")
     print(OUT / "index.html")
 
 

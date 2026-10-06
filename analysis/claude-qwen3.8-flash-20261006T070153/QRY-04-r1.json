@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 7854,
+  "stop_reason": "end_turn",
+  "session_id": "2c96cc2b-4fad-4558-90e3-657248906700",
+  "total_cost_usd": 0.031875,
+  "usage": {
+    "input_tokens": 3424,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 15360,
+    "output_tokens": 283,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 3424,
+      "outputTokens": 283,
+      "cacheReadInputTokens": 15360,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.031875,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 1,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Looking at the `part def FixedWingUav` definition, it contains four nested part usages (`eoCamera`, `searchRadar`, `processor`, `radio`) plus two attributes, which are not parts.\n\n```json\n{\"parts\": [\"MaritimeISR::FixedWingUav::eoCamera\", \"MaritimeISR::FixedWingUav::searchRadar\", \"MaritimeISR::FixedWingUav::processor\", \"MaritimeISR::FixedWingUav::radio\"]}\n```",
+  "ttft_ms": 6629,
+  "type": "result",
+  "duration_ms": 7923,
+  "uuid": "08531cc7-26e1-44bb-a8bd-296cb6576781",
+  "ttft_stream_ms": 3881,
+  "time_to_request_ms": 68,
+  "first_content_frame_ms": 3882,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

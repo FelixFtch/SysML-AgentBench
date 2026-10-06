@@ -1,0 +1,5 @@
+```json
+{"parts": ["MaritimeISR::FixedWingUav::eoCamera", "MaritimeISR::FixedWingUav::searchRadar", "MaritimeISR::FixedWingUav::processor", "MaritimeISR::FixedWingUav::radio"]}
+```
+
+FixedWingUav (model.sysml lines within `part def FixedWingUav`) contains exactly four part usages — `eoCamera : Camera`, `searchRadar : Radar`, `processor : Processor`, and `radio : Radio`. Its `attribute` members (`powerLimitW`, `downlinkMbps`) are not part usages, and the usages `usv`/`uav`/`commandShip`/`shore` are nested in the package, not in FixedWingUav.

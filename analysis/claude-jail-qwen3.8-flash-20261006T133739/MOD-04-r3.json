@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 107273,
+  "stop_reason": "end_turn",
+  "session_id": "8a09e2cd-c60c-41ee-8e21-515bc59dae6a",
+  "total_cost_usd": 0.21221400000000004,
+  "usage": {
+    "input_tokens": 13672,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 158208,
+    "output_tokens": 2590,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 13672,
+      "outputTokens": 2590,
+      "cacheReadInputTokens": 158208,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.21221400000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 10,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary of the work:\n\n**Files changed**\n- `input/baseline/RadioHealth.sysml` — added `port health : LinkPort;` to `usv.radio`, beside the existing `port fromProcessor`. No other changes; `uplinkMbps : Real = 8.0` untouched, package name still `RadioHealth`, no other numbers added.\n- `answer.md` — created with the full report.\n\n**Validation**\n- Ran the official Pilot 0.62 validator on the unmodified baseline first (PASS, 0 diagnostics), then on the edited file: **PASS, `diagnostics: []`, 0 warnings**. AST went from 27 → 32 elements, consistent with just the added port.\n\n**Check results**\n- Port `health` of type `LinkPort` on `usv.radio`: ✅\n- `uplinkMbps == 8.0` preserved: ✅\n- No other numbers added: ✅\n\n**Open questions:** none — the task was unambiguous.",
+  "ttft_ms": 6513,
+  "type": "result",
+  "duration_ms": 115105,
+  "uuid": "291c5103-e060-4e9d-a50e-d67c25a9d97a",
+  "ttft_stream_ms": 6176,
+  "time_to_request_ms": 61,
+  "first_content_frame_ms": 6176,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

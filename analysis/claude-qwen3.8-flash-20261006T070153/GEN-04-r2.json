@@ -1,0 +1,102 @@
+{
+  "duration_api_ms": 57194,
+  "stop_reason": "end_turn",
+  "session_id": "b3fe1c96-4fa7-44dd-aacd-1d6262760022",
+  "total_cost_usd": 0.112378,
+  "usage": {
+    "input_tokens": 4916,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 106496,
+    "output_tokens": 1382,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 4916,
+      "outputTokens": 1382,
+      "cacheReadInputTokens": 106496,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.112378,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_5426f487dc7242fb9e99ea82",
+      "tool_input": {
+        "command": "find /data/robotics/RTRC -maxdepth 3 -type d | head -50",
+        "description": "Survey repo directory structure"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_2cde6785dbef4517ab3a3c19",
+      "tool_input": {
+        "command": "find /data/robotics/RTRC -name \"*.sysml\" 2>/dev/null | head -20",
+        "description": "Find SysML example files"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 6,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage ShoreArchive {\n\n    port def LinkPort;\n\n    part def Processor;\n\n    part shore {\n        attribute backhaulMbps : Real = 50.0;\n        attribute archiveDays : Real = 30.0;\n\n        port fromCommand : LinkPort;\n        part archive : Processor;\n    }\n\n    requirement def ShoreArchiveRetention {\n        doc /* The shore archive keeps relayed tracks for 30 days. */\n    }\n}\n```",
+  "ttft_ms": 5423,
+  "type": "result",
+  "duration_ms": 57372,
+  "uuid": "6da51fe3-1502-482f-aa9f-4bce06a7b934",
+  "ttft_stream_ms": 3717,
+  "time_to_request_ms": 103,
+  "first_content_frame_ms": 3717,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

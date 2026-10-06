@@ -27,7 +27,6 @@ import yaml  # noqa: E402
 
 from agents.llm import chat, extract_sysml  # noqa: E402
 
-CORPUS = ROOT / "bench" / "corpus"
 DEFAULT_ROUNDS = int(os.environ.get("BENCH_REPAIR_ROUNDS", "20"))
 # Stop early after this many consecutive byte-identical resubmissions; 0 disables the guard.
 IDENTICAL_STOP = int(os.environ.get("BENCH_REPAIR_IDENTICAL_STOP", "3"))
@@ -73,37 +72,21 @@ def _task(task_dir: Path) -> tuple[dict, str]:
 EXAMPLES_LIBRARY = ROOT / "analysis" / "vector-index" / "examples"
 
 
-def _notes_by_keyword(prompt: str, limit: int = 3) -> list[dict]:
-    """The original P3 retrieval: notes from bench/corpus ranked by shared words. Fallback only."""
-    chunks = []
-    for path in sorted(CORPUS.glob("*.md")):
-        for block in path.read_text(encoding="utf-8").split("\n\n"):
-            text = block.strip()
-            if text:
-                chunks.append({"source": path.name, "text": text})
-    words = {word.lower() for word in prompt.split() if len(word) > 3}
-    ranked = sorted(chunks, key=lambda item: sum(word in item["text"].lower() for word in words), reverse=True)
-    return [{**item, "method": "keyword", "role": "note"} for item in ranked[:limit]]
-
-
 def _retrieve(prompt: str, limit: int = 6) -> list[dict]:
     """P3's retrieval (paper 2): MiniLM + FAISS over the examples library, then one-hop neighbours.
 
     The library is official SysML-v2-Release example elements plus the notes corpus
     (bench/build_examples_library.py). MaritimeISR is not in it: the held-out keys repeat its values.
-    When the library or the embedding stack is missing, the keyword notes are used and each item says so."""
+    There is no other ranking: a missing library or embedding stack raises."""
+    from bench.vector_index import retrieve as vector_retrieve
     cards_file = EXAMPLES_LIBRARY / "cards.json"
     if not cards_file.is_file():
-        return _notes_by_keyword(prompt)
-    try:
-        from bench.vector_index import retrieve as vector_retrieve
-        rows = json.loads(cards_file.read_text(encoding="utf-8"))
-        cards = {row["id"]: row["text"] for row in rows}
-        sources = {row["id"]: row["source"] for row in rows}
-        neighbors = {key: set(value) for key, value in json.loads((EXAMPLES_LIBRARY / "neighbors.json").read_text(encoding="utf-8")).items()}
-        found = vector_retrieve(prompt, cards, neighbors, name="examples", k_seeds=3, limit=limit)
-    except Exception:
-        return _notes_by_keyword(prompt)
+        raise FileNotFoundError(f"{cards_file} is missing; build it with python3 bench/build_examples_library.py")
+    rows = json.loads(cards_file.read_text(encoding="utf-8"))
+    cards = {row["id"]: row["text"] for row in rows}
+    sources = {row["id"]: row["source"] for row in rows}
+    neighbors = {key: set(value) for key, value in json.loads((EXAMPLES_LIBRARY / "neighbors.json").read_text(encoding="utf-8")).items()}
+    found = vector_retrieve(prompt, cards, neighbors, name="examples", k_seeds=3, limit=limit)
     return [{"source": sources[item["id"]], "text": cards[item["id"]], "method": found["method"], "role": item["role"],
              "score": item["score"], "threshold": found["threshold"], "embedding_model": found["embedding_model"]}
             for item in found["picked"]]

@@ -29,19 +29,48 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_REVISION = "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
 CACHE = ROOT / "analysis" / "vector-index"
 DEFAULT_THRESHOLD = float(os.environ.get("BENCH_VECTOR_THRESHOLD", "0.30"))
+REQUIREMENTS = ROOT / "requirements-retrieval.txt"
+INSTALL = "pip install --user -r requirements-retrieval.txt"
 
 _MODEL = None
 
 
+def snapshot(download: bool = False) -> Path:
+    """Local folder of the pinned MiniLM snapshot. Loading from it never touches the network; only
+    `python3 bench/vector_index.py --download` fetches it."""
+    try:
+        from huggingface_hub import snapshot_download
+        from huggingface_hub.errors import LocalEntryNotFoundError
+    except ImportError as exc:
+        raise ImportError(f"MiniLM + FAISS retrieval needs huggingface-hub: {INSTALL}") from exc
+    try:
+        return Path(snapshot_download(EMBEDDING_MODEL, revision=EMBEDDING_REVISION, local_files_only=not download))
+    except LocalEntryNotFoundError as exc:
+        raise OSError(f"{EMBEDDING_MODEL} snapshot {EMBEDDING_REVISION} is not in the local Hugging Face cache: "
+                      "python3 bench/vector_index.py --download") from exc
+
+
 def model():
-    """The sentence-transformer, loaded once per process (CPU is enough for a few thousand cards)."""
+    """The sentence-transformer at the pinned snapshot, loaded once per process (CPU is enough for a few thousand cards)."""
     global _MODEL
     if _MODEL is None:
-        from sentence_transformers import SentenceTransformer
-        _MODEL = SentenceTransformer(EMBEDDING_MODEL, device="cpu")
+        try:
+            from sentence_transformers import SentenceTransformer
+        except ImportError as exc:
+            raise ImportError(f"MiniLM + FAISS retrieval needs sentence-transformers: {INSTALL}") from exc
+        _MODEL = SentenceTransformer(str(snapshot()), device="cpu")
     return _MODEL
+
+
+def _faiss():
+    try:
+        import faiss
+    except ImportError as exc:
+        raise ImportError(f"MiniLM + FAISS retrieval needs faiss-cpu: {INSTALL}") from exc
+    return faiss
 
 
 def embed(texts: list[str]) -> np.ndarray:
@@ -64,7 +93,7 @@ class CardIndex:
     """FAISS index over one card dictionary, cached on disk by content hash."""
 
     def __init__(self, cards: dict[str, str], name: str):
-        import faiss
+        faiss = _faiss()
         self.cards = dict(cards)
         self.ids = sorted(self.cards)
         self.name = name
@@ -149,3 +178,41 @@ def retrieve(query: str, cards: dict[str, str], neighbors: dict[str, set], *, na
             "index_key": index.key, "library_size": len(cards), "picked": picked, "edges": edges,
             "top": [{"id": ident, "score": round(score, 4), "cosine": round(cosine[ident], 4), "text": cards[ident]}
                     for ident, score in ranked[:8]]}
+
+
+def check() -> dict:
+    """Raise unless every package in requirements-retrieval.txt is installed at its pinned version and the pinned
+    MiniLM snapshot embeds and searches. Nothing is written to the index cache."""
+    from importlib.metadata import PackageNotFoundError, version
+    pins = dict(line.strip().split("==", 1) for line in REQUIREMENTS.read_text(encoding="utf-8").splitlines()
+                if line.strip() and not line.strip().startswith(("#", "-")))
+    wrong = {}
+    for name, pinned in pins.items():
+        try:
+            installed = version(name)
+        except PackageNotFoundError:
+            installed = None
+        if installed != pinned:
+            wrong[name] = {"pinned": pinned, "installed": installed}
+    if wrong:
+        raise RuntimeError(f"retrieval stack differs from requirements-retrieval.txt: {wrong}. {INSTALL}")
+    faiss = _faiss()
+    cards = embed(["part def RadioUnit", "attribute powerLimitW = 60.0"])
+    index = faiss.IndexFlatIP(cards.shape[1])
+    index.add(cards)
+    scores, rows = index.search(embed(["what is the power limit"]), 2)
+    if cards.shape[1] != 384 or int(rows[0][0]) != 1:
+        raise RuntimeError(f"retrieval self-test failed: dimension {cards.shape[1]}, best card {int(rows[0][0])}")
+    return {"packages": pins, "model": EMBEDDING_MODEL, "revision": EMBEDDING_REVISION, "dimension": int(cards.shape[1]),
+            "self_test_cosine": [round(float(score), 4) for score in scores[0]]}
+
+
+if __name__ == "__main__":
+    if sys.argv[1:] not in (["--check"], ["--download"]):
+        raise SystemExit("usage: python3 bench/vector_index.py --check | --download")
+    try:
+        if sys.argv[1] == "--download":
+            print(snapshot(download=True))
+        print(json.dumps(check(), indent=2))
+    except (ImportError, OSError, RuntimeError) as exc:
+        raise SystemExit(f"retrieval check FAILED: {exc}")

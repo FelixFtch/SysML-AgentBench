@@ -1,0 +1,94 @@
+{
+  "duration_api_ms": 321881,
+  "stop_reason": "end_turn",
+  "session_id": "264e5df5-d51b-4bd1-9af2-8d848d355f20",
+  "total_cost_usd": 0.605467,
+  "usage": {
+    "input_tokens": 6481,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 109824,
+    "output_tokens": 20726,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 6481,
+      "outputTokens": 20726,
+      "cacheReadInputTokens": 109824,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.605467,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Write",
+      "tool_use_id": "call_ad7000e9b7dc48619fd663fb",
+      "tool_input": {
+        "file_path": "/data/robotics/RTRC/mvp/agent-runs/20261006T081713-P-CODE-2-ALN-03/workspace/AlignRadar.sysml",
+        "content": "package AlignRadar {\n    import UavSensorSpec::*;\n    import RadarVendor::*;\n\n    alias SearchRadar for RadarVendor::RadarModule_def;\n    alias Camera for RadarVendor::GimbalCamera_def;\n\n    allocation searchRadarAllocation allocate UavSensorSpec::uav::searchRadar to RadarVendor::payload::radar;\n    allocation eoCameraAllocation allocate UavSensorSpec::uav::eoCamera to RadarVendor::payload::gimbal;\n}\n"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage AlignRadar {\n    import UavSensorSpec::*;\n    import RadarVendor::*;\n\n    alias SearchRadar for RadarVendor::RadarModule_def;\n    alias Camera for RadarVendor::GimbalCamera_def;\n\n    allocation searchRadarAllocation allocate UavSensorSpec.uav.searchRadar to RadarVendor.payload.radar;\n    allocation eoCameraAllocation allocate UavSensorSpec.uav.eoCamera to RadarVendor.payload.gimbal;\n}\n```\n\n```json\n{\n  \"mappings\": [\n    {\n      \"oem_element\": \"UavSensorSpec::SearchRadar\",\n      \"supplier_element\": \"RadarVendor::RadarModule_def\",\n      \"mapping_type\": \"alias\",\n      \"rationale\": \"Both are part definitions for the UAV's search radar payload; the vendor's RadarModule_def is the supplier realization of the specified SearchRadar.\"\n    },\n    {\n      \"oem_element\": \"UavSensorSpec::Camera\",\n      \"supplier_element\": \"RadarVendor::GimbalCamera_def\",\n      \"mapping_type\": \"alias\",\n      \"rationale\": \"The specification's generic electro-optical camera definition corresponds to the supplier's GimbalCamera_def, the vendor's camera payload element.\"\n    },\n    {\n      \"oem_element\": \"UavSensorSpec::uav::searchRadar\",\n      \"supplier_element\": \"RadarVendor::payload::radar\",\n      \"mapping_type\": \"allocation\",\n      \"rationale\": \"The radar part usage on the specified uav is fulfilled by the vendor's radar part usage on its payload assembly (typed by the aliased RadarModule_def).\"\n    },\n    {\n      \"oem_element\": \"UavSensorSpec::uav::eoCamera\",\n      \"supplier_element\": \"RadarVendor::payload::gimbal\",\n      \"mapping_type\": \"allocation\",\n      \"rationale\": \"The EO camera part usage on the specified uav is fulfilled by the vendor's gimbal part usage on its payload assembly (typed by the aliased GimbalCamera_def).\"\n    }\n  ],\n  \"unmatched\": [\n    \"UavSensorSpec::SearchRadar::rangeKm\",\n    \"RadarVendor::RadarModule_def::maxRangeKm\",\n    \"RadarVendor::RadarModule_def::massKg\"\n  ]\n}\n```",
+  "ttft_ms": 80016,
+  "type": "result",
+  "duration_ms": 322068,
+  "uuid": "2d4b2de7-799c-435a-aa57-a638250429c2",
+  "ttft_stream_ms": 2900,
+  "time_to_request_ms": 67,
+  "first_content_frame_ms": 2901,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

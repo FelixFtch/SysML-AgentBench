@@ -34,4 +34,4 @@ Date: 2026-10-06. Reviewer: the assistant, at the user's request, as the second 
 
 ## Verdict
 
-The bank is consistent enough to freeze. The two recommendations above are lenience in the keys, not errors, and are left for the next key revision so that the frozen keys are the ones that were reviewed.
+The bank is consistent enough to freeze. The two recommendations above are left for the next key revision so that the frozen keys are the ones that were reviewed: MOD-01's key is lenient (it does not check the radio connection the task says to keep), AMB-02's key is strict (it accepts only "watt", "power limit" or "how many watts"; in the 2026-10-06 max batch an answer asking for "a numerical value, limit, or baseline (and its unit)" fails it).

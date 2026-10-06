@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 76238,
+  "stop_reason": "end_turn",
+  "session_id": "f6f7edc3-d27c-443a-bb60-7b9f3fd94a8a",
+  "total_cost_usd": 0.154986,
+  "usage": {
+    "input_tokens": 9747,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 113152,
+    "output_tokens": 1987,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 9747,
+      "outputTokens": 1987,
+      "cacheReadInputTokens": 113152,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.154986,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 8,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. RT-03 is a read-and-restate task; the model was read, validated, and restated with no facts added.\n\n**Files changed**\n- `answer.md` (new) — the requirement restatement. No `.sysml` files were edited.\n\n**Model read**\n- `input/model.sysml` defines package `RoundTripRadar` containing a single requirement definition, `RadarShare`, whose doc states: *\"The UAV radar shares tracks with the command ship.\"*\n\n**Requirements restated in answer.md**\n- The model defines one requirement, `RadarShare`, in the package `RoundTripRadar`.\n- RadarShare: The UAV radar shares tracks with the command ship.\n- The model states no other requirements and no numeric limits, rates, budgets, frequencies, ranges, or counts — consistent with the \"do not add facts\" rule, nothing beyond this was asserted.\n\n**Validation status**\n- `./validate RoundTripRadar input/model.sysml` → official status **PASS**, 0 diagnostics, 0 warnings.\n\n**Check results / open questions**\n- None failing; no open questions.",
+  "ttft_ms": 7678,
+  "type": "result",
+  "duration_ms": 79525,
+  "uuid": "d4561348-5109-4574-a69f-e6995bd60e6e",
+  "ttft_stream_ms": 7367,
+  "time_to_request_ms": 46,
+  "first_content_frame_ms": 7367,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

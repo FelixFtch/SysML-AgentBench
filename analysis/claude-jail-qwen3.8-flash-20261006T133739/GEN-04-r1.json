@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 454759,
+  "stop_reason": "end_turn",
+  "session_id": "3b3a7530-88b4-4930-b4c1-691bd0bbd244",
+  "total_cost_usd": 0.7957,
+  "usage": {
+    "input_tokens": 28683,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 478720,
+    "output_tokens": 16517,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 28683,
+      "outputTokens": 16517,
+      "cacheReadInputTokens": 478720,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.7957,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 21,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the task rules:\n\n**Files changed**\n- `ShoreArchive.sysml` (new) — the model\n- `answer.md` (new) — the report\n\n**Final model** (`ShoreArchive.sysml:1-23`):\n```sysml\npackage ShoreArchive {\n\n    private import ScalarValues::*;\n\n    port def LinkPort { }\n\n    part def Processor { }\n\n    part shore {\n        port fromCommand : LinkPort;\n        part archive : Processor;\n        attribute backhaulMbps : Real = 50.0;\n        attribute archiveDays : Real = 30.0;\n    }\n\n    requirement def ShoreArchiveRetention {\n        doc /* The shore archive keeps relayed tracks for 30 days. */\n    }\n}\n```\n\n**Validation status:** official Pilot 0.62 validator → **PASS** (`return_code: 0`, `diagnostics: []`, 0 warnings). All four requirements covered; the values 50.0 / 30.0 / \"30 days\" are used exactly as stated — nothing was adjusted to satisfy a check.\n\n**Failing checks encountered and fixed (reported verbatim in answer.md):**\n- `Couldn't resolve reference to Type 'Real'.` and `An attribute must be typed by attribute definitions.` — fixed by importing `ScalarValues`.\n- `mismatched input 'import' expecting '}'`, `no viable alternative at input '::'`, `extraneous input '}' expecting EOF` — this kernel's grammar rejected bare `import`; `private import ScalarValues::*;` (the form used throughout the bundled library sources, e.g. `Time.sysml`) cleared all syntax errors and linked `Real`.\n\n**Open question:** requirement 2 doesn't give `shore` itself a type, so I left the part usage untyped (a nested `part archive : Processor` is typed, per the spec). If `shore` is meant to be typed by a definition, tell me which one and I'll add it.",
+  "ttft_ms": 5010,
+  "type": "result",
+  "duration_ms": 466026,
+  "uuid": "53ebf635-bd74-476f-a24c-03335125eecd",
+  "ttft_stream_ms": 3986,
+  "time_to_request_ms": 78,
+  "first_content_frame_ms": 3986,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

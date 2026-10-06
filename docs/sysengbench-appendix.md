@@ -1,5 +1,20 @@
-# 附录：SysEngBench
+# Appendix: SysEngBench
 
-SysEngBench（Bell、Longshore、Madachy，与第三篇论文同一团队）是系统工程知识选择题，不是 SysML 模型题。Hugging Face 上的 `rabell/SysEngBench` 许可是 MIT，大约一千一百道四选一，字段是题干、四个选项、答案和解释。卷子里没有可交给官方 Pilot 的 `.sysml`。
+SysEngBench (Bell, Longshore, Madachy, the team behind paper 3) is a set of multiple-choice questions on systems engineering knowledge, organised by INCOSE Handbook category. It contains no SysML model that the official Pilot could check. Source: `rabell/SysEngBench` on Hugging Face, MIT licence, `test.csv` with 1,144 four-option questions, registered with its SHA-256 in `datasets/SOURCES.md`.
 
-它不进入 24 道海事题的主评分。主评分只比较需求到模型、修改、读模型、缺信息和回写。SysEngBench 若以后要做，只能单独报“模型懂不懂系统工程术语”，不能和语法通过率或功率 FAIL 加在一起。
+## How it is used
+
+It is a side benchmark named in the sponsor's brief and is not added to the exam score. `bench/run_side.py` puts the same 100 questions, fixed with seed 20261006 (`analysis/sysengbench/ids-100.txt`), to the four exam candidates: direct qwen3.8-flash, direct qwen3.8-max, and OpenCode and Claude Code on qwen3.8-flash in the agent sandbox. Each prompt holds 10 questions and asks for a JSON map from question id to letter; every question is asked three times, 300 answers per candidate. The answer column is read only when scoring.
+
+## Results
+
+| Candidate | Correct of 300 |
+|---|---|
+| Direct qwen3.8-flash | 283 |
+| Direct qwen3.8-max | 291 |
+| OpenCode (flash) | 272 |
+| Claude Code (flash) | 291 |
+
+Answering B every time scores 51 of these 100 questions: in the full set the key is B for 557 questions and C for 394 of 1,144. All four candidates score 91–97%, so the benchmark says that the models know the vocabulary of systems engineering; it does not separate them the way the maritime exam does, and it says nothing about writing SysML v2. Current numbers are in `STATUS.md`; the run folders are `analysis/side-sysengbench-*`.
+
+The 2026-10-03 run (20 questions answered by a judging model) is archived in `analysis/archive/2026-10-06-judges/` and not used.

@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 449594,
+  "stop_reason": "end_turn",
+  "session_id": "35739a64-5d5f-4496-aa5f-7aeab6a26bf9",
+  "total_cost_usd": 0.8256119999999999,
+  "usage": {
+    "input_tokens": 34480,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 852224,
+    "output_tokens": 9084,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 34480,
+      "outputTokens": 9084,
+      "cacheReadInputTokens": 852224,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.8256119999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 32,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the workspace rules:\n\n**Files changed**\n- `ShoreArchive.sysml` (created) — the model\n- `answer.md` (created) — deliverable write-up\n- Nothing under `requirements/`/`gold/` was touched; `input/requirements.md` was read only.\n\n**Model**\n\n```sysml\npackage ShoreArchive {\n    private import ScalarValues::*;\n\n    port def LinkPort;\n\n    part def Processor;\n\n    part shore {\n        port fromCommand : LinkPort;\n        part archive : Processor;\n        attribute backhaulMbps : Real = 50.0;\n        attribute archiveDays : Real = 30.0;\n    }\n\n    requirement def ShoreArchiveRetention {\n        doc /* The shore archive keeps relayed tracks for 30 days. */\n    }\n}\n```\n\n**Validation status**: `./validate ShoreArchive ShoreArchive.sysml` → **PASS**, `diagnostics: []`, 0 warnings — confirmed on two consecutive runs. Evidence retained in `validation/20261006T104333412862694/` and `validation/20261006T104725437350678/`.\n\n**Check results** — each requirement cross-checked against the official model export (`model.json`):\n1. `PortDefinition::LinkPort` and `PartDefinition::Processor` present — pass.\n2. `PartUsage::shore` owns exactly `fromCommand` (typed LinkPort), `archive` (typed Processor), `backhaulMbps`, `archiveDays` — pass.\n3. Both attributes typed `ScalarValues::Real` with `LiteralRational` values `50.0` / `30.0`, nested on `shore` — pass.\n4. `RequirementDefinition::ShoreArchiveRetention` with documentation body \"The shore archive keeps relayed tracks for 30 days.\" — pass.\n\n**Open questions**: none — all values came verbatim from `input/requirements.md`; no number was invented, changed, or relaxed.",
+  "ttft_ms": 3614,
+  "type": "result",
+  "duration_ms": 460267,
+  "uuid": "0b6f8887-b397-485b-b3a1-2422d61cadef",
+  "ttft_stream_ms": 3416,
+  "time_to_request_ms": 48,
+  "first_content_frame_ms": 3416,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

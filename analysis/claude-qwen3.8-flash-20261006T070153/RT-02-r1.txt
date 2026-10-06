@@ -1,0 +1,11 @@
+Write permission was declined, so here is the restatement directly:
+
+**Requirements restated from the model**
+
+1. The model defines a package named `RoundTripPower`, which privately imports the `ScalarValues` package.
+2. The package defines a part usage named `usv`.
+3. The part `usv` has an attribute `powerLimitW` of type `Real` with the value `60.0`.
+4. The package defines a requirement definition named `KeepPower`.
+5. `KeepPower` states: the unmanned surface vessel power limit is 60 W.
+
+Notes on fidelity: the attribute value `60.0` itself carries no unit in the model; the unit "W" appears only in the requirement's documentation text. The requirement def does not formally assert anything against `usv` beyond this doc statement — no subject, constraint, or satisfaction binding is present in the given model, so none is claimed here.

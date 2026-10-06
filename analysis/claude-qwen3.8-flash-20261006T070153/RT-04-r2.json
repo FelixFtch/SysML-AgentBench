@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 25017,
+  "stop_reason": "end_turn",
+  "session_id": "c1c652cc-4e5c-4b5e-a310-95d918ba46c5",
+  "total_cost_usd": 0.057069999999999996,
+  "usage": {
+    "input_tokens": 3574,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 51200,
+    "output_tokens": 544,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 3574,
+      "outputTokens": 544,
+      "cacheReadInputTokens": 51200,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.057069999999999996,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 4,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Restating the model's requirements in sentences:\n\n1. The system includes a shore part that models the round-trip archive.\n2. The shore part has an attribute `backhaulMbps` valued at 50.0, representing a 50 Mbit/s backhaul.\n3. The shore part has an attribute `archiveDays` valued at 30.0, representing a 30-day retention period.\n4. The model defines a requirement named `Archive`, stated as: the shore archive keeps tracks for 30 days on a 50 Mbit/s backhaul.\n\nThese sentences cover everything the model asserts — the `RoundTripArchive` package, its single `shore` part with the two attribute values, and the `Archive` requirement definition with its documentation text. No performance, capacity, or operational claims beyond those values are present in the model, so none are stated here.",
+  "ttft_ms": 6411,
+  "type": "result",
+  "duration_ms": 25127,
+  "uuid": "6b799d1f-ea55-4ae0-9117-ef70a17fc0b8",
+  "ttft_stream_ms": 5182,
+  "time_to_request_ms": 65,
+  "first_content_frame_ms": 5182,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

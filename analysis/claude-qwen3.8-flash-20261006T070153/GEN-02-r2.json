@@ -1,0 +1,94 @@
+{
+  "duration_api_ms": 51482,
+  "stop_reason": "end_turn",
+  "session_id": "7c10b119-725b-4729-8944-bcdbc48ebbc8",
+  "total_cost_usd": 0.112705,
+  "usage": {
+    "input_tokens": 3786,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 51200,
+    "output_tokens": 2727,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 3786,
+      "outputTokens": 2727,
+      "cacheReadInputTokens": 51200,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.112705,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_dae82dfeea364cf58001d035",
+      "tool_input": {
+        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T072828-P-CODE-2-GEN-02/workspace 2>/dev/null; ls /data/robotics/RTRC/mvp 2>/dev/null | head",
+        "description": "List workspace contents"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 3,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage UavSearch {\n\n    port def TrackPort {\n    }\n\n    port def ImageryPort {\n    }\n\n    port def LinkPort {\n    }\n\n    part def Radar {\n        port tracks : TrackPort;\n    }\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n\n    part def Processor {\n        port trackIn : TrackPort;\n        port imageryIn : ImageryPort;\n        port uplink : LinkPort;\n    }\n\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part uav {\n        part searchRadar : Radar;\n        part eoCamera : Camera;\n        part processor : Processor;\n        part radio : Radio;\n\n        connect searchRadar.tracks to processor.trackIn;\n        connect eoCamera.imagery to processor.imageryIn;\n        connect processor.uplink to radio.fromProcessor;\n    }\n}\n```",
+  "ttft_ms": 30746,
+  "type": "result",
+  "duration_ms": 51646,
+  "uuid": "1d6a5e6e-2116-4f18-8963-114496fb2d16",
+  "ttft_stream_ms": 5209,
+  "time_to_request_ms": 119,
+  "first_content_frame_ms": 5209,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

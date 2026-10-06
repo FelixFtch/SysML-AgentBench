@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 69785,
+  "stop_reason": "end_turn",
+  "session_id": "313e05ec-34ae-4fd5-9618-7b4f5f63ca9b",
+  "total_cost_usd": 0.132033,
+  "usage": {
+    "input_tokens": 8871,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 96256,
+    "output_tokens": 1582,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 8871,
+      "outputTokens": 1582,
+      "cacheReadInputTokens": 96256,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.132033,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 8,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Read the three numeric attributes from `part def UnmannedSurfaceVessel` in `input/model.sysml:36-38` and wrote the answer.\n\n**Answer** (now in `answer.md`):\n```json\n{\"powerLimitW\": 60.0, \"uplinkMbps\": 8.0, \"storageGB\": 128.0}\n```\n\n**Files changed:** `answer.md` (created). No model files were edited — this was a read-only query.\n\n**Validation status:** `./validate MaritimeISR input/model.sysml` → **PASS**, 0 diagnostics, return code 0 (official-pilot-xtext-emf, kernel 0.62.0).\n\n**Check results:** No failing checks to report. The values are read directly from the model: `powerLimitW : Real = 60.0`, `uplinkMbps : Real = 8.0`, `storageGB : Real = 128.0`.\n\n**Open questions:** None.",
+  "ttft_ms": 9793,
+  "type": "result",
+  "duration_ms": 76748,
+  "uuid": "a967409c-163f-46e1-b18e-0e0059b928e0",
+  "ttft_stream_ms": 8694,
+  "time_to_request_ms": 67,
+  "first_content_frame_ms": 8695,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

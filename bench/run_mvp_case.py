@@ -28,17 +28,12 @@ LITERAL = re.compile(r"=\s*([0-9]+(?:\.[0-9]+)?)\s*;")
 
 
 def _archived(task_id: str) -> dict:
-    from bench.rescore import apply, load
-    table = load()
+    """The same task's cells in the scored direct-flash batch (bench/batches.py), for comparison with this run."""
+    from bench.batches import rows
     counts = {"PASS": 0, "FAIL": 0, "other": 0}
-    for path in sorted((ROOT / "analysis").glob("heldout-*/results.jsonl")):
-        for line in path.read_text(encoding="utf-8").splitlines():
-            if not line.strip():
-                continue
-            row = json.loads(line)
-            if row.get("task_id") != task_id:
-                continue
-            status = apply("flash", row, table).get("status")
+    for row in rows("flash"):
+        if row.get("task_id") == task_id:
+            status = row.get("status")
             counts[status if status in counts else "other"] += 1
     return counts
 
@@ -128,7 +123,7 @@ def main() -> None:
         "reliability": {
             "this_run": scored.get("status"),
             "archived": _archived(task_id),
-            "note": "The same task's 12 archived main-matrix cells (current scorer), to see whether the verdict is stable. This new run counts separately.",
+            "note": "The same task's 12 cells in the scored direct-flash batch, to see whether the verdict is stable. This new run counts separately.",
         },
     }
     out = ROOT / "analysis" / f"mvp-case-{stamp}-{task_id}"

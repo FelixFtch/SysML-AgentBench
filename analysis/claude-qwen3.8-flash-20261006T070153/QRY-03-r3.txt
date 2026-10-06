@@ -1,0 +1,18 @@
+Checking each connect statement for an endpoint on `commandShip`:
+
+1. `usv.eoCamera.imagery → usv.processor.imageryIn` — no
+2. `usv.irCamera.imagery → usv.processor.imageryIn` — no
+3. `usv.ais.tracks → usv.processor.trackIn` — no
+4. `usv.processor.uplink → usv.radio.fromProcessor` — no
+5. `usv.radio.toShore → commandShip.fromUsv` — **yes**
+6. `uav.searchRadar.tracks → uav.processor.trackIn` — no
+7. `uav.eoCamera.imagery → uav.processor.imageryIn` — no
+8. `uav.processor.uplink → uav.radio.fromProcessor` — no
+9. `uav.radio.toShore → commandShip.fromUav` — **yes**
+10. `commandShip.toShore → shore.fromCommand` — **yes**
+
+Three connect statements touch `commandShip` (`fromUsv`, `fromUav`, `toShore`).
+
+```json
+{"connections": 3}
+```

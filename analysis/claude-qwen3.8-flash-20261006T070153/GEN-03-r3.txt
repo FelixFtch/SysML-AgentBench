@@ -1,0 +1,18 @@
+```sysml
+package FusionNode {
+
+    port def LinkPort {
+    }
+
+    part def Processor {
+        port trackIn : LinkPort
+    }
+
+    part usage commandShip {
+        port fromUsv : LinkPort
+        port fromUav : LinkPort
+        part fusion : Processor
+        attribute fusionLatencyS : Real = 2.0
+    }
+}
+```

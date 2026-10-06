@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 24315,
+  "stop_reason": "end_turn",
+  "session_id": "967f5eae-dfb1-46a7-81af-ec19a2bebf9e",
+  "total_cost_usd": 0.05793999999999999,
+  "usage": {
+    "input_tokens": 3383,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 51200,
+    "output_tokens": 617,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 3383,
+      "outputTokens": 617,
+      "cacheReadInputTokens": 51200,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.05793999999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 3,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "I've read the single input file, `input/requirements.md`, and it contains a deliberate ambiguity that I cannot resolve on my own:\n\n- One statement says the uplink is **8** (no unit).\n- Another says the uplink is **8 MHz**.\n\nThese are only consistent if we assume the bare \"8\" was meant to be \"8 MHz\" — but that assumption is exactly what the task forbids: the unit is not settled, and the file instructs that a missing or conflicting number/unit must be asked about, not invented, with no SysML written until it is resolved.\n\n**My question:** What is the uplink bandwidth, with its unit?\n\n1. **8 MHz** — the bare \"8\" was shorthand, and MHz is the correct unit, or\n2. **8 with some other unit** (e.g. 8 Gbps, 8 Msymbol/s, 8 kHz), or\n3. Some different value entirely.\n\nOnce you confirm the value and unit, I can proceed. Until then I have written no SysML and invented no number, per the task's rules.",
+  "ttft_ms": 7444,
+  "type": "result",
+  "duration_ms": 24434,
+  "uuid": "9e40bf30-560e-4248-99ea-e3768ef9bbba",
+  "ttft_stream_ms": 5211,
+  "time_to_request_ms": 64,
+  "first_content_frame_ms": 5215,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

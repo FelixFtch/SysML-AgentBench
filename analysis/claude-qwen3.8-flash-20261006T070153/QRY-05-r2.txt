@@ -1,0 +1,5 @@
+The three attributes in `UnmannedSurfaceVessel` (workspace `input/model.sysml:36-38`) are powerLimitW = 60.0, uplinkMbps = 8.0, storageGB = 128.0 (the 120.0 powerLimitW on line 45 belongs to FixedWingUav, not the USV).
+
+```json
+{"powerLimitW": 60.0, "uplinkMbps": 8.0, "storageGB": 128.0}
+```

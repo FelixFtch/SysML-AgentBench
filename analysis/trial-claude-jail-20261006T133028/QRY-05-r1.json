@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 48096,
+  "stop_reason": "end_turn",
+  "session_id": "1fe7656b-7850-449c-a70c-c1698d328ce8",
+  "total_cost_usd": 0.12989900000000001,
+  "usage": {
+    "input_tokens": 10479,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 94208,
+    "output_tokens": 1216,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 10479,
+      "outputTokens": 1216,
+      "cacheReadInputTokens": 94208,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.12989900000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 6,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Answer read from `input/model.sysml:36-38` in part definition `UnmannedSurfaceVessel`:\n\n```json\n{\"powerLimitW\": 60.0, \"uplinkMbps\": 8.0, \"storageGB\": 128.0}\n```\n\n**Files changed**\n- `answer.md` — created with the JSON answer. No `.sysml` model files were modified (this was a read-only query).\n\n**Validation status**\n- `./validate MaritimeISR input/model.sysml` → `PASS` (official-pilot-xtext-emf, exit code 0, zero diagnostics, zero warnings).\n\n**Check results**\n- powerLimitW = 60.0 ✓ (line 36)\n- uplinkMbps = 8.0 ✓ (line 37)\n- storageGB = 128.0 ✓ (line 38)\n\n**Open questions**\n- None.",
+  "ttft_ms": 5571,
+  "type": "result",
+  "duration_ms": 56899,
+  "uuid": "b8ee291f-1278-4eb2-a273-1c5ebf950d15",
+  "ttft_stream_ms": 5190,
+  "time_to_request_ms": 55,
+  "first_content_frame_ms": 5190,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

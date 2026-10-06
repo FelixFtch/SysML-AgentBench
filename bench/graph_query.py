@@ -1,14 +1,13 @@
 """One-hop retrieval over the official parse, then one answer from qwen3.8-max.
 
-This follows the GRAG paper's step "node plus its neighbors," using the parsed
-SysML export. It does not use their MiniLM/FAISS index or their EV model, and
-the retrieved text replaces the full model in the prompt.
+This follows the GRAG paper's steps on the parsed SysML export: MiniLM + FAISS seeds
+(bench/vector_index.py), then each node plus its neighbors. It does not use their EV
+model, and the retrieved text replaces the full model in the prompt.
 """
 from __future__ import annotations
 
 import hashlib
 import json
-import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -111,31 +110,10 @@ def build_graph(parse_dir: Path, prefix: str):
     return cards, neighbors, kinds
 
 
-def retrieve_keyword(question: str, cards: dict, neighbors: dict, limit: int = 8) -> list[str]:
-    """The 2026-10-03 ranking (shared words, top 4 seeds, one hop). Kept for the archived comparison."""
-    words = {word.lower() for word in re.findall(r"[A-Za-z0-9]+", question) if len(word) > 2}
-    ranked = sorted(cards, key=lambda ident: sum(word in cards[ident].lower() for word in words), reverse=True)
-    chosen = []
-    for ident in ranked[:4]:
-        if ident not in chosen:
-            chosen.append(ident)
-        for hop in neighbors.get(ident, ()):
-            if hop in cards and hop not in chosen:
-                chosen.append(hop)
-            if len(chosen) >= limit:
-                break
-        if len(chosen) >= limit:
-            break
-    return [cards[ident] for ident in chosen[:limit]]
-
-
 def retrieve(question: str, cards: dict, neighbors: dict, limit: int = 8) -> tuple[list[str], dict]:
     """Paper 2's retrieval on our parse: MiniLM + FAISS seeds with the exact-name bonus, then one hop.
-    Returns the card texts and the settings used. Falls back to the keyword ranking if the stack is missing."""
-    try:
-        from bench.vector_index import retrieve as vector_retrieve
-    except Exception as exc:  # embedding stack not installed
-        return retrieve_keyword(question, cards, neighbors, limit), {"method": "keyword", "fallback_reason": str(exc)[:200]}
+    Returns the card texts and the settings used. There is no other ranking: a missing embedding stack raises."""
+    from bench.vector_index import retrieve as vector_retrieve
     found = vector_retrieve(question, cards, neighbors, name="memory", k_seeds=4, limit=limit)
     settings = {key: found[key] for key in ("method", "embedding_model", "threshold", "k_seeds", "name_bonus", "index_key", "library_size")}
     return [cards[item["id"]] for item in found["picked"]], settings

@@ -1,0 +1,5 @@
+Looking at the `part def FixedWingUav` definition, it contains four nested part usages (`eoCamera`, `searchRadar`, `processor`, `radio`) plus two attributes, which are not parts.
+
+```json
+{"parts": ["MaritimeISR::FixedWingUav::eoCamera", "MaritimeISR::FixedWingUav::searchRadar", "MaritimeISR::FixedWingUav::processor", "MaritimeISR::FixedWingUav::radio"]}
+```

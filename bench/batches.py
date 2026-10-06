@@ -1,0 +1,193 @@
+"""The scored batches that the results page, STATUS.md and the report read. One place to change when a batch is added.
+
+Four candidates on the 27 frozen tasks (bench/FREEZE.md, tag freeze-2026-10-06):
+- direct qwen3.8-flash and direct qwen3.8-max, approaches P0-P3, 3 repeats: 324 cells each;
+- OpenCode and Claude Code on qwen3.8-flash, 3 repeats: 81 runs each, both in the sandbox of decision 026; their ALN
+  rows come from a rerun (RERUNS) that replaces the ALN rows of the first sandboxed batch, which are kept on disk and
+  listed by superseded_rows() with RERUN_REASON.
+Two agent batches of the same morning are discarded and listed in DISCARDED with the reason; the 2026-10-03 matrix
+(24 tasks, old rules) is listed in ARCHIVE. Neither is mixed into the numbers above.
+"""
+from __future__ import annotations
+
+import json
+import re
+from collections import defaultdict
+from functools import lru_cache
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+ANALYSIS = ROOT / "analysis"
+AGENT_RUNS = ROOT / "mvp" / "agent-runs"
+TYPES = ["GEN", "MOD", "ALN", "QRY", "AMB", "RT"]
+CONFIGS = ["P0", "P1", "P2", "P3"]
+
+COHORTS = {
+    "flash": {"label": "Direct · qwen3.8-flash", "short": "flash", "kind": "direct", "model": "qwen3.8-flash",
+              "glob": "heldout-qwen3.8-flash-20261006T*"},
+    "max": {"label": "Direct · qwen3.8-max", "short": "max", "kind": "direct", "model": "qwen3.8-max",
+            "glob": "heldout-qwen3.8-max-20261006T*"},
+    "opencode": {"label": "OpenCode · qwen3.8-flash", "short": "OpenCode", "kind": "agent", "model": "qwen3.8-flash",
+                 "glob": "opencode-jail-qwen3.8-flash-*"},
+    "claude": {"label": "Claude Code · qwen3.8-flash", "short": "Claude Code", "kind": "agent", "model": "qwen3.8-flash",
+               "glob": "claude-jail-qwen3.8-flash-*"},
+}
+
+DISCARDED = {
+    "opencode-open": {"label": "OpenCode, workspace inside the repository", "model": "qwen3.8-flash",
+                      "dir": "opencode-qwen3.8-flash-20261006T070152",
+                      "reason": "The agent could read the whole repository and read answer keys in several runs, including the key "
+                                "of the task it was solving (GEN-01, GEN-02, GEN-05). Not a clean score."},
+    "claude-denied": {"label": "Claude Code, tools denied", "model": "qwen3.8-flash",
+                      "dir": "claude-qwen3.8-flash-20261006T070153",
+                      "reason": "Every Bash and Write call was denied (43 and 10), so the agent never ran the validator; "
+                                "not the same setup as OpenCode."},
+}
+
+RERUNS = {"opencode": "opencode-jail-aln-qwen3.8-flash-*", "claude": "claude-jail-aln-qwen3.8-flash-*"}
+RERUN_REASON = ("ALN runs of the first sandboxed batch. ./validate passed the files in the order the agent gave them, and "
+                "the Pilot's verdict depends on that order: with the agent's own file first, 8 alignment packages (OpenCode 3, "
+                "Claude Code 5) that fail in the scorer's order (sources first) passed the agent's check and were submitted. Every ALN run "
+                "of both agents was rerun with ./validate in the scorer's order (decision 026); the rerun replaces these rows.")
+
+ARCHIVE = {"label": "2026-10-03 matrix (24 tasks, old repair loop, old AMB/RT rules)", "pass": 224, "n": 288,
+           "dirs": ["heldout-20261003T000045", "heldout-20261003T001321"],
+           "note": "qwen3.8-flash, P1 repair with 3 rounds and only the latest error lines, re-scored once on 2026-10-03; "
+                   "kept as the record of the old rules, not comparable cell for cell."}
+
+
+def batch_dir(cohort: str) -> Path | None:
+    """The newest result folder of a cohort (by name, which starts with the run stamp)."""
+    found = sorted(path for path in ANALYSIS.glob(COHORTS[cohort]["glob"]) if (path / "results.jsonl").is_file())
+    return found[-1] if found else None
+
+
+def rerun_dir(cohort: str) -> Path | None:
+    """The newest rerun folder of a cohort; its summary.json lists the tasks it replaces."""
+    if cohort not in RERUNS:
+        return None
+    found = sorted(path for path in ANALYSIS.glob(RERUNS[cohort]) if (path / "results.jsonl").is_file())
+    return found[-1] if found else None
+
+
+def rerun_tasks(folder: Path) -> list[str]:
+    tasks = json.loads((folder / "summary.json").read_text(encoding="utf-8")).get("tasks")
+    return sorted(tasks) if isinstance(tasks, list) else []
+
+
+def _lines(path: Path) -> list[dict]:
+    if not path.is_file():
+        return []
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+@lru_cache(maxsize=None)
+def _direct_folders(model: str, start: str) -> dict[tuple[str, str], list[str]]:
+    """Run folders of one direct batch, keyed by (approach, task), oldest first. Two batches ran at the same time,
+    so a folder is assigned by the model recorded in its solve.json; repeats are in folder order."""
+    pattern = re.compile(r"^(\d{8}T\d{6})(?:-[0-9a-f]{4})?-(P[0-3])-(.+)$")
+    groups: dict[tuple[str, str], list[str]] = defaultdict(list)
+    for folder in AGENT_RUNS.iterdir():
+        match = pattern.match(folder.name)
+        if not match or match.group(1) < start:
+            continue
+        solve = folder / "solve.json"
+        if solve.is_file() and json.loads(solve.read_text(encoding="utf-8")).get("provider_model") == model:
+            groups[(match.group(2), match.group(3))].append(folder.name)
+    return {key: sorted(value) for key, value in groups.items()}
+
+
+def rows(cohort: str) -> list[dict]:
+    """Score rows of one cohort with cohort id and label; direct rows also get their run folder (`_folder`)."""
+    spec = COHORTS[cohort]
+    folder = batch_dir(cohort)
+    if not folder:
+        return []
+    out = []
+    folders = None
+    if spec["kind"] == "direct":
+        start = json.loads((folder / "summary.json").read_text(encoding="utf-8")).get("started") or folder.name[-15:]
+        folders = _direct_folders(spec["model"], start)
+    lines = [(row, folder.name) for row in _lines(folder / "results.jsonl")]
+    rerun = rerun_dir(cohort)
+    if rerun:
+        replaced = set(rerun_tasks(rerun))
+        lines = [(row, name) for row, name in lines if row["task_id"] not in replaced]
+        lines += [(row, rerun.name) for row in _lines(rerun / "results.jsonl")]
+    for row, name in lines:
+        row = {**row, "cohort_id": cohort, "cohort": spec["label"], "model": spec["model"], "batch": name}
+        if folders is not None:
+            names = folders.get((row["configuration"], row["task_id"])) or []
+            repeat = int(row.get("repeat") or 0)
+            if 1 <= repeat <= len(names):
+                row["_folder"] = str(AGENT_RUNS / names[repeat - 1])
+        out.append(row)
+    return out
+
+
+def discarded_rows(key: str) -> list[dict]:
+    return _lines(ANALYSIS / DISCARDED[key]["dir"] / "results.jsonl")
+
+
+def superseded_rows(cohort: str) -> list[dict]:
+    """Rows of a cohort's first batch that its rerun replaces."""
+    folder, rerun = batch_dir(cohort), rerun_dir(cohort)
+    if not folder or not rerun:
+        return []
+    replaced = set(rerun_tasks(rerun))
+    return [row for row in _lines(folder / "results.jsonl") if row["task_id"] in replaced]
+
+
+def usage_of_row(row: dict) -> dict:
+    """Tokens of one cell: direct rows carry per-call usage, agent rows one usage block."""
+    if row.get("calls") is not None and row.get("usage") is None:
+        total = {"input": 0, "cached": 0, "output": 0, "calls": 0}
+        for call in row.get("calls") or []:
+            usage = call.get("usage") or {}
+            total["input"] += usage.get("prompt_tokens") or 0
+            total["cached"] += (usage.get("prompt_tokens_details") or {}).get("cached_tokens") or 0
+            total["output"] += usage.get("completion_tokens") or 0
+            total["calls"] += 1
+        return total
+    usage = row.get("usage") or {}
+    return {"input": usage.get("input") or 0, "cached": usage.get("cached") or 0, "output": usage.get("output") or 0,
+            "calls": usage.get("calls") or usage.get("turns") or 0}
+
+
+def side_results() -> dict:
+    """SysEngBench and PURE per candidate: the newest side-<bench>-<candidate>-<model>-* folder of each."""
+    out: dict[str, dict] = {"sysengbench": {}, "pure": {}}
+    pairs = {"flash": ("direct", "qwen3.8-flash"), "max": ("direct", "qwen3.8-max"),
+             "opencode": ("opencode", "qwen3.8-flash"), "claude": ("claude", "qwen3.8-flash")}
+    for bench in out:
+        for cohort, (candidate, model) in pairs.items():
+            found = sorted(ANALYSIS.glob(f"side-{bench}-{candidate}-{model}-*"))
+            if not found:
+                continue
+            folder = found[-1]
+            meta = json.loads((folder / "summary.json").read_text(encoding="utf-8"))
+            items = _lines(folder / "results.jsonl")
+            usage = {"input": 0, "cached": 0, "output": 0, "calls": 0}
+            for item in items:
+                block = item.get("usage") or {}
+                if "by_model" in block:
+                    for slot in block["by_model"].values():
+                        usage["input"] += slot.get("prompt_tokens") or 0
+                        usage["cached"] += slot.get("cached_tokens") or 0
+                        usage["output"] += slot.get("completion_tokens") or 0
+                        usage["calls"] += slot.get("calls") or 0
+                else:
+                    usage["input"] += block.get("input") or 0
+                    usage["cached"] += block.get("cached") or 0
+                    usage["output"] += block.get("output") or 0
+                    usage["calls"] += block.get("calls") or block.get("turns") or 0
+            entry = {"folder": folder.name, "model": model, "usage": usage, "prompts": len(items),
+                     "errors": sum(1 for item in items if item.get("error"))}
+            if bench == "sysengbench":
+                entry.update({"correct": sum(item.get("correct") or 0 for item in items), "n": sum(item.get("n") or 0 for item in items),
+                              "always_b": meta.get("always_B_on_subset"), "questions": meta.get("questions"),
+                              "repeats": meta.get("repeats"), "subset": meta.get("subset"), "sha256": meta.get("sha256")})
+            else:
+                entry.update({"pass": sum(item.get("status") == "PASS" for item in items), "n": len(items)})
+            out[bench][cohort] = entry
+    return out

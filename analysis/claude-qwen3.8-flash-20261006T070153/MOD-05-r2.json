@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 38834,
+  "stop_reason": "end_turn",
+  "session_id": "e1f10785-741d-4ca6-b54d-50008af69e40",
+  "total_cost_usd": 0.07305500000000001,
+  "usage": {
+    "input_tokens": 4046,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 51200,
+    "output_tokens": 1089,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 4046,
+      "outputTokens": 1089,
+      "cacheReadInputTokens": 51200,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.07305500000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 4,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage PowerBudget {\n    private import ScalarValues::*;\n    part usv {\n        attribute powerLimitW : Real = 60.0;\n        part eoCamera { attribute drawW : Real = 41.0; }\n        part computer { attribute drawW : Real = 25.0; }\n        part irCamera { attribute drawW : Real = 12.0; }\n    }\n}\n```",
+  "ttft_ms": 20352,
+  "type": "result",
+  "duration_ms": 38966,
+  "uuid": "67159596-8c71-436f-87a1-b9157076e77a",
+  "ttft_stream_ms": 15543,
+  "time_to_request_ms": 81,
+  "first_content_frame_ms": 15544,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

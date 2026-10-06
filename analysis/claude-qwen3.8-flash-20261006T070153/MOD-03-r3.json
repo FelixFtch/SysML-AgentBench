@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 7631,
+  "stop_reason": "end_turn",
+  "session_id": "89b539f1-4ba2-40ea-92c6-aa49d8275e5f",
+  "total_cost_usd": 0.031375,
+  "usage": {
+    "input_tokens": 2779,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 15360,
+    "output_tokens": 392,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 2779,
+      "outputTokens": 392,
+      "cacheReadInputTokens": 15360,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.031375,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 1,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage ShoreHop {\n    port def LinkPort;\n    part def Radio { port fromProcessor : LinkPort; port toShore : LinkPort; }\n    part def Processor { port uplink : LinkPort; }\n    part def ShoreStation { port fromVessel : LinkPort; }\n    part vessel {\n        part processor : Processor;\n        part radio : Radio;\n    }\n    part shore : ShoreStation;\n    connect vessel.processor.uplink to vessel.radio.fromProcessor;\n    connect vessel.radio.toShore to shore.fromVessel;\n}\n```",
+  "ttft_ms": 6254,
+  "type": "result",
+  "duration_ms": 7741,
+  "uuid": "8920f373-1311-4111-94e0-45a9778bc6e6",
+  "ttft_stream_ms": 2810,
+  "time_to_request_ms": 123,
+  "first_content_frame_ms": 2810,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

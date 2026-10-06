@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 59269,
+  "stop_reason": "end_turn",
+  "session_id": "624239c7-d7ff-4a48-89a3-ce1dbd62356a",
+  "total_cost_usd": 0.119832,
+  "usage": {
+    "input_tokens": 9163,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 93184,
+    "output_tokens": 1097,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 9163,
+      "outputTokens": 1097,
+      "cacheReadInputTokens": 93184,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.119832,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 6,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**Answer:**\n\n```json\n{\"powerLimitW\": 60.0, \"uplinkMbps\": 8.0, \"storageGB\": 128.0}\n```\n\nThese are the three attribute values on `part def UnmannedSurfaceVessel` in `input/model.sysml` (lines 36–38).\n\n**Report per task rules:**\n\n- **Files changed:** `answer.md` (created, containing the JSON answer only). No `.sysml` model files were edited — this was a read-only query.\n- **Validation status:** `./validate MaritimeISR input/model.sysml` → **PASS**, 0 diagnostics, 0 warnings (official-pilot-xtext-emf, kernel 0.62.0).\n- **Check results:** No failing checks to report verbatim.\n- **Open questions:** None — all three values are present and unambiguous in the model.",
+  "ttft_ms": 9778,
+  "type": "result",
+  "duration_ms": 66234,
+  "uuid": "2b348a3a-8db0-49c6-a2f0-94deea851de7",
+  "ttft_stream_ms": 9380,
+  "time_to_request_ms": 83,
+  "first_content_frame_ms": 9381,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

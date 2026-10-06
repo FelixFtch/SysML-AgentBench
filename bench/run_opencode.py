@@ -1,9 +1,10 @@
-"""Run the held-out tasks through pinned OpenCode (v1.18.27), model selectable, usage recorded. Configuration name: P-CODE.
+"""Run the held-out tasks through pinned OpenCode (v1.18.27) in the sandbox. Configuration name: P-CODE.
 
-    python3 bench/run_opencode.py --model qwen3.8-flash --repeats 3 [--tasks GEN-01 ...]
+    python3 bench/run_opencode.py --model qwen3.8-flash --repeats 3 --workers 3 [--tasks GEN-01 ...]
 
-Each task runs in a fresh workspace holding only the task input and AGENTS.md (agents/external/opencode_run.py).
-Tokens are summed from OpenCode's own step events in stdout.jsonl. Output: analysis/opencode-<model>-<stamp>/results.jsonl.
+Each run gets a fresh workspace with the task input, AGENTS.md / CLAUDE.md and ./validate, inside the bubblewrap
+sandbox of agents/external/jail.py (decision 026). Tokens are summed from OpenCode's step events in stdout.jsonl.
+Output: analysis/opencode-jail-<model>-<stamp>/results.jsonl.
 """
 from __future__ import annotations
 
@@ -11,7 +12,9 @@ import argparse
 import json
 import os
 import sys
+import threading
 import traceback
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -23,6 +26,7 @@ from agents.external.opencode_run import run_opencode  # noqa: E402
 from bench.experiment import load_env, validate_and_grade  # noqa: E402
 
 HELD = ROOT / "bench" / "tasks" / "t4_maritime_isr" / "heldout"
+LOCK = threading.Lock()
 
 
 def usage_from_log(path: Path) -> dict:
@@ -45,43 +49,68 @@ def usage_from_log(path: Path) -> dict:
     return total
 
 
+def one(item: dict, repeat: int, model: str, out: Path) -> None:
+    task_dir = ROOT / item["path"]
+    record = {"repeat": repeat, "task_id": item["id"], "type": item["type"], "configuration": "P-CODE",
+              "cohort_id": "opencode", "provider_model": model, "jailed": True}
+    try:
+        solved = run_opencode(task_dir)
+        workspace = Path(solved["workspace"])
+        scored = validate_and_grade(task_dir, solved["text"], label=f"P-CODE-{item['id']}", workspace=workspace.parent / "graded")
+        record.update({"status": scored["status"], "sysml_status": scored.get("sysml_status"),
+                       "engineering_status": scored.get("engineering_status"), "engine_run": scored.get("engine_run"),
+                       "reason": scored.get("reason"), "usage": usage_from_log(workspace.parent / "stdout.jsonl"),
+                       "returncode": solved["returncode"], "workspace": str(workspace)})
+        if item["type"] == "ALN":
+            record.update({"precision": scored.get("precision"), "recall": scored.get("recall")})
+    except Exception as exc:
+        record.update({"status": "FAIL", "error": f"{type(exc).__name__}: {exc}", "trace": traceback.format_exc()[-1500:]})
+    with LOCK:
+        with (out / "results.jsonl").open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps({key: value for key, value in record.items() if key != "trace"}, ensure_ascii=False) + "\n")
+        usage = record.get("usage") or {}
+        print(f"r{repeat} {item['id']} {record['status']} {usage.get('input', '?')} in / {usage.get('output', '?')} out", flush=True)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", default="qwen3.8-flash")
     parser.add_argument("--repeats", type=int, default=1)
     parser.add_argument("--repeat-offset", type=int, default=0)
     parser.add_argument("--tasks", nargs="*", default=[])
+    parser.add_argument("--workers", type=int, default=1)
+    parser.add_argument("--resume", default="", help="an existing output folder: runs already in its results.jsonl are skipped")
+    parser.add_argument("--name", default="opencode-jail", help="output folder prefix: analysis/<name>-<model>-<stamp>")
+    parser.add_argument("--note", default="", help="stored in summary.json")
     args = parser.parse_args()
     load_env()
     os.environ["MVP_LLM_MODEL"] = args.model
     tasks = [json.loads(line) for line in (HELD / "index.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
     if args.tasks:
         tasks = [item for item in tasks if item["id"] in args.tasks]
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
-    out = ROOT / "analysis" / f"opencode-{args.model}-{stamp}"
-    out.mkdir(parents=True)
-    (out / "summary.json").write_text(json.dumps({"cohort": "opencode", "model": args.model, "version": "1.18.27",
-                                                  "repeats": args.repeats, "started": stamp}, indent=2), encoding="utf-8")
-    for repeat in range(1 + args.repeat_offset, 1 + args.repeat_offset + args.repeats):
-        for item in tasks:
-            task_dir = ROOT / item["path"]
-            record = {"repeat": repeat, "task_id": item["id"], "type": item["type"], "configuration": "P-CODE",
-                      "cohort_id": "opencode", "provider_model": args.model}
-            try:
-                solved = run_opencode(task_dir)
-                workspace = Path(solved["workspace"])
-                scored = validate_and_grade(task_dir, solved["text"], label=f"P-CODE-{item['id']}", workspace=workspace)
-                record.update({"status": scored["status"], "sysml_status": scored.get("sysml_status"),
-                               "engineering_status": scored.get("engineering_status"), "engine_run": scored.get("engine_run"),
-                               "reason": scored.get("reason"), "usage": usage_from_log(workspace.parent / "stdout.jsonl"),
-                               "returncode": solved["returncode"], "workspace": str(workspace)})
-                if item["type"] == "ALN":
-                    record.update({"precision": scored.get("precision"), "recall": scored.get("recall")})
-            except Exception as exc:
-                record.update({"status": "FAIL", "error": f"{type(exc).__name__}: {exc}", "trace": traceback.format_exc()[-1500:]})
-            with (out / "results.jsonl").open("a", encoding="utf-8") as handle:
-                handle.write(json.dumps({key: value for key, value in record.items() if key != "trace"}, ensure_ascii=False) + "\n")
-            print(f"r{repeat} {item['id']} {record['status']} {(record.get('usage') or {}).get('input', '?')} in / {(record.get('usage') or {}).get('output', '?')} out", flush=True)
+    done: set[tuple[str, int]] = set()
+    if args.resume:
+        out = Path(args.resume)
+        if (out / "results.jsonl").is_file():
+            done = {(row["task_id"], int(row["repeat"])) for row in map(json.loads, (out / "results.jsonl").read_text(encoding="utf-8").splitlines()) if row}
+        summary = json.loads((out / "summary.json").read_text(encoding="utf-8"))
+        summary.setdefault("resumed", []).append({"at": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S"),
+                                                  "kept_rows": len(done), "workers": args.workers})
+        (out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    else:
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+        out = ROOT / "analysis" / f"{args.name}-{args.model}-{stamp}"
+        out.mkdir(parents=True)
+        (out / "summary.json").write_text(json.dumps({"cohort": "opencode", "model": args.model, "version": "1.18.27", "jailed": True,
+                                                      "timeout_s": int(os.environ.get("BENCH_AGENT_TIMEOUT", "900")),
+                                                      "repeats": args.repeats, "tasks": args.tasks or "all", "workers": args.workers,
+                                                      "started": stamp, **({"note": args.note} if args.note else {})}, indent=2),
+                                          encoding="utf-8")
+    jobs = [(item, repeat) for repeat in range(1 + args.repeat_offset, 1 + args.repeat_offset + args.repeats) for item in tasks
+            if (item["id"], repeat) not in done]
+    with ThreadPoolExecutor(max_workers=max(1, args.workers)) as pool:
+        for item, repeat in jobs:
+            pool.submit(one, item, repeat, args.model, out)
     print(out)
 
 

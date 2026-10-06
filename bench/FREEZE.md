@@ -43,10 +43,10 @@ Anything listed here is not edited while a matrix runs; a change means a new fre
 | `bench/score_answer.py` | `c4d4b46d50a4aeed` |
 | `bench/score_alignment.py` | `5df06a175b208348` |
 | `bench/experiment.py` | `f417df508cbc702e` |
-| `agents/solve.py` | `12629456f89c8394` |
+| `agents/solve.py` | `979379f3dc59143f` |
 | `agents/llm.py` | `ec3c55a31d5e0ae9` |
-| `bench/vector_index.py` | `d360376d10adbac1` |
-| `bench/graph_query.py` | `7a8e0754b66cc895` |
+| `bench/vector_index.py` | `3ceb25d996b173e2` |
+| `bench/graph_query.py` | `fd18be0d387b69bb` |
 | `bench/corpus/sysml-syntax.md` | `2fa117caf5c74db2` |
 | `bench/corpus/maritime-vocabulary.md` | `e6727de2756b6328` |
 | `analysis/vector-index/examples/cards.json` | `66990cda5682d8f6` |
@@ -69,3 +69,9 @@ Anything listed here is not edited while a matrix runs; a change means a new fre
 - Within the direct candidates: P0→P1 isolates repair, P1→P2 the outline, P2→P3 retrieval; first-attempt pass inside each repaired cell is reported next to the final pass.
 - Across candidates on the same model: the three ways of running flash, 27 tasks × 3 repeats each.
 - No numeric target is pre-registered; the 2026-10-03 matrix (224/288 under its rules) is the archived point of comparison, not a baseline for the new rules.
+
+## Amendments
+
+**2026-10-06, after the scored batches (tag `freeze-2026-10-06-a1`).** By the user's decision, retrieval has no fallback. `agents/solve.py` (P3) and `bench/graph_query.py` no longer switch to a word ranking when the MiniLM + FAISS stack is missing; they raise. `bench/vector_index.py` loads the pinned MiniLM snapshot `1110a243fdf4706b3f48f1d95db1a4f5529b4d41` from the local cache, never from the network, names the install command when a package is missing, and has `--check` and `--download`; the package versions are pinned in `requirements-retrieval.txt`. Hashes before the amendment: `agents/solve.py` `12629456f89c8394`, `bench/vector_index.py` `d360376d10adbac1`, `bench/graph_query.py` `7a8e0754b66cc895`.
+
+The scored batches stand without a rerun: all 162 P3 cells of the two direct batches recorded `hybrid` retrieval, so the removed branch never ran, and P3 retrieval with the amended code on the 27 task prompts reproduces the saved retrieval of all 162 cells exactly (same cards, same scores), with the network blocked.

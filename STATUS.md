@@ -1,59 +1,93 @@
 # STATUS
 
-Generated 2026-10-03 20:21 UTC by `python3 scripts/make_status.py` from saved results. All maritime numbers are synthetic, not RTX specifications. Official SysML v2 Pilot 0.62 is the syntax adjudicator.
+Generated 2026-10-06 16:24 UTC by `python3 scripts/make_status.py` from saved results. All maritime numbers are synthetic, not RTX specifications. The official SysML v2 Pilot 0.62 is the only syntax judge; the answer keys are the ground truth; no model judges (decision 025).
 
-## Scoring rule (changed 2026-10-03)
+Task bank: 27 sealed tasks, second review recorded in `bench/tasks/t4_maritime_isr/heldout/REVIEW.md`, frozen in `bench/FREEZE.md` (tag `freeze-2026-10-06`).
 
-A task passes when the official parse passes, every required name and connection is present, no number was invented, every value the task said to keep is unchanged, and every engineering check comes out as the answer key expects. Whether the design meets its budget is reported separately as the design verdict.
+## Scoring rule
 
-The old rule scored MOD-05 honest answers FAIL and would have scored a raised limit PASS (checked with four hand-written probes). All 143 saved GEN/MOD answers were re-scored from their official parses; 15 changed, all honest MOD-05 answers. Archived results files are unchanged; see `analysis/rescore-20261003.jsonl` and `docs/decisions/019-task-verdict-vs-design-verdict.md`.
+A task passes when the official parse passes (GEN, MOD, ALN), every required name, connection or mapping is present, no number was invented, every value the task said to keep is unchanged, and every engineering check comes out as the key expects. Whether the design meets its budget is a separate design verdict (decision 019).
 
-## Main matrix: qwen3.8-flash, 24 held-out tasks × P0–P3 × 3 repeats
+## Four candidates on the 27 tasks
 
-Total 224/288 PASS (archived rule: 212).
+| Candidate | Cells | PASS | Rate | Repeat groups that disagree | Cost (USD, cn-beijing) |
+|---|---|---|---|---|---|
+| Direct · qwen3.8-flash | 324 | 267 | 82.4% | 24/108 | $0.0773 |
+| Direct · qwen3.8-max | 324 | 312 | 96.3% | 8/108 | $0.9458 |
+| OpenCode · qwen3.8-flash | 81 | 77 | 95.1% | 4/27 | $0.6817 |
+| Claude Code · qwen3.8-flash | 81 | 76 | 93.8% | 3/27 | $0.5143 |
 
-| Configuration | PASS | FAIL | Tokens | Cost (USD, cn-beijing list price) |
+Direct candidates: 27 tasks × P0–P3 × 3 repeats; the system prompt carries the SysML rules (and the alignment rules for ALN), and P1–P3 repair with the full official diagnostics. Agents: 27 tasks × 3 repeats, each run in a bubblewrap sandbox with the task statement, AGENTS.md and `./validate` (the official Pilot) and nothing else: no SysML rules in the prompt, and the repository, answer keys, past runs and transcripts are not visible (decision 026). The agents' ALN rows come from a rerun with `./validate` in the scorer's file order (see the validator note below).
+
+| Task type | flash | max | OpenCode | Claude Code |
 |---|---|---|---|---|
-| P0 | 57 | 15 | 31,190 | $0.00510 |
-| P1 | 51 | 21 | 50,377 | $0.00855 |
-| P2 | 58 | 14 | 89,059 | $0.0160 |
-| P3 | 58 | 14 | 105,304 | $0.0183 |
+| GEN | 52/60 | 60/60 | 14/15 | 15/15 |
+| MOD | 60/60 | 60/60 | 14/15 | 14/15 |
+| ALN | 20/36 | 33/36 | 8/9 | 7/9 |
+| QRY | 45/60 | 58/60 | 15/15 | 15/15 |
+| AMB | 38/48 | 41/48 | 11/12 | 10/12 |
+| RT | 52/60 | 60/60 | 15/15 | 15/15 |
 
-| Task type | PASS | Cells |
+| Agent | Runs | PASS | Hit the 900 s limit | No answer.md | Runs that called ./validate | ./validate calls | Tokens (input, cached, output) |
+|---|---|---|---|---|---|---|---|
+| OpenCode · qwen3.8-flash | 81 | 77 | 2 | 2 | 68 | 151 | 23,274,893, 21,470,720, 463,909 |
+| Claude Code · qwen3.8-flash | 81 | 76 | 2 | 3 | 69 | 134 | 17,398,757, 16,263,680, 414,434 |
+
+**Validator note.** The official Pilot 0.62 can give a different verdict for the same files in a different order. An alignment package that writes a nested usage as `Pkg::part::sub` instead of `Pkg::part.sub` fails with `Must be an accessible feature (use dot notation for nesting)` when the source models are listed first, and passes when the package itself is listed first. The scorer always lists the sources first; the direct candidates' repair loop uses the scorer. Re-validating every graded ALN answer in the other order changed none of the 72 direct answers or the three gold packages, and 8 of the 15 ALN answers the agents submitted in their first sandboxed batch (three runs submitted none); in all 8 the agent had validated its package with its own file listed first. `./validate` now passes the files in the scorer's order, and every agent ALN run was rerun.
+
+### Approaches, Direct · qwen3.8-flash (81 cells each)
+
+| Approach | PASS | Official parse 1st attempt → final (39 SysML answers) | Repairs | Tokens | USD |
+|---|---|---|---|---|---|
+| P0 | 63 | 34 → 34 | 0 | 46,864 | $0.00873 |
+| P1 | 68 | 33 → 36 | 17 | 79,551 | $0.0123 |
+| P2 | 67 | 37 → 39 | 2 | 128,529 | $0.0242 |
+| P3 | 69 | 31 → 38 | 13 | 197,521 | $0.0320 |
+
+### Approaches, Direct · qwen3.8-max (81 cells each)
+
+| Approach | PASS | Official parse 1st attempt → final (39 SysML answers) | Repairs | Tokens | USD |
+|---|---|---|---|---|---|
+| P0 | 77 | 39 → 39 | 0 | 46,939 | $0.1199 |
+| P1 | 79 | 39 → 39 | 0 | 46,727 | $0.1188 |
+| P2 | 77 | 39 → 39 | 0 | 127,836 | $0.3372 |
+| P3 | 79 | 39 → 39 | 0 | 142,524 | $0.3698 |
+
+## Failures by class
+
+| Class | flash | max | OpenCode | Claude Code |
+|---|---|---|---|---|
+| query-renamed | 15 | 2 | 0 | 0 |
+| missed-topic | 10 | 7 | 0 | 0 |
+| aln-missing-pair | 12 | 3 | 0 | 0 |
+| missing-phrase | 8 | 0 | 0 | 0 |
+| syntax-connection | 6 | 0 | 0 | 0 |
+| agent-timeout | 0 | 0 | 2 | 2 |
+| checklist-missing | 3 | 0 | 0 | 0 |
+| syntax-reference | 3 | 0 | 0 | 0 |
+| invented-number | 0 | 0 | 1 | 2 |
+| no-sysml | 0 | 0 | 1 | 1 |
+
+Details: `docs/failure_taxonomy.md`, `analysis/failure-classes-20261006.jsonl` (rebuilt by `python3 bench/classify_failures.py`).
+
+## Side benchmarks named in the brief (not in the exam score)
+
+| Candidate | SysEngBench | PURE |
 |---|---|---|
-| GEN | 26 | 60 |
-| MOD | 60 | 60 |
-| QRY | 43 | 60 |
-| AMB | 38 | 48 |
-| RT | 57 | 60 |
+| flash | 283/300 | 6/6 |
+| max | 291/300 | 6/6 |
+| OpenCode | 272/300 | 6/6 |
+| Claude Code | 291/300 | 6/6 |
 
-Repeat stability: 23 of 96 task × configuration groups gave different results across the three repeats (AMB-01, AMB-02, AMB-04, GEN-01, GEN-02, GEN-04, QRY-01, QRY-02, QRY-03, QRY-04).
+SysEngBench (rabell/SysEngBench, MIT): 100 questions fixed with seed 20261006 (`analysis/sysengbench/ids-100.txt`), 10 per prompt, 3 repeats. Always answering B scores 51/100 on this subset; the key is mostly B and C. PURE: the two sealed excerpts (EIRENE, CDN peering), 3 repeats, extracted sentences must equal the key.
 
-## Failures (64)
+## Runs that do not count
 
-| Class | Cells |
-|---|---|
-| syntax-real-or-import | 22 |
-| query-renamed | 16 |
-| syntax-connection | 8 |
-| missed-topic | 6 |
-| syntax-other | 4 |
-| no-question | 4 |
-| missing-phrase | 3 |
-| query-wrong-number | 1 |
-
-Details: `docs/failure_taxonomy.md`, `analysis/failure-classes.jsonl`.
-
-## Off-the-shelf agents (separate cohorts, not added to the 288)
-
-- OpenCode v1.18.27 on qwen3.8-flash: 21/24. MOD-02, MOD-03 and MOD-04 produced no SysML package. Cost $0.1389 for 24 tasks, mostly cached re-reads of the workspace.
-- Claude Code through CCR on qwen3.8-max: 24/24 after re-running the first run's GEN-04 failure and two timeouts (MOD-01, QRY-02). Token use was not recorded.
-
-## Model judges (not scored)
-
-- Jev 1.13: agrees with the tool on 226/288; 32 false passes, all GEN; 30 false fails (mostly AMB).
-- qwen3.8-max: agrees on 157/288; 70 false passes.
-- Both judges were told that an over-budget design does not pass, so they are compared with the design verdict. Only MOD-05 differs between the two verdicts.
+- OpenCode, workspace inside the repository (77/81, `analysis/opencode-qwen3.8-flash-20261006T070152`): The agent could read the whole repository and read answer keys in several runs, including the key of the task it was solving (GEN-01, GEN-02, GEN-05). Not a clean score.
+- Claude Code, tools denied (60/81, `analysis/claude-qwen3.8-flash-20261006T070153`): Every Bash and Write call was denied (43 and 10), so the agent never ran the validator; not the same setup as OpenCode.
+- OpenCode, ALN runs of the first sandboxed batch (6/9, `analysis/opencode-jail-qwen3.8-flash-20261006T133737`, replaced by `analysis/opencode-jail-aln-qwen3.8-flash-20261006T152723`): ALN runs of the first sandboxed batch. ./validate passed the files in the order the agent gave them, and the Pilot's verdict depends on that order: with the agent's own file first, 8 alignment packages (OpenCode 3, Claude Code 5) that fail in the scorer's order (sources first) passed the agent's check and were submitted. Every ALN run of both agents was rerun with ./validate in the scorer's order (decision 026); the rerun replaces these rows.
+- Claude Code, ALN runs of the first sandboxed batch (1/9, `analysis/claude-jail-qwen3.8-flash-20261006T133739`, replaced by `analysis/claude-jail-aln-qwen3.8-flash-20261006T152725`): ALN runs of the first sandboxed batch. ./validate passed the files in the order the agent gave them, and the Pilot's verdict depends on that order: with the agent's own file first, 8 alignment packages (OpenCode 3, Claude Code 5) that fail in the scorer's order (sources first) passed the agent's check and were submitted. Every ALN run of both agents was rerun with ./validate in the scorer's order (decision 026); the rerun replaces these rows.
+- 2026-10-03 matrix (24 tasks, old repair loop, old AMB/RT rules): 224/288. qwen3.8-flash, P1 repair with 3 rounds and only the latest error lines, re-scored once on 2026-10-03; kept as the record of the old rules, not comparable cell for cell.
 
 ## Part 2 prototype: blank brief → requirements → two designs → Pilot → alignment → checks → human approval → memory
 
@@ -62,6 +96,9 @@ Details: `docs/failure_taxonomy.md`, `analysis/failure-classes.jsonl`.
 - `20261003T144850`: designs A PASS, B PASS; alignment package PASS; checks all pass; approved none.
 - `20261003T150116`: designs A PASS, B PASS; alignment package PASS; checks all pass; approved A.
 - `20261003T192328`: designs A PASS, B PASS; alignment package PASS; checks all pass; approved none.
+- `20261004T042212`: designs A PASS, B PASS; alignment package PASS; checks all pass; approved none.
+- `20261006T063010`: designs A PASS, B PASS; alignment package PASS (1 pairs declared); checks all pass; approved none.
+- `20261006T063305`: designs A PASS, B PASS; alignment package PASS (5 pairs declared); checks all pass; approved none.
 
 Memory (`analysis/memory/approved.jsonl`): 2 approved designs (20261003T144529 A, 20261003T150116 A). Approved designs are retrieved by the next run.
 
@@ -77,13 +114,14 @@ Memory (`analysis/memory/approved.jsonl`): 2 approved designs (20261003T144529 A
 
 ## Cost
 
-Recorded spend at list price (China Beijing region, checked 2026-10-03): about $0.2639. Not recorded: the qwen3.8-max judge over 288 answers; Claude Code's 28 answers through CCR; the two PURE tasks; alignment and read-back calls in 4 Part 2 runs; 5 MOD change runs made before usage logging. Part 2 and MOD runs made after 2026-10-03 19:00 UTC record every call.
+At the China (Beijing) list price checked 2026-10-03: the four scored batches and the side benchmarks $2.4629; everything recorded, including the discarded runs, graph retrieval, Part 2 and the MOD chain, about $3.5424. 4 Part 2 runs recorded only requirements, designs and trade-offs, not alignment and read-back; later runs record everything. 5 MOD change runs predate usage logging; later runs record everything. 5 Claude Code runs hit the 900 s limit before Claude Code reported its usage (it reports only when a run ends); their tokens are not in these sums, so Claude Code's cost is a lower bound. The paper 1 replication (4 calls, qwen3.8-max) and the trial runs of 2026-10-06 are recorded in their own folders and not summed here.
 
 ## Not done
 
-- Second reviewer for the 24 answer keys; `bench/FREEZE.md` and a freeze tag.
-- Human blind review with Cohen's κ; confidence intervals for the configuration differences.
-- A frontier model and a qwen3.8-max run of the full matrix; graph retrieval as a P3 sub-configuration.
-- Alignment tasks with an answer key (paper 1) and tasks that must trigger the approval gate.
-- Second checker (Syside CLI) and vendor AI (Cameo AI Assistant); SysMBench 151 has no license file.
-- A scored evaluation set for the Part 2 prototype; dynamic simulation beyond static budget checks.
+- Human blind review with Cohen's κ; confidence intervals for the differences between approaches and candidates.
+- A frontier model outside the Qwen family; the vendor AI (Cameo AI Assistant) and a second checker (Syside CLI).
+- Tasks that must trigger the approval gate; interface tasks in the UMAA style (interoperability); a scored evaluation set for the Part 2 prototype; dynamic simulation beyond static budgets.
+- A reproduction on a clean machine (fresh clone, `requirements-retrieval.txt`, tests, one batch re-scored).
+- Report the Pilot's file-order dependence to the SysML v2 Pilot maintainers.
+- Two key issues noted in the second review are left for the next key revision: MOD-01 is lenient (the radio connection it says to keep is not checked); AMB-02 is strict (only "watt", "power limit" or "how many watts" count as asking about the limit).
+- Proposed for the next key revision, not applied: the AMB invented-number rule also fails a correct clarification that shows an example format or arithmetic from the statement. All three agent answers it fails stop and ask; one writes "e.g. `<= 450 W`" as the format it wants (OpenCode, AMB-02), two derive 128 GB / 30 days ≈ 4.27 GB/day and say it must not be used (Claude Code, AMB-03).

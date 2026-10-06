@@ -1,0 +1,12 @@
+**I can't verify or model "shared in real time" from this input — the requirements give no numbers, and I won't invent them.** Per the task rule, here is what I need before any check (or SysML) can be written:
+
+**Missing values needed for a check:**
+
+1. **Latency budget** — What is the maximum allowed end-to-end delay from track creation on the vessel to availability at shore (e.g., ≤ X ms/s)? "Real time" has no verifiable meaning without this number.
+2. **Bandwidth constraint** — Is there a limit on the vessel-to-shore link (e.g., X kbit/s), or a max message size/rate for track reports? Without one, "bandwidth" cannot be checked at all — and the heading itself notes none is given.
+3. **Track load definition** — Number of simultaneous tracks, track update rate (Hz), and payload size per track report. These determine the required data rate and are needed to check feasibility against (2).
+4. **Acceptance criterion semantics** — Is the requirement "every track push delivered within the latency budget" (hard bound), or a percentile (e.g., 95% of updates ≤ X)? And what happens on link loss — is store-and-forward acceptable, or is a missed deadline a failure?
+
+**Conflict/ambiguity note:** the document says tracks "must be shared … in real time" while also stating "No latency and no bandwidth are given" — as written, the requirement is unverifiable, so there is nothing to allocate, bound, or model.
+
+Please provide the latency budget, bandwidth/data-rate limit, and track-load figures (or point me to the specification that contains them). Until then, per the instructions, I am not writing SysML and not substituting assumed values.

@@ -193,38 +193,23 @@ def _node(ident: str, text: str) -> dict:
     return node
 
 
-def _keyword_seeds(brief: str, cards: dict, limit: int = 4) -> tuple[list[str], dict]:
-    """The original lexical ranking: a word scores when it appears in the card text, a number only
-    when the card holds the same value. Kept as the fallback when the embedding model is unavailable."""
-    words = sorted({word.lower() for word in re.findall(r"[A-Za-z]+", brief) if len(word) > 2} - STOPWORDS)
-    values = numbers_in(brief)
-    score = {ident: sum(word in text.lower() for word in words) + len(values & numbers_in(text)) for ident, text in cards.items()}
-    ranked = sorted(cards, key=lambda ident: (-score[ident], cards[ident]))
-    return [ident for ident in ranked[:limit] if score[ident] > 0], score
-
-
 def retrieve_existing(brief: str, limit: int = 12) -> dict:
     """Stage 1, the GRAG step: seed elements, then their one-hop neighbours.
 
     Seeds come from `bench.vector_index.retrieve` (MiniLM embeddings in a FAISS index, cosine plus an
-    exact-name bonus, threshold recorded in the result). If the embedding stack cannot load, the
-    lexical ranking is used and the result says so in `method`."""
+    exact-name bonus, threshold recorded in the result). There is no other ranking: without the
+    embedding stack (requirements-retrieval.txt) this raises."""
+    from bench.vector_index import retrieve as vector_retrieve
     cards, neighbors, kinds, source_of, sources = _library()
     words = sorted({word.lower() for word in re.findall(r"[A-Za-z]+", brief) if len(word) > 2} - STOPWORDS)
     values = numbers_in(brief)
     query = words + sorted(values, key=float)
-    method = {"method": "keyword", "embedding_model": None, "threshold": None}
-    try:
-        from bench.vector_index import retrieve as vector_retrieve
-        found = vector_retrieve(brief, cards, neighbors, name="memory", k_seeds=4, limit=limit)
-        seeds = [item["id"] for item in found["picked"] if item["role"] == "seed"]
-        score = {item["id"]: item["score"] for item in found["picked"]}
-        score.update({item["id"]: item["score"] for item in found["top"]})
-        method = {"method": found["method"], "embedding_model": found["embedding_model"], "threshold": found["threshold"],
-                  "name_bonus": found["name_bonus"], "index_key": found["index_key"]}
-    except Exception as exc:  # the embedding stack is optional at runtime; the record names the fallback
-        seeds, score = _keyword_seeds(brief, cards)
-        method["fallback_reason"] = f"{type(exc).__name__}: {exc}"[:200]
+    found = vector_retrieve(brief, cards, neighbors, name="memory", k_seeds=4, limit=limit)
+    seeds = [item["id"] for item in found["picked"] if item["role"] == "seed"]
+    score = {item["id"]: item["score"] for item in found["picked"]}
+    score.update({item["id"]: item["score"] for item in found["top"]})
+    method = {"method": found["method"], "embedding_model": found["embedding_model"], "threshold": found["threshold"],
+              "name_bonus": found["name_bonus"], "index_key": found["index_key"]}
     picked: list[dict] = []
     seen: set[str] = set()
     for ident in seeds:

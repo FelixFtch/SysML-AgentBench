@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 91296,
+  "stop_reason": "end_turn",
+  "session_id": "802cc3a0-77a7-42e5-8dcf-3c069f7a139c",
+  "total_cost_usd": 0.19226999999999997,
+  "usage": {
+    "input_tokens": 11560,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 138240,
+    "output_tokens": 2614,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 11560,
+      "outputTokens": 2614,
+      "cacheReadInputTokens": 138240,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.19226999999999997,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 9,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. This was a read-only query — no model edits were needed.\n\n**Answer** (written to `answer.md`):\n\n```json\n{\"parts\": [\"MaritimeISR::FixedWingUav::eoCamera\", \"MaritimeISR::FixedWingUav::searchRadar\", \"MaritimeISR::FixedWingUav::processor\", \"MaritimeISR::FixedWingUav::radio\"]}\n```\n\n**How it was determined:**\n- In `input/model.sysml:40-47`, `part def FixedWingUav` nests exactly four part usages (`eoCamera`, `searchRadar`, `processor`, `radio`). Its two nested `powerLimitW` and `downlinkMbps` are attribute usages, not part usages, so they're excluded. The package-level `part uav : FixedWingUav` (`model.sysml:62`) is a usage *of* the definition, not nested *in* it.\n- Cross-checked against the official validator's parsed model (`validation/.../model.json`), which reports exactly these four `PartUsage` elements with qualified names under `MaritimeISR::FixedWingUav::`.\n\n**Files changed:** `answer.md` (new). No `.sysml` files were modified.\n\n**Validation status:** `./validate MaritimeISR input/model.sysml` → official status **PASS**, 0 diagnostics, 0 warnings (verified before writing the answer; the model is unchanged, so this remains current).\n\n**Open questions:** none.",
+  "ttft_ms": 8323,
+  "type": "result",
+  "duration_ms": 98569,
+  "uuid": "81bfb188-9c07-40d5-a66c-e763bb56ffe1",
+  "ttft_stream_ms": 7780,
+  "time_to_request_ms": 45,
+  "first_content_frame_ms": 7780,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

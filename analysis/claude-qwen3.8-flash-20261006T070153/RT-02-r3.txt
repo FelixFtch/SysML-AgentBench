@@ -1,0 +1,10 @@
+**Restatement of the model's requirements**
+
+1. The model defines a part `usv` that carries an attribute named `powerLimitW`, typed `Real`, with the value 60.0.
+2. The model defines a requirement definition named `KeepPower`, whose stated requirement is: *The unmanned surface vessel power limit is 60 W.*
+
+**Boundary notes (what the model does and does not say)**
+
+- The number 60.0 on the attribute is untyped as to unit in the model text itself; the unit "W" appears only in the attribute's name (`powerLimitW`) and in the requirement's documentation.
+- The model contains no explicit link between `KeepPower` and `usv` or `powerLimitW` (no `satisfy`, `verify`, or requirement usage), so it does not state which part satisfies the requirement.
+- `KeepPower` is a *definition* of a requirement; the model declares no individual requirement *usage* or verification status.

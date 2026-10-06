@@ -1,0 +1,9 @@
+The write to `answer.md` wasn't permitted, so here is the restatement directly:
+
+## RT-03 — Requirements restated from the model
+
+The model contains one package, `RoundTripRadar`, defining a single requirement, `RadarShare`.
+
+**RadarShare:** The UAV radar shares tracks with the command ship.
+
+That is the only requirement stated in the model; it adds no subject definitions, no performance constraints, and no other requirements beyond this sentence.

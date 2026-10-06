@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 129833,
+  "stop_reason": "end_turn",
+  "session_id": "320fbcd4-6f84-47ad-9207-03d26b8d8a46",
+  "total_cost_usd": 0.254869,
+  "usage": {
+    "input_tokens": 13388,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 177408,
+    "output_tokens": 3969,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 13388,
+      "outputTokens": 3969,
+      "cacheReadInputTokens": 177408,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.254869,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 11,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary of the completed task:\n\n**Files changed**\n- `input/baseline/UsvPlain.sysml` — edited the baseline in place:\n  - added `part irCamera : Camera;` inside `part usv`\n  - added `connect usv.irCamera.imagery to usv.processor.imageryIn;`\n  - kept the existing eoCamera / AIS / radio connections and `powerLimitW = 60.0` unchanged; no other numbers added\n- `answer.md` — written with the full final model, diff description, and validation results\n\n**Validation status** — `./validate UsvPlain input/baseline/UsvPlain.sysml`: **PASS** (official SysML v2 Pilot 0.62.0). Diagnostics: `[]`, warnings: 0, return code 0. The validator's own scope note: it covers parser/linker and implemented Xtext static checks, excludes engineering budgets and full unit/dimension verification.\n\n**Check results**\n- `irCamera` of `Camera` inside `usv`: present ✓\n- `usv.irCamera.imagery → usv.processor.imageryIn` connection: present ✓\n- Existing camera, AIS, radio connections: intact ✓\n- `powerLimitW` still `60.0`: ✓\n\n**Open questions** — none. Note that both cameras now terminate on the single `processor.imageryIn` port; the official validator accepts this, and the task specified exactly this connection, so I did not alter it.",
+  "ttft_ms": 6399,
+  "type": "result",
+  "duration_ms": 135418,
+  "uuid": "94c84470-dd4f-4d0c-bf19-7c89a9dc8fd5",
+  "ttft_stream_ms": 6179,
+  "time_to_request_ms": 50,
+  "first_content_frame_ms": 6179,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

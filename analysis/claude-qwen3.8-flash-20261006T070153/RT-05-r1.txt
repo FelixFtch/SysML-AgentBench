@@ -1,0 +1,19 @@
+**Restatement of RT-05 — model contents and requirements as sentences**
+
+*What the model contains (structure only, nothing inferred):*
+
+- The package `RoundTripFusion` privately imports all members of `ScalarValues` (the source of the `Real` type used below).
+- It defines a part usage `commandShip`.
+- `commandShip` declares two ports, named `fromUsv` and `fromUav`; neither port has a declared type.
+- `commandShip` declares one attribute, `fusionLatencyS`, typed `Real`, with the value `2.0`.
+- It defines a requirement definition `Fusion`, whose documentation sentence is the requirement text.
+
+*The requirement, restated in sentences:*
+
+1. **Fusion latency:** the latency of fusion is 2 seconds. In the model this is carried by `commandShip`'s attribute `fusionLatencyS : Real = 2.0`.
+2. **Two uplinks:** the command ship accepts two uplinks. In the model this is carried by `commandShip` having exactly two ports, `fromUsv` and `fromUav`.
+
+*Notes on scope:*
+
+- The two requirement items above are the whole of what `requirement def Fusion` states; there are no other requirement statements in the model.
+- The model does not say what `Usv` and `Uav` stand for, does not type the ports, and specifies no units on `fusionLatencyS` beyond what the requirement doc's "2 seconds" implies; none of those details are asserted here.

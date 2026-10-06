@@ -1,0 +1,8 @@
+Restating the model's requirements in sentences:
+
+1. The system includes a shore part that models the round-trip archive.
+2. The shore part has an attribute `backhaulMbps` valued at 50.0, representing a 50 Mbit/s backhaul.
+3. The shore part has an attribute `archiveDays` valued at 30.0, representing a 30-day retention period.
+4. The model defines a requirement named `Archive`, stated as: the shore archive keeps tracks for 30 days on a 50 Mbit/s backhaul.
+
+These sentences cover everything the model asserts — the `RoundTripArchive` package, its single `shore` part with the two attribute values, and the `Archive` requirement definition with its documentation text. No performance, capacity, or operational claims beyond those values are present in the model, so none are stated here.

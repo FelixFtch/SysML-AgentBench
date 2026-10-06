@@ -1,0 +1,16 @@
+{
+  "cohort": "opencode",
+  "model": "qwen3.8-flash",
+  "version": "1.18.27",
+  "jailed": true,
+  "timeout_s": 900,
+  "repeats": 3,
+  "tasks": [
+    "ALN-01",
+    "ALN-02",
+    "ALN-03"
+  ],
+  "workers": 3,
+  "started": "20261006T152723",
+  "note": "ALN rerun with ./validate in the scorer's file order; replaces the ALN rows of the first sandboxed batch (decision 026)"
+}

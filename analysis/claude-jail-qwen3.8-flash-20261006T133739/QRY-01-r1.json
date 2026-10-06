@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 94178,
+  "stop_reason": "end_turn",
+  "session_id": "a0f8ed39-d562-4615-9526-583370bfc70a",
+  "total_cost_usd": 0.186782,
+  "usage": {
+    "input_tokens": 12310,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 139264,
+    "output_tokens": 2224,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 12310,
+      "outputTokens": 2224,
+      "cacheReadInputTokens": 139264,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.186782,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 8,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done.\n\n**Answer (also written to `answer.md`):**\n\n```json\n{\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}\n```\n\n- **Files changed:** `answer.md` (new). No `.sysml` files were edited — this was a read-only query.\n- **Validation status:** `./validate MaritimeISR input/model.sysml` → **PASS**, 0 diagnostics, 0 warnings (run against the untouched model, hash `1dcfd605…`).\n- **Check results:** The four top-level part usages at `input/model.sysml:61-64` match; the validator's parsed model confirms these four `PartUsage` elements with the qualified names above. Nested usages inside the `part def`s (e.g. `processor`, `radio`) are type internals, not platform instances.\n- **Open questions:** None.",
+  "ttft_ms": 6345,
+  "type": "result",
+  "duration_ms": 101099,
+  "uuid": "437d1ded-26cb-4671-ad62-dbfa79b53574",
+  "ttft_stream_ms": 5022,
+  "time_to_request_ms": 58,
+  "first_content_frame_ms": 5022,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

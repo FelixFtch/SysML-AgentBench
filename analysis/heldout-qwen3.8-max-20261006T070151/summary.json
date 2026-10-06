@@ -1,0 +1,8 @@
+{
+  "cells": 324,
+  "counts": {
+    "PASS": 312,
+    "FAIL": 12
+  },
+  "directory": "/data/robotics/RTRC/analysis/heldout-qwen3.8-max-20261006T070151"
+}

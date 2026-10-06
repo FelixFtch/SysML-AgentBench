@@ -39,6 +39,34 @@ def load_env() -> None:
         os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 
+def validate_and_grade(task_dir: Path, text: str, *, label: str, workspace: Path | None = None) -> dict:
+    """Score the text an external agent returned: parse it once with the official Pilot when the task takes
+    SysML (ALN tasks are parsed together with their two read-only sources), then grade. Returns the grade
+    plus run_dir, engine_run and sysml_status. No repair: the agent did its own repairing in its workspace."""
+    import yaml as _yaml
+    from agents.llm import extract_sysml
+    from agents.solve import companions_of
+    from mvp.engine import run_submitted_model
+    case = _yaml.safe_load((task_dir / "case.yaml").read_text(encoding="utf-8"))
+    solved = {"text": text, "run_dir": None, "engine_run": None, "sysml_status": None}
+    if case["type"] in {"GEN", "MOD", "ALN"} and case.get("package"):
+        try:
+            source = extract_sysml(text)
+        except ValueError as exc:
+            solved["sysml_status"] = "FAIL"
+            solved["reason"] = str(exc)
+        else:
+            folder = workspace or (ROOT / "mvp" / "exam-inbox" / f"external-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%f')}")
+            folder.mkdir(parents=True, exist_ok=True)
+            path = folder / f"{case['package']}.sysml"
+            path.write_text(source, encoding="utf-8")
+            validated = run_submitted_model(companions_of(case, task_dir) + [path], case["package"], label=label)
+            solved.update({"run_dir": validated["run_dir"], "engine_run": validated["run_id"], "sysml_status": validated["sysml"]["status"]})
+    scored = grade(task_dir, solved)
+    scored.update({"run_dir": solved["run_dir"], "engine_run": solved["engine_run"], "sysml_status": scored.get("sysml_status") or solved["sysml_status"]})
+    return scored
+
+
 def grade(task_dir: Path, solved: dict) -> dict:
     kind = yaml.safe_load((task_dir / "case.yaml").read_text(encoding="utf-8"))["type"]
     if kind == "ALN":
@@ -76,8 +104,11 @@ def main() -> None:
     if args.tasks:
         tasks = [item for item in tasks if item["id"] in args.tasks]
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
-    out = ROOT / "analysis" / f"heldout-{stamp}"
+    model = os.environ.get("MVP_LLM_MODEL", "model")
+    out = ROOT / "analysis" / f"heldout-{model}-{stamp}"
     out.mkdir(parents=True)
+    (out / "summary.json").write_text(json.dumps({"cohort": "direct", "model": model, "configs": args.configs, "repeats": args.repeats,
+                                                  "rounds": args.rounds, "started": stamp, "tasks": len(tasks)}, indent=2), encoding="utf-8")
     rows = []
     for repeat in range(1 + args.repeat_offset, 1 + args.repeat_offset + args.repeats):
         for item in tasks:

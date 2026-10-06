@@ -50,7 +50,8 @@ def run_opencode(task_dir: Path) -> dict:
     completed = subprocess.run(
         [str(BINARY), "run", "--pure", "--auto", "--format", "json",
          "--dir", str(workspace), "--model", f"qwen/{model}", prompt],
-        cwd=workspace, env=os.environ.copy(), text=True, capture_output=True, timeout=300,
+        cwd=workspace, env=os.environ.copy(), text=True, capture_output=True,
+        timeout=int(os.environ.get("BENCH_AGENT_TIMEOUT", "900")),
     )
     (work / "stdout.jsonl").write_text(completed.stdout, encoding="utf-8")
     (work / "stderr.txt").write_text(completed.stderr, encoding="utf-8")

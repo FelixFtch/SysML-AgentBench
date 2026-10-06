@@ -1,0 +1,365 @@
+{
+  "id": "20261006T055247",
+  "prompt_file": "research/paper-artifacts/CMBSE-main/prompts/sysmlv2_alignment_process.md",
+  "departures": [
+    "Stage 0 syntax confirmation and stage 5 consistency check are done by the official Pilot 0.62, not by the model.",
+    "Every 'confirmed, proceed to Stage N' is typed by this script; no human edits any stage output.",
+    "No SysML v2 specification PDF is uploaded; the prompt allows best-effort mode without it."
+  ],
+  "stage0_pilot": {
+    "oem": {
+      "status": "PASS",
+      "run_id": "20261006T055247-78ee7367",
+      "diagnostics": []
+    },
+    "supplier": {
+      "status": "PASS",
+      "run_id": "20261006T055253-3d16614a",
+      "diagnostics": []
+    },
+    "extension": {
+      "status": "PASS",
+      "run_id": "20261006T055301-5a681251",
+      "diagnostics": []
+    }
+  },
+  "published_package_pilot": {
+    "status": "FAIL",
+    "run_id": "20261006T055305-48296dd1",
+    "diagnostics": [
+      "IntegratedModel_Alignment.sysml L7: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L9: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L13: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L15: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L17: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L17: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L17: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L18: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L18: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L18: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L3: Couldn't resolve reference to Namespace 'Supplier'.",
+      "IntegratedModel_Alignment.sysml L2: Couldn't resolve reference to Namespace 'OEM'.",
+      "IntegratedModel_Alignment.sysml L10: Couldn't resolve reference to Element 'port_MeasuringInfo_def'.",
+      "IntegratedModel_Alignment.sysml L11: Couldn't resolve reference to Element 'port_Mass_def'.",
+      "IntegratedModel_Alignment.sysml L12: Couldn't resolve reference to Element 'MessDataInterface_def'.",
+      "IntegratedModel_Alignment.sysml L7: Must have at least two related elements",
+      "IntegratedModel_Alignment.sysml L9: Must have at least two related elements",
+      "IntegratedModel_Alignment.sysml L13: Must have at least two related elements",
+      "IntegratedModel_Alignment.sysml L15: Must have at least two related elements",
+      "IntegratedModel_Alignment.sysml L17: Must have at least two related elements",
+      "IntegratedModel_Alignment.sysml L18: Must have at least two related elements"
+    ]
+  },
+  "stage5_pilot": {
+    "status": "FAIL",
+    "run_id": "20261006T055738-32c6dd2e",
+    "diagnostics": [
+      "IntegratedModel_Alignment.sysml L53: no viable alternative at input 'def'",
+      "IntegratedModel_Alignment.sysml L56: no viable alternative at input 'overallSystemAlign'",
+      "IntegratedModel_Alignment.sysml L56: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L56: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L56: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L56: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L56: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L61: no viable alternative at input 'portEnergyAlign'",
+      "IntegratedModel_Alignment.sysml L61: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L61: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L61: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L61: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L61: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L66: no viable alternative at input 'energyInterfaceAlign'",
+      "IntegratedModel_Alignment.sysml L66: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L66: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L66: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L66: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L66: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L71: no viable alternative at input 'systemInstanceAlign'",
+      "IntegratedModel_Alignment.sysml L71: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L71: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L71: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L71: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L71: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L71: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L76: no viable alternative at input 'energySystemInstanceAlign'",
+      "IntegratedModel_Alignment.sysml L76: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L76: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L76: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L76: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L76: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L76: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L76: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L81: no viable alternative at input 'energyInterfaceInstAlign'",
+      "IntegratedModel_Alignment.sysml L81: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L81: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L81: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L81: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L81: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L81: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L81: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L87: no viable alternative at input 'loadCellAlign'",
+      "IntegratedModel_Alignment.sysml L87: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L87: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L87: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L87: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L87: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L92: no viable alternative at input 'energySystemDefAlign'",
+      "IntegratedModel_Alignment.sysml L92: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L92: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L92: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L92: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L92: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L97: no viable alternative at input 'portMeasuringInfoAlign'",
+      "IntegratedModel_Alignment.sysml L97: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L97: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L97: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L97: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L97: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L102: no viable alternative at input 'portMassAlign'",
+      "IntegratedModel_Alignment.sysml L102: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L102: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L102: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L102: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L102: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L107: no viable alternative at input 'messDataInterfaceAlign'",
+      "IntegratedModel_Alignment.sysml L107: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L107: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L107: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L107: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L107: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L112: no viable alternative at input 'loadCellInstanceAlign'",
+      "IntegratedModel_Alignment.sysml L112: no viable alternative at input 'from'",
+      "IntegratedModel_Alignment.sysml L112: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L112: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L112: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L112: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L112: no viable alternative at input '::'",
+      "IntegratedModel_Alignment.sysml L112: no viable alternative at input 'to'",
+      "IntegratedModel_Alignment.sysml L120: no viable alternative at input 'strainGaugeComp'",
+      "IntegratedModel_Alignment.sysml L121: no viable alternative at input 'sup'",
+      "IntegratedModel_Alignment.sysml L126: no viable alternative at input 'portTempComp'",
+      "IntegratedModel_Alignment.sysml L127: no viable alternative at input 'sup'",
+      "IntegratedModel_Alignment.sysml L132: no viable alternative at input 'tempInterfaceComp'",
+      "IntegratedModel_Alignment.sysml L133: no viable alternative at input 'sup'",
+      "IntegratedModel_Alignment.sysml L138: no viable alternative at input 'measuringObjComp'",
+      "IntegratedModel_Alignment.sysml L139: no viable alternative at input 'sup'",
+      "IntegratedModel_Alignment.sysml L121: Couldn't resolve reference to Feature 'StrainGauge'.",
+      "IntegratedModel_Alignment.sysml L127: Couldn't resolve reference to Feature 'PortTemperature'.",
+      "IntegratedModel_Alignment.sysml L133: Couldn't resolve reference to Feature 'TemperatureInterface'.",
+      "IntegratedModel_Alignment.sysml L139: Couldn't resolve reference to Feature 'MeasuringObject'."
+    ]
+  },
+  "mappings": {
+    "published_count": 13,
+    "published_pairs": [
+      [
+        "EnergySystem",
+        "EnergySystem"
+      ],
+      [
+        "EnergySystem",
+        "EnergySystem_def"
+      ],
+      [
+        "def_EnergySystem",
+        "EnergySystem"
+      ],
+      [
+        "def_EnergySystem",
+        "EnergySystem_def"
+      ],
+      [
+        "def_LoadCell",
+        "loadcell_def"
+      ],
+      [
+        "def_LoadCell",
+        "loadcell_v1"
+      ],
+      [
+        "def_MessDataInterface",
+        "MessDataInterface_def"
+      ],
+      [
+        "def_port_Mass",
+        "port_Mass_def"
+      ],
+      [
+        "def_port_MeasuringInfo",
+        "port_MeasuringInfo_def"
+      ],
+      [
+        "loadcell",
+        "loadcell_def"
+      ],
+      [
+        "loadcell",
+        "loadcell_v1"
+      ]
+    ],
+    "generated_count": 16,
+    "generated_pairs": [
+      [
+        "EnergySystem",
+        "EnergySystem"
+      ],
+      [
+        "N/A",
+        "StrainGauge_def"
+      ],
+      [
+        "N/A",
+        "TemperatureInterface_def"
+      ],
+      [
+        "N/A",
+        "def_MeasuringObject"
+      ],
+      [
+        "N/A",
+        "port_Temperature_def"
+      ],
+      [
+        "OverallSystem_v1",
+        "MeasuringSystem_v1"
+      ],
+      [
+        "def_EnergyInterface",
+        "PowerInterface_def"
+      ],
+      [
+        "def_EnergySystem",
+        "EnergySystem_def"
+      ],
+      [
+        "def_LoadCell",
+        "loadcell_def"
+      ],
+      [
+        "def_MessDataInterface",
+        "MessDataInterface_def"
+      ],
+      [
+        "def_OverallSystem",
+        "MeasuringSystem_def"
+      ],
+      [
+        "def_port_Energy",
+        "port_Power_def"
+      ],
+      [
+        "def_port_Mass",
+        "port_Mass_def"
+      ],
+      [
+        "def_port_MeasuringInfo",
+        "port_MeasuringInfo_def"
+      ],
+      [
+        "energyInterface",
+        "energyInterface"
+      ],
+      [
+        "loadcell",
+        "loadcell_v1"
+      ]
+    ],
+    "shared": [
+      [
+        "EnergySystem",
+        "EnergySystem"
+      ],
+      [
+        "def_EnergySystem",
+        "EnergySystem_def"
+      ],
+      [
+        "def_LoadCell",
+        "loadcell_def"
+      ],
+      [
+        "def_MessDataInterface",
+        "MessDataInterface_def"
+      ],
+      [
+        "def_port_Mass",
+        "port_Mass_def"
+      ],
+      [
+        "def_port_MeasuringInfo",
+        "port_MeasuringInfo_def"
+      ],
+      [
+        "loadcell",
+        "loadcell_v1"
+      ]
+    ],
+    "only_generated": [
+      [
+        "N/A",
+        "StrainGauge_def"
+      ],
+      [
+        "N/A",
+        "TemperatureInterface_def"
+      ],
+      [
+        "N/A",
+        "def_MeasuringObject"
+      ],
+      [
+        "N/A",
+        "port_Temperature_def"
+      ],
+      [
+        "OverallSystem_v1",
+        "MeasuringSystem_v1"
+      ],
+      [
+        "def_EnergyInterface",
+        "PowerInterface_def"
+      ],
+      [
+        "def_OverallSystem",
+        "MeasuringSystem_def"
+      ],
+      [
+        "def_port_Energy",
+        "port_Power_def"
+      ],
+      [
+        "energyInterface",
+        "energyInterface"
+      ]
+    ],
+    "only_published": [
+      [
+        "EnergySystem",
+        "EnergySystem_def"
+      ],
+      [
+        "def_EnergySystem",
+        "EnergySystem"
+      ],
+      [
+        "def_LoadCell",
+        "loadcell_v1"
+      ],
+      [
+        "loadcell",
+        "loadcell_def"
+      ]
+    ],
+    "note": "Pairs compared by short names of (oem_element, supplier_element); mapping_type ignored."
+  },
+  "usage": {
+    "calls": 4,
+    "by_model": {
+      "qwen3.8-max": {
+        "calls": 4,
+        "prompt_tokens": 43646,
+        "completion_tokens": 13916,
+        "cached_tokens": 25856
+      }
+    }
+  }
+}

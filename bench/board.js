@@ -6,6 +6,8 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const trunc = (v, n) => { const s = String(v ?? ""); return s.length > n ? `${s.slice(0, n - 1)}…` : s; };
 const pct = (a, b) => (b ? `${((a / b) * 100).toFixed(1)}%` : "—");
+// A task type with no cells in the saved batches yet (ALN before the re-run) reads as 0/0.
+const BT = (table, t) => (table && table[t]) || { pass: 0, n: 0, agree: 0 };
 const num = (n) => (n == null || n === "" ? "—" : Number(n).toLocaleString("en-US"));
 const g = (n) => (n == null || n === "" ? "—" : String(Number(n)));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -21,12 +23,13 @@ async function api(url, body) {
 const S = { facts: null, tasks: [], cells: [], cell: null, cellLive: false, record: null, memory: [], catalog: null, budgets: null,
   choice: null, edited: false, mod: null, modTask: "MOD-05", mods: {}, mxMode: "tool", runStage: "", cellStage: "", modStage: "", appJob: null };
 const FLOW = {};
-const TYPE_NAME = { GEN: "Generate a new model", MOD: "Modify an existing model", QRY: "Query a model", AMB: "Ambiguous: ask, don't guess", RT: "Round trip: model back to text" };
-const TYPE_SHORT = { GEN: "generate", MOD: "modify", QRY: "query", AMB: "ambiguous", RT: "round trip" };
-const TYPE_ORDER = ["GEN", "MOD", "QRY", "AMB", "RT"];
+const TYPE_NAME = { GEN: "Generate a new model", MOD: "Modify an existing model", ALN: "Align two models (paper 1)", QRY: "Query a model", AMB: "Ambiguous: ask, don't guess", RT: "Round trip: model back to text" };
+const TYPE_SHORT = { GEN: "generate", MOD: "modify", ALN: "align", QRY: "query", AMB: "ambiguous", RT: "round trip" };
+const TYPE_ORDER = ["GEN", "MOD", "ALN", "QRY", "AMB", "RT"];
 const TYPE_GUIDE = {
   GEN: { gets: "Requirements only, no model", gives: "A new SysML v2 model", judge: "Official Pilot syntax passes, and every required part, connection and number is present", pilot: true },
   MOD: { gets: "An existing model plus one change", gives: "The edited model", judge: "Official Pilot syntax passes, the checklist is met, and values that must stay are unchanged. MOD-05 also has a power budget (design verdict)", pilot: true },
+  ALN: { gets: "A specification package and a supplier package, both read-only", gives: "One alignment package of alias and allocation declarations, plus a JSON report", judge: "Official Pilot resolves every name; every required pair is declared, no look-alike pair is, nothing but imports, aliases and allocations is declared, and unmatched elements are reported", pilot: true },
   QRY: { gets: "A model plus one question", gives: "A JSON answer", judge: "Every field equals the answer key: the numbers, and names written in full with ::", pilot: false },
   AMB: { gets: "Requirements missing a number a check needs", gives: "Text that should ask for it", judge: "Asks a question (with ?), asks about the missing quantity, and invents no number", pilot: false },
   RT: { gets: "A model", gives: "The requirements restated in sentences", judge: "Every phrase and number the answer key lists is written back", pilot: false },
@@ -476,7 +479,7 @@ function failingChecks(record) {
 function renderAnswers() {
   const f = S.facts;
   const cfg = Object.fromEntries(f.configs.map((c) => [c.id, c]));
-  const typeLine = TYPE_ORDER.map((t) => `${t} ${f.by_type[t].pass}/${f.by_type[t].n}`).join(" · ");
+  const typeLine = TYPE_ORDER.filter((t) => BT(f.by_type, t).n).map((t) => `${t} ${BT(f.by_type, t).pass}/${BT(f.by_type, t).n}`).join(" · ");
   const r = S.record;
   let appBig = "No run yet";
   let appText = "Pick parts in 2.2 and give them to the agent.";
@@ -621,7 +624,7 @@ function renderScores() {
       ${bar("OpenCode", f.opencode.pass, f.opencode.n, `${f.opencode.pass}/${f.opencode.n}`)}
       ${bar("Claude Code", f.claude.pass, f.claude.n, `${f.claude.pass}/${f.claude.n}`)}
       <div class="bar-sep"></div>
-      ${TYPE_ORDER.map((t) => bar(`${t} ${TYPE_NAME[t]}`, f.by_type[t].pass, f.by_type[t].n, `${f.by_type[t].pass}/${f.by_type[t].n}`)).join("")}
+      ${TYPE_ORDER.map((t) => bar(`${t} ${TYPE_NAME[t]}`, BT(f.by_type, t).pass, BT(f.by_type, t).n, BT(f.by_type, t).n ? `${BT(f.by_type, t).pass}/${BT(f.by_type, t).n}` : "not run yet")).join("")}
       <p class="note">The scoring rule changed once, on October 3. The old rule failed MOD-05's honest answers and would have passed an answer that raised the limit. The current rule requires "values to keep are unchanged + check results match the answer key"; the main matrix went from ${f.rescore.archived_flash_pass} (archived) to ${f.flash.pass}, and only MOD-05 cells changed (re-scoring record ${esc(f.rescore.file)}). Across three repeats of the same task and approach, ${f.reliability.flips}/${f.reliability.groups} groups gave different results.</p></div>
     <div class="panel"><h4>Tokens (main model, 72 cells per approach)</h4>
       ${cfg.map((c) => bar(c.id, c.tokens, maxTok, num(c.tokens), "tok")).join("")}
@@ -633,7 +636,7 @@ function renderScores() {
       ${stack("qwen3.8-max", [[f.judge.agree, "ok"], [f.judge.false_pass, "fp"], [qFalseFail, "fn"]], f.judge.n)}
       <div class="legend"><span><i style="background:#2f9c7d"></i>agrees</span><span><i style="background:#d9534f"></i>false pass</span><span><i style="background:#e0a35f"></i>false fail</span></div>
       <table style="margin-top:8px"><thead><tr><th>Task type</th><th class="num">Jev agrees</th><th class="num">qwen agrees</th></tr></thead><tbody>
-      ${TYPE_ORDER.map((t) => `<tr><td>${t} ${TYPE_NAME[t]}</td><td class="num">${f.jev.by_type[t].agree}/${f.jev.by_type[t].n}</td><td class="num">${f.judge.by_type[t].agree}/${f.judge.by_type[t].n}</td></tr>`).join("")}
+      ${TYPE_ORDER.filter((t) => BT(f.by_type, t).n).map((t) => `<tr><td>${t} ${TYPE_NAME[t]}</td><td class="num">${BT(f.jev.by_type, t).agree}/${BT(f.jev.by_type, t).n}</td><td class="num">${BT(f.judge.by_type, t).agree}/${BT(f.judge.by_type, t).n}</td></tr>`).join("")}
       </tbody></table>
       <p class="note">All ${f.jev.false_pass} of Jev's false passes are GEN: it passes models that fail the official syntax check. Its false fails are mostly AMB: the answer asked the right question and Jev still failed it. ${esc(f.rescore.judge_basis)}</p></div>
     <div class="panel cost" id="cost-panel"></div>`;
@@ -692,12 +695,12 @@ function cellClass(c) {
 function renderGlossary() {
   const f = S.facts;
   const count = (types) => S.tasks.filter((x) => types.includes(x.type)).length;
-  const modelTasks = count(["GEN", "MOD"]);
+  const modelTasks = count(["GEN", "MOD", "ALN"]);
   const textTasks = count(["QRY", "AMB", "RT"]);
   const cards = TYPE_ORDER.map((t) => {
     const g = TYPE_GUIDE[t];
-    const bt = f.by_type[t];
-    return `<article class="gl-type ${g.pilot ? "model" : "text"}"><header><b>${t}</b><i>${esc(TYPE_SHORT[t])}</i><span>${count([t])} tasks · ${bt.pass}/${bt.n} pass</span></header>
+    const bt = BT(f.by_type, t);
+    return `<article class="gl-type ${g.pilot ? "model" : "text"}"><header><b>${t}</b><i>${esc(TYPE_SHORT[t])}</i><span>${count([t])} tasks · ${bt.n ? `${bt.pass}/${bt.n} pass` : "not run yet"}</span></header>
       <h5>${esc(TYPE_NAME[t])}</h5>
       <dl><dt>Gets</dt><dd>${esc(g.gets)}</dd><dt>Answers with</dt><dd>${esc(g.gives)}</dd><dt>Passes when</dt><dd>${esc(g.judge)}</dd></dl>
       <footer>${g.pilot ? "Official syntax check: yes" : "Official syntax check: not applicable"}</footer></article>`;
@@ -712,7 +715,7 @@ function renderGlossary() {
     ["9/12", "row end: main-matrix cells passed out of 12 (4 approaches × 3 repeats); column foot: that column's pass rate"],
   ];
   $("#mx-guide").innerHTML = `<div class="gl-types">${cards}</div>
-    <p class="gl-note"><b>Why "not applicable" shows up so often.</b> Only GEN and MOD answers are SysML models, so only those ${modelTasks} tasks (${modelTasks * 12} main-matrix cells) go through the official Pilot. QRY, AMB and RT answers are JSON or text (${textTasks} tasks, ${textTasks * 12} cells); they are compared with the answer key directly. Only MOD-05 has a power budget, so a design verdict exists for its 12 cells alone.</p>
+    <p class="gl-note"><b>Why "not applicable" shows up so often.</b> Only GEN, MOD and ALN answers are SysML, so only those ${modelTasks} tasks (${modelTasks * 12} main-matrix cells) go through the official Pilot. QRY, AMB and RT answers are JSON or text (${textTasks} tasks, ${textTasks * 12} cells); they are compared with the answer key directly. Only MOD-05 has a power budget, so a design verdict exists for its 12 cells alone.</p>
     <div class="gl-codes">${codes.map(([k, v]) => `<span><b>${esc(k)}</b>${esc(v)}</span>`).join("")}</div>`;
 }
 
@@ -736,8 +739,8 @@ function renderMatrix() {
   let body = "";
   for (const type of TYPE_ORDER) {
     const group = tasks.filter((t) => t.type === type);
-    const bt = S.facts.by_type[type];
-    body += `<tr class="grp"><th colspan="20"><b>${type}</b> = ${esc(TYPE_NAME[type])} <span class="grp-io">answer: ${esc(TYPE_GUIDE[type].gives.toLowerCase())}</span> · main matrix ${bt.pass}/${bt.n} (${pct(bt.pass, bt.n)})</th></tr>`;
+    const bt = BT(S.facts.by_type, type);
+    body += `<tr class="grp"><th colspan="20"><b>${type}</b> = ${esc(TYPE_NAME[type])} <span class="grp-io">answer: ${esc(TYPE_GUIDE[type].gives.toLowerCase())}</span> · ${bt.n ? `main matrix ${bt.pass}/${bt.n} (${pct(bt.pass, bt.n)})` : "not in the saved batches yet (added 2026-10-06; runs in the next matrix)"}</th></tr>`;
     for (const t of group) {
       let passed = 0;
       let total = 0;
@@ -946,6 +949,22 @@ function listCheck(sysml, v) {
     miss.length ? `missing: ${miss.slice(0, 2).join("; ")}${miss.length > 2 ? " …" : ""}` : invented ? `${invented} number(s) not in the task` : "parts, connections and kept values all present"];
 }
 
+function alignCheck(sysml, v) {
+  if (sysml !== "PASS") return ["Mappings", "not applied", "", "the official parse of sources + package failed first"];
+  const map = v.must_map || {};
+  const miss = (map.missing || []).map((m) => m.kind === "allocation" ? `${m.from} → ${m.to}` : `alias ${m.name} → ${m.target}`);
+  const bad = ((v.must_not_map || {}).violations || []).map((m) => `alias ${m.name} → ${m.target}`);
+  const stray = v.stray_declarations || [];
+  const un = v.unmatched || {};
+  const ok = !miss.length && !bad.length && !stray.length && !(un.missing || []).length;
+  const why = miss.length ? `missing: ${miss.slice(0, 2).join("; ")}${miss.length > 2 ? " …" : ""}`
+    : bad.length ? `look-alike pair declared: ${bad[0]}`
+    : stray.length ? `declares its own elements: ${stray.slice(0, 2).join("; ")}`
+    : (un.missing || []).length ? `unmatched not reported: ${un.missing.slice(0, 2).join("; ")}`
+    : `precision ${v.precision ?? "—"} · recall ${v.recall ?? "—"} · unmatched reported ${un.hit ?? 0}/${un.expected ?? 0}`;
+  return ["Mappings", `${map.hit ?? 0}/${map.expected ?? 0} pairs`, ok ? "pass" : "fail", why];
+}
+
 function answerCheck(type, v) {
   const short = (x) => trunc(typeof x === "string" ? x : JSON.stringify(x), 48);
   if (type === "QRY") {
@@ -986,6 +1005,7 @@ function answerCheck(type, v) {
 const VERDICT_RULE = {
   GEN: "official syntax and every checklist item must pass",
   MOD: "official syntax, checklist and kept values must all pass",
+  ALN: "names resolve, every required pair declared, no look-alike pair, sources untouched, unmatched reported",
   QRY: "no model submitted: the JSON must equal the answer key",
   AMB: "no model submitted: all three question checks must hold",
   RT: "no model submitted: every required phrase must be written back",
@@ -1000,14 +1020,15 @@ function renderCell(d, live) {
   const cls = d.status === "PASS" ? "pass" : d.status === "FAIL" ? "fail" : "";
   const model = d.model || MODEL_OF[d.cohort_id] || "";
   const cost = d.usage && (d.usage.input || d.usage.output) ? usdOf(model, d.usage) : null;
-  const modelTask = d.type === "GEN" || d.type === "MOD";
+  const alignTask = d.type === "ALN";
+  const modelTask = d.type === "GEN" || d.type === "MOD" || alignTask;
   const v = d.verdict || {};
   const pending = ["Check", "—", "", "runs after the answer arrives"];
   $("#cell-head").innerHTML = `<div class="scene-wrap" id="cell-scene"></div>` + verdictBar([
     ["Task verdict", status, `big ${cls}`, d.archived_status && d.archived_status !== d.status ? `archived verdict ${d.archived_status}; re-scored with the current rule` : running ? "running" : VERDICT_RULE[d.type] || "every checklist item must match"],
-    modelTask ? ["Official syntax", d.sysml_status || "—", d.sysml_status === "PASS" ? "pass" : d.sysml_status ? "fail" : "", `${at.length} parse(s)${at.length > 1 ? ` · ${at.length - 1} repair(s)` : ""}`] : null,
-    running && !Object.keys(v).length ? pending : modelTask ? listCheck(d.sysml_status, v) : answerCheck(d.type, v),
-    modelTask ? designItem(d.sysml_status, v) : null,
+    modelTask ? ["Official syntax", d.sysml_status || "—", d.sysml_status === "PASS" ? "pass" : d.sysml_status ? "fail" : "", `${at.length} parse(s)${at.length > 1 ? ` · ${at.length - 1} repair(s)` : ""}${alignTask ? " · sources + package together" : ""}`] : null,
+    running && !Object.keys(v).length ? pending : alignTask ? alignCheck(d.sysml_status, v) : modelTask ? listCheck(d.sysml_status, v) : answerCheck(d.type, v),
+    modelTask && !alignTask ? designItem(d.sysml_status, v) : null,
     ["Jev (not scored)", d.jev ? `pass probability ${d.jev.p_pass}` : "—", d.jev ? (d.jev.agree ? "pass" : "fail") : "", d.jev ? judgeWord(d, d.jev) : "no record"],
     ["qwen (not scored)", d.qwen ? d.qwen.verdict : "—", d.qwen ? (d.qwen.agree ? "pass" : "fail") : "", d.qwen ? judgeWord(d, d.qwen) : "no record"],
     ["This cell", `${d.task_id} · ${d.configuration || ""}${d.repeat ? ` · repeat ${d.repeat}` : ""}`, "", `${d.cohort || ""}${model ? ` · ${model}` : ""}${d.tokens ? ` · ${num(d.tokens)} tokens` : ""}${cost != null ? ` · ${money(cost)}` : ""}`],

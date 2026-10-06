@@ -1,0 +1,11 @@
+id: ALN-03
+type: ALN
+scenario_family: t4_maritime_isr
+split: heldout
+package: AlignRadar
+sources:
+- UavSensorSpec.sysml
+- RadarVendor.sysml
+synthetic: true
+status: single-author
+second_reviewer: pending

@@ -1,0 +1,30 @@
+task_id: ALN-01
+package: AlignCamera
+status: single-author
+sources:
+- UsvPayloadSpec.sysml
+- OptronicsKit.sysml
+must_map:
+- kind: alias
+  name: Camera
+  target: OptronicsKit::EoCameraUnit
+- kind: alias
+  name: ImageryPort
+  target: OptronicsKit::VideoOut
+- kind: alias
+  name: imagery
+  target: OptronicsKit::EoCameraUnit::videoOut
+- kind: alias
+  name: drawW
+  target: OptronicsKit::EoCameraUnit::powerDrawW
+- kind: allocation
+  from: UsvPayloadSpec::usv.eoCamera
+  to: OptronicsKit::kit.cameraUnit
+must_not_map:
+- kind: alias
+  name: drawW
+  target: OptronicsKit::EoCameraUnit::heaterW
+  why: heaterW is a second, separate power figure; powerDrawW is the counterpart of
+    drawW
+must_report_unmatched:
+- OptronicsKit::EoCameraUnit::heaterW

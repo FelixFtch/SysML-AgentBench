@@ -1,0 +1,46 @@
+task_id: ALN-02
+package: AlignLink
+status: single-author
+sources:
+- ShipLinkIcd.sysml
+- VendorRadioPack.sysml
+must_map:
+- kind: alias
+  name: Radio
+  target: VendorRadioPack::RadioUnit
+- kind: alias
+  name: LinkPort
+  target: VendorRadioPack::DataLink
+- kind: alias
+  name: HealthPort
+  target: VendorRadioPack::StatusOut
+- kind: alias
+  name: toShore
+  target: VendorRadioPack::RadioUnit::dataOut
+- kind: alias
+  name: health
+  target: VendorRadioPack::RadioUnit::status
+- kind: alias
+  name: uplinkMbps
+  target: VendorRadioPack::RadioUnit::linkRateMbps
+- kind: alias
+  name: CommandShip
+  target: VendorRadioPack::ShipTerminal
+- kind: allocation
+  from: ShipLinkIcd::usv.radio
+  to: VendorRadioPack::vessel.radioUnit
+- kind: allocation
+  from: ShipLinkIcd::commandShip
+  to: VendorRadioPack::terminal
+must_not_map:
+- kind: alias
+  name: HealthPort
+  target: VendorRadioPack::ControlIn
+  why: health is reported out of the radio; ControlIn carries commands into it
+- kind: alias
+  name: uplinkMbps
+  target: VendorRadioPack::RadioUnit::txPowerW
+  why: a data rate is not a transmit power
+must_report_unmatched:
+- VendorRadioPack::ControlIn
+- VendorRadioPack::RadioUnit::txPowerW

@@ -22,3 +22,6 @@
 {"id": "RT-03", "type": "RT", "path": "bench/tasks/t4_maritime_isr/heldout/RT-03"}
 {"id": "RT-04", "type": "RT", "path": "bench/tasks/t4_maritime_isr/heldout/RT-04"}
 {"id": "RT-05", "type": "RT", "path": "bench/tasks/t4_maritime_isr/heldout/RT-05"}
+{"id": "ALN-01", "type": "ALN", "path": "bench/tasks/t4_maritime_isr/heldout/ALN-01"}
+{"id": "ALN-02", "type": "ALN", "path": "bench/tasks/t4_maritime_isr/heldout/ALN-02"}
+{"id": "ALN-03", "type": "ALN", "path": "bench/tasks/t4_maritime_isr/heldout/ALN-03"}

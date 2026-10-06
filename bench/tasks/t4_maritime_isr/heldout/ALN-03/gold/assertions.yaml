@@ -1,0 +1,33 @@
+task_id: ALN-03
+package: AlignRadar
+status: single-author
+sources:
+- UavSensorSpec.sysml
+- RadarVendor.sysml
+must_map:
+- kind: alias
+  name: SearchRadar
+  target: RadarVendor::RadarModule_def
+- kind: alias
+  name: rangeKm
+  target: RadarVendor::RadarModule_def::maxRangeKm
+- kind: alias
+  name: Camera
+  target: RadarVendor::GimbalCamera_def
+- kind: allocation
+  from: UavSensorSpec::uav.searchRadar
+  to: RadarVendor::payload.radar
+- kind: allocation
+  from: UavSensorSpec::uav.eoCamera
+  to: RadarVendor::payload.gimbal
+must_not_map:
+- kind: alias
+  name: SearchRadar
+  target: RadarVendor::payload::radar
+  why: a definition must not be aliased to a usage; the usage pair is an allocation
+- kind: alias
+  name: searchRadar
+  target: RadarVendor::RadarModule_def
+  why: a usage must not be aliased to a definition
+must_report_unmatched:
+- RadarVendor::RadarModule_def::massKg

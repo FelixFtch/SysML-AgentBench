@@ -519,8 +519,8 @@ def _execute(task_dir: Path, config: str, job: dict) -> None:
     syntax = None
     rounds = 0
     run_dir = None
-    if case["type"] in {"GEN", "MOD"}:
-        from agents.solve import rounds_for, validate_with_repair
+    if case["type"] in {"GEN", "MOD", "ALN"}:
+        from agents.solve import companions_of, rounds_for, validate_with_repair
         cap = rounds_for(config)
         scratch = ROOT / "mvp" / "exam-inbox" / f"live-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}-{case['id']}"
         scratch.mkdir(parents=True, exist_ok=True)
@@ -538,7 +538,7 @@ def _execute(task_dir: Path, config: str, job: dict) -> None:
             _phase(job, "Repair from errors", f"Repair {entry['attempt']} of at most {cap}: the complete error list goes back to the model, together with every earlier version. Numbers stay as in the task.")
 
         loop = validate_with_repair(case, prompt, text, scratch, prefix=prefix, label=f"board-{case['id']}",
-                                    max_rounds=cap, calls=[], on_attempt=on_attempt)
+                                    max_rounds=cap, calls=[], on_attempt=on_attempt, companions=companions_of(case, task_dir))
         text, syntax, run_dir, rounds = loop["text"], loop["sysml_status"], loop["run_dir"], loop["repair_rounds"]
         with JOB_LOCK:
             job["answer"] = text

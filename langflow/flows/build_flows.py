@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "langflow" / "components"))
 
+from lfx.components.files_and_knowledge.knowledge import KnowledgeComponent  # noqa: E402
 from lfx.components.flow_controls.conditional_router import ConditionalRouterComponent  # noqa: E402
 from lfx.components.flow_controls.human_input import HumanInput, _action_id  # noqa: E402
 from lfx.components.input_output import ChatInput, ChatOutput  # noqa: E402
@@ -37,6 +38,7 @@ from rtrc.rtrc_start import RtrcStart  # noqa: E402
 from rtrc.rtrc_step import STEPS, RtrcStep  # noqa: E402
 
 S = list(STEPS)
+KNOWLEDGE_BASE = "rtrc_memory"
 
 
 def _enc(handle: dict, compact: bool = False) -> str:
@@ -228,11 +230,21 @@ def memory_flow() -> dict:
     memory = RtrcMemory(_id="RtrcMemory-library")
     out = ChatOutput(_id="ChatOutput-memory")
     out.set(input_value=memory.as_message)
-    graph = Graph(start=memory, end=out)
+    knowledge = KnowledgeComponent(_id="Knowledge-memory")
+    knowledge.set(input_df=memory.as_dataframe, knowledge_base=KNOWLEDGE_BASE, mode="Ingest", allow_duplicates=False, chunk_size=10,
+                  column_config=[{"column_name": "text", "vectorize": True, "identifier": False},
+                                 {"column_name": "id", "vectorize": False, "identifier": True}])
+    graph = _graph(memory, [out, knowledge])
     titles = {"RtrcMemory-library": ("F0 Memory · Paper 2", "MaritimeISR plus every approved design, as element cards from the official parse, with their links."),
-              "ChatOutput-memory": ("Chat Output", "The memory's sources and size.")}
-    notes = [("note-memory", "# F0 · What the agent knows\n\nThe memory is the existing MaritimeISR model plus every design a person approved, parsed by the official Pilot into element cards (type, full name, value or connection ends, documentation text) with their links.\n\n- **Cards** output: one row per card. To browse the memory as a Langflow knowledge base, connect **Cards** to a **Knowledge** node in Ingest mode.\n- The agent flow's ① Search memory always uses our own retrieval (MiniLM + FAISS, seeds + one hop), so its results match the results page.", 40, -20)]
-    return build("RTRC F0: memory (what the agent knows)", "The library the agent searches: MaritimeISR and approved designs as cards.", graph, titles, notes, None, ["rtrc", "memory"])
+              "ChatOutput-memory": ("Chat Output", "The memory's sources and size."),
+              "Knowledge-memory": ("Knowledge base rtrc_memory", "The cards as Langflow's own knowledge base, embedded by Qwen (qwen3.7-text-embedding). Rows already there are skipped.")}
+    notes = [("note-memory", "# F0 · What the agent knows\n\nThe memory is the existing MaritimeISR model plus every design a person approved, parsed by the official Pilot into element cards (type, full name, value or connection ends, documentation text) with their links.\n\n- Running this flow fills the Langflow knowledge base **rtrc_memory** (Knowledge page): the card text is embedded by Qwen, the other columns are kept as metadata, and cards already there are skipped. Run it again after a design is approved.\n- The agent flow's ① Search memory always uses our own retrieval (MiniLM + FAISS, seeds + one hop), so its results match the results page.", 40, -20)]
+    flow = build("RTRC F0: memory (what the agent knows)", "The library the agent searches: MaritimeISR and approved designs as cards, mirrored into a Langflow knowledge base.",
+                 graph, titles, notes, None, ["rtrc", "memory"])
+    for node in flow["data"]["nodes"]:
+        if node["id"] == "Knowledge-memory":
+            node["data"]["node"]["template"]["knowledge_base"]["options"] = [KNOWLEDGE_BASE]
+    return flow
 
 
 # ---------- F1 / F2 exam cells ----------

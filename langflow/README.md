@@ -9,14 +9,14 @@ python3.12 -m venv .venv-langflow && .venv-langflow/bin/pip install -r requireme
 scripts/langflow.sh --import    # the shell service (127.0.0.1:8781) and Langflow (127.0.0.1:7860); imports the flows
 ```
 
-Open http://127.0.0.1:7860 and log in as `rtrc` with the password in `.langflow/secrets.env`, which `scripts/langflow_secrets.py` creates (gitignored, never printed). The flows are in the project **RTRC SysML-AgentBench**; the RTRC nodes are in the component list under **Rtrc**. A sandboxed agent (Claude Code or OpenCode) only runs while the results page is stopped, because the page serves answer keys.
+Open http://127.0.0.1:7860 and log in as `rtrc` with the password in `.langflow/secrets.env`, which `scripts/langflow_secrets.py` creates (gitignored, never printed). The flows are in the project **RTRC SysML-AgentBench**; the RTRC nodes are in the component list under **Rtrc**. Run **RTRC F0: memory** once (Playground) to fill the knowledge base, and again after a design is approved. A sandboxed agent (Claude Code or OpenCode) only runs while the results page is stopped, because the page serves answer keys.
 
 ## The flows
 
 | Flow | What it shows | How it runs | Person |
 |---|---|---|---|
 | RTRC agent flow: requirement to approved SysML v2 design | ① search memory → ② requirements → new design, or adapt the similar project found in memory → ④ official Pilot ⇄ repair → ⑤ align with memory → ⑥ checks and read-back → trade-offs if a check fails → ⑦ diagram, Cameo export, review → ⑧ decision → write to memory, record grades and times | live on Qwen (direct, or Claude Code / OpenCode on Qwen in the sandbox), or replay of a saved run | ⑧ Approve A, Approve B, Reject or Send back |
-| RTRC F0: memory | MaritimeISR plus every approved design, as cards from the official parse | no model call | |
+| RTRC F0: memory | MaritimeISR plus every approved design, as cards from the official parse; fills the Langflow knowledge base **rtrc memory** (Knowledge page: search the cards, filter by metadata) | Qwen embeddings for new cards only; runs in the server (editor or API), not with `lfx run` | |
 | RTRC F1: exam cell, direct model | one exam cell step by step: task, retrieved notes, outline, answer, every Pilot attempt, repair, read values, verdict against the sealed key (missing items only), archive | replay any graded cell, or a live run (not added to any score) | |
 | RTRC F2: exam cell, sandboxed coding agent | the same for OpenCode / Claude Code, with their tool calls | replay, or live | |
 | RTRC F3: results | the frozen exam results as tables | no model call | |
@@ -54,7 +54,7 @@ Through the server: `POST /api/v2/workflows` with `{"flow_id", "input_value", "t
 
 - Local only (127.0.0.1), login on, sign-ups inactive, CORS limited to the local origin.
 - `LANGFLOW_ALLOW_CUSTOM_COMPONENTS=False`: only built-in components and the code in `langflow/components` run; edited or pasted component code is refused, and the built-in code-execution components are disabled. Only the admin may edit component code.
-- No model key in Langflow: the RTRC nodes call the shell service, which reads `.env` itself. The service needs the token from `.langflow/secrets.env`, serves no answer key, and refuses sandboxed agents while the results page runs.
+- The RTRC nodes call the shell service, which reads `.env` itself; the service needs the token from `.langflow/secrets.env`, serves no answer key, and refuses sandboxed agents while the results page runs. The only key Langflow holds is the Qwen key for the knowledge base's embeddings (user decision of 2026-10-06): `langflow/flows/setup_knowledge.py` copies it from `.env` into an encrypted Langflow credential (provider "OpenAI Compatible", model `qwen3.7-text-embedding`) without printing it. The knowledge base itself is stored in `~/.langflow/knowledge_bases/`.
 - The flow files hold no key. Check before committing: `rg -l "sk-|api_key\":\s*\"[^\"]" langflow/flows` should print nothing.
 
 ## Changing the flows
@@ -73,7 +73,8 @@ Learned with Langflow 1.12.5:
 - **Human Input:** give each choice its own chain of nodes. Langflow skips the unchosen branches, but a node fed by two branches receives the review text on both (it cannot tell which was picked), and a node after two branch nodes fails with "has not been built yet". If-Else branches can join again.
 - **Python graph API:** components added with `graph.add_component` after `Graph(start, end)` appear in `dump()` only after `graph.initialize()`.
 - An input cannot be named after a `Component` method (`run`). The flow list is returned gzip-compressed.
-- `lfx run` needs `LANGFLOW_CONFIG_DIR`; it pauses at Human Input only with `--human-input`, reading a 1-based choice from stdin.
+- `lfx run` needs `LANGFLOW_CONFIG_DIR`; it pauses at Human Input only with `--human-input`, reading a 1-based choice from stdin. It cannot run F0, whose Knowledge node needs the server's model provider settings.
+- Qwen's embedding endpoint takes at most 20 texts per request; F0's Knowledge node sends 10. After a failed ingest, restart Langflow before retrying (Chroma otherwise reports "an instance already exists with different settings").
 
 ## Files
 
@@ -82,6 +83,7 @@ Learned with Langflow 1.12.5:
 | `langflow/components/rtrc/` | the RTRC nodes: Start, Step (①–⑦), Record (⑨, writes memory on approve), Memory, Exam cell / step, MOD change / step, Results, Cameo export / record, Gate record |
 | `langflow/flows/build_flows.py`, `*.json` | the flows as code, and the generated flow files |
 | `langflow/flows/import_flows.py` | creates or updates the project |
+| `langflow/flows/setup_knowledge.py` | the Qwen embedding provider and the knowledge base `rtrc_memory` (safe to repeat) |
 | `bench/shell_service.py` | the local JSON API the nodes call |
 | `bench/langflow_parity.py` | the parity checks |
 | `scripts/langflow.sh`, `scripts/langflow_secrets.py`, `requirements-langflow.txt` | start, secrets, pinned versions |

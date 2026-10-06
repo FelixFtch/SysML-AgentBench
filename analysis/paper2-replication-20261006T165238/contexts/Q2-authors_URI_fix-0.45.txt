@@ -1,0 +1,12 @@
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV label highPerformanceEV
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery
+- ElectricVehicleModel/VehicleInstances member ElectricVehicleModel/VehicleInstances/highPerformanceEV
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV isDefinedBy ElectricVehicleModel/PartDefinitions/ElectricVehicle
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV type PartUsage
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV comment Instance representing a high-performance electric vehicle with upgraded battery and motor.
+
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/VehicleInstances/highPerformanceEV/cooling
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor

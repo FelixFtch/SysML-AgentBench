@@ -228,7 +228,7 @@ code {{ font-size: 14px; }}
 </table>
 
 <h2>10. Files</h2>
-<p>Scored batches: {', '.join(f"<code>analysis/{e(C[key]['batch'])}/results.jsonl</code>" for key in ORDER if C[key]['batch'])}; agents' ALN rows: {', '.join(f"<code>analysis/{e(C[key]['rerun_batch'])}/results.jsonl</code>" for key in ORDER if C[key].get('rerun_batch'))}. Per-task table: <code>per_task.csv</code>. Status page: <code>STATUS.md</code>. Decisions 019 (task vs design verdict), 022 (repair loop), 023 (retrieval), 024 (alignment), 025 (no judges, second review, freeze), 026 (agent sandbox).</p>
+<p>Scored batches: {', '.join(f"<code>analysis/{e(C[key]['batch'])}/results.jsonl</code>" for key in ORDER if C[key]['batch'])}; agents' ALN rows: {', '.join(f"<code>analysis/{e(C[key]['rerun_batch'])}/results.jsonl</code>" for key in ORDER if C[key].get('rerun_batch'))}. Per-task table: <code>per_task.csv</code>. Status page: <code>STATUS.md</code>. Decisions 019 (task vs design verdict), 022 (repair loop), 023 (retrieval), 024 (alignment), 025 (no judges, second review, freeze), 026 (agent sandbox), 027 (paper 2 replicated on its own model).</p>
 <p>This page only summarises results already on disk; it calls no model.</p>
 </main>
 </html>

@@ -1,0 +1,8 @@
+PartUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::motor
+PartUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV
+PartUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::battery
+Package ElectricVehicleModel::VehicleInstances
+AttributeUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::motor::efficiency 0.96
+AttributeUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::motor::torque 600.0
+PartUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::cooling
+AttributeUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::battery::capacity 100.0

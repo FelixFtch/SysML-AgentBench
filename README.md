@@ -15,7 +15,7 @@ Sponsor: RTX Technology Research Center (RTRC). Faculty advisor: Prof. George Bo
 | [`docs/knowledge-base/`](docs/knowledge-base/README.md) | Process knowledge base (D7): the process, Pilot notes, what helps, evaluating agents fairly, extending the bank, glossary |
 | [`docs/failure_taxonomy.md`](docs/failure_taxonomy.md) | The failures of the four candidates by class |
 | [`bench/FREEZE.md`](bench/FREEZE.md) · [`REVIEW.md`](bench/tasks/t4_maritime_isr/heldout/REVIEW.md) | What is frozen (hashes, tag `freeze-2026-10-06`) and the second review of the 27 answer keys |
-| [`docs/decisions/`](docs/decisions/) | Decision records; 016–026 (2026-10-03 to 2026-10-06) override the plan where they differ |
+| [`docs/decisions/`](docs/decisions/) | Decision records; 016–027 (2026-10-03 to 2026-10-06) override the plan where they differ |
 | [`plans/SysML_AgentBench_完整执行计划.md`](plans/SysML_AgentBench_完整执行计划.md) | Execution plan v2.0: deliverables, ground-truth method, task suite, schedule, decisions §18 |
 | [`plans/project-statement.md`](plans/project-statement.md) | Project statement v1.1 for sponsor signature (English) |
 | [`research/source-extracts/rtx-brief.txt`](research/source-extracts/rtx-brief.txt) | Sponsor brief (verbatim) |

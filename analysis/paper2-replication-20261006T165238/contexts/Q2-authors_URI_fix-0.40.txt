@@ -1,0 +1,48 @@
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV label highPerformanceEV
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/VehicleInstances/cityCompactEV/cooling
+- ElectricVehicleModel/VehicleInstances/cityCompactEV type PartUsage
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/efficiency label efficiency
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/efficiency member 0.96
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor member ElectricVehicleModel/PartDefinitions/Motor/efficiency
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/efficiency type AttributeUsage
+- ElectricVehicleModel/VehicleInstances/cityCompactEV isDefinedBy ElectricVehicleModel/PartDefinitions/ElectricVehicle
+- ElectricVehicleModel/PartDefinitions member ElectricVehicleModel/PartDefinitions/Motor
+- ElectricVehicleModel/VehicleInstances member ElectricVehicleModel/PartDefinitions/Motor
+- ElectricVehicleModel/PartDefinitions/Motor type PartDefinition
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor member ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/efficiency
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/VehicleInstances/cityCompactEV/motor
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor member ElectricVehicleModel/PartDefinitions/Motor/torque
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV type PartUsage
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor type PartUsage
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/VehicleInstances/highPerformanceEV/cooling
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle member ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor type PartUsage
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/efficiency isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor isDefinedBy ElectricVehicleModel/PartDefinitions/Motor
+- ElectricVehicleModel/PartDefinitions/Motor label Motor
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV isDefinedBy ElectricVehicleModel/PartDefinitions/ElectricVehicle
+- ElectricVehicleModel/VehicleInstances/cityCompactEV comment Instance representing a compact city vehicle optimized for efficiency and lower power.
+
+- ElectricVehicleModel/VehicleInstances member ElectricVehicleModel/VehicleInstances/cityCompactEV
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor member ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/torque
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor label motor
+- ElectricVehicleModel/VehicleInstances/cityCompactEV label cityCompactEV
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV comment Instance representing a high-performance electric vehicle with upgraded battery and motor.
+
+- ElectricVehicleModel/PartDefinitions/Motor member ElectricVehicleModel/PartDefinitions/Motor/efficiency
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor label motor
+- ElectricVehicleModel/VehicleInstances member ElectricVehicleModel/VehicleInstances/highPerformanceEV
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle member ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/VehicleInstances/cityCompactEV/battery
+- ElectricVehicleModel/PartDefinitions/Motor member ElectricVehicleModel/PartDefinitions/Motor/torque
+- ElectricVehicleModel/PartDefinitions/Motor comment This part defines an electric motor.
+Attributes include torque and efficiency, used for performance evaluation.
+
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor

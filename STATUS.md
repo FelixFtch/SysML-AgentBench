@@ -1,6 +1,6 @@
 # STATUS
 
-Generated 2026-10-06 16:24 UTC by `python3 scripts/make_status.py` from saved results. All maritime numbers are synthetic, not RTX specifications. The official SysML v2 Pilot 0.62 is the only syntax judge; the answer keys are the ground truth; no model judges (decision 025).
+Generated 2026-10-06 16:56 UTC by `python3 scripts/make_status.py` from saved results. All maritime numbers are synthetic, not RTX specifications. The official SysML v2 Pilot 0.62 is the only syntax judge; the answer keys are the ground truth; no model judges (decision 025).
 
 Task bank: 27 sealed tasks, second review recorded in `bench/tasks/t4_maritime_isr/heldout/REVIEW.md`, frozen in `bench/FREEZE.md` (tag `freeze-2026-10-06`).
 
@@ -122,6 +122,6 @@ At the China (Beijing) list price checked 2026-10-03: the four scored batches an
 - A frontier model outside the Qwen family; the vendor AI (Cameo AI Assistant) and a second checker (Syside CLI).
 - Tasks that must trigger the approval gate; interface tasks in the UMAA style (interoperability); a scored evaluation set for the Part 2 prototype; dynamic simulation beyond static budgets.
 - A reproduction on a clean machine (fresh clone, `requirements-retrieval.txt`, tests, one batch re-scored).
-- Report the Pilot's file-order dependence to the SysML v2 Pilot maintainers.
+- Proposed, not applied (decision 027): put each element's documentation text into its retrieval card, as the paper 2 authors' snippets do; it needs a new freeze and a P3 rerun.
 - Two key issues noted in the second review are left for the next key revision: MOD-01 is lenient (the radio connection it says to keep is not checked); AMB-02 is strict (only "watt", "power limit" or "how many watts" count as asking about the limit).
 - Proposed for the next key revision, not applied: the AMB invented-number rule also fails a correct clarification that shows an example format or arithmetic from the statement. All three agent answers it fails stop and ask; one writes "e.g. `<= 450 W`" as the format it wants (OpenCode, AMB-02), two derive 128 GB / 30 days ≈ 4.27 GB/day and say it must not be used (Claude Code, AMB-03).

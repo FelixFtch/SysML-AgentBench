@@ -1,0 +1,8 @@
+PartUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV doc: Instance representing a high-performance electric vehicle with upgraded battery and motor.
+AttributeUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::motor::efficiency 0.96
+AttributeUsage ElectricVehicleModel::VehicleInstances::baseModelVehicle::motor::efficiency 0.93
+PartUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::motor
+Package ElectricVehicleModel::VehicleInstances
+PartUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::battery
+PartUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::cooling
+PartUsage ElectricVehicleModel::VehicleInstances::baseModelVehicle::motor

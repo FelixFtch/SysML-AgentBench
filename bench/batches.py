@@ -52,6 +52,8 @@ _ALN_RERUN = {"label": "ALN runs of the first sandboxed batch",
                         "scorer's order (sources first) passed the agent's check and were submitted. Every ALN run of both agents "
                         "was rerun with ./validate in the scorer's order (decision 026); the rerun replaces these rows."}
 _P3_RERUN = {"label": "P3 cells retrieved with cards that lacked documentation text", "configs": ["P3"],
+             # The only tasks whose P3 retrieval changed with the new cards; every other P3 prompt was byte-identical.
+             "inputs_changed": ["GEN-04", "GEN-05"],
              "reason": "The paper 2 replication (decision 027) showed that the authors' node text carries each element's "
                        "documentation and our retrieval cards did not. The cards now do, and every P3 cell of both direct "
                        "batches was rerun under freeze revision 2 (decision 028); the rerun replaces these rows."}
@@ -62,7 +64,7 @@ RERUNS = {"opencode": {"glob": "opencode-jail-aln-qwen3.8-flash-*", **_ALN_RERUN
 
 ARCHIVE = {"label": "2026-10-03 matrix (24 tasks, old repair loop, old AMB/RT rules)", "pass": 224, "n": 288,
            "dirs": ["heldout-20261003T000045", "heldout-20261003T001321"],
-           "note": "qwen3.8-flash, P1 repair with 3 rounds and only the latest error lines, re-scored once on 2026-10-03; "
+           "note": "qwen3.8-flash, P1 repair with 3 rounds, the first 8 error lines only and a fresh conversation each time, re-scored once on 2026-10-03; "
                    "kept as the record of the old rules, not comparable cell for cell."}
 
 
@@ -176,6 +178,12 @@ def usage_of_row(row: dict) -> dict:
             total["calls"] += 1
         return total
     usage = row.get("usage") or {}
+    if usage.get("model_usage"):
+        # Claude Code's own per-model block; the first runner's "input" left out the cached tokens.
+        slots = usage["model_usage"].values()
+        return {"input": sum((s.get("inputTokens") or 0) + (s.get("cacheReadInputTokens") or 0) + (s.get("cacheCreationInputTokens") or 0) for s in slots),
+                "cached": sum(s.get("cacheReadInputTokens") or 0 for s in slots),
+                "output": sum(s.get("outputTokens") or 0 for s in slots), "calls": usage.get("turns") or 0}
     return {"input": usage.get("input") or 0, "cached": usage.get("cached") or 0, "output": usage.get("output") or 0,
             "calls": usage.get("calls") or usage.get("turns") or 0}
 

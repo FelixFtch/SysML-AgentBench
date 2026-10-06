@@ -143,6 +143,20 @@ def _agent_stats(cells: list[dict]) -> dict:
     return stats
 
 
+def _rerun_spread(cohorts: dict) -> dict:
+    """Cells of a rerun whose prompt was byte-identical to the replaced run, and how many changed verdict."""
+    spread = {}
+    for cohort, spec in RERUNS.items():
+        if "inputs_changed" not in spec:
+            continue
+        old = {(row["task_id"], row.get("configuration"), int(row["repeat"])): row["status"] for row in superseded_rows(cohort)}
+        new = {(row["task_id"], row.get("configuration"), int(row["repeat"])): row["status"] for row in cohorts[cohort]["_cells"]}
+        same = [key for key in old if key in new and key[0] not in spec["inputs_changed"]]
+        if same:
+            spread[cohort] = {"cells": len(same), "changed": sum(old[key] != new[key] for key in same)}
+    return spread
+
+
 def _configs(cohort: str, cells: list[dict]) -> list[dict]:
     model = COHORTS[cohort]["model"]
     out = []
@@ -238,7 +252,8 @@ def _costs(cohorts: dict, side: dict) -> dict:
     if silent:
         unrecorded.append(f"{len(silent)} Claude Code runs hit the 900 s limit before Claude Code reported its usage (it reports only when a run ends); "
                           "their tokens are not in these sums, so Claude Code's cost is a lower bound.")
-    unrecorded.append("The paper 1 replication (4 calls, qwen3.8-max) and the trial runs of 2026-10-06 are recorded in their own folders and not summed here.")
+    unrecorded.append("The paper 1 replication (4 calls, qwen3.8-max), the paper 2 replication (18 calls, qwen3.8-max) and the trial runs of "
+                      "2026-10-06 are recorded in their own folders and not summed here.")
     counted = [item for item in items if item["group_id"] not in {"part2", "mod"}]
     return {"prices": PRICES, "items": items, "runs": runs, "mod_runs": mod_runs, "unrecorded": unrecorded,
             "missing": {"part2_partial": part2_partial, "mod_unlogged": mod_unlogged},
@@ -310,6 +325,7 @@ def facts() -> dict:
         found = superseded_rows(cohort)
         if found:
             superseded.append({"key": f"{cohort}-superseded", "cohort": cohort,
+                               "who": COHORTS[cohort]["short"], "what": RERUNS[cohort]["label"],
                                "label": f"{COHORTS[cohort]['short']}, {RERUNS[cohort]['label']}",
                                "reason": RERUNS[cohort]["reason"], "dir": f"analysis/{batch_dir(cohort).name}",
                                "rerun_dir": f"analysis/{rerun_dir(cohort).name}",
@@ -333,7 +349,10 @@ def facts() -> dict:
         "reliability": {**flash["reliability"],
                         "mod05_pass": sum(row["status"] == "PASS" for row in mod05),
                         "mod05_fail": sum(row["status"] == "FAIL" for row in mod05),
-                        "mod05_design_fail": sum(row.get("engineering_status") == "FAIL" for row in mod05)},
+                        "mod05_design_fail": sum(row.get("engineering_status") == "FAIL" for row in mod05),
+                        "mod05_by_cohort": {cohort: {"n": len(cells), "honest": sum(row["status"] == "PASS" and row.get("engineering_status") == "FAIL" for row in cells)}
+                                            for cohort, cells in ((c, [row for row in entry["_cells"] if row["task_id"] == "MOD-05"]) for c, entry in cohorts.items())},
+                        "rerun_spread": _rerun_spread(cohorts)},
         "safety": {"kept": "LossOfSeparation" in hazards and "HazardTrackNotShared" in hazards, "file": "scenario/maritime-isr/hazards.sysml"},
         "graph": {task: {"status": item["status"], "answer": item["answer"]} for task, item in sorted(graph.items())},
         "rule": "A task passes when the official parse passes (GEN, MOD, ALN), every required name, connection or mapping is present, "

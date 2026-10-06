@@ -31,7 +31,7 @@ const TYPE_GUIDE = {
   MOD: { gets: "An existing model plus one change", gives: "The edited model", judge: "Official Pilot syntax passes, the checklist is met, and values that must stay are unchanged. MOD-05 also has a power budget (design verdict)", pilot: true },
   ALN: { gets: "A specification package and a supplier package, both read-only", gives: "One alignment package of alias and allocation declarations, plus a JSON report", judge: "Official Pilot resolves every name; every required pair is declared, no look-alike pair is, nothing but imports, aliases and allocations is declared, and unmatched elements are reported", pilot: true },
   QRY: { gets: "A model plus one question", gives: "A JSON answer", judge: "Every field equals the answer key: the numbers, and names written in full with ::", pilot: false },
-  AMB: { gets: "Requirements missing a number a check needs", gives: "Text that should ask for it", judge: "Asks (a question, or a request such as \"please clarify\"), asks about the missing quantity, and invents no number", pilot: false },
+  AMB: { gets: "Requirements missing a number a check needs", gives: "Text that should ask for it", judge: "Asks (a question, or a request such as \"please clarify\"), asks about the missing quantity, and writes no SysML with a number the task did not give (an example or arithmetic in the question is not counted, revision 2)", pilot: false },
   RT: { gets: "A model", gives: "The requirements restated in sentences", judge: "Every phrase and number the answer key lists is written back", pilot: false },
 };
 const CONFIG_NAME = { P0: "P0 one-shot", P1: "P1 repair from errors", P2: "P2 outline first", P3: "P3 retrieval + outline" };
@@ -347,13 +347,13 @@ const BENCH = {
     { id: "bank", row: "src", col: 1, kind: "source", owner: "Human-written · sealed", title: "Task bank, 27 tasks", sub: "task statements + baseline models",
       does: "27 tasks: GEN 5, MOD 5, ALN 3, QRY 5, AMB 4, RT 5, reviewed a second time and frozen (bench/FREEZE.md). Task statements and answer keys are stored apart; the agent gets only the statement.", input: "—", output: "One task statement; MOD and ALN tasks include baseline models" },
     { id: "corpus", row: "src", col: 2, kind: "source", owner: "Retrieval library · read-only", title: "Examples + notes", sub: "official examples, Pilot-parsed", papers: ["p2"], cond: "P3 only",
-      does: "Official SysML-v2-Release example models parsed by the Pilot (one card per element, with one-hop links) plus the notes in bench/corpus. P3 embeds the task statement with MiniLM, searches a FAISS index, takes up to 3 seeds with cosine ≥ 0.30 and adds their one-hop neighbours: Paper 2's method. MaritimeISR is not in this library because the query tasks read it.", input: "Task statement", output: "Up to 6 cards for the outline prompt" },
+      does: "Official SysML-v2-Release example models parsed by the Pilot (one card per element with its documentation text, with one-hop links) plus the notes in bench/corpus. P3 embeds the task statement with MiniLM, searches a FAISS index, takes up to 3 seeds with cosine ≥ 0.30 and adds their one-hop neighbours: Paper 2's method. MaritimeISR is not in this library because the query tasks read it.", input: "Task statement", output: "Up to 6 cards for the outline prompt" },
     { id: "gold", row: "src", col: 6, kind: "gold", owner: "Human-written · sealed", title: "Answer key", sub: "never shown to the agent",
-      does: "assertions.yaml (names, connections, numbers, whether to ask) or answer.json. Opened only at the check step.", input: "—", output: "Checklist" },
+      does: "assertions.yaml (names, connections, numbers to keep, required and forbidden alignment pairs, what to ask about, phrases to restate) or answer.json. Opened only at the check step.", input: "—", output: "Checklist" },
     { id: "issue", row: "main", col: 1, owner: "Code", title: "Issue task", sub: "without the answer key",
       does: "Gives the task statement (and baseline model) to the agent. The gold folder never enters the prompt.", input: "One task from the bank", output: "Agent prompt" },
     { id: "outline", row: "main", col: 2, owner: "Model", title: "Outline", sub: "parts, ports, connections; no SysML yet", cond: "P2 / P3 only",
-      does: "The model first lists the parts, ports, connections and attributes it needs as JSON, then writes from that outline. P3's outline prompt also has 3 retrieved notes.", input: "Task statement (P3: plus 3 notes)", output: "Outline JSON" },
+      does: "The model first lists the parts, ports, connections and attributes it needs as JSON, then writes from that outline. P3's outline prompt also has up to 6 retrieved cards (3 seeds and their neighbours).", input: "Task statement (P3: plus up to 6 cards)", output: "Outline JSON" },
     { id: "write", row: "main", col: 3, owner: "Model · agent under test", title: "Write the answer", sub: "flash · max · OpenCode · Claude Code", papers: ["p3"],
       does: "Answers by task type: GEN writes a new model, MOD edits the baseline, ALN writes an alignment package between two models, QRY answers from a model in JSON, AMB asks when information is missing, RT restates the model in words. Agents work in a sandbox with ./validate and cannot see the answer keys. The prompt carries SysML rules, Paper 3's \"rules\".", input: "Task statement + rules (+ outline)", output: "Answer: SysML, JSON or text" },
     { id: "syntax", row: "main", col: 4, owner: "Official tool", title: "Official syntax", sub: "SysML v2 Pilot 0.62", papers: ["ours"],
@@ -391,7 +391,7 @@ const APP = {
   rows: [{ id: "src", label: "Memory", hint: "retrieval reads from here" }, { id: "main", label: "Six stages", hint: "every run" }, { id: "side", label: "Side paths", hint: "guard · repair · trade-offs" }],
   nodes: [
     { id: "mem", row: "src", col: 2, kind: "source", owner: "Memory", title: "Existing model + approved designs", sub: "MaritimeISR element cards", papers: ["p2"],
-      does: "MaritimeISR.sysml is parsed by the official Pilot (428 elements); code turns 53 of them into cards (type, full name, value or connection ends), linked by 185 edges (ownership, connections). Designs a person approves are added the same way.", input: "Official parse", output: "Cards and edges" },
+      does: "MaritimeISR.sysml is parsed by the official Pilot (428 elements); code turns 63 of them into cards (type, full name, value or connection ends, documentation text), linked by 185 edges (ownership, connections). Designs a person approves are added the same way.", input: "Official parse", output: "Cards and edges" },
     { id: "brief", row: "main", col: 1, kind: "human", owner: "Person · 2.2", title: "Task brief", sub: "generated from choices, or your text",
       does: "The part and parameter choices in 2.2 generate an English brief; you can also edit the text. This is everything the agent receives.", input: "Choices in 2.2", output: "A brief" },
     { id: "retrieve", row: "main", col: 2, owner: "Code", title: "① Retrieve", sub: "MiniLM + FAISS seeds + one hop", papers: ["p2"],
@@ -409,7 +409,7 @@ const APP = {
     { id: "source", row: "side", col: 3, kind: "guard", owner: "Code", title: "Number source check", sub: "every number must be in the brief",
       does: "Every number in the requirements must appear in the brief. If one does not, the run cannot go into memory until a person supplies it.", input: "Requirements + brief", output: "Numbers of unknown origin" },
     { id: "repair", row: "side", col: 4, kind: "loop", owner: "Model", title: "Repair from errors", sub: "error text sent back, numbers kept", papers: ["p3"],
-      does: "When a design fails the official Pilot, the error text goes back to the model with: fix the syntax only, keep the numbers. Up to 3 parses per design.", input: "Original prompt + last version + error text", output: "A new version, validated again" },
+      does: "When a design fails the official Pilot, the complete error list (line and column) goes back to the model in the same conversation, after every earlier version, with: fix the syntax, keep the numbers. Up to 20 repairs per design; three identical resubmissions in a row stop the loop. The same loop as the exam's P1–P3.", input: "The conversation so far + the complete error list", output: "A new version, validated again" },
     { id: "catalog", row: "side", col: 5, kind: "source", owner: "Synthetic catalog", title: "Parts catalog", sub: "5 slots, 11 parts · 3 parameters",
       does: "2 visible cameras, 3 infrared options, 2 computers, 2 uplinks, 2 storage sizes, plus recording rate, retention hours and upload rate. The choices in 2.2 come from here. Not RTX data.", input: "—", output: "Parts and parameters to choose from" },
     { id: "tradeoff", row: "side", col: 6, kind: "loop", owner: "Model · code recomputes", title: "Trade-offs", sub: "catalog choices only",
@@ -418,7 +418,7 @@ const APP = {
   edges: [
     { from: "brief", to: "retrieve" }, { from: "retrieve", to: "gen" }, { from: "gen", to: "syntax" }, { from: "syntax", to: "align" },
     { from: "align", to: "check" }, { from: "check", to: "human" },
-    { from: "mem", to: "retrieve", kind: "feed", route: "v", label: "searched by brief words and numbers" },
+    { from: "mem", to: "retrieve", kind: "feed", route: "v", label: "searched with MiniLM + FAISS" },
     { from: "mem", to: "align", kind: "feed", route: "rd", label: "alignment target: MaritimeISR" },
     { from: "gen", to: "source", kind: "side", route: "v", label: "checked one by one", side: "left" },
     { from: "syntax", to: "repair", kind: "loop", route: "v", label: "FAIL" },
@@ -440,9 +440,12 @@ const APP = {
 function renderHeader() {
   const f = S.facts;
   $("#kpi-total").textContent = `${f.flash.pass} / ${f.flash.n}`;
-  $("#kpi-total-sub").textContent = `${pct(f.flash.pass, f.flash.n)} · 27 tasks × 4 approaches × 3 · official Pilot + answer keys`;
+  $("#kpi-total-sub").textContent = `${pct(f.flash.pass, f.flash.n)} · 27 tasks × 4 approaches × 3 repeats`;
   $("#kpi-max").textContent = `${f.cohorts.max.pass} / ${f.cohorts.max.n}`;
   $("#kpi-max-sub").textContent = `${pct(f.cohorts.max.pass, f.cohorts.max.n)} · the stronger model on the same cells`;
+  const oc = f.cohorts.opencode, cl = f.cohorts.claude;
+  $("#kpi-agents").textContent = `${oc.pass} · ${cl.pass} / ${oc.n}`;
+  $("#kpi-agents-sub").textContent = `OpenCode ${pct(oc.pass, oc.n)} · Claude Code ${pct(cl.pass, cl.n)} · sandboxed, 27 tasks × 3`;
   const cards = f.knowledge.maritime.cards;
   $("#kpi-mem").textContent = `${cards} cards + ${S.memory.length} designs`;
   $("#kpi-mem-sub").textContent = "MaritimeISR element cards + designs a person approved";
@@ -541,14 +544,13 @@ function focusPaper(p) {
 
 function renderSources() {
   const k = S.facts.knowledge;
-  const corpusChunks = k.corpus.reduce((a, c) => a + c.chunks, 0);
   const items = [
     { color: "#6c8ebf", title: "Exam task bank", size: `${k.tasks.n} tasks`, small: `+ ${k.tasks.gold} answer keys`, path: "bench/tasks/heldout/",
       how: "Written by people, reviewed a second time and frozen (bench/FREEZE.md). MOD and ALN tasks include baseline models.", prompt: "The task statement goes into the prompt; the answer key never does and is opened only at \"Check against key\".", use: [["1.1 Issue task", "bench", "issue"], ["1.1 Answer key", "bench", "gold"]] },
-    { color: "#d4b46a", title: "P3 retrieval library", size: `${k.examples.cards ?? "—"} cards`, small: `official examples (${k.examples.folders}/${k.examples.folders_total} folders) + ${corpusChunks} notes`, path: "analysis/vector-index/examples/ · bench/corpus/",
-      how: "Official SysML-v2-Release example models parsed by the Pilot, one card per element, plus SysML syntax tips and maritime vocabulary. MaritimeISR is not in it: the query tasks read MaritimeISR.", prompt: "Only in P3's outline prompt: up to 3 seeds by MiniLM + FAISS (cosine ≥ 0.30) plus their one-hop neighbours.", use: [["1.1 Retrieval library (P3 only)", "bench", "corpus"]] },
+    { color: "#d4b46a", title: "P3 retrieval library", size: `${k.examples.cards ?? "—"} cards`, small: `${(k.examples.cards ?? 0) - (k.examples.notes ?? 0)} from official examples (${k.examples.folders}/${k.examples.folders_total} folders) + ${k.examples.notes ?? "—"} notes`, path: "analysis/vector-index/examples/ · bench/corpus/",
+      how: "Official SysML-v2-Release example models parsed by the Pilot, one card per element (type, full name, value, documentation text), plus SysML syntax tips and maritime vocabulary. MaritimeISR is not in it: the query tasks read MaritimeISR.", prompt: "Only in P3's outline prompt: up to 3 seeds by MiniLM + FAISS (cosine ≥ 0.30) plus their one-hop neighbours.", use: [["1.1 Retrieval library (P3 only)", "bench", "corpus"]] },
     { color: "#1c7ed6", title: "Existing model MaritimeISR", size: `${k.maritime.cards} cards`, small: `${k.maritime.elements} elements · ${k.maritime.links} edges`, path: k.maritime.file,
-      how: "The official Pilot parses it to JSON; code turns each element into a card: type, full name, value or connection ends.", prompt: "Retrieved cards become the \"examples\" part of the design prompt; the source file is not imported or edited.", use: [["2.1 ① Retrieve", "app", "retrieve"], ["2.1 ④ Alignment target", "app", "align"]] },
+      how: "The official Pilot parses it to JSON; code turns each element into a card: type, full name, value or connection ends, documentation text.", prompt: "Retrieved cards become the \"examples\" part of the design prompt; the source file is not imported or edited.", use: [["2.1 ① Retrieve", "app", "retrieve"], ["2.1 ④ Alignment target", "app", "align"]] },
     { color: "#2b8a3e", title: "Approved designs", size: `${S.memory.length} designs`, small: S.memory.length ? S.memory.map((m) => `${m.run_id}·${m.design}`).join(", ") : "none approved yet", path: k.memory.file,
       how: "Only designs that pass all four checks, carry no number of unknown origin, and that a person approved.", prompt: "Retrieved together with the MaritimeISR cards, tagged \"approved\" in the prompt.", use: [["2.1 ⑥ Into memory", "app", "human"], ["2.1 ① Retrieve", "app", "retrieve"]] },
     { color: "#a996e0", title: "Synthetic parts catalog", size: `${k.catalog.options} parts`, small: `${k.catalog.slots} slots · ${k.catalog.params} parameters (incl. the fixed 60 W)`, path: "bench/discover.py · CATALOG",
@@ -576,7 +578,7 @@ function renderPapers() {
   const papers = [
     { key: "p2", act: "① Retrieve", title: "Paper 2 · Bader et al.: GRAG graph-retrieval QA", venue: "ISSE 2025 · one electric-vehicle model, 3 questions",
       orig: ["SysML v2 API exports JSON-LD", "converted to an RDF graph", "node + one-hop neighbours", "MiniLM vectors · FAISS threshold", "GPT-4.1 answers"],
-      ours: ["official Pilot parse JSON", "one card per element, connections included", "MiniLM vectors · FAISS · cosine ≥ 0.30 + exact-name bonus", "add one-hop neighbours", "cards go into the design prompt (2.1) or the P3 outline prompt (1.1)"],
+      ours: ["official Pilot parse JSON", "one card per element with its documentation text, connections included", "MiniLM vectors · FAISS · cosine ≥ 0.30 + exact-name bonus", "add one-hop neighbours", "cards go into the design prompt (2.1) or the P3 outline prompt (1.1)"],
       where: [["2.1 ① Retrieve", "app", "retrieve"], ["2.1 Memory", "app", "mem"], ["1.1 Retrieval library (P3)", "bench", "corpus"]],
       evidence: `Latest run: memory had ${ret.library_size ?? "—"} cards; ${nodes.length} elements matched (${seeds} seeds, ${nodes.length - seeds} neighbours), ${Object.keys(ret.numbers || {}).length} with values${ret.method ? `; retrieval method ${esc(ret.method)}` : " (this run predates vector retrieval: keyword seeds)"}. Separately, the query tasks were redone with graph retrieval: ${qPass}/${Object.keys(graph).length} QRY correct${graph["QRY-03"] ? `; QRY-03 asks for a connection count, answer key 3, graph retrieval answered ${esc(graph["QRY-03"].answer)}` : ""}. On the five QRY questions, hybrid retrieval finds 13/15 key elements against 11/15 for the earlier keyword ranking (analysis/retrieval-eval-*.json). The authors' own pipeline on their own EV model (decision 027): their published notebook passes an empty context to the model (0/3 answers right); with full URIs it answers 3/3 and its retrieval matches the paper at threshold 0.35 (precision 0.177 against 0.180). Ours answered 2/3 with a tenth of the context while the cards lacked documentation text, and 3/3 with it; the cards now carry it (freeze revision 2, decision 028).`,
       missing: "Same embedding model and the same kind of index as the paper (inner product over unit vectors, so a cosine threshold), on our Pilot parse instead of the API's JSON-LD; the exact-name bonus is ours. The paper's F1 of 0.904 at threshold 0.45 is not reproduced: it depends on the paper's question wording and labels, which are not published. Like the authors' snippets, our cards carry each element's documentation text since freeze revision 2." },
@@ -584,13 +586,13 @@ function renderPapers() {
       orig: ["rules", "template", "examples", "generate the model", "a person reads errors, corrects, regenerates", "create / modify / query"],
       ours: ["rules: SysML rules", "template: attribute contract", "examples: retrieved cards", "generate requirements and two designs", "official error text sent back for repair", "read-back = query"],
       where: [["2.1 ② Generate", "app", "gen"], ["2.1 Repair from errors", "app", "repair"], ["2.1 ⑤ Read-back", "app", "check"], ["1.1 Write the answer", "bench", "write"], ["1.1 Repair (P1)", "bench", "repair"]],
-      evidence: `Exam, direct flash: ${f.flash.pass}/${f.flash.n} cells; P0 ${cfg.P0.pass}, P1 ${cfg.P1.pass}, P2 ${cfg.P2.pass}, P3 ${cfg.P3.pass} of 81. Official syntax on the first attempt → after the repair loop (39 SysML answers per approach): P1 ${cfg.P1.syntax_first} → ${cfg.P1.syntax_final}, P2 ${cfg.P2.syntax_first} → ${cfg.P2.syntax_final}, P3 ${cfg.P3.syntax_first} → ${cfg.P3.syntax_final}. The old loop (latest error lines only, 3 rounds) resubmitted GEN-03 unchanged four times; the new loop keeps every version and error list.${(r.designs || []).length ? ` Latest Part 2 run: ${r.designs.map((d) => `design ${d.key} official validation ${d.sysml_status}, ${(d.attempts || []).length} parse(s)`).join("; ")}.` : ""}`,
+      evidence: `Exam, direct flash: ${f.flash.pass}/${f.flash.n} cells; P0 ${cfg.P0.pass}, P1 ${cfg.P1.pass}, P2 ${cfg.P2.pass}, P3 ${cfg.P3.pass} of 81. Official syntax on the first attempt → after the repair loop (39 SysML answers per approach): P1 ${cfg.P1.syntax_first} → ${cfg.P1.syntax_final}, P2 ${cfg.P2.syntax_first} → ${cfg.P2.syntax_final}, P3 ${cfg.P3.syntax_first} → ${cfg.P3.syntax_final}. The old loop (the first 8 error lines only, a fresh conversation each time, 3 rounds) resubmitted GEN-03 unchanged four times; the new loop keeps every version and error list.${(r.designs || []).length ? ` Latest Part 2 run: ${r.designs.map((d) => `design ${d.key} official validation ${d.sysml_status}, ${(d.attempts || []).length} parse(s)`).join("; ")}.` : ""}`,
       missing: "In the paper a person corrects errors; here the official tool's complete error list does, in one conversation. The rules state one toolchain convention the model did not find on its own (`private import`). The paper's bicycle example model was not used and its Yes/No capability table was not built." },
     { key: "p1", act: "④ Align", title: "Paper 1 · Li, Husung, Wang: cross-organization model alignment", venue: "arXiv 2508.16181 · ISSE 2025 · seven stages, human review, source models unchanged",
       orig: ["preparation and syntax check", "element summaries", "candidate mappings (LLM)", "mapping verification", "separate alignment package", "consistency check", "export"],
       ours: ["design A × MaritimeISR", "model proposes mappings", "code checks both names and classifies each pair from the two parses", "code writes alias (definitions, features) and allocation (usages); a part usage against a definition is left to the person", "three files through the Pilot", "per-pair Accept / Reject in 2.3, sources unchanged"],
       where: [["2.1 ④ Align", "app", "align"], ["2.1 ⑥ Person decides", "app", "human"], ["1.1 ALN tasks: Check against key", "bench", "check"]],
-      evidence: `Exam, three ALN tasks: direct flash ${BT(f.by_type, "ALN").pass}/${BT(f.by_type, "ALN").n}, max ${BT(f.cohorts.max.by_type, "ALN").pass}/${BT(f.cohorts.max.by_type, "ALN").n}. The authors' own pipeline run on their own example: 7 of their 11 pairs reproduced, but their published package and the generated one both fail the official Pilot (decision 024).${al.proposed ? ` Latest Part 2 run: ${al.proposed} pairs proposed, ${al.declared ?? al.verified} declared by code; package ${esc(pkg.name || "")} official Pilot ${esc(pkg.sysml_status || "not generated")}.` : ""}`,
+      evidence: `Exam, three ALN tasks: direct flash ${BT(f.by_type, "ALN").pass}/${BT(f.by_type, "ALN").n}, max ${BT(f.cohorts.max.by_type, "ALN").pass}/${BT(f.cohorts.max.by_type, "ALN").n}, OpenCode ${BT(f.cohorts.opencode.by_type, "ALN").pass}/${BT(f.cohorts.opencode.by_type, "ALN").n}, Claude Code ${BT(f.cohorts.claude.by_type, "ALN").pass}/${BT(f.cohorts.claude.by_type, "ALN").n}. The authors' own pipeline run on their own example: 7 of their 11 pairs reproduced, but their published package and the generated one both fail the official Pilot (decision 024).${al.proposed ? ` Latest Part 2 run: ${al.proposed} pairs proposed, ${al.declared ?? al.verified} declared by code; package ${esc(pkg.name || "")} official Pilot ${esc(pkg.sysml_status || "not generated")}.` : ""}`,
       missing: "No LLM-written element summaries (the Pilot parse plays that role) and no extension metadata such as #FullyMatched. A Pilot pass shows the names resolve; whether the pairs are right is decided by the ALN keys in the exam and by the per-pair review in 2.3." },
   ];
   const chain = (list) => list.map((x) => `<span>${esc(x)}</span>`).join("<i>→</i>");
@@ -609,6 +611,28 @@ function bar(label, value, max, text, cls = "") {
 }
 function stack(label, parts, total) {
   return `<div class="bar-row"><span>${esc(label)}</span><div class="track">${parts.map(([v, cls]) => `<div class="fill ${cls}" style="width:${(v / total) * 100}%"></div>`).join("")}</div><span class="v">${parts[0][0]}/${total}</span></div>`;
+}
+
+function notCounted(f) {
+  const path = (p) => `<span class="nc-path">${esc(p)}</span>`;
+  const pass = (d) => `<td class="num">${d.pass}/${d.n}</td>`;
+  const head = (cells) => `<thead><tr>${cells.map(([t, cls]) => `<th${cls ? ` class="${cls}"` : ""}>${esc(t)}</th>`).join("")}</tr></thead>`;
+  const groups = [`<div class="nc-group"><h5>Discarded batches</h5>
+    <table class="nc-table">${head([["Batch"], ["Pass", "num"], ["Why it does not count"], ["Folder"]])}<tbody>
+    ${(f.discarded || []).map((d) => `<tr><td>${esc(d.label)}</td>${pass(d)}<td>${esc(d.reason)}</td><td>${path(d.dir)}</td></tr>`).join("")}</tbody></table></div>`];
+  const byWhat = {};
+  for (const d of f.superseded || []) (byWhat[d.what] = byWhat[d.what] || []).push(d);
+  for (const [what, items] of Object.entries(byWhat)) {
+    groups.push(`<div class="nc-group"><h5>Replaced by a rerun · ${esc(what)}</h5><p class="nc-why">${esc(items[0].reason)}</p>
+      <table class="nc-table">${head([["Candidate"], ["Pass, replaced rows", "num"], ["Replaced rows"], ["Rerun that counts"]])}<tbody>
+      ${items.map((d) => `<tr><td>${esc(d.who)}</td>${pass(d)}<td>${path(d.dir)}</td><td>${path(d.rerun_dir)}</td></tr>`).join("")}</tbody></table></div>`);
+  }
+  const a = f.archive;
+  groups.push(`<div class="nc-group"><h5>Archived under the old rules</h5>
+    <table class="nc-table">${head([["Matrix"], ["Pass", "num"], ["Why it does not count"], ["Folders"]])}<tbody>
+    <tr><td>${esc(a.label)}</td>${pass(a)}<td>${esc(a.note)}</td><td>${(a.dirs || []).map((p) => path(`analysis/${p}`)).join("<br>")}</td></tr></tbody></table></div>`);
+  return `<h4>Runs that do not count</h4>
+    <p class="note" style="margin:0">None of these runs is in any score above. They stay on disk; the cost of the discarded and replaced runs is listed in the cost panel below.</p>${groups.join("")}`;
 }
 
 function renderScores() {
@@ -642,12 +666,9 @@ function renderScores() {
     <div class="panel"><h4>Side benchmarks named in the brief (not in the exam score)</h4>
       <table><thead><tr><th>Candidate</th><th class="num">SysEngBench</th><th class="num">PURE</th></tr></thead><tbody>${sideRows}</tbody></table>
       <p class="note">SysEngBench: ${anySeb ? `${anySeb.questions} questions fixed with seed 20261006, 10 per prompt, ${anySeb.repeats} repeats; always answering B would score ${anySeb.always_b}/${anySeb.questions} on this subset, because the dataset's key is mostly B and C.` : "not run yet."} PURE: the two sealed excerpts, 3 repeats; the extracted requirement sentences must equal the key.</p></div>
-    <div class="panel wide"><h4>Approaches with the same model (81 cells each)</h4>${cfgTable("flash")}${cfgTable("max")}
+    <div class="panel full"><h4>Approaches with the same model (81 cells each)</h4><div class="two-col">${cfgTable("flash")}${cfgTable("max")}</div>
       <p class="note">Syntax 1st → final counts the 39 SysML answers (GEN, MOD, ALN) per approach: passing the official parse on the first attempt, and after the repair loop (P0 has no loop). Tokens and USD at the ${esc(f.costs.prices.region)} list price.</p></div>
-    <div class="panel"><h4>Runs that do not count</h4>
-      ${(f.discarded || []).map((d) => `<div class="audit"><b>${esc(d.label)} · ${d.pass}/${d.n}</b>${esc(d.reason)} <span class="hint mono">${esc(d.dir)}</span></div>`).join("")}
-      ${(f.superseded || []).map((d) => `<div class="audit"><b>${esc(d.label)} · ${d.pass}/${d.n}</b>${esc(d.reason)} <span class="hint mono">${esc(d.dir)} → ${esc(d.rerun_dir)}</span></div>`).join("")}
-      <div class="audit"><b>${esc(f.archive.label)} · ${f.archive.pass}/${f.archive.n}</b>${esc(f.archive.note)}</div></div>
+    <div class="panel full">${notCounted(f)}</div>
     <div class="panel cost" id="cost-panel"></div>`;
   renderCost(false);
 }
@@ -678,7 +699,7 @@ function renderCost(intl) {
       <span class="cv">${money(it.usd)}</span><small class="ct">${tokens}${per}</small></div>`;
   }).join("");
   const insight = p0 && p3 && m0 ? `Same 81 cells: flash P0 costs ${money(p0.usd)}, flash P3 ${money(p3.usd)} (${(p3.usd / p0.usd).toFixed(1)}×), max P0 ${money(m0.usd)} (${Math.round(m0.usd / p0.usd)}×).`
-    + (oc && cl ? ` The agents on flash: OpenCode ${money(oc.usd)} for ${oc.cells} runs, Claude Code ${money(cl.usd)} for ${cl.cells}; each step re-sends the workspace, mostly billed as cached input.` : "") : "";
+    + (oc && cl ? ` The agents on flash: OpenCode ${money(oc.usd)} for ${oc.cells} runs, Claude Code at least ${money(cl.usd)} for ${cl.cells}; each step re-sends the workspace, mostly billed as cached input.` : "") : "";
   const total = items.reduce((a, it) => a + (it.group_id === "part2" || it.group_id === "mod" ? 0 : it.usd || 0), 0)
     + [...(c.runs || []), ...(c.mod_runs || [])].reduce((a, r) => a + (usdOf("qwen3.8-max", r, intl) || 0), 0);
   $("#cost-panel").innerHTML = `<div class="cost-head"><h4>Cost in USD at official list prices</h4>
@@ -687,7 +708,7 @@ function renderCost(intl) {
     <div class="price-row">${Object.keys(pr.models).map(priceChip).join("")}</div>
     ${insight ? `<div class="audit" style="margin:10px 0">${esc(insight)}</div>` : ""}
     <div class="cost-rows">${rows}</div>
-    <p class="note">Recorded total about ${money(total)}, including the discarded runs. ${esc(c.unrecorded.join(" "))}</p>`;
+    <p class="note">Recorded total about ${money(total)}, including the discarded and replaced runs. ${esc(c.unrecorded.join(" "))}</p>`;
   $$("#cost-region button").forEach((b) => { b.onclick = () => renderCost(b.dataset.region === "intl"); });
 }
 
@@ -1318,7 +1339,7 @@ function runDetailHTML(r, id) {
     const hits = new Set(ret.words || []);
     return io("Code · Paper 2", "① Retrieve from memory", "Words in the brief + memory cards", "Matched cards, verbatim, as the \"examples\" part of the design prompt")
       + `<div class="block-h">Memory = these sources (${esc(ret.library_size ?? "—")} cards in all)</div><div class="chips" style="margin-bottom:10px">${(ret.sources || []).map((s) => `<span class="chip">${esc(s.label)} · ${esc(s.cards)} cards · <span class="mono">${esc(s.path)}</span></span>`).join("")}</div>`
-      + `<div class="block-h">Query words and numbers (blue = found in at least one card)</div><div class="words" style="margin-bottom:10px">${(ret.query_words || []).map((w) => `<span class="${hits.has(w) ? "hit" : ""}">${esc(w)}</span>`).join("")}</div>`
+      + `<div class="block-h">${ret.method && ret.method !== "keyword" ? "Words and numbers of the brief (blue = found in at least one card; shown for reference, the ranking is by MiniLM + FAISS)" : "Query words and numbers (blue = found in at least one card)"}</div><div class="words" style="margin-bottom:10px">${(ret.query_words || []).map((w) => `<span class="${hits.has(w) ? "hit" : ""}">${esc(w)}</span>`).join("")}</div>`
       + `<div class="rgraph">${retrievalGraph(ret)}</div>`
       + `<table style="margin-top:10px"><thead><tr><th>Role</th><th>Card (text that enters the prompt)</th><th class="num">Score</th><th>Source</th></tr></thead><tbody>${(ret.nodes || []).map((n) => `<tr><td>${n.role === "seed" ? "seed" : "neighbour"}</td><td class="mono" style="font-size:11.5px">${esc(n.text)}</td><td class="num">${esc(n.score)}</td><td>${esc(n.source)}</td></tr>`).join("")}</tbody></table>`
       + `<div class="audit"><b>Note</b>${esc(ret.note || "")} ${ret.method && ret.method !== "keyword"
@@ -1889,19 +1910,20 @@ function renderCaps() {
   const r = S.record && Array.isArray(S.record.designs) ? S.record : null;
   const fails = r ? failingChecks(r) : [];
   const pure = f.side.pure || {};
+  const typeLine4 = (t) => ["flash", "max", "opencode", "claude"].map((k) => `${C[k].short} ${BT(C[k].by_type, t).pass}/${BT(C[k].by_type, t).n}`).join(", ");
   const caps = [
     { title: "① Generate requirements from a task", done: r ? `The latest run wrote ${(r.requirements?.requirements || []).length} numbered requirements; ${(r.requirements?.unsourced || []).length} carry numbers not in the brief.` : "No run yet.",
-      proof: `2.3: "② Write requirements" and "Number source check". Asking when a number is missing, exam AMB tasks: flash ${BT(f.by_type, "AMB").pass}/${BT(f.by_type, "AMB").n}, max ${BT(C.max.by_type, "AMB").pass}/${BT(C.max.by_type, "AMB").n}. Copying requirement sentences from real documents (PURE): ${Object.entries(pure).map(([k, x]) => `${C[k].short} ${x.pass}/${x.n}`).join(", ") || "not run yet"}.`,
+      proof: `2.3: "② Write requirements" and "Number source check". Asking when a number is missing, exam AMB tasks: ${typeLine4("AMB")}. Copying requirement sentences from real documents (PURE): ${Object.entries(pure).map(([k, x]) => `${C[k].short} ${x.pass}/${x.n}`).join(", ") || "not run yet"}.`,
       todo: "Nobody has reviewed the generated requirements' quality one by one; PURE covers two short excerpts." },
     { title: "② Generate design concepts", done: r ? `Every run writes two designs: ${r.designs.map((d) => `${d.key} official validation ${d.sysml_status}`).join(", ")}; aligned with MaritimeISR, alignment package official Pilot ${r.alignment?.package?.sysml_status || "not generated"}.` : "No run yet.",
-      proof: `2.3: "② Write design", "③ Official validation", "④ Align". Exam GEN tasks: flash ${BT(f.by_type, "GEN").pass}/${BT(f.by_type, "GEN").n}, max ${BT(C.max.by_type, "GEN").pass}/${BT(C.max.by_type, "GEN").n}; ALN tasks: flash ${BT(f.by_type, "ALN").pass}/${BT(f.by_type, "ALN").n}, max ${BT(C.max.by_type, "ALN").pass}/${BT(C.max.by_type, "ALN").n}.`,
+      proof: `2.3: "② Write design", "③ Official validation", "④ Align". Exam GEN tasks: ${typeLine4("GEN")}; ALN tasks: ${typeLine4("ALN")}.`,
       todo: "The two designs differ because the prompt says so (literal / restructured); there is no automatic search of the design space yet." },
     { title: "③ Consistency checks (static budgets)", done: r ? `All four checks read only officially parsed numbers. ${fails.length ? `Latest run failed ${fails.join(", ")}; the agent proposed trade-offs and code recomputed them from the catalog.` : "The latest run passed all four."}` : "No run yet.",
-      proof: `2.3: "⑤ Budget checks" and "Trade-offs"; MOD-05 in the exam: ${f.reliability.mod05_pass}/12 flash cells report the overrun honestly (design verdict FAIL, task verdict PASS), none raised the limit.`,
+      proof: `2.3: "⑤ Budget checks" and "Trade-offs"; MOD-05 in the exam, answers that report the overrun honestly (design verdict FAIL, task verdict PASS): ${Object.entries(f.reliability.mod05_by_cohort || {}).map(([k, x]) => `${C[k].short} ${x.honest}/${x.n}`).join(", ")}; none raised the limit.`,
       todo: "These are static budget sums, not time-domain simulation: no queueing, link-outage durations or temperature." },
   ];
   $("#caps").innerHTML = caps.map((c) => `<article><h4>${esc(c.title)}</h4><p><b>Done: </b>${esc(c.done)}</p><p style="margin-top:6px"><b>Evidence: </b>${esc(c.proof)}</p><p style="margin-top:6px;color:var(--ink-3)"><b>Not yet: </b>${esc(c.todo)}</p></article>`).join("")
-    + `<article style="grid-column:1/-1"><h4>Other checks</h4><p>Repeat stability: groups whose three repeats disagree, ${["flash", "max", "opencode", "claude"].map((k) => `${C[k].short} ${C[k].reliability.flips}/${C[k].reliability.groups}`).join(", ")}. Hazard requirements file ${esc(f.safety.file)} ${f.safety.kept ? "is unchanged" : "was changed"}. The task bank and scorers are frozen (${esc(f.freeze.file)}, tag ${esc(f.freeze.tag)}).</p></article>`;
+    + `<article style="grid-column:1/-1"><h4>Other checks</h4><p>Repeat stability: groups whose three repeats disagree, ${["flash", "max", "opencode", "claude"].map((k) => `${C[k].short} ${C[k].reliability.flips}/${C[k].reliability.groups}`).join(", ")}. ${Object.keys(f.reliability.rerun_spread || {}).length ? `Rerunning P3 with byte-identical prompts changed ${Object.entries(f.reliability.rerun_spread).map(([k, x]) => `${x.changed} of ${x.cells} ${C[k].short} verdicts`).join(" and ")} (decision 028), so a difference of a few cells is noise. ` : ""}Hazard requirements file ${esc(f.safety.file)} ${f.safety.kept ? "is unchanged" : "was changed"}. The task bank and scorers are frozen (${esc(f.freeze.file)}, tag ${esc(f.freeze.tag)}).</p></article>`;
 }
 
 /* ======================= events & boot ======================= */

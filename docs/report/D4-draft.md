@@ -11,7 +11,7 @@ RTRC 2706 · UConn Senior Design · data through 2026-10-06. Every maritime numb
 - **Safety holds.** No candidate changed a value the task said to keep or wrote a model with a number the task did not give, and on the over-budget task (MOD-05, 78 W against a 60 W limit) all 30 answers (24 direct cells, 6 agent runs) report the overrun instead of raising the limit.
 - **The official tool has an order dependence.** The Pilot can pass an alignment package when it is listed before its source models and fail the same files in the other order. The scorer uses one fixed order; the agents' validator now uses the same order, and their alignment runs were rerun.
 - **Scored under freeze revision 2.** After the batches, three keys were fixed and the retrieval cards gained documentation text (decision 028). The saved answers were re-scored with the batches' own scoring code, which changed six cells, all from FAIL to PASS, and every direct P3 cell was rerun.
-- **Cost.** At the China (Beijing) list price, 81 cells cost $0.0087 on flash P0 and $0.12 on max P0 (14×); an agent run on flash costs about $0.006–0.008 on average (81 runs: OpenCode $0.68, Claude Code at least $0.51). Everything scored, including the side benchmarks, cost $2.45; everything recorded, including discarded and superseded runs, about $3.93.
+- **Cost.** At the China (Beijing) list price, 81 cells cost $0.0087 on flash P0 and $0.12 on max P0 (14×); an agent run on flash costs about $0.006–0.008 on average (81 runs: OpenCode $0.68, Claude Code at least $0.51). Everything scored, including the side benchmarks, cost $2.45; everything recorded, including discarded and superseded runs, about $3.97.
 
 ## 1. What was built
 
@@ -124,9 +124,9 @@ Prices: Alibaba Cloud Model Studio, China (Beijing) list price checked 2026-10-0
 | Claude Code on flash | 81 | at least $0.5143 |
 | Side benchmarks, four candidates | SysEngBench 300 answers, PURE 6 each | $0.2438 |
 | Scored batches and side benchmarks | | $2.45 |
-| Discarded and superseded runs | agents 81 + 81 + 9 + 9, P3 cells 81 + 81 | $1.36 |
+| Discarded and superseded runs | agents 81 + 81 + 9 + 9, P3 cells 81 + 81 | $1.40 |
 
-Everything recorded, including the discarded and superseded runs, graph retrieval, the Part 2 prototype and the MOD change chain, comes to about $3.93. The paper 1 and paper 2 replications and the trial runs are recorded in their own folders and not summed.
+Everything recorded, including the discarded and superseded runs, graph retrieval, the Part 2 prototype and the MOD change chain, comes to about $3.97. The paper 1 and paper 2 replications and the trial runs are recorded in their own folders and not summed. The discarded Claude Code batch is priced from Claude Code's own per-model usage, because its runner recorded the cached input apart from the input.
 
 ## 10. Limits
 

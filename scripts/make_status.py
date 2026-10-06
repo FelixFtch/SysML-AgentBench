@@ -139,7 +139,7 @@ def main() -> None:
     costs = f["costs"]
     lines += ["", "## Cost", "",
               f"At the China (Beijing) list price checked {costs['prices']['checked']}: the four scored batches and the side benchmarks {_usd(costs['batch_usd'])}; "
-              f"everything recorded, including the discarded runs, graph retrieval, Part 2 and the MOD chain, about {_usd(costs['recorded_usd'])}. "
+              f"everything recorded, including the discarded and replaced runs, graph retrieval, Part 2 and the MOD chain, about {_usd(costs['recorded_usd'])}. "
               + " ".join(costs["unrecorded"]), ""]
     lines += [
         "## Not done",

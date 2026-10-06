@@ -1,6 +1,6 @@
 # STATUS
 
-Generated 2026-10-06 18:02 UTC by `python3 scripts/make_status.py` from saved results. All maritime numbers are synthetic, not RTX specifications. The official SysML v2 Pilot 0.62 is the only syntax judge; the answer keys are the ground truth; no model judges (decision 025).
+Generated 2026-10-06 18:36 UTC by `python3 scripts/make_status.py` from saved results. All maritime numbers are synthetic, not RTX specifications. The official SysML v2 Pilot 0.62 is the only syntax judge; the answer keys are the ground truth; no model judges (decision 025).
 
 Task bank: 27 sealed tasks, second review recorded in `bench/tasks/t4_maritime_isr/heldout/REVIEW.md`, frozen in `bench/FREEZE.md` (tag `freeze-2026-10-06-r2`).
 
@@ -90,7 +90,7 @@ SysEngBench (rabell/SysEngBench, MIT): 100 questions fixed with seed 20261006 (`
 - Claude Code, ALN runs of the first sandboxed batch (1/9, `analysis/claude-jail-qwen3.8-flash-20261006T133739`, replaced by `analysis/claude-jail-aln-qwen3.8-flash-20261006T152725`): ./validate passed the files in the order the agent gave them, and the Pilot's verdict depends on that order: with the agent's own file first, 8 alignment packages (OpenCode 3, Claude Code 5) that fail in the scorer's order (sources first) passed the agent's check and were submitted. Every ALN run of both agents was rerun with ./validate in the scorer's order (decision 026); the rerun replaces these rows.
 - flash, P3 cells retrieved with cards that lacked documentation text (69/81, `analysis/heldout-qwen3.8-flash-20261006T070150`, replaced by `analysis/heldout-p3doc-qwen3.8-flash-20261006T171547`): The paper 2 replication (decision 027) showed that the authors' node text carries each element's documentation and our retrieval cards did not. The cards now do, and every P3 cell of both direct batches was rerun under freeze revision 2 (decision 028); the rerun replaces these rows.
 - max, P3 cells retrieved with cards that lacked documentation text (79/81, `analysis/heldout-qwen3.8-max-20261006T070151`, replaced by `analysis/heldout-p3doc-qwen3.8-max-20261006T171549`): The paper 2 replication (decision 027) showed that the authors' node text carries each element's documentation and our retrieval cards did not. The cards now do, and every P3 cell of both direct batches was rerun under freeze revision 2 (decision 028); the rerun replaces these rows.
-- 2026-10-03 matrix (24 tasks, old repair loop, old AMB/RT rules): 224/288. qwen3.8-flash, P1 repair with 3 rounds and only the latest error lines, re-scored once on 2026-10-03; kept as the record of the old rules, not comparable cell for cell.
+- 2026-10-03 matrix (24 tasks, old repair loop, old AMB/RT rules): 224/288. qwen3.8-flash, P1 repair with 3 rounds, the first 8 error lines only and a fresh conversation each time, re-scored once on 2026-10-03; kept as the record of the old rules, not comparable cell for cell.
 
 ## Part 2 prototype: blank brief → requirements → two designs → Pilot → alignment → checks → human approval → memory
 
@@ -117,7 +117,7 @@ Memory (`analysis/memory/approved.jsonl`): 2 approved designs (20261003T144529 A
 
 ## Cost
 
-At the China (Beijing) list price checked 2026-10-03: the four scored batches and the side benchmarks $2.4481; everything recorded, including the discarded runs, graph retrieval, Part 2 and the MOD chain, about $3.9294. 4 Part 2 runs recorded only requirements, designs and trade-offs, not alignment and read-back; later runs record everything. 5 MOD change runs predate usage logging; later runs record everything. 5 Claude Code runs hit the 900 s limit before Claude Code reported its usage (it reports only when a run ends); their tokens are not in these sums, so Claude Code's cost is a lower bound. The paper 1 replication (4 calls, qwen3.8-max) and the trial runs of 2026-10-06 are recorded in their own folders and not summed here.
+At the China (Beijing) list price checked 2026-10-03: the four scored batches and the side benchmarks $2.4481; everything recorded, including the discarded and replaced runs, graph retrieval, Part 2 and the MOD chain, about $3.9672. 4 Part 2 runs recorded only requirements, designs and trade-offs, not alignment and read-back; later runs record everything. 5 MOD change runs predate usage logging; later runs record everything. 5 Claude Code runs hit the 900 s limit before Claude Code reported its usage (it reports only when a run ends); their tokens are not in these sums, so Claude Code's cost is a lower bound. The paper 1 replication (4 calls, qwen3.8-max), the paper 2 replication (18 calls, qwen3.8-max) and the trial runs of 2026-10-06 are recorded in their own folders and not summed here.
 
 ## Not done
 

@@ -835,7 +835,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
-        if parsed.path not in {"/api/run", "/api/discover", "/api/mvp-run", "/api/approve"}:
+        if parsed.path not in {"/api/run", "/api/discover", "/api/mvp-run", "/api/approve", "/api/review-mapping"}:
             self._send(404, b"not found", "text/plain")
             return
         length = int(self.headers.get("Content-Length") or "0")
@@ -850,6 +850,17 @@ class Handler(BaseHTTPRequestHandler):
                 with JOB_LOCK:
                     result = approve(str(payload.get("run_id") or ""), str(payload.get("design") or ""))
             except ValueError as exc:
+                self._send(409, json.dumps({"error": str(exc)}, ensure_ascii=False).encode(), "application/json; charset=utf-8")
+                return
+            self._send(200, json.dumps(result, ensure_ascii=False).encode(), "application/json; charset=utf-8")
+            return
+        if parsed.path == "/api/review-mapping":
+            from bench.discover import review_mapping
+            try:
+                with JOB_LOCK:
+                    result = review_mapping(str(payload.get("run_id") or ""), int(payload.get("index", -1)),
+                                            str(payload.get("decision") or ""), str(payload.get("note") or ""))
+            except (ValueError, TypeError) as exc:
                 self._send(409, json.dumps({"error": str(exc)}, ensure_ascii=False).encode(), "application/json; charset=utf-8")
                 return
             self._send(200, json.dumps(result, ensure_ascii=False).encode(), "application/json; charset=utf-8")

@@ -424,10 +424,92 @@ def simulate(numbers: dict, connections: list, requirements: list[dict]) -> list
     return checks
 
 
+DEFINITION_TYPES = {"PartDefinition", "PortDefinition", "AttributeDefinition", "InterfaceDefinition", "ItemDefinition",
+                    "RequirementDefinition", "ConnectionDefinition", "ActionDefinition", "ConjugatedPortDefinition"}
+USAGE_TYPES = {"PartUsage", "PortUsage", "AttributeUsage", "InterfaceUsage", "ItemUsage", "RequirementUsage", "ActionUsage"}
+
+
+def element_kinds(run_dir: Path, package: str) -> dict:
+    """For every named element of `package` in one official parse: its type, and how an alignment package may
+    refer to it. A definition, or a feature owned by a definition, is reached by qualified name (alias). A usage
+    reached from the package through usages only has a dot path (allocation), e.g. DesignA::usv.eoCamera."""
+    from mvp.engine import exported_elements
+    elements = exported_elements(json.loads((run_dir / "sysml" / "model.json").read_text(encoding="utf-8")))
+    by_id = {element["@id"]: element for element in elements}
+    kinds = {}
+    for element in elements:
+        name = element.get("qualifiedName")
+        if not name or not name.startswith(package + "::") or not element.get("declaredName"):
+            continue
+        kind = element.get("@type")
+        chain, through_definition = [], False
+        owner = by_id.get((element.get("owner") or {}).get("@id") or "")
+        while owner and owner.get("qualifiedName") != package:
+            if owner.get("@type") in DEFINITION_TYPES:
+                through_definition = True
+            chain.append(owner.get("declaredName") or "")
+            owner = by_id.get((owner.get("owner") or {}).get("@id") or "")
+        usage_path = None
+        if kind in USAGE_TYPES and not through_definition:
+            usage_path = package + "::" + ".".join(list(reversed(chain)) + [element["declaredName"]])
+        kinds[name] = {"type": kind, "construct": "allocation" if usage_path else ("alias" if kind in DEFINITION_TYPES or through_definition else None),
+                       "usage_path": usage_path}
+    return kinds
+
+
+def category(kind: str) -> str:
+    for word in ("Part", "Port", "Attribute", "Interface", "Item", "Requirement", "Action", "Connection"):
+        if kind.startswith(word) or kind.startswith("Conjugated" + word):
+            return word
+    return kind
+
+
+def alignment_lines(rows: list[dict], design_kinds: dict, existing_kinds: dict) -> tuple[list[str], list[dict]]:
+    """Turn verified pairs into alias / allocation statements.
+
+    Same category on both sides is required (a part is not aligned to a port). Two usages reached through usages
+    become an allocation. Two definitions, or two definition features, become an alias named with the design's
+    short name. A design usage feature against an existing definition feature (the design writes `vessel { attribute
+    powerLimitW }`, the existing model writes it inside the definition) also becomes an alias and is marked as a
+    level difference for the reviewer. A part usage against a part definition is not declared: typing the usage by
+    the existing definition is a design decision for a person, so the pair stays in the table for review only.
+    Nothing is auto-converted, which is where the paper's type-mismatch cases went."""
+    lines, annotated = [], []
+    counter = 0
+    for row in rows:
+        left, right = design_kinds.get(row["design"]), existing_kinds.get(row["existing"])
+        note = dict(row)
+        short = row["design"].split("::")[-1]
+        if not left or not right:
+            note.update({"construct": None, "declared": False, "refused": "one side is not a named element in the parse"})
+        elif category(left["type"]) != category(right["type"]):
+            note.update({"construct": None, "declared": False,
+                         "refused": f"category mismatch: {left['type']} vs {right['type']}"})
+        elif left["construct"] == "allocation" and right["construct"] == "allocation":
+            counter += 1
+            lines.append(f"    allocation map{counter} allocate {left['usage_path']} to {right['usage_path']};")
+            note.update({"construct": "allocation", "declared": True, "statement": lines[-1].strip()})
+        elif left["construct"] == "alias" and right["construct"] == "alias":
+            lines.append(f"    alias {short} for {row['existing']};")
+            note.update({"construct": "alias", "declared": True, "statement": lines[-1].strip()})
+        elif right["construct"] == "alias" and category(left["type"]) in {"Attribute", "Port"}:
+            lines.append(f"    alias {short} for {row['existing']};")
+            note.update({"construct": "alias", "declared": True, "statement": lines[-1].strip(),
+                         "level": f"the design states it on a usage ({left['type']}); the existing model states it in a definition"})
+        else:
+            note.update({"construct": None, "declared": False,
+                         "refused": f"usage against definition ({left['type']} vs {right['type']}): typing the design's usage by the existing definition is a design decision; not declared, left for the reviewer"})
+        annotated.append(note)
+    return lines, annotated
+
+
 def align(stamp: str, design: dict, design_path: Path, retrieval: dict) -> dict:
-    """Stage 4: the model proposes mappings; code checks both names exist; the official Pilot then parses a
-    separate alignment package together with both untouched source files."""
+    """Stage 4, paper 1 as the project runs it: the model proposes mappings; code checks both names exist and
+    classifies each pair from the two official parses; code writes a separate package of `alias` (definitions and
+    features) and `allocation` (usages) statements; the official Pilot parses it together with both untouched
+    source files. A person accepts or rejects each pair afterwards (analysis/memory/alignment-reviews.jsonl)."""
     from mvp.engine import run_submitted_model
+    from bench.graph_query import maritime_parse
     existing = sorted({node["name"] for node in retrieval.get("nodes", []) if node.get("source") == "MaritimeISR" and node.get("name")})
     elements = design.get("elements") or []
     if not existing:
@@ -449,28 +531,72 @@ def align(stamp: str, design: dict, design_path: Path, retrieval: dict) -> dict:
         checked.append({"design": left, "existing": right, "reason": row.get("reason") or "",
                         "design_exists": left in design_set, "existing_exists": right in existing_set,
                         "ok": left in design_set and right in existing_set})
-    result = {"mappings": checked, "verified": sum(1 for row in checked if row["ok"]), "proposed": len(checked),
-              "existing_names": existing, "model": reply.get("model"),
-              "note": "Mappings are proposals. Code checks both names exist, then the official Pilot parses the alignment package. Neither source model is edited. A person decides whether to adopt them."}
+    design_kinds = element_kinds(Path(design["run_dir"]), f"Design{design['key']}") if design.get("run_dir") else {}
+    existing_kinds = element_kinds(maritime_parse(), "MaritimeISR")
     ok_rows = [row for row in checked if row["ok"]]
-    if not ok_rows:
+    lines, annotated = alignment_lines(ok_rows, design_kinds, existing_kinds)
+    by_pair = {(row["design"], row["existing"]): row for row in annotated}
+    checked = [by_pair.get((row["design"], row["existing"]), {**row, "construct": None, "declared": False}) for row in checked]
+    for index, row in enumerate(checked):
+        row["index"] = index
+    result = {"mappings": checked, "verified": len(ok_rows), "declared": sum(1 for row in checked if row.get("declared")),
+              "refused": [row for row in checked if row.get("refused")], "proposed": len(checked),
+              "existing_names": existing, "model": reply.get("model"), "constructs": "alias for definitions and definition features, allocation for usages",
+              "note": "Mappings are proposals. Code checks both names exist, writes alias and allocation statements from the two parses, then the official Pilot parses the alignment package. Neither source model is edited. A person accepts or rejects each pair."}
+    if not lines:
         return result
     name = f"Align{design['key']}_{stamp}"
-    lines = [f"package {name} {{",
-             "    doc /* Alignment package written by the agent. Neither source model is edited. */"]
-    for index, row in enumerate(ok_rows, 1):
-        lines.append(f"    dependency map{index} from {row['design']} to {row['existing']};")
-    lines.append("}")
-    source = "\n".join(lines) + "\n"
+    source = "\n".join([f"package {name} {{",
+                        "    doc /* Alignment package written by code from the model's verified mappings. Neither source model is edited. */",
+                        f"    private import Design{design['key']}::*;",
+                        "    private import MaritimeISR::*;"] + lines + ["}"]) + "\n"
     path = design_path.parent / f"{name}.sysml"
     path.write_text(source, encoding="utf-8")
     validated = run_submitted_model([MARITIME_FILE, design_path, path], name, label=f"discover-align-{design['key']}")
     result["package"] = {
         "name": name, "source": source, "files": ["MaritimeISR.sysml", design_path.name, path.name],
         "sysml_status": validated["sysml"]["status"], "run_id": validated["run_id"],
-        "diagnostics": [{"line": item.get("line"), "message": item.get("message", "")} for item in validated["sysml"].get("diagnostics", [])[:6]],
+        "diagnostics": [{"line": item.get("line"), "message": item.get("message", "")} for item in validated["sysml"].get("diagnostics", [])],
     }
     return result
+
+
+REVIEWS = ROOT / "analysis" / "memory" / "alignment-reviews.jsonl"
+
+
+def load_reviews() -> list[dict]:
+    if not REVIEWS.is_file():
+        return []
+    return [json.loads(line) for line in REVIEWS.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def review_mapping(run_id: str, index: int, decision: str, note: str = "") -> dict:
+    """A person accepts or rejects one proposed pair. Appends to the review log and marks the saved run."""
+    if decision not in {"accept", "reject"}:
+        raise ValueError("The decision must be accept or reject.")
+    if not re.fullmatch(r"\d{8}T\d{6}", run_id or ""):
+        raise ValueError("Invalid run id.")
+    path = ROOT / "analysis" / f"discover-{run_id}.json"
+    if not path.is_file():
+        raise ValueError("No such run.")
+    record = json.loads(path.read_text(encoding="utf-8"))
+    rows = (record.get("alignment") or {}).get("mappings") or []
+    if not 0 <= index < len(rows):
+        raise ValueError("No such mapping.")
+    row = rows[index]
+    entry = {"run_id": run_id, "index": index, "design": row.get("design"), "existing": row.get("existing"),
+             "construct": row.get("construct"), "decision": decision, "note": note[:300],
+             "reviewed_at": datetime.now(timezone.utc).isoformat()}
+    REVIEWS.parent.mkdir(parents=True, exist_ok=True)
+    with REVIEWS.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    row["review"] = {"decision": decision, "note": entry["note"], "reviewed_at": entry["reviewed_at"]}
+    text = json.dumps(record, ensure_ascii=False, indent=2)
+    path.write_text(text, encoding="utf-8")
+    latest = ROOT / "analysis" / "discover-latest.json"
+    if latest.is_file() and json.loads(latest.read_text(encoding="utf-8")).get("id") == run_id:
+        latest.write_text(text, encoding="utf-8")
+    return {"record": record, "reviews": load_reviews()}
 
 
 def read_back(source: str) -> dict:

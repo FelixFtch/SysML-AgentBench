@@ -404,7 +404,7 @@ const APP = {
     { id: "syntax", row: "main", col: 4, owner: "Official tool", title: "③ Official validation", sub: "Pilot parses both designs", papers: ["ours"],
       does: "The official Pilot parses each design. A FAIL goes to repair.", input: "Two SysML files", output: "PASS / FAIL, error text, parsed model" },
     { id: "align", row: "main", col: 5, owner: "Model proposes · code checks", title: "④ Align", sub: "mappings → alignment package through the Pilot", papers: ["p1"],
-      does: "The model pairs design A's element names with retrieved MaritimeISR element names; code checks both names exist; the pairs become a separate alignment package (dependency statements) parsed by the official Pilot together with both source files. Neither source model is edited.", input: "Design A element names + MaritimeISR element names", output: "Mapping table + alignment package + Pilot result" },
+      does: "The model pairs design A's element names with retrieved MaritimeISR element names; code checks both names exist; code classifies each pair from the two parses and writes a separate alignment package of alias (definitions and features) and allocation (usages) statements, parsed by the official Pilot together with both source files; a person accepts or rejects each pair in 2.3. Neither source model is edited.", input: "Design A element names + MaritimeISR element names", output: "Mapping table + alignment package + Pilot result + per-pair review" },
     { id: "check", row: "main", col: 6, owner: "Code · model", title: "⑤ Budget checks · read-back", sub: "power · upload · storage · trace", papers: ["p3"],
       does: "Code checks four things with officially parsed numbers: total power ≤ limit, upload ≤ uplink capacity, recording ≤ storage, every numbered requirement is in the model. Then the model restates its own model in sentences (Paper 3's query use) and code checks every brief number is read back.", input: "Officially parsed numbers + requirements", output: "Four checks + read-back text" },
     { id: "human", row: "main", col: 7, kind: "human", owner: "Person", title: "⑥ Person decides · memory", sub: "approval needs all four checks",
@@ -434,7 +434,7 @@ const APP = {
   captions: {
     p2: "<b>Paper 2 → ① Retrieve</b>: after the official Pilot parses MaritimeISR, every element becomes a card (type, full name, value). The brief's words and numbers score the cards; the top 4 are seeds, plus their one-hop neighbours (ownership, connection ends). Matched cards become the \"examples\" part of the design prompt. The paper uses vectors and FAISS; this uses words only. <a href=\"#s03\">See the comparison in 0.3</a>",
     p3: "<b>Paper 3 → ② Generate, repair, ⑤ read-back</b>: prompt = rules (SysML rules) + template (attribute contract: names and values) + examples (retrieved cards). Syntax errors go back as the official error text (in the paper a person corrects). ⑤ Read-back has the model restate requirements from its own model, Paper 3's query use. <a href=\"#s03\">See the comparison in 0.3</a>",
-    p1: "<b>Paper 1 → ④ Align</b>: the model proposes \"design A element ↔ MaritimeISR element\" mappings, code checks both names exist, then writes a separate alignment package (dependency statements) that the official Pilot parses with both source files. Neither source model is edited; a person decides whether to adopt them. <a href=\"#s03\">See the comparison in 0.3</a>",
+    p1: "<b>Paper 1 → ④ Align</b>: the model proposes \"design A element ↔ MaritimeISR element\" mappings, code checks both names exist and classifies each pair, then writes a separate alignment package of alias and allocation statements that the official Pilot parses with both source files. Neither source model is edited; a person accepts or rejects each pair in 2.3. <a href=\"#s03\">See the comparison in 0.3</a>",
     ours: "<b>Official SysML v2 Pilot</b>: ③ validates both designs, ④ validates the alignment package. Budget checks read only its parsed numbers.",
   },
 };
@@ -584,7 +584,7 @@ function renderPapers() {
       missing: "In the paper a person corrects errors; here the official tool's errors do. The paper's bicycle example model was not used and its Yes/No capability table was not built." },
     { key: "p1", act: "④ Align", title: "Paper 1 · Li, Husung, Wang: cross-organization model alignment", venue: "arXiv 2508.16181 · ISSE 2025 · seven stages, human review, source models unchanged",
       orig: ["preparation and syntax check", "element summaries", "candidate mappings (LLM)", "mapping verification", "separate alignment package", "consistency check", "export"],
-      ours: ["design A × MaritimeISR", "model proposes mappings", "code checks both names", "dependency alignment package", "three files through the Pilot", "human review, sources unchanged"],
+      ours: ["design A × MaritimeISR", "model proposes mappings", "code checks both names and classifies each pair from the two parses", "code writes alias (definitions, features) and allocation (usages); a part usage against a definition is left to the person", "three files through the Pilot", "per-pair Accept / Reject in 2.3, sources unchanged"],
       where: [["2.1 ④ Align", "app", "align"], ["2.1 ⑥ Person decides", "app", "human"], ["1.1 Check against key (MOD values to keep)", "bench", "check"]],
       evidence: al.proposed ? `Latest run: ${al.proposed} mappings proposed, ${al.verified} with both ends present; alignment package ${esc(pkg.name || "")} official Pilot ${esc(pkg.sysml_status || "not generated")}. A misspelled element name makes the Pilot report "Couldn't resolve reference" and the package FAILs.` : "The latest run produced no alignment package.",
       missing: "No element summaries and no automatic semantic matching; only dependency, not alias or allocation. A Pilot pass shows the names resolve, not that the two sides mean the same thing; that needs a person." },
@@ -1371,12 +1371,23 @@ function runDetailHTML(r, id) {
   }
   if (id === "align") {
     const pkg = al.package || {};
-    return io("Model proposes · code checks · official tool · Paper 1", "④ Align with MaritimeISR", `Design A element names (${(ds[0]?.elements || []).length}) + retrieved MaritimeISR element names (${(al.existing_names || []).length})`, "Mapping table + a separate alignment package")
-      + (al.proposed ? `<table><thead><tr><th>Design A element</th><th>MaritimeISR element</th><th>Reason (written by the model)</th><th>Both ends exist</th></tr></thead><tbody>${(al.mappings || []).map((m) => `<tr><td class="mono" style="font-size:11.5px">${esc(m.design)}</td><td class="mono" style="font-size:11.5px">${esc(m.existing)}</td><td>${esc(m.reason)}</td><td>${badge(m.ok ? "PASS" : "FAIL")}</td></tr>`).join("")}</tbody></table>` : `<p class="hint">${esc(al.note || al.error || "No alignment.")}</p>`)
-      + (pkg.source ? `<div class="two-col" style="margin-top:12px"><div><div class="block-h">Alignment package (written by the agent, a separate file)</div><pre class="code">${esc(pkg.source)}</pre></div>
+    const old = al.proposed && !("declared" in al);
+    const construct = (m) => m.construct ? `<span class="badge ${m.construct === "alias" ? "ok" : "info"}">${esc(m.construct)}</span>` : m.ok ? `<span class="badge warn">refused</span>` : `<span class="badge bad">name missing</span>`;
+    const review = (m) => {
+      if (!m.ok) return `<span class="hint">—</span>`;
+      if (m.review) return `<span class="badge ${m.review.decision === "accept" ? "ok" : "bad"}">${esc(m.review.decision)}ed</span><span class="hint"> ${esc((m.review.reviewed_at || "").slice(0, 16))}</span>`;
+      return `<button type="button" class="mini" data-review="${m.index ?? ""}" data-decision="accept">Accept</button> <button type="button" class="mini" data-review="${m.index ?? ""}" data-decision="reject">Reject</button>`;
+    };
+    const rows = (al.mappings || []).map((m) => `<tr><td><span class="mono" style="font-size:11.5px">${esc(m.design)}</span><div class="hint">↔ <span class="mono">${esc(m.existing)}</span></div><div class="hint">${esc(m.reason)}</div></td><td>${badge(m.ok ? "PASS" : "FAIL")}</td><td>${construct(m)}${m.refused ? `<div class="hint">${esc(m.refused)}</div>` : m.statement ? `<div class="hint mono">${esc(m.statement)}</div>` : ""}${m.level ? `<div class="hint">${esc(m.level)}</div>` : ""}</td><td>${review(m)}</td></tr>`).join("");
+    const accepted = (al.mappings || []).filter((m) => m.review?.decision === "accept").length;
+    const rejected = (al.mappings || []).filter((m) => m.review?.decision === "reject").length;
+    return io("Model proposes · code checks and writes · official tool · person reviews · Paper 1", "④ Align with MaritimeISR", `Design A element names (${(ds[0]?.elements || []).length}) + retrieved MaritimeISR element names (${(al.existing_names || []).length})`, "Mapping table, a separate alignment package, a per-pair review")
+      + (al.proposed ? `<div class="tbl-scroll"><table class="align-table"><thead><tr><th>Design A element ↔ MaritimeISR element, with the model's reason</th><th>Both ends exist</th><th>Construct (decided by code from the two parses)</th><th>Person</th></tr></thead><tbody>${rows}</tbody></table></div>
+         <p class="hint">${old ? "This run predates the alias / allocation package (it used dependency statements); pairs can still be reviewed." : `alias = a definition or a definition's feature; allocation = a usage reached through usages. A part usage against a part definition is not declared (typing it is a design decision) and a category mismatch is refused: ${(al.refused || []).length} pair(s) left undeclared.`} Reviewed: ${accepted} accepted, ${rejected} rejected. Reviews are appended to analysis/memory/alignment-reviews.jsonl and cannot be undone from the page.</p>` : `<p class="hint">${esc(al.note || al.error || "No alignment.")}</p>`)
+      + (pkg.source ? `<div class="two-col" style="margin-top:12px"><div><div class="block-h">Alignment package (${old ? "written by the agent" : "written by code from the verified pairs"}, a separate file)</div><pre class="code">${esc(pkg.source)}</pre></div>
           <div><div class="block-h">The official Pilot parses these three files together</div><div class="chips" style="margin-bottom:8px">${(pkg.files || []).map((f) => `<span class="chip">${esc(f)}</span>`).join("")}</div>
           <div class="audit ${pkg.sysml_status === "PASS" ? "pass" : "fail"}"><b>Official Pilot ${esc(pkg.sysml_status)}</b>${pkg.sysml_status === "PASS" ? "Every name in the alignment package resolves in the two source models." : esc((pkg.diagnostics || []).map((x) => x.message).join("; "))}</div><p class="hint mono" style="margin-top:6px">${esc(pkg.run_id || "")}</p></div></div>` : "")
-      + `<div class="audit"><b>Limits</b>Neither source model was edited. A Pilot pass shows the names resolve, not that the two sides mean the same thing; a person decides which mappings to adopt.</div>`;
+      + `<div class="audit"><b>Limits</b>Neither source model was edited. A Pilot pass shows the names resolve, not that the two sides mean the same thing; that is what the Accept / Reject column records.</div>`;
   }
   if (id === "simulate") {
     return io("Code", "⑤ Budget checks", "Officially parsed numbers + requirements", "Four checks (same formulas as the three tables in 2.2)")
@@ -1551,6 +1562,18 @@ async function approveDesign(key) {
     renderCaps();
   } catch (e) {
     alert(`Not approved: ${e.message}`);
+  }
+}
+
+async function reviewMapping(index, decision) {
+  const r = S.record;
+  try {
+    const out = await api("/api/review-mapping", { run_id: r.id, index: Number(index), decision });
+    S.record = txDeep(out.record);
+    S.runStage = "align";
+    renderRun();
+  } catch (e) {
+    alert(`Not recorded: ${e.message}`);
   }
 }
 
@@ -1935,6 +1958,11 @@ document.addEventListener("click", (e) => {
   const ap = e.target.closest("[data-approve]");
   if (ap) {
     if (confirm(`Approve design ${ap.dataset.approve} into memory? It is written to analysis/memory/approved.jsonl and the next retrieval will find it.`)) approveDesign(ap.dataset.approve);
+    return;
+  }
+  const rv = e.target.closest("[data-review]");
+  if (rv) {
+    reviewMapping(rv.dataset.review, rv.dataset.decision);
     return;
   }
   const mode = e.target.closest("#mx-mode [data-mode]");

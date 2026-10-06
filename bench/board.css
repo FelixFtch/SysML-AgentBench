@@ -441,6 +441,9 @@ pre.code.light { background: #f6f9fb; color: var(--ink); border: 1px solid var(-
 .loop-arrow { text-align: center; font-size: 12px; color: var(--warn); font-weight: 700; }
 .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; padding: 1px 8px; border-radius: 999px; background: #e9eff3; color: var(--ink-2); }
 .badge.pass { background: #cfeedd; color: var(--pass); } .badge.fail { background: #f6cbc7; color: var(--fail); } .badge.warn { background: #f8e3b9; color: var(--warn); }
+.badge.ok { background: #cfeedd; color: var(--pass); } .badge.bad { background: #f6cbc7; color: var(--fail); } .badge.info { background: #dbe7f3; color: #2c5a80; }
+button.mini { font-size: 11px; padding: 2px 8px; border-radius: 6px; border: 1px solid #b9c7d2; background: #fff; color: var(--ink-2); cursor: pointer; }
+button.mini:hover { background: #eef3f7; }
 
 /* ---------- console ---------- */
 .console { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
@@ -648,3 +651,9 @@ pre.code.light { background: #f6f9fb; color: var(--ink); border: 1px solid var(-
   .wire.live, .fn.is-run, .harbor-data-line, .harbor-radio-line, #harbor.over #box-frame { animation: none; }
   html { scroll-behavior: auto; }
 }
+
+/* 2.3 alignment review table: six columns, scrolls sideways in the detail pane */
+.tbl-scroll { overflow-x: auto; max-width: 100%; }
+.align-table { min-width: 560px; }
+.align-table td, .align-table th { vertical-align: top; }
+.align-table td:first-child { max-width: 300px; }

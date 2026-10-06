@@ -27,6 +27,10 @@ Thresholds 0.20–0.40 give the same hits; 0.50 returns nothing. 0.30 is kept so
 
 Graph-retrieval QRY with qwen3.8-max, context = retrieved cards only: 5/5 (`analysis/graph-query-20261006T053755.json`); the 2026-10-03 keyword run was 4/5 (`graph-query-max.json`, QRY-03 answered 0). GEN-03 under P3 with the new library and the new repair loop: PASS in one trial (`analysis/trial-p3-20261006T054209/`).
 
+## Amendment, 2026-10-06: no fallback
+
+By the user's decision the word-ranking fallback is gone from P3 (`agents/solve.py`), Part 2 (`bench/discover.py`) and the graph-retrieval queries (`bench/graph_query.py`): without the embedding stack, retrieval raises with the install command. The versions are pinned in `requirements-retrieval.txt`; the MiniLM snapshot is pinned to `1110a243fdf4706b3f48f1d95db1a4f5529b4d41` and loaded from the local cache only (`python3 bench/vector_index.py --download` fetches it once, `--check` verifies versions, snapshot and a test search); the results page does not start if the check fails. The fallback never ran in a scored cell: all 162 P3 cells recorded `hybrid`, and the amended code reproduces their saved retrieval exactly (`bench/FREEZE.md`, Amendments). `bench/eval_retrieval.py` keeps its word ranking as the measured "before" baseline of the table above; it is not used for retrieval.
+
 ## Not reproduced from the paper
 
 Its input is the SysML v2 API's JSON-LD turned into RDF; ours is the Pilot's JSON export. Its radius search on an L2 index with 0.35 was calibrated on its vehicle model and is not reused. Its F1 of 0.904 is on its own three questions. The exact-name bonus is ours, added because 384-dimensional sentence vectors blur short identifiers like `usv`.

@@ -1,0 +1,94 @@
+{
+  "duration_api_ms": 159828,
+  "stop_reason": "end_turn",
+  "session_id": "1e621194-0581-4ece-bcb9-07c7ff4ecda6",
+  "total_cost_usd": 0.293073,
+  "usage": {
+    "input_tokens": 4904,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 70656,
+    "output_tokens": 9329,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 4904,
+      "outputTokens": 9329,
+      "cacheReadInputTokens": 70656,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.293073,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_decc34246d284ebeab35cfcf",
+      "tool_input": {
+        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T072436-P-CODE-2-ALN-03/workspace/ && ls /data/robotics/RTRC/mvp/agent-runs/20261006T072436-P-CODE-2-ALN-03/",
+        "description": "List benchmark run workspace contents"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 4,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage AlignRadar {\n    private import UavSensorSpec::*;\n    private import RadarVendor::*;\n\n    alias SearchRadar for RadarVendor::RadarModule_def;\n    alias Camera for RadarVendor::GimbalCamera_def;\n    alias rangeKm for RadarVendor::RadarModule_def::maxRangeKm;\n\n    allocation radarAllocation allocate UavSensorSpec::uav.searchRadar to RadarVendor::payload.radar;\n    allocation cameraAllocation allocate UavSensorSpec::uav.eoCamera to RadarVendor::payload.gimbal;\n}\n```\n\n```json\n{\n  \"mappings\": [\n    {\n      \"oem_element\": \"UavSensorSpec::SearchRadar\",\n      \"supplier_element\": \"RadarVendor::RadarModule_def\",\n      \"mapping_type\": \"alias\",\n      \"rationale\": \"Both part definitions specify a UAV radar payload module; the vendor's RadarModule_def is the supplier realization of the specification's SearchRadar definition.\"\n    },\n    {\n      \"oem_element\": \"UavSensorSpec::Camera\",\n      \"supplier_element\": \"RadarVendor::GimbalCamera_def\",\n      \"mapping_type\": \"alias\",\n      \"rationale\": \"Both part definitions specify the electro-optical camera payload; the gimbal mount is the vendor's implementation detail of the same camera function.\"\n    },\n    {\n      \"oem_element\": \"UavSensorSpec::SearchRadar::rangeKm\",\n      \"supplier_element\": \"RadarVendor::RadarModule_def::maxRangeKm\",\n      \"mapping_type\": \"alias\",\n      \"rationale\": \"For a radar definition, the specification's rangeKm characteristic denotes the radar's operational (maximum) detection range in km, matching the supplier's maxRangeKm attribute.\"\n    },\n    {\n      \"oem_element\": \"UavSensorSpec::uav.searchRadar\",\n      \"supplier_element\": \"RadarVendor::payload.radar\",\n      \"mapping_type\": \"allocation\",\n      \"rationale\": \"The single radar instance in the UAV assembly corresponds one-to-one to the vendor's radar instance in the payload assembly, under the aliased definitions.\"\n    },\n    {\n      \"oem_element\": \"UavSensorSpec::uav.eoCamera\",\n      \"supplier_element\": \"RadarVendor::payload.gimbal\",\n      \"mapping_type\": \"allocation\",\n      \"rationale\": \"The EO camera instance in the UAV assembly corresponds one-to-one to the vendor's gimbal camera instance in the payload assembly, under the aliased definitions.\"\n    }\n  ],\n  \"unmatched\": [\n    \"UavSensorSpec::uav\",\n    \"RadarVendor::RadarModule_def::massKg\",\n    \"RadarVendor::payload\"\n  ]\n}\n```",
+  "ttft_ms": 106212,
+  "type": "result",
+  "duration_ms": 160028,
+  "uuid": "c3c4b9ab-08bd-49b2-9eec-6f3f997fd4b3",
+  "ttft_stream_ms": 3656,
+  "time_to_request_ms": 124,
+  "first_content_frame_ms": 3656,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

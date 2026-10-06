@@ -1,0 +1,102 @@
+{
+  "duration_api_ms": 55347,
+  "stop_reason": "end_turn",
+  "session_id": "4e2a2fcf-9dbd-46a7-b661-c1f74a659423",
+  "total_cost_usd": 0.117371,
+  "usage": {
+    "input_tokens": 4841,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 69632,
+    "output_tokens": 2334,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 4841,
+      "outputTokens": 2334,
+      "cacheReadInputTokens": 69632,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.117371,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_63021c2ea80446e78b363558",
+      "tool_input": {
+        "command": "grep -rl \"part def\\|PortDef\\|port def\" /data/robotics/RTRC --include=\"*.sysml\" -I 2>/dev/null | head -20",
+        "description": "Find SysML reference files in repo"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_58a42340d73d4e6fa22864e3",
+      "tool_input": {
+        "command": "find /data/robotics/RTRC/mvp -maxdepth 3 -type d 2>/dev/null | head -30; find /data/robotics/RTRC -name \"*.sysml\" -I 2>/dev/null | head -20",
+        "description": "Look for SysML syntax references in repo"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 5,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage FourNode {\n\n    port def LinkPort;\n\n    part def Radio {\n        port toCommand : LinkPort;\n    }\n\n    part def ShoreStation {\n        port fromCommand : LinkPort;\n    }\n\n    part usv {\n        part radio : Radio;\n    }\n\n    part uav {\n        part radio : Radio;\n    }\n\n    part commandShip {\n        port fromUsv : LinkPort;\n        port fromUav : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part shore : ShoreStation;\n\n    connect usv.radio.toCommand to commandShip.fromUsv;\n    connect uav.radio.toCommand to commandShip.fromUav;\n    connect commandShip.toShore to shore.fromCommand;\n}\n```",
+  "ttft_ms": 5293,
+  "type": "result",
+  "duration_ms": 55491,
+  "uuid": "11f73183-8b14-421b-938e-1542ee16a360",
+  "ttft_stream_ms": 3338,
+  "time_to_request_ms": 63,
+  "first_content_frame_ms": 3339,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

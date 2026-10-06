@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 735606,
+  "stop_reason": "end_turn",
+  "session_id": "2a7e88f4-13bf-444b-8864-e2b1f44ff0bb",
+  "total_cost_usd": 1.192237,
+  "usage": {
+    "input_tokens": 25422,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 527104,
+    "output_tokens": 32063,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 25422,
+      "outputTokens": 32063,
+      "cacheReadInputTokens": 527104,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 1.192237,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 23,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Final report per the workspace rules:\n\n**Files changed**\n- `AlignCamera.sysml` (new) — the alignment package: imports of both source packages, 6 aliases (`ImageryPort→VideoOut`, `Camera→EoCameraUnit`, `Processor→VideoSink`, `drawW→powerDrawW`, `imagery→videoOut`, `imageryIn→videoIn`) and 3 allocations (`usv→kit`, `usv.eoCamera→kit.cameraUnit`, `usv.processor→kit.recorder`).\n- `answer.md` (new) — the required deliverable: exactly one fenced `sysml` block followed by one fenced `json` block, containing the same package and the mapping/unmatched report.\n- `validation/…` — validator output snapshots; scratch test files removed.\n\n**Validation status**\n- `./validate AlignCamera AlignCamera.sysml input/baseline/UsvPayloadSpec.sysml input/baseline/OptronicsKit.sysml` → **PASS** (official Pilot 0.62, 0 diagnostics, 0 warnings).\n- Intermediate runs FAILed and were fixed, reported verbatim: `mismatched input 'import' expecting '}'` (bare `import` is not accepted — `public import` is); and on the first full draft, 12 linking errors `Couldn't resolve reference to Feature 'UsvPayloadSpec'/'OptronicsKit'/'usv'/'kit'/…` on the allocation lines (dot paths starting at the package name don't resolve — `allocate UsvPayloadSpec::usv.eoCamera to OptronicsKit::kit.cameraUnit;` does).\n\n**Check results**\n- Baselines unmodified: md5 `a79461511fa8cb4f1268afc1a8955cd4` (UsvPayloadSpec) and `2433e0a706773be1eb46e9b0bfd9e3b7` (OptronicsKit), identical before and after; re-validated PASS with the same input hashes.\n- Unmatched: `OptronicsKit::EoCameraUnit::heaterW` — no counterpart in the spec; left unmapped per rule 4. The `connect` endpoints in each package are structurally mirrored and corroborate the port/usage mappings.\n\n**Open questions**\n- `usv`↔`kit`: I treated the top-level part usages as corresponding (each assembles exactly the camera + consumer pair) and added `usvAllocation`; if the intent is to map only the leaf usages, that one line can be dropped. No numbers or limits were involved, so nothing was relaxed.",
+  "ttft_ms": 12769,
+  "type": "result",
+  "duration_ms": 772938,
+  "uuid": "f316aa6a-e0f4-4bee-8418-a4097d015936",
+  "ttft_stream_ms": 11829,
+  "time_to_request_ms": 51,
+  "first_content_frame_ms": 11829,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

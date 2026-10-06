@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 73382,
+  "stop_reason": "end_turn",
+  "session_id": "5fd9efa0-9be2-43fc-8bb6-aeaedafe9bd0",
+  "total_cost_usd": 0.15496300000000002,
+  "usage": {
+    "input_tokens": 10183,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 112896,
+    "output_tokens": 1904,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 10183,
+      "outputTokens": 1904,
+      "cacheReadInputTokens": 112896,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.15496300000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 8,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the task rules:\n\n**Files changed**\n- Created `answer.md` — restatement of the model's requirements.\n- `input/model.sysml` untouched (read-only in this task; hash `8c74d213…` unchanged).\n\n**Validation status**\n- `./validate RoundTripRadar input/model.sysml` → **PASS**, `diagnostics: []`, 0 warnings, `return_code: 0` (official SysML v2 Pilot 0.62).\n\n**Check results**\n- No failing checks to report. The validator's scope note: it covers parser/linker and Xtext static checks only, excluding engineering budgets and full unit/dimension verification.\n\n**What the answer says**\nThe model contains exactly one requirement: `RadarShare`, doc text *\"The UAV radar shares tracks with the command ship.\"* That single sentence is the complete requirement set. I explicitly noted that the model contains **no** numbers, rates, limits, or other facts, and added none — e.g. no assumptions about track share frequency or mechanism.\n\n**Open questions**\nNone. The task was fully determinate from the model.",
+  "ttft_ms": 9764,
+  "type": "result",
+  "duration_ms": 76558,
+  "uuid": "acdebcdf-9122-483b-9611-6aa9955bea75",
+  "ttft_stream_ms": 8785,
+  "time_to_request_ms": 74,
+  "first_content_frame_ms": 8785,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

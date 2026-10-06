@@ -1,0 +1,12 @@
+I've read the only input file (`input/requirements.md`), and it matches the prompt exactly — there is nothing else in the workspace to check against. Per the instruction not to invent values, I'm stopping to ask rather than producing SysML or a design.
+
+**What's missing to make "vessel power use must be as low as possible" checkable:**
+
+1. **A reference number.** "As low as possible" has no pass/fail form. Please provide one of:
+   - a hard ceiling in watts (e.g. "≤ 150 W continuous"), or
+   - a target + best-known value (e.g. "goal 120 W, current 200 W") so the check can be an improvement comparison.
+2. **Operating condition the number applies to.** Peak vs. continuous vs. energy-per-mission (W vs. W·h), and at what duty (idle / cruise / peak load) — the unit and basis both change the check.
+3. **The vessel context.** The requirements name no vessel, no mission duration, and no load inventory (propulsion, sensors, hotel loads). Without a load list or a baseline, there is nothing to allocate power against.
+4. **Any conflict resolution if applicable.** If a battery/bus spec exists elsewhere (voltage, capacity, discharge limit), share it — a "lowest power" objective often collides with a bus-voltage or endurance requirement, and I'd need to know which wins.
+
+If a watt limit genuinely does not exist by design, tell me what artifact you want instead (e.g. an optimization structure with power as the objective function and no numeric constraint), and I'll confirm the scope before writing anything.

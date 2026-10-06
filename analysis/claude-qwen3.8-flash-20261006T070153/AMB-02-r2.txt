@@ -1,0 +1,17 @@
+I've read the only input file (`input/requirements.md`), and per its own instruction — ask rather than invent — here is my response.
+
+## I need to ask before doing anything
+
+The task says "vessel power use must be as low as possible" but provides **no numbers at all**, and explicitly notes "No watt limit is given." That makes any check, design target, or trade-off impossible to perform honestly. The workspace contains only this requirements file — no vessel description, load list, battery/propulsion data, or mission profile.
+
+To proceed, I'd need at least:
+
+1. **The vessel/power system definition** — what loads exist (propulsion, hotel, sensors, etc.), and what the intended power architecture is. Right now "the vessel" is undefined.
+2. **A measurable acceptance criterion** — either:
+   - a watt or energy **limit** to check against (which the file says is missing), or
+   - a baseline figure to compare "as low as possible" against, or
+   - confirmation that no numeric check is wanted and the task is something else entirely.
+3. **Units and time basis** — instantaneous power (W), energy per mission (Wh), cruise vs. peak, etc. "Power use" without a unit or duty cycle is ambiguous.
+4. **What output is actually expected** — the file rules out SysML and forbids invented values, but doesn't say what *is* in scope (an analysis? a document? a calculation sheet?).
+
+I have deliberately not written SysML, not assumed a watt budget, and not fabricated component values. Please supply the missing numbers/units (or the intended deliverable), and I'll take it from there.

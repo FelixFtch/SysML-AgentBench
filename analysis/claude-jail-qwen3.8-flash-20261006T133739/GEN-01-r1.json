@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 121984,
+  "stop_reason": "end_turn",
+  "session_id": "79931e3a-4158-410c-a891-be5cf387b73d",
+  "total_cost_usd": 0.253716,
+  "usage": {
+    "input_tokens": 13771,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 188672,
+    "output_tokens": 3621,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 13771,
+      "outputTokens": 3621,
+      "cacheReadInputTokens": 188672,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.253716,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 10,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the project rules:\n\n**Files changed**\n- `UsvLink.sysml` (new) — the package, exactly the names from the spec: port defs `ImageryPort`/`LinkPort`; part defs `Camera`, `Processor`, `Radio`, `CommandShip` with their ports; part usages `usv` (containing `camera`, `processor`, `radio`) and `commandShip`; the three `connect` statements as stated. No numeric limits anywhere.\n- `answer.md` (new) — model, validation evidence, and requirement-by-requirement check table.\n\n**Validation status**\n`./validate UsvLink UsvLink.sysml` → **PASS**, zero diagnostics, zero warnings (Pilot 0.62, 2026-08 library). Evidence at `validation/20261006T093914590125521/validation.json`.\n\n**Check results**\nAll 8 requirements satisfied (see table in `answer.md`). One mid-write slip was caught and fixed before validating: `usv` was briefly typed `: Camera`, which isn't in the allowed name list — corrected to untyped `part usv`, matching requirement 6 literally.\n\n**Open questions**\nNone blocking. One note: requirement 6 gives `usv` no type, so I left it as a typeless part usage (validator accepts this). If a `Usv` part definition was intended, say the word and I'll add it.",
+  "ttft_ms": 7015,
+  "type": "result",
+  "duration_ms": 127313,
+  "uuid": "9918439d-a258-4890-a00f-ef38acabd320",
+  "ttft_stream_ms": 5550,
+  "time_to_request_ms": 56,
+  "first_content_frame_ms": 5551,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

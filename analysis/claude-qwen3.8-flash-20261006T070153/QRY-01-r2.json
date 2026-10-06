@@ -1,0 +1,102 @@
+{
+  "duration_api_ms": 46527,
+  "stop_reason": "end_turn",
+  "session_id": "4398e748-3716-4082-a156-01ec9ad49a16",
+  "total_cost_usd": 0.131797,
+  "usage": {
+    "input_tokens": 6892,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 109824,
+    "output_tokens": 1697,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 6892,
+      "outputTokens": 1697,
+      "cacheReadInputTokens": 109824,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.131797,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_16bdcc9c709f4dc4acba5600",
+      "tool_input": {
+        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01/workspace/input; echo \"---\"; find /data/robotics/RTRC/mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01 -maxdepth 2 -type f | head -50",
+        "description": "Inspect input directory and run files"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_7c6c43cae1384e35a2e90861",
+      "tool_input": {
+        "command": "diff <(cat /data/robotics/RTRC/mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01/workspace/input/model.sysml) /dev/null | head -5; grep -n \"part usv\\|part uav\\|part commandShip\\|part shore\" /data/robotics/RTRC/mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01/workspace/input/model.sysml",
+        "description": "Confirm platform part usages in the frozen model file"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "The four platform part usages are declared at the top level of the `MaritimeISR` package (verified against `input/model.sysml:61-64`): `usv : UnmannedSurfaceVessel`, `uav : FixedWingUav`, `commandShip : CommandShip`, and `shore : ShoreStation`. Their qualified names:\n\n```json\n{\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}\n```",
+  "ttft_ms": 8044,
+  "type": "result",
+  "duration_ms": 46686,
+  "uuid": "7a9d6391-8ac2-44cc-afa5-ba552775742d",
+  "ttft_stream_ms": 2719,
+  "time_to_request_ms": 67,
+  "first_content_frame_ms": 2719,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

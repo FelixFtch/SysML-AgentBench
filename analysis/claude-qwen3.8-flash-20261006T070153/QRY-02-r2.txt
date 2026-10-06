@@ -1,0 +1,3 @@
+```json
+{"attribute": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW", "value": 60.0}
+```

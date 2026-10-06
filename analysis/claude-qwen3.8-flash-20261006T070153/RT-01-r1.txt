@@ -1,0 +1,6 @@
+The model contains one requirement. Restated in sentences, keeping strictly to what it says:
+
+- The package `RoundTripShare` defines a single requirement, `Share`.
+- `Share` requires that the unmanned surface vessel sends camera imagery to the shore.
+
+That is the whole of the model's stated requirement: one sending action (camera imagery), one sender (the unmanned surface vessel), and one recipient location (the shore). The model states no round-trip or return behavior in `Share`'s text, no imagery format, quantity, timing, or quality constraints, and no additional requirements — so none are restated here.

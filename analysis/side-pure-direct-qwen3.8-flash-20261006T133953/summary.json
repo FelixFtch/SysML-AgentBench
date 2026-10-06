@@ -1,0 +1,7 @@
+{
+  "bench": "pure",
+  "candidate": "direct",
+  "model": "qwen3.8-flash",
+  "repeats": 3,
+  "started": "20261006T133953"
+}

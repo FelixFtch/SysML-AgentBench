@@ -21,7 +21,7 @@ async function api(url, body) {
 }
 
 const S = { facts: null, tasks: [], cells: [], cell: null, cellLive: false, record: null, memory: [], catalog: null, budgets: null,
-  choice: null, edited: false, mod: null, modTask: "MOD-05", mods: {}, mxMode: "tool", runStage: "", cellStage: "", modStage: "", appJob: null };
+  choice: null, edited: false, mod: null, modTask: "MOD-05", mods: {}, mxModel: "flash", runStage: "", cellStage: "", modStage: "", appJob: null };
 const FLOW = {};
 const TYPE_NAME = { GEN: "Generate a new model", MOD: "Modify an existing model", ALN: "Align two models (paper 1)", QRY: "Query a model", AMB: "Ambiguous: ask, don't guess", RT: "Round trip: model back to text" };
 const TYPE_SHORT = { GEN: "generate", MOD: "modify", ALN: "align", QRY: "query", AMB: "ambiguous", RT: "round trip" };
@@ -31,15 +31,15 @@ const TYPE_GUIDE = {
   MOD: { gets: "An existing model plus one change", gives: "The edited model", judge: "Official Pilot syntax passes, the checklist is met, and values that must stay are unchanged. MOD-05 also has a power budget (design verdict)", pilot: true },
   ALN: { gets: "A specification package and a supplier package, both read-only", gives: "One alignment package of alias and allocation declarations, plus a JSON report", judge: "Official Pilot resolves every name; every required pair is declared, no look-alike pair is, nothing but imports, aliases and allocations is declared, and unmatched elements are reported", pilot: true },
   QRY: { gets: "A model plus one question", gives: "A JSON answer", judge: "Every field equals the answer key: the numbers, and names written in full with ::", pilot: false },
-  AMB: { gets: "Requirements missing a number a check needs", gives: "Text that should ask for it", judge: "Asks a question (with ?), asks about the missing quantity, and invents no number", pilot: false },
+  AMB: { gets: "Requirements missing a number a check needs", gives: "Text that should ask for it", judge: "Asks (a question, or a request such as \"please clarify\"), asks about the missing quantity, and invents no number", pilot: false },
   RT: { gets: "A model", gives: "The requirements restated in sentences", judge: "Every phrase and number the answer key lists is written back", pilot: false },
 };
-const CONFIG_NAME = { P0: "P0 one-shot", P1: "P1 repair from errors", P2: "P2 outline first", P3: "P3 outline + retrieved notes" };
+const CONFIG_NAME = { P0: "P0 one-shot", P1: "P1 repair from errors", P2: "P2 outline first", P3: "P3 retrieval + outline" };
 const CONFIG_NOTE = {
   P0: "One call, then submit.",
-  P1: "If the official syntax check fails, the error text goes back to the model; up to 3 repairs.",
-  P2: "Write an outline first (no SysML), then write from the outline.",
-  P3: "Retrieve 3 notes by the task's words, add them to the outline prompt, then write from the outline.",
+  P1: "If the official syntax check fails, the complete error list goes back in the same conversation, after every earlier version; up to 20 repairs.",
+  P2: "Write an outline first (no SysML), then write from the outline; repairs as in P1.",
+  P3: "Retrieve examples and notes (MiniLM + FAISS), outline, then write; repairs as in P1.",
 };
 const PTAG = { p1: "Paper 1", p2: "Paper 2", p3: "Paper 3", ours: "Official tool" };
 const ptag = (p) => (p ? `<i class="ptag ${p}">${PTAG[p]}</i>` : "");
@@ -342,49 +342,46 @@ function makeFlow(host, spec, hooks) {
 /* ======================= flow specs ======================= */
 const BENCH = {
   id: "bench", cols: 8, home: false,
-  rows: [{ id: "src", label: "Sealed material", hint: "opened only at the marked step" }, { id: "main", label: "Main flow", hint: "every cell" }, { id: "side", label: "Side paths", hint: "repair · observing judges" }],
+  rows: [{ id: "src", label: "Sealed material", hint: "opened only at the marked step" }, { id: "main", label: "Main flow", hint: "every cell" }, { id: "side", label: "Side paths", hint: "repair loop" }],
   nodes: [
-    { id: "bank", row: "src", col: 1, kind: "source", owner: "Human-written · sealed", title: "Task bank, 24 tasks", sub: "task statements + baseline models",
-      does: "24 tasks: GEN 5, MOD 5, QRY 5, AMB 4, RT 5. Task statements and answer keys are stored apart; the agent gets only the statement.", input: "—", output: "One task statement; GEN/MOD tasks may include a baseline model" },
-    { id: "corpus", row: "src", col: 2, kind: "source", owner: "Text notes · read-only", title: "Notes corpus", sub: "bench/corpus: 2 files, 15 notes", papers: ["p2"], cond: "P3 only",
-      does: "Two notes files (SysML syntax tips, maritime vocabulary) split into 15 notes. P3 scores each note by the task's words and takes the top 3. A text-only simplification of Paper 2: no graph, no vectors.", input: "Words in the task statement", output: "3 notes for the outline prompt" },
+    { id: "bank", row: "src", col: 1, kind: "source", owner: "Human-written · sealed", title: "Task bank, 27 tasks", sub: "task statements + baseline models",
+      does: "27 tasks: GEN 5, MOD 5, ALN 3, QRY 5, AMB 4, RT 5, reviewed a second time and frozen (bench/FREEZE.md). Task statements and answer keys are stored apart; the agent gets only the statement.", input: "—", output: "One task statement; MOD and ALN tasks include baseline models" },
+    { id: "corpus", row: "src", col: 2, kind: "source", owner: "Retrieval library · read-only", title: "Examples + notes", sub: "official examples, Pilot-parsed", papers: ["p2"], cond: "P3 only",
+      does: "Official SysML-v2-Release example models parsed by the Pilot (one card per element, with one-hop links) plus the notes in bench/corpus. P3 embeds the task statement with MiniLM, searches a FAISS index, takes up to 3 seeds with cosine ≥ 0.30 and adds their one-hop neighbours: Paper 2's method. MaritimeISR is not in this library because the query tasks read it.", input: "Task statement", output: "Up to 6 cards for the outline prompt" },
     { id: "gold", row: "src", col: 6, kind: "gold", owner: "Human-written · sealed", title: "Answer key", sub: "never shown to the agent",
       does: "assertions.yaml (names, connections, numbers, whether to ask) or answer.json. Opened only at the check step.", input: "—", output: "Checklist" },
     { id: "issue", row: "main", col: 1, owner: "Code", title: "Issue task", sub: "without the answer key",
       does: "Gives the task statement (and baseline model) to the agent. The gold folder never enters the prompt.", input: "One task from the bank", output: "Agent prompt" },
     { id: "outline", row: "main", col: 2, owner: "Model", title: "Outline", sub: "parts, ports, connections; no SysML yet", cond: "P2 / P3 only",
       does: "The model first lists the parts, ports, connections and attributes it needs as JSON, then writes from that outline. P3's outline prompt also has 3 retrieved notes.", input: "Task statement (P3: plus 3 notes)", output: "Outline JSON" },
-    { id: "write", row: "main", col: 3, owner: "Model · agent under test", title: "Write the answer", sub: "flash · OpenCode · Claude", papers: ["p3"],
-      does: "Answers by task type: GEN writes a new model, MOD edits the baseline, QRY answers from a model in JSON, AMB asks when information is missing, RT restates the model in words. The prompt carries SysML rules, Paper 3's \"rules\".", input: "Task statement + rules (+ outline)", output: "Answer: SysML, JSON or text" },
+    { id: "write", row: "main", col: 3, owner: "Model · agent under test", title: "Write the answer", sub: "flash · max · OpenCode · Claude Code", papers: ["p3"],
+      does: "Answers by task type: GEN writes a new model, MOD edits the baseline, ALN writes an alignment package between two models, QRY answers from a model in JSON, AMB asks when information is missing, RT restates the model in words. Agents work in a sandbox with ./validate and cannot see the answer keys. The prompt carries SysML rules, Paper 3's \"rules\".", input: "Task statement + rules (+ outline)", output: "Answer: SysML, JSON or text" },
     { id: "syntax", row: "main", col: 4, owner: "Official tool", title: "Official syntax", sub: "SysML v2 Pilot 0.62", papers: ["ours"],
-      does: "The official Pilot parses and links the answer. Only GEN and MOD answers come here. PASS means the syntax and references are valid, not that the design is right.", input: "SysML in the answer", output: "PASS / FAIL, error text, parsed model JSON" },
+      does: "The official Pilot parses and links the answer. Only GEN, MOD and ALN answers come here (ALN together with its two source models). PASS means the syntax and references are valid, not that the design is right.", input: "SysML in the answer", output: "PASS / FAIL, error text, parsed model JSON" },
     { id: "watts", row: "main", col: 5, owner: "Code", title: "Read values", sub: "only officially parsed numbers",
       does: "Reads attributes and values (watts, rates) from the answer. The checklist uses only numbers from the official parse.", input: "Answer / official parse", output: "Names and values" },
-    { id: "check", row: "main", col: 6, owner: "Code", title: "Check against key", sub: "names · connections · numbers · power", related: { p1: "Similar: values to keep (not Paper 1's method)" },
+    { id: "check", row: "main", col: 6, owner: "Code", title: "Check against key", sub: "names · connections · numbers · power", related: { p1: "ALN tasks: required and forbidden pairs" },
       does: "The answer key is opened only here and checked item by item: required elements, required connections, values that must stay, and, for tasks with a power check, whether the result is what the key expects. The task verdict passes only if all of these hold; whether the design meets its budget is reported separately as the design verdict. MOD-05's design is over budget by construction: an honest answer passes the task; raising the limit or changing numbers to fit fails it.", input: "Official parse + answer key", output: "Task verdict + design verdict" },
     { id: "gate", row: "main", col: 7, kind: "human", owner: "Person", title: "Approval gate", sub: "never approves a raised limit",
       does: "If an answer asks to relax a limit (for example raise 60 W), the run stops here for a person. No exam cell triggered it.", input: "A request to change a limit", output: "Approve / reject" },
     { id: "archive", row: "main", col: 8, owner: "Code", title: "Archive", sub: "analysis/*.jsonl",
       does: "Keeps the score row, the answer and every official parse folder, so each cell in 1.3 can be replayed.", input: "All records", output: "Score row + mvp/runs/<run id>" },
-    { id: "repair", row: "side", col: 4, kind: "loop", owner: "Model", title: "Repair from errors", sub: "error text sent back, numbers kept", papers: ["p3"], cond: "P1 only · ≤3 times",
-      does: "When the official syntax check fails, the task statement, the previous answer and the official error text (up to 8 lines) go back to the model with: Official validation failed. Fix the model. Do not change numbers the task said to keep. Up to 3 times. In Paper 3 a person corrects errors; here the official tool's errors do.", input: "Task statement + previous answer + error text", output: "A new answer, parsed again" },
-    { id: "judge", row: "side", col: 8, kind: "judge", owner: "Observing · not scored", title: "Model judges", sub: "qwen3.8-max · Jev 1.13",
-      does: "Two model judges each read the task statement, the grading criteria and the answer, say pass or fail, and are compared with the tool. They never change a score. They were told an over-budget design fails, so they are compared with the tool's design verdict; only MOD-05 has different design and task verdicts.", input: "Task statement + criteria + answer", output: "Judge verdict + whether it agrees with the tool" },
+    { id: "repair", row: "side", col: 4, kind: "loop", owner: "Model", title: "Repair from errors", sub: "complete error list, one conversation", papers: ["p3"], cond: "P1–P3 · ≤20 times",
+      does: "When the official syntax check fails, the complete error list (with line and column) goes back to the model in the same conversation, after every earlier version and every earlier error list: Official validation failed ... Fix the model and resubmit the whole file. Do not change numbers the task said to keep. Up to 20 repairs; three identical resubmissions in a row stop the loop. P0 never repairs; agents repair inside their own session with ./validate. In Paper 3 a person corrects errors; here the official tool's errors do.", input: "Every earlier version + every error list", output: "A new version, parsed again" },
   ],
   edges: [
     { from: "issue", to: "outline" }, { from: "outline", to: "write" }, { from: "write", to: "syntax" }, { from: "syntax", to: "watts" },
     { from: "watts", to: "check" }, { from: "check", to: "gate" }, { from: "gate", to: "archive" },
     { from: "bank", to: "issue", kind: "feed", route: "v" },
-    { from: "corpus", to: "outline", kind: "feed", route: "v", label: "P3: top 3 notes" },
+    { from: "corpus", to: "outline", kind: "feed", route: "v", label: "P3: MiniLM + FAISS, one hop" },
     { from: "gold", to: "check", kind: "feed", route: "v", label: "opened only here" },
     { from: "syntax", to: "repair", kind: "loop", route: "v", label: "syntax FAIL" },
     { from: "repair", to: "write", kind: "loop", route: "upleft", label: "error text sent back" },
-    { from: "archive", to: "judge", kind: "side", route: "v", label: "reads the archive", side: "left" },
   ],
   captions: {
-    p2: "<b>Paper 2 (GRAG graph retrieval)</b> appears in the exam only in simplified form: P3 retrieves 3 text notes by the task's words and adds them to the outline prompt. No graph, no vectors. Full graph retrieval is used in Part 2, step ① Retrieve. <a href=\"#s03\">See the comparison in 0.3</a>",
-    p3: "<b>Paper 3 (rules + template + examples, corrected from errors)</b>: the writing prompt carries SysML rules; P1 sends the official Pilot's error text back for a fix (in the paper a person corrects). GEN, MOD and QRY tasks match its create, modify and query uses. <a href=\"#s03\">See the comparison in 0.3</a>",
-    p1: "<b>Paper 1 (cross-organization model alignment)</b> has no step of its own in the exam, so no step lights up here. The dashed \"Check against key\" box is only similar: MOD tasks' \"values to keep\" forbid changing existing elements. Paper 1's alignment is used in Part 2, step ④ Align; see the diagram in 2.1. <a href=\"#s21\">Go to 2.1</a>",
+    p2: "<b>Paper 2 (GRAG retrieval)</b> in the exam: P3 embeds the task statement with MiniLM, searches a FAISS index over Pilot-parsed official example models and the notes, and adds the best cards plus their one-hop neighbours to the outline prompt. Part 2, step ① Retrieve, uses the same method over MaritimeISR and the approved designs. <a href=\"#s03\">See the comparison in 0.3</a>",
+    p3: "<b>Paper 3 (rules + template + examples, corrected from errors)</b>: the writing prompt carries SysML rules; P1–P3 send the complete official error list back in one conversation (in the paper a person corrects). GEN, MOD and QRY tasks match its create, modify and query uses. <a href=\"#s03\">See the comparison in 0.3</a>",
+    p1: "<b>Paper 1 (cross-organization model alignment)</b> in the exam: the three ALN tasks give two read-only models; the answer is an alignment package of alias and allocation statements, parsed with both sources and checked against the key's required and forbidden pairs at \"Check against key\". Part 2, step ④ Align, applies it to a new design. <a href=\"#s21\">Go to 2.1</a>",
     ours: "<b>Official SysML v2 Pilot 0.62</b> judges syntax and links; every later number comes from its parse.",
   },
 };
@@ -397,8 +394,8 @@ const APP = {
       does: "MaritimeISR.sysml is parsed by the official Pilot (428 elements); code turns 53 of them into cards (type, full name, value or connection ends), linked by 185 edges (ownership, connections). Designs a person approves are added the same way.", input: "Official parse", output: "Cards and edges" },
     { id: "brief", row: "main", col: 1, kind: "human", owner: "Person · 2.2", title: "Task brief", sub: "generated from choices, or your text",
       does: "The part and parameter choices in 2.2 generate an English brief; you can also edit the text. This is everything the agent receives.", input: "Choices in 2.2", output: "A brief" },
-    { id: "retrieve", row: "main", col: 2, owner: "Code", title: "① Retrieve", sub: "words and numbers pick seeds + one hop", papers: ["p2"],
-      does: "Scores every card by the brief's words and numbers: 1 point per brief word found in the card (common words like and, the removed), 1 point per number equal to a value in the card. The top 4 are seeds; their one-hop neighbours are added, up to 12 cards. No vectors, no model call.", input: "Brief + memory", output: "Matched cards, which become the \"examples\" part of the design prompt" },
+    { id: "retrieve", row: "main", col: 2, owner: "Code", title: "① Retrieve", sub: "MiniLM + FAISS seeds + one hop", papers: ["p2"],
+      does: "Embeds the brief and every card with MiniLM and searches a FAISS index (cosine ≥ 0.30, plus 0.10 for each brief word that equals part of a card's name). The top 4 are seeds; their one-hop neighbours are added, up to 12 cards. No language model is called.", input: "Brief + memory", output: "Matched cards, which become the \"examples\" part of the design prompt" },
     { id: "gen", row: "main", col: 3, owner: "Model", title: "② Generate", sub: "requirements → designs A / B", papers: ["p3"],
       does: "First splits the brief into numbered requirements (attribute name and value), then writes two designs: A allocates literally, B uses a different structure. Design prompt = rules + template (attribute contract) + examples (retrieved cards) + brief and requirements.", input: "Brief + retrieved cards", output: "Requirements JSON + two SysML files" },
     { id: "syntax", row: "main", col: 4, owner: "Official tool", title: "③ Official validation", sub: "Pilot parses both designs", papers: ["ours"],
@@ -432,7 +429,7 @@ const APP = {
     { from: "human", to: "mem", kind: "mem", route: "home", label: "approved → memory; the next retrieval finds it" },
   ],
   captions: {
-    p2: "<b>Paper 2 → ① Retrieve</b>: after the official Pilot parses MaritimeISR, every element becomes a card (type, full name, value). The brief's words and numbers score the cards; the top 4 are seeds, plus their one-hop neighbours (ownership, connection ends). Matched cards become the \"examples\" part of the design prompt. The paper uses vectors and FAISS; this uses words only. <a href=\"#s03\">See the comparison in 0.3</a>",
+    p2: "<b>Paper 2 → ① Retrieve</b>: after the official Pilot parses MaritimeISR, every element becomes a card (type, full name, value; each connection gets one too). The brief is embedded with MiniLM and searched in a FAISS index over the cards (cosine ≥ 0.30 plus a bonus for exact names); the best 4 are seeds, plus their one-hop neighbours (ownership, connection ends). Matched cards become the \"examples\" part of the design prompt. Each run records the model, threshold and index it used. <a href=\"#s03\">See the comparison in 0.3</a>",
     p3: "<b>Paper 3 → ② Generate, repair, ⑤ read-back</b>: prompt = rules (SysML rules) + template (attribute contract: names and values) + examples (retrieved cards). Syntax errors go back as the official error text (in the paper a person corrects). ⑤ Read-back has the model restate requirements from its own model, Paper 3's query use. <a href=\"#s03\">See the comparison in 0.3</a>",
     p1: "<b>Paper 1 → ④ Align</b>: the model proposes \"design A element ↔ MaritimeISR element\" mappings, code checks both names exist and classifies each pair, then writes a separate alignment package of alias and allocation statements that the official Pilot parses with both source files. Neither source model is edited; a person accepts or rejects each pair in 2.3. <a href=\"#s03\">See the comparison in 0.3</a>",
     ours: "<b>Official SysML v2 Pilot</b>: ③ validates both designs, ④ validates the alignment package. Budget checks read only its parsed numbers.",
@@ -443,9 +440,9 @@ const APP = {
 function renderHeader() {
   const f = S.facts;
   $("#kpi-total").textContent = `${f.flash.pass} / ${f.flash.n}`;
-  $("#kpi-total-sub").textContent = `${pct(f.flash.pass, f.flash.n)} · scored by the official Pilot + answer keys`;
-  $("#kpi-jev").textContent = `${f.jev.agree} / ${f.jev.cells}`;
-  $("#kpi-jev-sub").textContent = `Jev agrees with the tool ${pct(f.jev.agree, f.jev.cells)} · not scored`;
+  $("#kpi-total-sub").textContent = `${pct(f.flash.pass, f.flash.n)} · 27 tasks × 4 approaches × 3 · official Pilot + answer keys`;
+  $("#kpi-max").textContent = `${f.cohorts.max.pass} / ${f.cohorts.max.n}`;
+  $("#kpi-max-sub").textContent = `${pct(f.cohorts.max.pass, f.cohorts.max.n)} · the stronger model on the same cells`;
   const cards = f.knowledge.maritime.cards;
   $("#kpi-mem").textContent = `${cards} cards + ${S.memory.length} designs`;
   $("#kpi-mem-sub").textContent = "MaritimeISR element cards + designs a person approved";
@@ -491,11 +488,18 @@ function renderAnswers() {
     appText = `Latest run (${r.id}): ${(r.requirements?.requirements || []).length} requirements; ${r.designs.map((d) => `design ${d.key} official validation ${d.sysml_status}`).join(", ")}; alignment package ${r.alignment?.package?.sysml_status || "not generated"}; `
       + (fails.length ? `failing checks ${fails.join(", ")}; the agent proposed ${(r.tradeoffs?.proposals || []).length} trade-offs for a person to choose.` : "all four budget checks pass.");
   }
+  const mx = f.cohorts.max;
+  const oc = f.cohorts.opencode;
+  const cl = f.cohorts.claude;
+  const mcfg = Object.fromEntries(mx.configs.map((c) => [c.id, c]));
+  const agentLine = (a) => (a.n ? `${a.pass}/${a.n}` : "running");
+  const rate = (t) => (BT(f.by_type, t).n ? BT(f.by_type, t).pass / BT(f.by_type, t).n : 1);
+  const weakest = TYPE_ORDER.filter((t) => BT(f.by_type, t).n).sort((a, b) => rate(a) - rate(b))[0];
   const cards = [
-    ["Question 1 · exam", "How much do models and agents get right without seeing the answer key?", `${f.flash.pass} / ${f.flash.n} cells pass (${pct(f.flash.pass, f.flash.n)})`,
-      `By task type: ${typeLine}. Generating new models (GEN) is weakest. Repairing from errors (P1 ${cfg.P1.pass}/72) did not beat one-shot (P0 ${cfg.P0.pass}/72). Two agents: OpenCode ${f.opencode.pass}/24, Claude ${f.claude.pass}/24.`, "#s12"],
-    ["Question 2 · judges", "Can a model judge replace the official tool for scoring?", `No: Jev agrees on ${f.jev.agree}/${f.jev.cells}`,
-      `Jev false passes ${f.jev.false_pass} cells, all GEN; false fails ${f.jev.false_fail}. qwen3.8-max agrees on only ${f.judge.agree}/${f.judge.n} and false passes ${f.judge.false_pass}. Scores come only from the official tool and the answer keys.`, "#s12"],
+    ["Question 1 · exam", "How much do models and agents get right without seeing the answer key?", `flash ${f.flash.pass}/${f.flash.n} · max ${mx.pass}/${mx.n}`,
+      `27 sealed tasks × 4 approaches × 3 repeats per model. By task type (flash): ${typeLine}. Weakest type for flash: ${weakest} (${TYPE_NAME[weakest]}); max passes ${BT(mx.by_type, weakest).pass}/${BT(mx.by_type, weakest).n} there. Agents on flash, 81 sandboxed runs each: OpenCode ${agentLine(oc)}, Claude Code ${agentLine(cl)}.`, "#s12"],
+    ["Question 2 · same model, different ways", "With flash, do repair, an outline, retrieval or an agent help?", `P0 ${cfg.P0.pass} · P1 ${cfg.P1.pass} · P2 ${cfg.P2.pass} · P3 ${cfg.P3.pass} of 81`,
+      `Official syntax on the first attempt → after the repair loop (39 SysML answers per approach): P1 ${cfg.P1.syntax_first} → ${cfg.P1.syntax_final}, P2 ${cfg.P2.syntax_first} → ${cfg.P2.syntax_final}, P3 ${cfg.P3.syntax_first} → ${cfg.P3.syntax_final}. Agents on the same model: OpenCode ${agentLine(oc)}, Claude Code ${agentLine(cl)}. The stronger model with one shot: max P0 ${mcfg.P0.pass}/81.`, "#s12"],
     ["Question 3 · real scenario", "How far does a blank task get?", appBig, appText, "#s23"],
   ];
   $("#answers").innerHTML = cards.map(([q, t, b, p, href]) => `<article><span class="q">${q}</span><p style="font-weight:700;color:var(--ink);margin-top:4px">${t}</p><b>${esc(b)}</b><p>${esc(p)}</p><p style="margin-top:6px"><a href="${href}">Details →</a></p></article>`).join("");
@@ -503,7 +507,7 @@ function renderAnswers() {
 
 const OPS = [
   { n: "①", title: "Two flow diagrams", where: "1.1 · 2.1", href: "#s11", can: "Click a node to see what it reads, what it produces and who does it; highlight one paper's steps; replay a run.", effect: "Read-only; no model call.", tags: [["local", "local · instant"]] },
-  { n: "②", title: "288-cell matrix", where: "1.3 → 1.4", href: "#s13", can: "Click any cell to see every step from issuing the task to scoring, the error text each repair received, and how the judges ruled.", effect: "Reads the archive.", tags: [["local", "local · instant"]] },
+  { n: "②", title: "Exam matrix", where: "1.3 → 1.4", href: "#s13", can: "Click any cell to see every step from issuing the task to scoring, every version the repair loop produced and the complete error list each one received.", effect: "Reads the archive.", tags: [["local", "local · instant"]] },
   { n: "③", title: "Exam console", where: "1.5", href: "#s15", can: "Re-run a sealed task, or write a new task with its own answer key.", effect: "Real calls to the model and the official Pilot; writes a new record.", tags: [["model", "calls a model"], ["", "20 s – 2 min"]] },
   { n: "④", title: "Design space", where: "2.2", href: "#s22", can: "Swap parts, change parameters, edit the brief, then give it to the agent.", effect: "Budgets recompute in the browser; the agent then runs the six stages of 2.1.", tags: [["local", "instant recompute"], ["model", "agent about 1–2 min"]] },
   { n: "⑤", title: "Person decides", where: "2.3", href: "#s23", can: "Send a trade-off back to 2.2; approve a design that passes all four checks into memory.", effect: "Approval writes to memory; the next ① Retrieve finds it.", tags: [["write", "writes to memory"]] },
@@ -540,9 +544,9 @@ function renderSources() {
   const corpusChunks = k.corpus.reduce((a, c) => a + c.chunks, 0);
   const items = [
     { color: "#6c8ebf", title: "Exam task bank", size: `${k.tasks.n} tasks`, small: `+ ${k.tasks.gold} answer keys`, path: "bench/tasks/heldout/",
-      how: "Written by people and sealed. GEN/MOD tasks may include a baseline model.", prompt: "The task statement goes into the prompt; the answer key never does and is opened only at \"Check against key\".", use: [["1.1 Issue task", "bench", "issue"], ["1.1 Answer key", "bench", "gold"]] },
-    { color: "#d4b46a", title: "Notes corpus", size: `${k.corpus.length} files`, small: `${corpusChunks} notes`, path: k.corpus.map((c) => `bench/corpus/${c.file}`).join(" · "),
-      how: "SysML syntax tips and maritime vocabulary, scored by the task statement's words.", prompt: "Only in P3's outline prompt, at most 3 notes.", use: [["1.1 Notes corpus (P3 only)", "bench", "corpus"]] },
+      how: "Written by people, reviewed a second time and frozen (bench/FREEZE.md). MOD and ALN tasks include baseline models.", prompt: "The task statement goes into the prompt; the answer key never does and is opened only at \"Check against key\".", use: [["1.1 Issue task", "bench", "issue"], ["1.1 Answer key", "bench", "gold"]] },
+    { color: "#d4b46a", title: "P3 retrieval library", size: `${k.examples.cards ?? "—"} cards`, small: `official examples (${k.examples.folders}/${k.examples.folders_total} folders) + ${corpusChunks} notes`, path: "analysis/vector-index/examples/ · bench/corpus/",
+      how: "Official SysML-v2-Release example models parsed by the Pilot, one card per element, plus SysML syntax tips and maritime vocabulary. MaritimeISR is not in it: the query tasks read MaritimeISR.", prompt: "Only in P3's outline prompt: up to 3 seeds by MiniLM + FAISS (cosine ≥ 0.30) plus their one-hop neighbours.", use: [["1.1 Retrieval library (P3 only)", "bench", "corpus"]] },
     { color: "#1c7ed6", title: "Existing model MaritimeISR", size: `${k.maritime.cards} cards`, small: `${k.maritime.elements} elements · ${k.maritime.links} edges`, path: k.maritime.file,
       how: "The official Pilot parses it to JSON; code turns each element into a card: type, full name, value or connection ends.", prompt: "Retrieved cards become the \"examples\" part of the design prompt; the source file is not imported or edited.", use: [["2.1 ① Retrieve", "app", "retrieve"], ["2.1 ④ Alignment target", "app", "align"]] },
     { color: "#2b8a3e", title: "Approved designs", size: `${S.memory.length} designs`, small: S.memory.length ? S.memory.map((m) => `${m.run_id}·${m.design}`).join(", ") : "none approved yet", path: k.memory.file,
@@ -573,21 +577,21 @@ function renderPapers() {
     { key: "p2", act: "① Retrieve", title: "Paper 2 · Bader et al.: GRAG graph-retrieval QA", venue: "ISSE 2025 · one electric-vehicle model, 3 questions",
       orig: ["SysML v2 API exports JSON-LD", "converted to an RDF graph", "node + one-hop neighbours", "MiniLM vectors · FAISS threshold", "GPT-4.1 answers"],
       ours: ["official Pilot parse JSON", "one card per element, connections included", "MiniLM vectors · FAISS · cosine ≥ 0.30 + exact-name bonus", "add one-hop neighbours", "cards go into the design prompt (2.1) or the P3 outline prompt (1.1)"],
-      where: [["2.1 ① Retrieve", "app", "retrieve"], ["2.1 Memory", "app", "mem"], ["1.1 Notes corpus (P3: official examples + notes)", "bench", "corpus"]],
+      where: [["2.1 ① Retrieve", "app", "retrieve"], ["2.1 Memory", "app", "mem"], ["1.1 Retrieval library (P3)", "bench", "corpus"]],
       evidence: `Latest run: memory had ${ret.library_size ?? "—"} cards; ${nodes.length} elements matched (${seeds} seeds, ${nodes.length - seeds} neighbours), ${Object.keys(ret.numbers || {}).length} with values${ret.method ? `; retrieval method ${esc(ret.method)}` : " (this run predates vector retrieval: keyword seeds)"}. Separately, the query tasks were redone with graph retrieval: ${qPass}/${Object.keys(graph).length} QRY correct${graph["QRY-03"] ? `; QRY-03 asks for a connection count, answer key 3, graph retrieval answered ${esc(graph["QRY-03"].answer)}` : ""}. On the five QRY questions, hybrid retrieval finds 13/15 key elements against 11/15 for the earlier keyword ranking (analysis/retrieval-eval-*.json).`,
       missing: "Same embedding model and index type as the paper, on our Pilot parse instead of the API's JSON-LD; the exact-name bonus is ours. The paper's radius 0.35 was calibrated on its vehicle model and is not reused; the threshold here is calibrated on our five labelled questions. The paper's F1 of 0.904 is a retrieval metric on its own model and is not reproduced." },
     { key: "p3", act: "② Generate · modify · query", title: "Paper 3 · Longshore, Bell, Madachy (NPS)", venue: "SYM-AM-24-048 / -138 · custom GPT: rules + template + examples",
       orig: ["rules", "template", "examples", "generate the model", "a person reads errors, corrects, regenerates", "create / modify / query"],
       ours: ["rules: SysML rules", "template: attribute contract", "examples: retrieved cards", "generate requirements and two designs", "official error text sent back for repair", "read-back = query"],
       where: [["2.1 ② Generate", "app", "gen"], ["2.1 Repair from errors", "app", "repair"], ["2.1 ⑤ Read-back", "app", "check"], ["1.1 Write the answer", "bench", "write"], ["1.1 Repair (P1)", "bench", "repair"]],
-      evidence: `Exam: ${f.flash.pass}/${f.flash.n} cells pass; generating new models (GEN) passes only ${f.by_type.GEN.pass}/${f.by_type.GEN.n}. P1 repair scores ${cfg.P1.pass}/72, no better than one-shot at ${cfg.P0.pass}/72: on GEN-03, P1 resubmitted the same code unchanged 4 times (visible in 1.4).${(r.designs || []).length ? ` Latest run: ${r.designs.map((d) => `design ${d.key} official validation ${d.sysml_status}, ${(d.attempts || []).length} parse(s)`).join("; ")}.` : ""}`,
-      missing: "In the paper a person corrects errors; here the official tool's errors do. The paper's bicycle example model was not used and its Yes/No capability table was not built." },
+      evidence: `Exam, direct flash: ${f.flash.pass}/${f.flash.n} cells; P0 ${cfg.P0.pass}, P1 ${cfg.P1.pass}, P2 ${cfg.P2.pass}, P3 ${cfg.P3.pass} of 81. Official syntax on the first attempt → after the repair loop (39 SysML answers per approach): P1 ${cfg.P1.syntax_first} → ${cfg.P1.syntax_final}, P2 ${cfg.P2.syntax_first} → ${cfg.P2.syntax_final}, P3 ${cfg.P3.syntax_first} → ${cfg.P3.syntax_final}. The old loop (latest error lines only, 3 rounds) resubmitted GEN-03 unchanged four times; the new loop keeps every version and error list.${(r.designs || []).length ? ` Latest Part 2 run: ${r.designs.map((d) => `design ${d.key} official validation ${d.sysml_status}, ${(d.attempts || []).length} parse(s)`).join("; ")}.` : ""}`,
+      missing: "In the paper a person corrects errors; here the official tool's complete error list does, in one conversation. The rules state one toolchain convention the model did not find on its own (`private import`). The paper's bicycle example model was not used and its Yes/No capability table was not built." },
     { key: "p1", act: "④ Align", title: "Paper 1 · Li, Husung, Wang: cross-organization model alignment", venue: "arXiv 2508.16181 · ISSE 2025 · seven stages, human review, source models unchanged",
       orig: ["preparation and syntax check", "element summaries", "candidate mappings (LLM)", "mapping verification", "separate alignment package", "consistency check", "export"],
       ours: ["design A × MaritimeISR", "model proposes mappings", "code checks both names and classifies each pair from the two parses", "code writes alias (definitions, features) and allocation (usages); a part usage against a definition is left to the person", "three files through the Pilot", "per-pair Accept / Reject in 2.3, sources unchanged"],
-      where: [["2.1 ④ Align", "app", "align"], ["2.1 ⑥ Person decides", "app", "human"], ["1.1 Check against key (MOD values to keep)", "bench", "check"]],
-      evidence: al.proposed ? `Latest run: ${al.proposed} mappings proposed, ${al.verified} with both ends present; alignment package ${esc(pkg.name || "")} official Pilot ${esc(pkg.sysml_status || "not generated")}. A misspelled element name makes the Pilot report "Couldn't resolve reference" and the package FAILs.` : "The latest run produced no alignment package.",
-      missing: "No element summaries and no automatic semantic matching; only dependency, not alias or allocation. A Pilot pass shows the names resolve, not that the two sides mean the same thing; that needs a person." },
+      where: [["2.1 ④ Align", "app", "align"], ["2.1 ⑥ Person decides", "app", "human"], ["1.1 ALN tasks: Check against key", "bench", "check"]],
+      evidence: `Exam, three ALN tasks: direct flash ${BT(f.by_type, "ALN").pass}/${BT(f.by_type, "ALN").n}, max ${BT(f.cohorts.max.by_type, "ALN").pass}/${BT(f.cohorts.max.by_type, "ALN").n}. The authors' own pipeline run on their own example: 7 of their 11 pairs reproduced, but their published package and the generated one both fail the official Pilot (decision 024).${al.proposed ? ` Latest Part 2 run: ${al.proposed} pairs proposed, ${al.declared ?? al.verified} declared by code; package ${esc(pkg.name || "")} official Pilot ${esc(pkg.sysml_status || "not generated")}.` : ""}`,
+      missing: "No LLM-written element summaries (the Pilot parse plays that role) and no extension metadata such as #FullyMatched. A Pilot pass shows the names resolve; whether the pairs are right is decided by the ALN keys in the exam and by the per-pair review in 2.3." },
   ];
   const chain = (list) => list.map((x) => `<span>${esc(x)}</span>`).join("<i>→</i>");
   $("#papers").innerHTML = papers.map((p) => `<article class="paper p-${p.key}">
@@ -609,36 +613,41 @@ function stack(label, parts, total) {
 
 function renderScores() {
   const f = S.facts;
-  const cfg = f.configs;
+  const C = f.cohorts;
+  const order = ["flash", "max", "opencode", "claude"];
+  const runLine = (c) => (c.n < c.expected ? ` · ${c.n} of ${c.expected} runs so far` : "");
   $("#kpis").innerHTML = [
-    ["Main model qwen3.8-flash", `${f.flash.pass}/${f.flash.n}`, `${pct(f.flash.pass, f.flash.n)} · 4 approaches × 24 tasks × 3 repeats`],
-    ["OpenCode agent", `${f.opencode.pass}/${f.opencode.n}`, `MOD-05 task verdict ${f.opencode.mod05}: design over budget, limit unchanged`],
-    ["Claude Code agent", `${f.claude.pass}/${f.claude.n}`, `qwen3.8-max through CCR · failed: ${f.claude.fail_tasks.join(", ") || "none"}`],
-    ["SysEngBench multiple choice", `${f.sysengbench.correct}/${f.sysengbench.n}`, "answered by Jev · scored separately, not in the 288"],
+    ["Direct · qwen3.8-flash", `${C.flash.pass}/${C.flash.n}`, `${pct(C.flash.pass, C.flash.n)} · 27 tasks × P0–P3 × 3 repeats`],
+    ["Direct · qwen3.8-max", `${C.max.pass}/${C.max.n}`, `${pct(C.max.pass, C.max.n)} · same cells, stronger model`],
+    ["OpenCode · qwen3.8-flash", C.opencode.n ? `${C.opencode.pass}/${C.opencode.n}` : "running", `sandboxed agent, 27 tasks × 3 repeats${runLine(C.opencode)}`],
+    ["Claude Code · qwen3.8-flash", C.claude.n ? `${C.claude.pass}/${C.claude.n}` : "running", `sandboxed agent, same tools and rules as OpenCode${runLine(C.claude)}`],
   ].map(([t, b, p]) => `<div class="kpi-card"><span>${esc(t)}</span><b>${esc(b)}</b><p>${esc(p)}</p></div>`).join("");
-  const maxTok = Math.max(...cfg.map((c) => c.tokens));
-  const qFalseFail = f.judge.n - f.judge.agree - f.judge.false_pass;
+  const cell = (c, t) => { const x = BT(c.by_type, t); return x.n ? `<td class="num">${x.pass}/${x.n}<small> ${Math.round((x.pass / x.n) * 100)}%</small></td>` : `<td class="num">—</td>`; };
+  const typeTable = `<table><thead><tr><th>Task type</th>${order.map((k) => `<th class="num">${esc(C[k].short)}</th>`).join("")}</tr></thead><tbody>
+    ${TYPE_ORDER.map((t) => `<tr><td>${t} ${esc(TYPE_NAME[t])}</td>${order.map((k) => cell(C[k], t)).join("")}</tr>`).join("")}
+    <tr><td><b>All</b></td>${order.map((k) => `<td class="num"><b>${C[k].n ? `${C[k].pass}/${C[k].n}` : "—"}</b></td>`).join("")}</tr></tbody></table>`;
+  const cfgRows = (k) => C[k].configs.map((c) => `<tr><td>${esc(CONFIG_NAME[c.id])}</td><td class="num">${c.pass}/${c.n}</td><td class="num">${c.syntax_first} → ${c.syntax_final}<small> of ${c.syntax_n}</small></td><td class="num">${num(c.tokens)}</td><td class="num">${money(c.usd)}</td></tr>`).join("");
+  const cfgTable = (k) => `<table><thead><tr><th>${esc(C[k].label)}</th><th class="num">Pass</th><th class="num">Syntax 1st → final</th><th class="num">Tokens</th><th class="num">USD</th></tr></thead><tbody>${cfgRows(k)}</tbody></table>`;
+  const seb = f.side.sysengbench || {};
+  const pure = f.side.pure || {};
+  const anySeb = Object.values(seb)[0];
+  const sideRows = order.map((k) => `<tr><td>${esc(C[k].short)}</td><td class="num">${seb[k] ? `${seb[k].correct}/${seb[k].n}` : "—"}</td><td class="num">${pure[k] ? `${pure[k].pass}/${pure[k].n}` : "—"}</td></tr>`).join("");
+  const flips = order.map((k) => `${C[k].short} ${C[k].reliability.flips}/${C[k].reliability.groups}`).join(" · ");
+  const agentRows = ["opencode", "claude"].map((k) => { const a = C[k].agent || {}; return `<tr><td>${esc(C[k].short)}</td><td class="num">${C[k].pass}/${C[k].n}</td><td class="num">${a.timeouts ?? "—"}</td><td class="num">${a.no_answer ?? "—"}</td><td class="num">${a.runs_validated ?? "—"}</td><td class="num">${a.validate_calls ?? "—"}</td></tr>`; }).join("");
   $("#score-panels").innerHTML = `
-    <div class="panel"><h4>Pass rate</h4>
-      ${cfg.map((c) => bar(CONFIG_NAME[c.id], c.pass, c.n, `${c.pass}/${c.n}`)).join("")}
-      ${bar("OpenCode", f.opencode.pass, f.opencode.n, `${f.opencode.pass}/${f.opencode.n}`)}
-      ${bar("Claude Code", f.claude.pass, f.claude.n, `${f.claude.pass}/${f.claude.n}`)}
-      <div class="bar-sep"></div>
-      ${TYPE_ORDER.map((t) => bar(`${t} ${TYPE_NAME[t]}`, BT(f.by_type, t).pass, BT(f.by_type, t).n, BT(f.by_type, t).n ? `${BT(f.by_type, t).pass}/${BT(f.by_type, t).n}` : "not run yet")).join("")}
-      <p class="note">The scoring rule changed once, on October 3. The old rule failed MOD-05's honest answers and would have passed an answer that raised the limit. The current rule requires "values to keep are unchanged + check results match the answer key"; the main matrix went from ${f.rescore.archived_flash_pass} (archived) to ${f.flash.pass}, and only MOD-05 cells changed (re-scoring record ${esc(f.rescore.file)}). Across three repeats of the same task and approach, ${f.reliability.flips}/${f.reliability.groups} groups gave different results.</p></div>
-    <div class="panel"><h4>Tokens (main model, 72 cells per approach)</h4>
-      ${cfg.map((c) => bar(c.id, c.tokens, maxTok, num(c.tokens), "tok")).join("")}
-      <div class="bar-sep"></div>
-      ${cfg.map((c) => bar(`${c.id} per passing cell`, c.tokens / c.pass, Math.max(...cfg.map((x) => x.tokens / x.pass)), num(Math.round(c.tokens / c.pass)), "tok")).join("")}
-      <p class="note">USD figures are in the cost panel below.</p></div>
-    <div class="panel"><h4>Do the judges agree with the official tool? (288 cells)</h4>
-      ${stack("Jev 1.13", [[f.jev.agree, "ok"], [f.jev.false_pass, "fp"], [f.jev.false_fail, "fn"]], f.jev.cells)}
-      ${stack("qwen3.8-max", [[f.judge.agree, "ok"], [f.judge.false_pass, "fp"], [qFalseFail, "fn"]], f.judge.n)}
-      <div class="legend"><span><i style="background:#2f9c7d"></i>agrees</span><span><i style="background:#d9534f"></i>false pass</span><span><i style="background:#e0a35f"></i>false fail</span></div>
-      <table style="margin-top:8px"><thead><tr><th>Task type</th><th class="num">Jev agrees</th><th class="num">qwen agrees</th></tr></thead><tbody>
-      ${TYPE_ORDER.filter((t) => BT(f.by_type, t).n).map((t) => `<tr><td>${t} ${TYPE_NAME[t]}</td><td class="num">${BT(f.jev.by_type, t).agree}/${BT(f.jev.by_type, t).n}</td><td class="num">${BT(f.judge.by_type, t).agree}/${BT(f.judge.by_type, t).n}</td></tr>`).join("")}
-      </tbody></table>
-      <p class="note">All ${f.jev.false_pass} of Jev's false passes are GEN: it passes models that fail the official syntax check. Its false fails are mostly AMB: the answer asked the right question and Jev still failed it. ${esc(f.rescore.judge_basis)}</p></div>
+    <div class="panel wide"><h4>Pass rate by task type, four candidates</h4>${typeTable}
+      <p class="note">${esc(f.rule)} Groups whose three repeats disagree: ${esc(flips)}.</p>
+      <p class="note">The direct prompts carry the SysML rules (and the alignment rules for ALN); the agents get only the task statement, AGENTS.md and <code>./validate</code>. The agents' ALN rows come from a rerun with <code>./validate</code> in the scorer's file order (see “Runs that do not count”).</p>
+      <table><thead><tr><th>Agent</th><th class="num">Pass</th><th class="num">Hit 900 s</th><th class="num">No answer.md</th><th class="num">Runs that ran ./validate</th><th class="num">./validate calls</th></tr></thead><tbody>${agentRows}</tbody></table></div>
+    <div class="panel"><h4>Side benchmarks named in the brief (not in the exam score)</h4>
+      <table><thead><tr><th>Candidate</th><th class="num">SysEngBench</th><th class="num">PURE</th></tr></thead><tbody>${sideRows}</tbody></table>
+      <p class="note">SysEngBench: ${anySeb ? `${anySeb.questions} questions fixed with seed 20261006, 10 per prompt, ${anySeb.repeats} repeats; always answering B would score ${anySeb.always_b}/${anySeb.questions} on this subset, because the dataset's key is mostly B and C.` : "not run yet."} PURE: the two sealed excerpts, 3 repeats; the extracted requirement sentences must equal the key.</p></div>
+    <div class="panel wide"><h4>Approaches with the same model (81 cells each)</h4>${cfgTable("flash")}${cfgTable("max")}
+      <p class="note">Syntax 1st → final counts the 39 SysML answers (GEN, MOD, ALN) per approach: passing the official parse on the first attempt, and after the repair loop (P0 has no loop). Tokens and USD at the ${esc(f.costs.prices.region)} list price.</p></div>
+    <div class="panel"><h4>Runs that do not count</h4>
+      ${(f.discarded || []).map((d) => `<div class="audit"><b>${esc(d.label)} · ${d.pass}/${d.n}</b>${esc(d.reason)} <span class="hint mono">${esc(d.dir)}</span></div>`).join("")}
+      ${(f.superseded || []).map((d) => `<div class="audit"><b>${esc(d.label)} · ${d.pass}/${d.n}</b>${esc(d.reason)} <span class="hint mono">${esc(d.dir)} → ${esc(d.rerun_dir)}</span></div>`).join("")}
+      <div class="audit"><b>${esc(f.archive.label)} · ${f.archive.pass}/${f.archive.n}</b>${esc(f.archive.note)}</div></div>
     <div class="panel cost" id="cost-panel"></div>`;
   renderCost(false);
 }
@@ -648,9 +657,11 @@ function renderCost(intl) {
   const pr = c.prices;
   const items = c.items.map((it) => ({ ...it, usd: usdOf(it.model, it, intl) }));
   const max = Math.max(...items.map((it) => it.usd || 0));
-  const p0 = items.find((it) => it.id === "P0");
+  const p0 = items.find((it) => it.id === "flash-P0");
+  const p3 = items.find((it) => it.id === "flash-P3");
+  const m0 = items.find((it) => it.id === "max-P0");
   const oc = items.find((it) => it.id === "opencode");
-  const p3 = items.find((it) => it.id === "P3");
+  const cl = items.find((it) => it.id === "claude");
   const priceChip = (name) => {
     const m = pr.models[name];
     const use = intl && m.intl ? m.intl : m;
@@ -666,30 +677,23 @@ function renderCost(intl) {
       <div class="track"><div class="fill" style="width:${max ? Math.max((it.usd / max) * 100, 0.6) : 0}%"></div></div>
       <span class="cv">${money(it.usd)}</span><small class="ct">${tokens}${per}</small></div>`;
   }).join("");
-  const insight = p0 && oc && p3 ? `Same flash model: OpenCode spent ${money(oc.usd)} on 24 tasks, ${Math.round(oc.usd / p0.usd)}× what P0 spent on 72 cells (${money(p0.usd)}), because every step re-sends the whole workspace (mostly billed as cached input). P3 costs ${(p3.usd / p0.usd).toFixed(1)}× P0 and passes only ${p3.passes - p0.passes} more cell(s).` : "";
+  const insight = p0 && p3 && m0 ? `Same 81 cells: flash P0 costs ${money(p0.usd)}, flash P3 ${money(p3.usd)} (${(p3.usd / p0.usd).toFixed(1)}×), max P0 ${money(m0.usd)} (${Math.round(m0.usd / p0.usd)}×).`
+    + (oc && cl ? ` The agents on flash: OpenCode ${money(oc.usd)} for ${oc.cells} runs, Claude Code ${money(cl.usd)} for ${cl.cells}; each step re-sends the workspace, mostly billed as cached input.` : "") : "";
+  const total = items.reduce((a, it) => a + (it.group_id === "part2" || it.group_id === "mod" ? 0 : it.usd || 0), 0)
+    + [...(c.runs || []), ...(c.mod_runs || [])].reduce((a, r) => a + (usdOf("qwen3.8-max", r, intl) || 0), 0);
   $("#cost-panel").innerHTML = `<div class="cost-head"><h4>Cost in USD at official list prices</h4>
       <div class="seg-toggle" id="cost-region"><button data-region="cn" class="${intl ? "" : "on"}">${esc(pr.region)} · our region</button><button data-region="intl" class="${intl ? "on" : ""}">International · comparison</button></div></div>
     <p class="note" style="margin:0 0 8px">${esc(pr.region_note)} Prices checked ${esc(pr.checked)}.</p>
-    <div class="price-row">${["qwen3.8-flash", "qwen3.8-max", "jev-1.13.0"].map(priceChip).join("")}</div>
+    <div class="price-row">${Object.keys(pr.models).map(priceChip).join("")}</div>
     ${insight ? `<div class="audit" style="margin:10px 0">${esc(insight)}</div>` : ""}
     <div class="cost-rows">${rows}</div>
-    <p class="note">Recorded total about ${money(items.reduce((a, it) => a + (it.group_id === "part2" || it.group_id === "mod" ? 0 : it.usd || 0), 0) + [...(c.runs || []), ...(c.mod_runs || [])].reduce((a, r) => a + (usdOf("qwen3.8-max", r, intl) || 0), 0))}. Not recorded and not above: ${esc(c.unrecorded.join(" "))}</p>`;
+    <p class="note">Recorded total about ${money(total)}, including the discarded runs. ${esc(c.unrecorded.join(" "))}</p>`;
   $$("#cost-region button").forEach((b) => { b.onclick = () => renderCost(b.dataset.region === "intl"); });
 }
 
 /* ======================= 1.3 matrix ======================= */
-function claudeCell(task) {
-  const first = S.cells.find((c) => c.cohort_id === "claude1" && c.task_id === task);
-  const retry = S.cells.find((c) => c.cohort_id === "claude2" && c.task_id === task);
-  return first && first.status !== "PASS" && retry ? retry : first;
-}
-
 function cellClass(c) {
-  if (!c) return "J-none";
-  if (S.mxMode === "tool") return c.status;
-  const j = S.mxMode === "jev" ? c.jev : c.qwen;
-  if (!j) return "J-none";
-  return j.agree ? "J-ok" : j.false_pass ? "J-fp" : "J-fn";
+  return c ? c.status : "J-none";
 }
 
 function renderGlossary() {
@@ -699,60 +703,59 @@ function renderGlossary() {
   const textTasks = count(["QRY", "AMB", "RT"]);
   const cards = TYPE_ORDER.map((t) => {
     const g = TYPE_GUIDE[t];
-    const bt = BT(f.by_type, t);
+    const bt = BT(f.cohorts[S.mxModel].by_type, t);
     return `<article class="gl-type ${g.pilot ? "model" : "text"}"><header><b>${t}</b><i>${esc(TYPE_SHORT[t])}</i><span>${count([t])} tasks · ${bt.n ? `${bt.pass}/${bt.n} pass` : "not run yet"}</span></header>
       <h5>${esc(TYPE_NAME[t])}</h5>
       <dl><dt>Gets</dt><dd>${esc(g.gets)}</dd><dt>Answers with</dt><dd>${esc(g.gives)}</dd><dt>Passes when</dt><dd>${esc(g.judge)}</dd></dl>
       <footer>${g.pilot ? "Official syntax check: yes" : "Official syntax check: not applicable"}</footer></article>`;
   }).join("");
   const codes = [
-    ["GEN-03", "task 3 of type GEN; each type has 4–5 tasks"],
-    ["P0 … P3", "four approaches with the same model: one-shot · repair from errors (up to 3) · outline first · outline + 3 retrieved notes"],
+    ["GEN-03", "task 3 of type GEN; each type has 3–5 tasks"],
+    ["P0 … P3", "four approaches with the same model: one-shot · repair loop (up to 20) · outline first + repair · retrieval + outline + repair"],
     ["1 2 3", "repeat number; every task × approach ran three times"],
-    ["OC · CL", "OpenCode and Claude Code, off-the-shelf agents, one run per task, not in the 288"],
-    ["↻n", "P1 cell that went through n repair rounds"],
-    ["＊", "current scorer differs from the archived verdict (MOD-05 only; hover to see it)"],
-    ["9/12", "row end: main-matrix cells passed out of 12 (4 approaches × 3 repeats); column foot: that column's pass rate"],
+    ["OC · CL", "OpenCode and Claude Code on qwen3.8-flash, in the sandbox, three runs per task"],
+    ["↻n", "a cell whose official parse needed n repairs"],
+    ["11/12", "row end: passes out of 12 for the direct model shown (4 approaches × 3 repeats); column foot: that column's pass rate"],
   ];
   $("#mx-guide").innerHTML = `<div class="gl-types">${cards}</div>
-    <p class="gl-note"><b>Why "not applicable" shows up so often.</b> Only GEN, MOD and ALN answers are SysML, so only those ${modelTasks} tasks (${modelTasks * 12} main-matrix cells) go through the official Pilot. QRY, AMB and RT answers are JSON or text (${textTasks} tasks, ${textTasks * 12} cells); they are compared with the answer key directly. Only MOD-05 has a power budget, so a design verdict exists for its 12 cells alone.</p>
+    <p class="gl-note"><b>Why "not applicable" shows up so often.</b> Only GEN, MOD and ALN answers are SysML, so only those ${modelTasks} tasks (${modelTasks * 12} cells per direct model) go through the official Pilot. QRY, AMB and RT answers are JSON or text (${textTasks} tasks, ${textTasks * 12} cells); they are compared with the answer key directly. Only MOD-05 has a power budget, so a design verdict exists for its cells alone.</p>
     <div class="gl-codes">${codes.map(([k, v]) => `<span><b>${esc(k)}</b>${esc(v)}</span>`).join("")}</div>`;
 }
 
 function renderMatrix() {
   renderGlossary();
-  const flash = {};
-  for (const c of S.cells) if (c.cohort_id === "flash") flash[`${c.task_id}|${c.configuration}|${c.repeat}`] = c;
+  const model = S.mxModel;
+  const direct = {};
+  const agents = {};
+  for (const c of S.cells) {
+    if (c.cohort_id === model) direct[`${c.task_id}|${c.configuration}|${c.repeat}`] = c;
+    if (c.cohort_id === "opencode" || c.cohort_id === "claude") agents[`${c.cohort_id}|${c.task_id}|${c.repeat}`] = c;
+  }
   const cols = [];
-  for (const cfg of ["P0", "P1", "P2", "P3"]) for (const r of [1, 2, 3]) cols.push({ cfg, r, get: (t) => flash[`${t}|${cfg}|${r}`] });
-  cols.push({ cfg: "OC", get: (t) => S.cells.find((c) => c.cohort_id === "opencode" && c.task_id === t) });
-  cols.push({ cfg: "CL", get: (t) => claudeCell(t) });
+  for (const cfg of ["P0", "P1", "P2", "P3"]) for (const r of [1, 2, 3]) cols.push({ cfg, r, direct: true, get: (t) => direct[`${t}|${cfg}|${r}`] });
+  for (const [cid, tag] of [["opencode", "OC"], ["claude", "CL"]]) for (const r of [1, 2, 3]) cols.push({ cfg: tag, r, get: (t) => agents[`${cid}|${t}|${r}`] });
+  const lastOfGroup = (i) => cols[i].r === 3 && i < cols.length - 1;
   const tasks = [...S.tasks].sort((a, b) => TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) || a.id.localeCompare(b.id));
-  const legend = {
-    tool: [["#c9ecd7", "pass"], ["#f5c3bf", "fail"], ["#f3e1aa", "timeout"]],
-    jev: [["#d9d1f4", "Jev agrees with the tool"], ["#f1928b", "Jev false pass"], ["#f3c98d", "Jev false fail"], ["#edf1f4", "no judge (agent columns)"]],
-    qwen: [["#d9d1f4", "qwen agrees with the tool"], ["#f1928b", "qwen false pass"], ["#f3c98d", "qwen false fail"], ["#edf1f4", "no judge (agent columns)"]],
-  }[S.mxMode];
-  $("#mx-legend").innerHTML = legend.map(([c, t]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
-  const head1 = `<tr><th></th>${["P0", "P1", "P2", "P3"].map((p) => `<th colspan="3">${CONFIG_NAME[p]}</th><th class="gap"></th>`).join("")}<th colspan="2">agents</th><th></th></tr>`;
-  const head2 = `<tr><th></th>${["P0", "P1", "P2", "P3"].map(() => `<th>1</th><th>2</th><th>3</th><th class="gap"></th>`).join("")}<th title="OpenCode">OC</th><th title="Claude Code">CL</th><th>Pass</th></tr>`;
+  $("#mx-legend").innerHTML = [["#c9ecd7", "pass"], ["#f5c3bf", "fail"], ["#edf1f4", "not run yet"]].map(([c, t]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
+  const label = S.facts.cohorts[model].label;
+  const head1 = `<tr><th></th>${["P0", "P1", "P2", "P3"].map((p) => `<th colspan="3">${CONFIG_NAME[p]}</th><th class="gap"></th>`).join("")}<th colspan="3" title="OpenCode on qwen3.8-flash">OpenCode</th><th class="gap"></th><th colspan="3" title="Claude Code on qwen3.8-flash">Claude Code</th><th></th></tr>`;
+  const head2 = `<tr><th class="mx-model">${esc(label)}</th>${cols.map((col, i) => `<th>${col.r}</th>${lastOfGroup(i) ? `<th class="gap"></th>` : ""}`).join("")}<th>Pass</th></tr>`;
   let body = "";
   for (const type of TYPE_ORDER) {
     const group = tasks.filter((t) => t.type === type);
-    const bt = BT(S.facts.by_type, type);
-    body += `<tr class="grp"><th colspan="20"><b>${type}</b> = ${esc(TYPE_NAME[type])} <span class="grp-io">answer: ${esc(TYPE_GUIDE[type].gives.toLowerCase())}</span> · ${bt.n ? `main matrix ${bt.pass}/${bt.n} (${pct(bt.pass, bt.n)})` : "not in the saved batches yet (added 2026-10-06; runs in the next matrix)"}</th></tr>`;
+    const bt = BT(S.facts.cohorts[model].by_type, type);
+    body += `<tr class="grp"><th colspan="24"><b>${type}</b> = ${esc(TYPE_NAME[type])} <span class="grp-io">answer: ${esc(TYPE_GUIDE[type].gives.toLowerCase())}</span> · ${esc(S.facts.cohorts[model].short)} ${bt.pass}/${bt.n} (${pct(bt.pass, bt.n)})</th></tr>`;
     for (const t of group) {
       let passed = 0;
       let total = 0;
       const tds = cols.map((col, i) => {
         const c = col.get(t.id);
-        if (c && c.cohort_id === "flash") { total += 1; passed += c.status === "PASS" ? 1 : 0; }
-        const gap = i < 12 && col.r === 3 ? `<td class="gap"></td>` : "";
+        if (c && col.direct) { total += 1; passed += c.status === "PASS" ? 1 : 0; }
+        const gap = lastOfGroup(i) ? `<td class="gap"></td>` : "";
         if (!c) return `<td><button class="cell J-none" disabled>·</button></td>${gap}`;
         const rr = Number(c.repair_rounds || 0);
-        const moved = c.archived_status && c.archived_status !== c.status;
-        const tip = `${t.id} · ${c.cohort}${c.configuration ? ` · ${c.configuration}` : ""}${col.r ? ` repeat ${col.r}` : ""} · task verdict ${c.status}${moved ? ` (archived ${c.archived_status}; re-scored with the current rule)` : ""}${c.engineering_status && c.engineering_status !== "UNKNOWN" ? ` · design verdict ${c.engineering_status}` : ""}${c.jev ? ` · Jev ${c.jev.agree ? "agrees" : c.jev.false_pass ? "false pass" : "false fail"}` : ""}`;
-        return `<td><button type="button" class="cell ${cellClass(c)}" data-cell="${esc(c.id)}" title="${esc(tip)}">${rr ? `↻${rr}` : ""}${moved ? "＊" : ""}</button></td>${gap}`;
+        const tip = `${t.id} · ${c.cohort}${col.direct ? ` · ${c.configuration}` : ""} · repeat ${col.r} · task verdict ${c.status}${c.engineering_status && c.engineering_status !== "UNKNOWN" && c.engineering_status !== "NOT_APPLICABLE" ? ` · design verdict ${c.engineering_status}` : ""}${rr ? ` · ${rr} repair(s)${c.stop_reason && c.stop_reason !== "pass" ? `, stopped: ${c.stop_reason}` : ""}` : ""}`;
+        return `<td><button type="button" class="cell ${cellClass(c)}" data-cell="${esc(c.id)}" title="${esc(tip)}">${rr ? `↻${rr}` : ""}</button></td>${gap}`;
       }).join("");
       body += `<tr><th class="rowh">${t.id}</th>${tds}<td class="rowsum">${passed}/${total}</td></tr>`;
     }
@@ -760,7 +763,7 @@ function renderMatrix() {
   const foot = `<tr><td></td>${cols.map((col, i) => {
     const list = tasks.map((t) => col.get(t.id)).filter(Boolean);
     const p = list.filter((c) => c.status === "PASS").length;
-    return `<td title="${p}/${list.length}">${list.length ? Math.round((p / list.length) * 100) : "—"}%</td>${i < 12 && col.r === 3 ? `<td class="gap"></td>` : ""}`;
+    return `<td title="${p}/${list.length}">${list.length ? Math.round((p / list.length) * 100) + "%" : "—"}</td>${lastOfGroup(i) ? `<td class="gap"></td>` : ""}`;
   }).join("")}<td></td></tr>`;
   $("#matrix").innerHTML = `<table class="mx"><thead>${head1}${head2}</thead><tbody>${body}</tbody><tfoot>${foot}</tfoot></table>`;
   if (S.cell && !S.cellLive) { const on = $(`#matrix [data-cell="${CSS.escape(S.cell.id)}"]`); if (on) on.classList.add("on"); }
@@ -768,7 +771,7 @@ function renderMatrix() {
 
 /* ======================= 1.4 one cell ======================= */
 const BENCH_STEP = { "Issue task": "issue", "Retrieve notes": "corpus", "Outline": "outline", "Write answer": "write", "Official syntax": "syntax", "Repair from errors": "repair", "Read values": "watts", "Check against key": "check", "Approval gate": "gate", "Archive": "archive" };
-const BENCH_ORDER = ["bank", "issue", "corpus", "outline", "write", "syntax", "repair", "watts", "gold", "check", "gate", "archive", "judge"];
+const BENCH_ORDER = ["bank", "issue", "corpus", "outline", "write", "syntax", "repair", "watts", "gold", "check", "gate", "archive"];
 
 function benchStates(d, live) {
   const st = { bank: "pass" };
@@ -783,8 +786,6 @@ function benchStates(d, live) {
   }
   if ((d.attempts || []).length > 1 && (!st.repair || st.repair === "skip")) st.repair = d.sysml_status === "PASS" ? "pass" : "fail";
   st.gold = st.check && st.check !== "skip" ? "pass" : st.check === "skip" ? "skip" : "";
-  const judgeWrong = (d.jev && !d.jev.agree) || (d.qwen && !d.qwen.agree);
-  st.judge = live ? (st.archive ? "skip" : "") : !d.jev && !d.qwen ? "skip" : judgeWrong ? "fail" : "pass";
   if (live && d.phase && BENCH_STEP[d.phase]) st[BENCH_STEP[d.phase]] = "run";
   return st;
 }
@@ -800,12 +801,8 @@ function benchNow(id) {
   const map = Object.entries(BENCH_STEP).find(([, v]) => v === id);
   if (id === "bank") return esc(`${d.task_id} (${TYPE_NAME[d.type] || d.type})`);
   if (id === "gold") return st === "pass" ? "This cell opened the answer key at the check step. The text is at the bottom left of 1.4." : "This cell did not reach the check step.";
-  if (id === "corpus") return d.configuration === "P3" ? esc(`${(d.retrieved || []).length} notes: ${(d.retrieved || []).map((x) => x.source).join(", ")}`) : "Not a P3 cell, so no notes were retrieved.";
+  if (id === "corpus") return d.configuration === "P3" ? esc(`${(d.retrieved || []).length} cards: ${[...new Set((d.retrieved || []).map((x) => x.source))].join(", ")}`) : "Not a P3 cell, so nothing was retrieved.";
   if (id === "outline") return d.outline ? esc(`Outline of ${d.outline.length} characters; full text in 1.4.`) : "This cell has no outline.";
-  if (id === "judge") {
-    if (!d.jev && !d.qwen) return "No judge record for this cell (agent column or live run).";
-    return esc(`Jev: pass probability ${d.jev?.p_pass ?? "—"}, ${d.jev ? judgeWord(d, d.jev) : "—"}. qwen: ${d.qwen?.verdict ?? "—"}, ${d.qwen ? judgeWord(d, d.qwen) : "—"}.`);
-  }
   if (id === "syntax" || id === "repair") {
     const at = d.attempts || [];
     if (!at.length) return esc(stepDetail(d, map ? map[0] : "") || "This cell has no official parse.");
@@ -818,10 +815,11 @@ function benchStages(d, live) {
   const st = benchStates(d, live);
   const at = d.attempts || [];
   const list = [{ id: "issue", title: "Issue task", state: st.issue || "", sub: "task statement only, no answer key" }];
-  if (d.configuration === "P3") list.push({ id: "corpus", title: "Retrieve notes", state: st.corpus || "", sub: `${(d.retrieved || []).length} notes`, paper: "p2" });
+  if (d.configuration === "P3") list.push({ id: "corpus", title: "Retrieve notes", state: st.corpus || "", sub: `${(d.retrieved || []).length} cards (MiniLM + FAISS)`, paper: "p2" });
   if (d.configuration === "P2" || d.configuration === "P3") list.push({ id: "outline", title: "Outline", state: st.outline || "", sub: d.outline ? `${d.outline.length} characters` : "" });
-  list.push({ id: "write", title: "Write the answer", state: st.write || "", sub: d.tokens ? `${num(d.tokens)} tokens · ${(d.calls || []).length} calls` : d.cohort, paper: "p3" });
-  if (d.type === "GEN" || d.type === "MOD" || at.length) {
+  const agent = d.cohort_id === "opencode" || d.cohort_id === "claude";
+  list.push({ id: "write", title: "Write the answer", state: st.write || "", sub: agent ? `${d.tokens ? `${num(d.tokens)} tokens` : "usage not recorded"} · ${d.validator_runs || 0} run(s) of ./validate` : d.tokens ? `${num(d.tokens)} tokens · ${(d.calls || []).length} calls` : d.cohort, paper: "p3" });
+  if (d.type === "GEN" || d.type === "MOD" || d.type === "ALN" || at.length) {
     list.push({ id: "syntax", title: "Official syntax", state: st.syntax || "", sub: at.length ? `${at.length} parse(s) · last ${at[at.length - 1].status}` : stepDetail(d, "Official syntax"), paper: "ours" });
     if (at.length > 1 || (st.repair && st.repair !== "skip")) list.push({ id: "repair", title: "Repair from errors", state: st.repair || "", sub: `${Math.max(at.length - 1, 0)} round(s) · what each received`, paper: "p3" });
   }
@@ -829,12 +827,6 @@ function benchStages(d, live) {
   list.push({ id: "check", title: "Check against key", state: st.check || "", sub: stepDetail(d, "Check against key") });
   list.push({ id: "gate", title: "Approval gate", state: st.gate || "", sub: stepDetail(d, "Approval gate") });
   list.push({ id: "archive", title: "Archive", state: st.archive || "", sub: stepDetail(d, "Archive") });
-  if (!live) {
-    const wrong = [d.jev && !d.jev.agree ? "Jev" : "", d.qwen && !d.qwen.agree ? "qwen" : ""].filter(Boolean);
-    list.push({ id: "judge", title: "Model judges (not scored)", state: st.judge || "",
-      word: !d.jev && !d.qwen ? "no judges" : wrong.length === 2 ? "both wrong" : wrong.length ? `${wrong[0]} wrong` : "both right",
-      sub: d.jev || d.qwen ? `Jev ${d.jev ? (d.jev.agree ? "agrees with the tool" : "disagrees with the tool") : "—"} · qwen ${d.qwen ? (d.qwen.agree ? "agrees with the tool" : "disagrees with the tool") : "—"}` : "no judge record" });
-  }
   return list;
 }
 
@@ -860,23 +852,23 @@ function cellDetailHTML(d, id) {
     case "issue":
       return io("Code", "Issue task", `Task bank bench/tasks/heldout/${d.task_id}`, "Task statement (text at the bottom left)") + `<div class="audit"><b>Check</b>The prompt has no answer key. The key is opened only at "Check against key".</div>`;
     case "corpus":
-      return io("Code · simplified Paper 2", "Retrieve notes", "Words in the task statement + 15 notes", "The 3 highest-scoring notes")
-        + ((d.retrieved || []).map((x) => `<div class="block-h" style="margin-top:8px">${esc(x.source)}${x.score != null ? ` · score ${x.score}` : ""}</div><pre class="code light">${esc(x.text)}</pre>`).join("") || `<p class="hint">No notes retrieved.</p>`)
-        + `<div class="audit"><b>Check</b>Notes go only into the outline prompt; they contain no answer key.</div>`;
+      return io("Code · Paper 2", "Retrieve notes", "Task statement + the retrieval library (official examples + notes)", "Up to 3 seeds by MiniLM + FAISS, plus one-hop neighbours")
+        + ((d.retrieved || []).map((x) => `<div class="block-h" style="margin-top:8px">${esc(x.source)}${x.role ? ` · ${esc(x.role)}` : ""}${x.score != null ? ` · score ${x.score}` : ""}</div><pre class="code light">${esc(x.text)}</pre>`).join("") || `<p class="hint">Nothing retrieved.</p>`)
+        + `<div class="audit"><b>Check</b>Cards go only into the outline prompt. The library holds official example models and notes, no task of the exam and no answer key.</div>`;
     case "outline":
       return io("Model", "Outline", "Task statement (P3: plus 3 notes)", "Outline JSON, no SysML") + `<pre class="code light">${esc(d.outline || "(no outline)")}</pre>`;
     case "write":
-      return io("Model · agent under test", "Write the answer", `Task statement + SysML rules${d.outline ? " + outline" : ""}`, d.type === "GEN" || d.type === "MOD" ? "A SysML package" : "Text or JSON")
-        + `<p class="hint">${esc(d.cohort)} · ${esc(d.configuration || "")}${d.tokens ? ` · ${num(d.tokens)} tokens · calls ${esc((d.calls || []).join(", "))}` : ""}. The final answer is at the bottom right${at.length > 1 ? "; every attempt is under \"Official syntax\"" : ""}.</p>`;
+      return io("Model · agent under test", "Write the answer", d.cohort_id === "opencode" || d.cohort_id === "claude" ? "Task input, AGENTS.md and ./validate in a sandbox without the answer keys" : `Task statement + rules${d.outline ? " + outline" : ""}`, d.type === "GEN" || d.type === "MOD" ? "A SysML package" : d.type === "ALN" ? "An alignment package + a JSON report" : "Text or JSON")
+        + `<p class="hint">${esc(d.cohort)} · ${esc(d.configuration || "")}${d.tokens ? ` · ${num(d.tokens)} tokens` : ""}${(d.calls || []).length ? ` · calls ${esc((d.calls || []).join(", "))}` : ""}${d.validator_runs ? ` · ${d.validator_runs} run(s) of ./validate` : ""}. The final answer is at the bottom right${at.length > 1 ? "; every attempt is under \"Official syntax\"" : ""}.</p>`;
     case "syntax":
-      return io("Official tool", "Official syntax", "SysML in the answer", "PASS / FAIL + error text") + attemptsHTML(at, "the task statement, the previous answer and these error lines go back to the model: fix it, keep the task's numbers")
+      return io("Official tool", "Official syntax", "SysML in the answer", "PASS / FAIL + error text") + attemptsHTML(at, "this version and its complete error list are added to the same conversation: fix it, keep the task's numbers")
         + `<div class="audit"><b>Note</b>PASS only means the official tool can parse it, not that the design is right.</div>`;
     case "repair": {
       const same = at.filter((a) => a.same_as_previous).length;
-      return io("Model", "Repair from errors", "Task statement + previous answer + official error text (up to 8 lines)", "A new answer, parsed again")
+      return io("Model", "Repair from errors", "The same conversation: task, every earlier version, every complete error list", "A new version, parsed again")
         + `<div class="audit ${d.sysml_status === "PASS" ? "pass" : "fail"}"><b>Result</b>${Math.max(at.length - 1, 0)} repair round(s), last ${esc(d.sysml_status || "—")}.${same ? ` ${same} of them sent back code identical to the previous attempt.` : ""}</div>`
-        + `<p class="hint" style="margin:8px 0">The exact sentence sent to the model: Official validation failed. Fix the model. Do not change numbers the task said to keep. (followed by the error text)</p>`
-        + attemptsHTML(at, "sent back: task statement + previous answer + the error text above");
+        + `<p class="hint" style="margin:8px 0">The sentence sent to the model: Official validation failed: attempt n, repair n of at most 20. The complete error list from the official SysML v2 Pilot follows. Fix the model and resubmit the whole file in one fenced sysml block. Do not change numbers the task said to keep. (followed by every error with line and column)</p>`
+        + attemptsHTML(at, "added to the conversation: this version + the complete error list above");
     }
     case "watts":
       return io("Code", "Read values", "Answer / official parse", "Names and values") + `<p>${esc(stepDetail(d, "Read values") || "—")}</p>`;
@@ -886,23 +878,12 @@ function cellDetailHTML(d, id) {
       return io("Person", "Approval gate", "A request to change a limit", "Approve / reject") + `<p>${esc(stepDetail(d, "Approval gate"))}</p>`;
     case "archive":
       return io("Code", "Archive", "All records", "Score row + run folders") + `<p>${esc(stepDetail(d, "Archive"))}</p>${at.length ? `<p class="hint mono">${at.map((a) => esc(a.run_id || "")).join(" · ")}</p>` : ""}`;
-    case "judge":
-      return io("Observing · not scored", "Model judges", "Task statement + criteria + answer (not the tool's result)", "Pass / fail")
-        + `<table><thead><tr><th>Judge</th><th>Verdict</th><th>Against the tool</th></tr></thead><tbody>
-          <tr><td>Jev 1.13</td><td>${d.jev ? `pass probability ${esc(d.jev.p_pass)}` : "—"}</td><td>${d.jev ? badge(d.jev.agree ? "agrees" : d.jev.false_pass ? "false pass" : "false fail") : "—"}</td></tr>
-          <tr><td>qwen3.8-max</td><td>${esc(d.qwen?.verdict ?? "—")}</td><td>${d.qwen ? badge(d.qwen.agree ? "agrees" : d.qwen.false_pass ? "false pass" : "false fail") : "—"}</td></tr></tbody></table>
-          <div class="audit"><b>Note</b>The tool's task verdict is ${esc(d.status)}${d.engineering_status && d.engineering_status !== "UNKNOWN" ? `, design verdict ${esc(d.engineering_status)}` : ""}. The judges were told an over-budget design fails, so they are compared with the design verdict; only MOD-05 has different verdicts. Judges never change a score; they show whether a model could replace the tool.</div>`;
     default:
       return "";
   }
 }
 
-function judgeWord(d, judge) {
-  const basis = d.status === "PASS" && d.engineering_status === "FAIL" ? "the tool's design verdict" : "the tool";
-  return judge.agree ? `agrees with ${basis}` : judge.false_pass ? `false pass (vs ${basis})` : `false fail (vs ${basis})`;
-}
-
-const MODEL_OF = { flash: "qwen3.8-flash", opencode: "qwen3.8-flash", claude1: "qwen3.8-max", claude2: "qwen3.8-max" };
+const MODEL_OF = { flash: "qwen3.8-flash", max: "qwen3.8-max", opencode: "qwen3.8-flash", claude: "qwen3.8-flash" };
 
 function usdOf(model, t, intl = false) {
   let price = ((S.facts && S.facts.costs && S.facts.costs.prices.models) || {})[model];
@@ -990,7 +971,7 @@ function answerCheck(type, v) {
   }
   if (type === "AMB") {
     const missing = v.missing_questions || [];
-    const parts = [["uses a question mark", !!v.asked], [`asks about the missing quantity${missing[0] ? ` (${missing[0][0]})` : ""}`, !missing.length], ["invents no number", !v.invented_number]];
+    const parts = [[v.asked_how ? `asks (${v.asked_how})` : "asks (a question mark or a clarification request)", !!v.asked], [`asks about the missing quantity${missing[0] ? ` (${missing[0][0]})` : ""}`, !missing.length], [v.invented_number && (v.invented || []).length ? `invents no number (found ${v.invented.join(", ")})` : "invents no number", !v.invented_number]];
     const ok = parts.filter(([, y]) => y).length;
     return ["Question checks", `${ok}/3 met`, ok === 3 ? "pass" : "fail", parts.map(([n, y]) => `${y ? "✓" : "✕"} ${n}`).join(" · ")];
   }
@@ -1025,13 +1006,11 @@ function renderCell(d, live) {
   const v = d.verdict || {};
   const pending = ["Check", "—", "", "runs after the answer arrives"];
   $("#cell-head").innerHTML = `<div class="scene-wrap" id="cell-scene"></div>` + verdictBar([
-    ["Task verdict", status, `big ${cls}`, d.archived_status && d.archived_status !== d.status ? `archived verdict ${d.archived_status}; re-scored with the current rule` : running ? "running" : VERDICT_RULE[d.type] || "every checklist item must match"],
+    ["Task verdict", status, `big ${cls}`, running ? "running" : VERDICT_RULE[d.type] || "every checklist item must match"],
     modelTask ? ["Official syntax", d.sysml_status || "—", d.sysml_status === "PASS" ? "pass" : d.sysml_status ? "fail" : "", `${at.length} parse(s)${at.length > 1 ? ` · ${at.length - 1} repair(s)` : ""}${alignTask ? " · sources + package together" : ""}`] : null,
     running && !Object.keys(v).length ? pending : alignTask ? alignCheck(d.sysml_status, v) : modelTask ? listCheck(d.sysml_status, v) : answerCheck(d.type, v),
     modelTask && !alignTask ? designItem(d.sysml_status, v) : null,
-    ["Jev (not scored)", d.jev ? `pass probability ${d.jev.p_pass}` : "—", d.jev ? (d.jev.agree ? "pass" : "fail") : "", d.jev ? judgeWord(d, d.jev) : "no record"],
-    ["qwen (not scored)", d.qwen ? d.qwen.verdict : "—", d.qwen ? (d.qwen.agree ? "pass" : "fail") : "", d.qwen ? judgeWord(d, d.qwen) : "no record"],
-    ["This cell", `${d.task_id} · ${d.configuration || ""}${d.repeat ? ` · repeat ${d.repeat}` : ""}`, "", `${d.cohort || ""}${model ? ` · ${model}` : ""}${d.tokens ? ` · ${num(d.tokens)} tokens` : ""}${cost != null ? ` · ${money(cost)}` : ""}`],
+    ["This cell", `${d.task_id} · ${d.configuration || ""}${d.repeat ? ` · repeat ${d.repeat}` : ""}`, "", `${d.cohort || ""}${model && !(d.cohort || "").includes(model) ? ` · ${model}` : ""}${d.tokens ? ` · ${num(d.tokens)} tokens` : d.cohort_id === "claude" && !running ? " · usage not recorded (the run hit the time limit before Claude Code reported it)" : ""}${cost != null ? ` · ${money(cost)}` : ""}`],
   ]);
   if (window.SceneKit) SceneKit.render($("#cell-scene"), sceneCtx(d, live));
   const stages = benchStages(d, live);
@@ -1078,7 +1057,7 @@ function liveDetail(job) {
   }
   return { id: job.id, task_id: job.task_id, type: job.type, configuration: job.configuration, repeat: "", cohort: "This run", status: job.status === "error" ? "ERROR" : job.status_label,
     sysml_status: job.sysml_status, steps: job.steps, requirements: job.requirements, answer: job.answer, gold: job.gold, outline: job.outline,
-    retrieved: job.retrieved, attempts: job.attempts, phase: job.phase, jev: null, qwen: null, model: job.model, verdict: job.verdict || {},
+    retrieved: job.retrieved, attempts: job.attempts, phase: job.phase, model: job.model, verdict: job.verdict || {},
     engineering_status: job.engineering_status, usage, tokens: usage.input + usage.output || null };
 }
 
@@ -1342,7 +1321,9 @@ function runDetailHTML(r, id) {
       + `<div class="block-h">Query words and numbers (blue = found in at least one card)</div><div class="words" style="margin-bottom:10px">${(ret.query_words || []).map((w) => `<span class="${hits.has(w) ? "hit" : ""}">${esc(w)}</span>`).join("")}</div>`
       + `<div class="rgraph">${retrievalGraph(ret)}</div>`
       + `<table style="margin-top:10px"><thead><tr><th>Role</th><th>Card (text that enters the prompt)</th><th class="num">Score</th><th>Source</th></tr></thead><tbody>${(ret.nodes || []).map((n) => `<tr><td>${n.role === "seed" ? "seed" : "neighbour"}</td><td class="mono" style="font-size:11.5px">${esc(n.text)}</td><td class="num">${esc(n.score)}</td><td>${esc(n.source)}</td></tr>`).join("")}</tbody></table>`
-      + `<div class="audit"><b>Note</b>${esc(ret.note || "")} Score = query words found in the card + values equal to a number in the brief. No vectors; this step calls no model.</div>`;
+      + `<div class="audit"><b>Note</b>${esc(ret.note || "")} ${ret.method && ret.method !== "keyword"
+        ? `Score = cosine between the brief and the card (${esc(ret.embedding_model || "MiniLM")}, FAISS, seeds need ≥ ${esc(ret.threshold)}) + ${esc(ret.name_bonus)} per brief word equal to part of the card's name.`
+        : "Score = query words found in the card + values equal to a number in the brief (this run predates vector retrieval)."} This step calls no language model.</div>`;
   }
   if (id === "requirements") {
     return io("Model · Paper 3", "② Write requirements", "The brief", "Numbered requirements (attribute name and value) + questions")
@@ -1801,7 +1782,6 @@ function modStages(m) {
 function modDetail(m, id) {
   const { ex, cn, kp, chk } = modCounts(m);
   const io = (who, title, read, give) => `<div class="who">${esc(who)}</div><h4 class="dt">${esc(title)}</h4><div class="io"><div><h5>Reads</h5><p>${esc(read)}</p></div><div><h5>Produces</h5><p>${esc(give)}</p></div></div>`;
-  const archived = m.reliability?.archived || m.reliability?.archived_mod05 || {};
   switch (id) {
     case "req": return io("Task bank", "Task statement + baseline model", `${m.task_id}'s statement and the existing model in input/baseline`, "Agent prompt (text below)") + `<pre class="code light">${esc(m.requirements)}</pre><div class="audit"><b>Check</b>${esc(m.gold_note || "")}</div>`;
     case "write": return io(`Model ${m.model || ""}`, "Model edits the model", "Task statement + baseline model + SysML rules", "The edited SysML") + `<pre class="code">${esc(m.answer)}</pre>`;
@@ -1827,7 +1807,11 @@ function modDetail(m, id) {
     case "readback": return io("Model", "Read back", "Only the edited SysML", "Restated sentences; code checks every number in the model is read back")
       + (m.round_trip ? `<pre class="code light">${esc(m.round_trip)}</pre><div class="words" style="margin-top:6px">${Object.entries(m.round_trip_mentions || {}).map(([k, ok]) => `<span class="${ok ? "hit" : ""}">${esc(k)} ${ok ? "✓" : "✕"}</span>`).join("")}</div>` : `<p class="hint">No model to read back.</p>`);
     case "archive": return io("Code", "Archive", "All records", `analysis/mvp-case-${m.id}-${m.task_id}/case.json`)
-      + `<p>${esc(m.reliability?.note || "")} ${esc(m.task_id)} in the main-matrix archive: PASS ${esc(archived.PASS ?? "—")}, FAIL ${esc(archived.FAIL ?? "—")}.</p><p class="hint" style="margin-top:6px">${esc(m.safety?.note || "")}</p>`;
+      + (() => {
+        const same = S.cells.filter((c) => c.cohort_id === "flash" && c.task_id === m.task_id);
+        const ok = same.filter((c) => c.status === "PASS").length;
+        return `<p>This change run counts on its own. The same task in the scored direct-flash batch: ${ok}/${same.length} cells pass (4 approaches × 3 repeats).</p><p class="hint" style="margin-top:6px">${esc(m.safety?.note || "")}</p>`;
+      })();
     default: return "";
   }
 }
@@ -1901,18 +1885,23 @@ async function runMod() {
 /* ======================= 2.5 capabilities ======================= */
 function renderCaps() {
   const f = S.facts;
+  const C = f.cohorts;
   const r = S.record && Array.isArray(S.record.designs) ? S.record : null;
   const fails = r ? failingChecks(r) : [];
+  const pure = f.side.pure || {};
   const caps = [
     { title: "① Generate requirements from a task", done: r ? `The latest run wrote ${(r.requirements?.requirements || []).length} numbered requirements; ${(r.requirements?.unsourced || []).length} carry numbers not in the brief.` : "No run yet.",
-      proof: "2.3: \"② Write requirements\" and \"Number source check\".", todo: "Nobody has reviewed the requirements' quality one by one; whether the model asks when a number is missing is tested only by the exam's AMB tasks (main matrix " + `${f.by_type.AMB.pass}/${f.by_type.AMB.n}` + ")." },
+      proof: `2.3: "② Write requirements" and "Number source check". Asking when a number is missing, exam AMB tasks: flash ${BT(f.by_type, "AMB").pass}/${BT(f.by_type, "AMB").n}, max ${BT(C.max.by_type, "AMB").pass}/${BT(C.max.by_type, "AMB").n}. Copying requirement sentences from real documents (PURE): ${Object.entries(pure).map(([k, x]) => `${C[k].short} ${x.pass}/${x.n}`).join(", ") || "not run yet"}.`,
+      todo: "Nobody has reviewed the generated requirements' quality one by one; PURE covers two short excerpts." },
     { title: "② Generate design concepts", done: r ? `Every run writes two designs: ${r.designs.map((d) => `${d.key} official validation ${d.sysml_status}`).join(", ")}; aligned with MaritimeISR, alignment package official Pilot ${r.alignment?.package?.sysml_status || "not generated"}.` : "No run yet.",
-      proof: "2.3: \"② Write design\", \"③ Official validation\", \"④ Align\". In the exam, GEN tasks pass only " + `${f.by_type.GEN.pass}/${f.by_type.GEN.n}` + " in the main matrix.", todo: "The two designs differ because the prompt says so (literal / restructured); there is no automatic search of the design space yet." },
+      proof: `2.3: "② Write design", "③ Official validation", "④ Align". Exam GEN tasks: flash ${BT(f.by_type, "GEN").pass}/${BT(f.by_type, "GEN").n}, max ${BT(C.max.by_type, "GEN").pass}/${BT(C.max.by_type, "GEN").n}; ALN tasks: flash ${BT(f.by_type, "ALN").pass}/${BT(f.by_type, "ALN").n}, max ${BT(C.max.by_type, "ALN").pass}/${BT(C.max.by_type, "ALN").n}.`,
+      todo: "The two designs differ because the prompt says so (literal / restructured); there is no automatic search of the design space yet." },
     { title: "③ Consistency checks (static budgets)", done: r ? `All four checks read only officially parsed numbers. ${fails.length ? `Latest run failed ${fails.join(", ")}; the agent proposed trade-offs and code recomputed them from the catalog.` : "The latest run passed all four."}` : "No run yet.",
-      proof: "2.3: \"⑤ Budget checks\" and \"Trade-offs\"; 2.4's MOD-05: the over-budget design is reported honestly (design verdict FAIL), the limit is unchanged, task verdict PASS.", todo: "These are static budget sums, not time-domain simulation: no queueing, link-outage durations or temperature." },
+      proof: `2.3: "⑤ Budget checks" and "Trade-offs"; MOD-05 in the exam: ${f.reliability.mod05_pass}/12 flash cells report the overrun honestly (design verdict FAIL, task verdict PASS), none raised the limit.`,
+      todo: "These are static budget sums, not time-domain simulation: no queueing, link-outage durations or temperature." },
   ];
   $("#caps").innerHTML = caps.map((c) => `<article><h4>${esc(c.title)}</h4><p><b>Done: </b>${esc(c.done)}</p><p style="margin-top:6px"><b>Evidence: </b>${esc(c.proof)}</p><p style="margin-top:6px;color:var(--ink-3)"><b>Not yet: </b>${esc(c.todo)}</p></article>`).join("")
-    + `<article style="grid-column:1/-1"><h4>Other checks</h4><p>Across three repeats of the same task and approach, ${f.reliability.flips}/${f.reliability.groups} groups gave different results (${esc(f.reliability.flip_tasks.join(", "))}). MOD-05 has 12 archived main-matrix cells, all honest answers: over budget with the limit unchanged; under the current scorer the task verdict passes ${f.reliability.mod05_pass}/12. Hazard requirements file ${esc(f.safety.file)} ${f.safety.kept ? "is unchanged" : "was changed"}. PURE real-requirement excerpts: ${f.pure.map((p) => `${p.id} ${p.status}`).join(", ")}.</p></article>`;
+    + `<article style="grid-column:1/-1"><h4>Other checks</h4><p>Repeat stability: groups whose three repeats disagree, ${["flash", "max", "opencode", "claude"].map((k) => `${C[k].short} ${C[k].reliability.flips}/${C[k].reliability.groups}`).join(", ")}. Hazard requirements file ${esc(f.safety.file)} ${f.safety.kept ? "is unchanged" : "was changed"}. The task bank and scorers are frozen (${esc(f.freeze.file)}, tag ${esc(f.freeze.tag)}).</p></article>`;
 }
 
 /* ======================= events & boot ======================= */
@@ -1965,9 +1954,9 @@ document.addEventListener("click", (e) => {
     reviewMapping(rv.dataset.review, rv.dataset.decision);
     return;
   }
-  const mode = e.target.closest("#mx-mode [data-mode]");
+  const mode = e.target.closest("#mx-mode [data-model]");
   if (mode) {
-    S.mxMode = mode.dataset.mode;
+    S.mxModel = mode.dataset.model;
     $$("#mx-mode button").forEach((b) => b.classList.toggle("on", b === mode));
     renderMatrix();
   }

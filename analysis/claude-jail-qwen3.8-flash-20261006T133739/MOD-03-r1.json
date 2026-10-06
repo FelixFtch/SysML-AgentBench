@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 80323,
+  "stop_reason": "end_turn",
+  "session_id": "a2b5f892-2c15-49a0-934a-88db83af0910",
+  "total_cost_usd": 0.16843000000000002,
+  "usage": {
+    "input_tokens": 11004,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 113920,
+    "output_tokens": 2258,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 11004,
+      "outputTokens": 2258,
+      "cacheReadInputTokens": 113920,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.16843000000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 9,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the workspace rules:\n\n**Files changed**\n- `input/baseline/ShoreHop.sysml` — added exactly one line: `connect vessel.radio.toShore to shore.fromVessel;`. The existing `connect vessel.processor.uplink to vessel.radio.fromProcessor;` is kept verbatim; package name stays `ShoreHop`; no numeric limits invented; no other elements touched.\n- `answer.md` — written with the full record.\n\n**Validation status**\n- `./validate ShoreHop input/baseline/ShoreHop.sysml` → official status **PASS** (Pilot 0.62.0, `official-pilot-xtext-emf`), return code 0, 0 warnings.\n\n**Check results**\n- Diagnostics: `[]` — empty. Every requirement check passes: both new connection endpoints resolve (`vessel.radio.toShore : LinkPort` ↔ `shore.fromVessel : LinkPort`), the kept connection is unchanged, no numbers added. Note from the validator itself: its scope excludes engineering budgets and complete unit/dimension verification — not an issue here since no such constraints exist in this task.\n\n**Open questions**\n- None — the task was unambiguous and all required values were present in the baseline.",
+  "ttft_ms": 7952,
+  "type": "result",
+  "duration_ms": 84859,
+  "uuid": "f03d413f-8450-46c0-aa5e-169e447b01b8",
+  "ttft_stream_ms": 7694,
+  "time_to_request_ms": 71,
+  "first_content_frame_ms": 7695,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

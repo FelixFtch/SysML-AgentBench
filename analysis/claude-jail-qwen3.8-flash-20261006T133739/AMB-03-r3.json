@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 171053,
+  "stop_reason": "end_turn",
+  "session_id": "f58cf6e3-bd79-4d0e-b35d-164335f501c6",
+  "total_cost_usd": 0.28663099999999997,
+  "usage": {
+    "input_tokens": 12626,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 157952,
+    "output_tokens": 5781,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 12626,
+      "outputTokens": 5781,
+      "cacheReadInputTokens": 157952,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.28663099999999997,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. This task is an ambiguity stop-case, and the correct response was to **not** write SysML.\n\n## Files changed\n- `answer.md` — created with the decision, evidence, and open questions.\n- No `.sysml` files created or edited. The workspace contained no existing models (no `requirements/` or `gold/` dirs in this run), and rule 4 + the task brief itself prohibit authoring a model whose check inputs are missing.\n\n## Validation status\n- Not run — nothing to validate. `./validate` requires a `.sysml` file; since the correct outcome was \"stop and ask,\" no edit was made that could trigger validation.\n\n## Check results\n- **Storage check: cannot be evaluated.** The brief states it verbatim: *\"The shore keeps tracks for 30 days and has 128 GB of storage. No data rate is given, so the storage number cannot be checked.\"* The check `rate × 30 d ≤ 128 GB` is neither satisfiable nor falsifiable without the rate. I did not substitute the implied ≤4.27 GB/day bound for a specified value.\n\n## Open questions (blocking)\n1. What is the track data rate, with an explicit unit (MB/day, Mbps, or bytes-per-track × tracks-per-day)?\n2. Is 128 GB decimal (10⁹) or binary GiB (2³⁰)? — only needed once the rate exists.",
+  "ttft_ms": 16249,
+  "type": "result",
+  "duration_ms": 171273,
+  "uuid": "a34f19a5-5b40-4688-89d1-0525d56f0148",
+  "ttft_stream_ms": 10448,
+  "time_to_request_ms": 53,
+  "first_content_frame_ms": 10448,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

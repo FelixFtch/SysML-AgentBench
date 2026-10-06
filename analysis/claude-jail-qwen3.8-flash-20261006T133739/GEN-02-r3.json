@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 145078,
+  "stop_reason": "end_turn",
+  "session_id": "51c32345-3c65-409d-a215-5534a259de0d",
+  "total_cost_usd": 0.269436,
+  "usage": {
+    "input_tokens": 14270,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 207872,
+    "output_tokens": 3766,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 14270,
+      "outputTokens": 3766,
+      "cacheReadInputTokens": 207872,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.269436,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 11,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per CLAUDE.md rule 7:\n\n**Files changed**\n- `UavSearch.sysml` — created: the complete model (3 port defs, 4 part defs, `part uav` usage with `searchRadar`/`eoCamera`/`processor`/`radio`, and the 3 required `connect` statements).\n- `answer.md` — created: model, requirement-by-requirement check, validation evidence, open questions.\n\n**Validation status** — `./validate UavSearch UavSearch.sysml` → **PASS**, `diagnostics: []`, `warning_count: 0`, `return_code: 0` (official Pilot 0.62 validator; evidence in `validation/20261006T103502235410335/`).\n\n**Check results** — all 7 requirements satisfied, confirmed against the exported `model.json` (every required name present). No numeric limits were invented — none were given, and none appear in the model.\n\n**Open questions** — none. Everything needed (names, types, connection ends) was specified in `input/requirements.md`.",
+  "ttft_ms": 6588,
+  "type": "result",
+  "duration_ms": 156537,
+  "uuid": "17cb0447-a884-4000-8509-cce96679516e",
+  "ttft_stream_ms": 6123,
+  "time_to_request_ms": 72,
+  "first_content_frame_ms": 6123,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

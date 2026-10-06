@@ -1,0 +1,61 @@
+```sysml
+package AlignCamera {
+    private import UsvPayloadSpec::*;
+    private import OptronicsKit::*;
+
+    alias ImageryPort for OptronicsKit::VideoOut;
+    alias Camera for OptronicsKit::EoCameraUnit;
+    alias drawW for OptronicsKit::EoCameraUnit::powerDrawW;
+    alias imagery for OptronicsKit::EoCameraUnit::videoOut;
+
+    allocation eoCameraToCameraUnit allocate UsvPayloadSpec::usv::eoCamera to OptronicsKit::kit::cameraUnit;
+}
+```
+
+```json
+{
+  "mappings": [
+    {
+      "oem_element": "UsvPayloadSpec::ImageryPort",
+      "supplier_element": "OptronicsKit::VideoOut",
+      "mapping_type": "alias",
+      "rationale": "Both are port definitions for the same analog video/imagery signal interface carried from the camera to its consumer."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Camera",
+      "supplier_element": "OptronicsKit::EoCameraUnit",
+      "mapping_type": "alias",
+      "rationale": "The spec's electro-optical camera definition is the same payload device as the supplier's EoCameraUnit: one video output port plus a total power-draw attribute."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Camera::drawW",
+      "supplier_element": "OptronicsKit::EoCameraUnit::powerDrawW",
+      "mapping_type": "alias",
+      "rationale": "Both Real attributes express the camera's total electrical power draw in watts."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Camera::imagery",
+      "supplier_element": "OptronicsKit::EoCameraUnit::videoOut",
+      "mapping_type": "alias",
+      "rationale": "Both are the camera's outbound imagery/video port usage on the same port definition (ImageryPort ~ VideoOut)."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::usv::eoCamera",
+      "supplier_element": "OptronicsKit::kit::cameraUnit",
+      "mapping_type": "allocation",
+      "rationale": "The spec's EO camera usage in the vehicle is the part instance supplied by the kit's cameraUnit usage of the aliased definition Camera ~ EoCameraUnit."
+    }
+  ],
+  "unmatched": [
+    "UsvPayloadSpec::Processor",
+    "UsvPayloadSpec::Processor::imageryIn",
+    "UsvPayloadSpec::usv",
+    "UsvPayloadSpec::usv::processor",
+    "OptronicsKit::VideoSink",
+    "OptronicsKit::VideoSink::videoIn",
+    "OptronicsKit::EoCameraUnit::heaterW",
+    "OptronicsKit::kit",
+    "OptronicsKit::kit::recorder"
+  ]
+}
+```

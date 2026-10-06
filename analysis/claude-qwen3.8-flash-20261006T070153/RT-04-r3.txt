@@ -1,0 +1,20 @@
+## RT-04 — Restatement of the model's requirements
+
+**Ground facts in the model.** The model contains exactly one requirement statement — the `doc` comment on `requirement def Archive` — plus two numeric attributes on the `shore` part. Everything below traces to those.
+
+### The requirement, in sentences
+- The shore archive keeps tracks for **30 days**.
+- The shore archive operates on a **50 Mbit/s** backhaul.
+- This is captured as a requirement definition named **`Archive`**, inside the package **`RoundTripArchive`**.
+
+### The supporting parameter values (from `part shore`)
+- The `shore` part's backhaul rate attribute `backhaulMbps` is set to **50.0** — consistent with the "50 Mbit/s backhaul" in the requirement (the `Mbps` in the name matches the `Mbit/s` in the text).
+- The `shore` part's retention attribute `archiveDays` is set to **30.0** — consistent with the "30 days" in the requirement.
+
+### Notes on what is *not* claimed (to avoid adding facts)
+- **Units come from the names, not the types.** Both attributes are typed `Real` (via `private import ScalarValues::*`), which carries no unit; the physical meaning (`Mbps` → Mbit/s, `Days` → days) is encoded only in the attribute names and agrees with the requirement text.
+- **The numbers are default values**, `= 50.0` and `= 30.0`. The model does not state whether they are minimums, maximums, or targets, so I have not characterized them as such.
+- **No structural binding.** The model *defines* `Archive` (`requirement def`) but never *uses* it (no `require ... Archive` on `shore`). The link between the requirement and the `shore` part is only that they share the package and that the requirement's own wording says "the **shore** archive."
+- **"Tracks" is left undefined** — the model neither identifies what a track is nor the archive's purpose, so I have not added any.
+
+In one sentence: *The model requires the shore archive to retain tracks for 30 days over a 50 Mbit/s backhaul, with those two figures also recorded as the `shore` part's `archiveDays = 30.0` and `backhaulMbps = 50.0` attributes.*

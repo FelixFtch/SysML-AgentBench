@@ -1,0 +1,15 @@
+I've read `input/requirements.md`. The only requirement given is "tracks must be shared from the vessel to the shore in real time" — with no latency figure, no bandwidth figure, and no units anywhere. As instructed, I'm not inventing values and not writing any SysML. To check this requirement at all, I need the following numbers with units from you:
+
+**Missing — blocking:**
+1. **End-to-end latency limit** — what maximum delay (and from where to where: track source → shore display?) counts as "real time"? e.g., "≤ N s" or "≤ N ms".
+2. **Bandwidth available/allocated** — for the vessel→shore link (or the portion reserved for track sharing), in what unit (kbps? Mbps? messages/s)?
+
+**Missing — needed to make the two checks verifiable, please confirm or supply:**
+3. **Track report size** — bytes (or bits) per track message.
+4. **Track count and update rate** — max simultaneous targets/tracks, and messages per track per second.
+5. **Message arrival jitter / staleness threshold** — at the shore side, when is a track considered lost vs. just late?
+6. **Link technology and whether the bandwidth figure is shared with other traffic** — affects whether a headroom margin is required.
+
+**No conflicts found** — there is only one statement, so nothing contradicts yet; but note it is qualitative ("real time") and cannot be decomposed into checkable requirements without items 1–2 above.
+
+Once you give me the latency limit and bandwidth figure (with units), plus at least the message size and update rate, I can state the requirement as a bandwidth = track size × rate × count vs. allocated bandwidth check, and a latency budget check — and only then proceed to any modeling.

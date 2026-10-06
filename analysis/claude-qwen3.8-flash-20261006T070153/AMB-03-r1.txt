@@ -1,0 +1,29 @@
+I've read the requirements file (`input/requirements.md`). This is a check I can't complete as specified, and per the rules I must ask rather than assume — so no SysML and no derived numbers have been written.
+
+## What the requirement states
+
+- **Retain tracks for:** 30 days
+- **Onboard storage:** 128 GB
+- **Data rate:** *not given*
+
+## The gap
+
+To check whether 128 GB is sufficient for 30 days of track storage, I need the **track data rate** (or an equivalent, e.g. track generation frequency × bytes per track record). Without it, the two numbers can't be compared:
+
+- At 128 GB / 30 days ≈ **4.27 GB/day** (≈ 49.6 kB/s) is the maximum *average* data rate that fits. Whether the actual rate is below that is unknown.
+
+## Question for the requirements owner
+
+**Please provide the track data rate** — one of the following is sufficient:
+
+1. Average data rate with units (e.g. MB/s, GB/day, or records/s), **or**
+2. Track record size in bytes **and** track update/generation rate (e.g. tracks per second), **or**
+3. A stated worst-case *and* typical rate, if compression duty cycling is expected.
+
+Optional but useful for a realistic check:
+
+- Is compression applied to stored tracks, and if so what is the assumed compression ratio?
+- Does the 128 GB need to hold anything besides track data (OS, logs, other payloads)? If so, what fraction is reserved for tracks?
+- Is 30 days a continuous-recording assumption, or duty-cycled?
+
+Once a rate with units is supplied, I can perform the storage check (capacity ≥ rate × 30 days, with headroom for any reserved storage) and only then proceed toward modeling. I have not invented any value and have written no SysML, as instructed.

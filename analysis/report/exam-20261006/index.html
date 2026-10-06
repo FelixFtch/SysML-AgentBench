@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Maritime SysML exam, frozen bank, four candidates</title>
+<style>
+body { margin: 0; background: #fff; color: #111; font: 17px/1.65 Georgia, serif; }
+main { max-width: 1040px; margin: 0 auto; padding: 45px 58px; }
+h1 { font-size: 29px; line-height: 1.25; margin: 0 0 12px; }
+h2 { font-size: 20px; margin-top: 28px; }
+.subtitle { font-size: 20px; }
+.byline { color: #444; }
+table { border-collapse: collapse; width: 100%; margin: 18px 0; font-size: 15px; }
+th, td { border: 1px solid #d9d9d9; padding: 8px 10px; text-align: left; vertical-align: top; }
+th { background: #f4f7f8; }
+figure { margin: 24px 0; }
+img { width: 100%; height: auto; }
+figcaption { font-size: 14px; color: #444; }
+code { font-size: 14px; }
+</style>
+<main>
+<h1>Maritime SysML exam</h1>
+<p class="subtitle">27 sealed tasks, four candidates, scored only by the official SysML v2 Pilot and answer keys written in advance</p>
+<p class="byline">RTRC 2706 · UConn Senior Design · synthetic maritime ISR scenario; no number is an RTX specification. Built from saved files by <code>python3 analysis/report/build_exam_report.py</code>.</p>
+
+<h2>What can be said</h2>
+<table>
+<tr><th>Question</th><th>Saved result</th></tr>
+<tr><td>How much do the candidates get right without the answer key?</td><td>Direct qwen3.8-flash 267/324 (82.4%); direct qwen3.8-max 312/324 (96.3%); OpenCode on flash 77/81; Claude Code on flash 76/81. The weakest task type for flash is ALN: 20/36 (max 33/36).</td></tr>
+<tr><td>With the same model, do repair, an outline or retrieval help?</td><td>Flash, 81 cells each: P0 63, P1 68, P2 67, P3 69. The repair loop lifts the official parse from the first attempt to the final one (39 SysML answers each): P1 33 → 36, P2 37 → 39, P3 31 → 38. Max parses 39/39 on the first attempt in every approach.</td></tr>
+<tr><td>Can a model replace the tool as judge?</td><td>Not used. Two model judges were tried on the 2026-10-03 answers and agreed with the tool on 226/288 and 157/288; scores come only from the Pilot and the keys (decision 025).</td></tr>
+<tr><td>Are the agent scores clean?</td><td>The scored agent runs ran in a sandbox that shows only the task input, the rules file and <code>./validate</code>. Two earlier agent batches of the same morning are discarded: OpenCode could read the answer keys, Claude Code had its tools denied. The agents' ALN rows come from a rerun: the first sandboxed batch checked alignment packages with <code>./validate</code> in a file order the official Pilot passes and the scorer's order fails (section 7).</td></tr>
+<tr><td>What did this cost?</td><td>At the China (Beijing) list price the scored batches and the side benchmarks cost $2.4629; flash P0 $0.0087, flash P3 $0.0320, max P0 $0.1199. Everything recorded, including the discarded runs, about $3.5424.</td></tr>
+</table>
+
+<h2>1. What was measured</h2>
+<p>27 tasks: generate a model (GEN 5), modify a model (MOD 5), align two models (ALN 3, paper 1), query a model (QRY 5), ask when a number is missing (AMB 4), restate a model as requirements (RT 5). A second reviewer checked every key (<code>bench/tasks/t4_maritime_isr/heldout/REVIEW.md</code>, 27/27 mechanical checks) and the bank, scorers, prompts, retrieval library and toolchain are frozen in <code>bench/FREEZE.md</code> (tag <code>freeze-2026-10-06</code>).</p>
+<p>A task passes when the official parse passes (GEN, MOD, ALN), every required name, connection or mapping is present, no number was invented, every value the task said to keep is unchanged, and every engineering check comes out as the key expects. Whether the design meets its budget is a separate design verdict (decision 019).</p>
+<p>Direct candidates answer through one conversation per cell. P0 writes once. P1 adds the repair loop: the complete official error list goes back after every earlier version, up to 20 repairs, stopping after three identical resubmissions. P2 writes an outline first; P3 also retrieves official example models and notes with MiniLM + FAISS (paper 2); P2 and P3 repair as P1. The agents get the task input, AGENTS.md and <code>./validate</code> in a bubblewrap sandbox and repair inside their own session; the grader parses only their final answer. The direct prompts carry the SysML rules (and the alignment rules for ALN); the agents do not get them and learn the Pilot's rules only from its diagnostics.</p>
+
+<h2>2. Four candidates by task type</h2>
+<table><tr><th>Type</th><th>Direct · qwen3.8-flash</th><th>Direct · qwen3.8-max</th><th>OpenCode · qwen3.8-flash</th><th>Claude Code · qwen3.8-flash</th></tr>
+<tr><td>GEN</td><td>52/60</td><td>60/60</td><td>14/15</td><td>15/15</td></tr>
+<tr><td>MOD</td><td>60/60</td><td>60/60</td><td>14/15</td><td>14/15</td></tr>
+<tr><td>ALN</td><td>20/36</td><td>33/36</td><td>8/9</td><td>7/9</td></tr>
+<tr><td>QRY</td><td>45/60</td><td>58/60</td><td>15/15</td><td>15/15</td></tr>
+<tr><td>AMB</td><td>38/48</td><td>41/48</td><td>11/12</td><td>10/12</td></tr>
+<tr><td>RT</td><td>52/60</td><td>60/60</td><td>15/15</td><td>15/15</td></tr>
+<tr><td><b>All</b></td><td><b>267/324</b></td><td><b>312/324</b></td><td><b>77/81</b></td><td><b>76/81</b></td></tr></table>
+<figure><img src="figures/by_type.png" alt="Pass rate by task type for the four candidates"><figcaption>Figure 1. Pass rate by task type. Direct candidates: 60 cells per type (36 for ALN, 48 for AMB); agents: 15 runs per type (9 for ALN, 12 for AMB).</figcaption></figure>
+<p>Repeat groups whose three repeats disagree: flash 24/108, max 8/108, OpenCode 4/27, Claude Code 3/27.</p>
+<table><tr><th>Agent</th><th>Pass</th><th>Hit the 900 s limit</th><th>No answer.md</th><th>Runs that called ./validate</th><th>./validate calls</th></tr>
+<tr><td>OpenCode · qwen3.8-flash</td><td>77/81</td><td>2</td><td>2</td><td>68</td><td>151</td></tr>
+<tr><td>Claude Code · qwen3.8-flash</td><td>76/81</td><td>2</td><td>3</td><td>69</td><td>134</td></tr></table>
+
+<h2>3. Approaches with the same model</h2>
+<table><tr><th>Approach</th><th>flash pass</th><th>flash parse 1st → final (of 39)</th><th>flash repairs</th><th>flash tokens</th><th>flash USD</th><th>max pass</th><th>max USD</th></tr>
+<tr><td>P0 one-shot</td><td>63/81</td><td>34 → 34</td><td>0</td><td>46,864</td><td>$0.0087</td><td>77/81</td><td>$0.1199</td></tr>
+<tr><td>P1 repair loop (≤20)</td><td>68/81</td><td>33 → 36</td><td>17</td><td>79,551</td><td>$0.0123</td><td>79/81</td><td>$0.1188</td></tr>
+<tr><td>P2 outline first + repair</td><td>67/81</td><td>37 → 39</td><td>2</td><td>128,529</td><td>$0.0242</td><td>77/81</td><td>$0.3372</td></tr>
+<tr><td>P3 retrieval + outline + repair</td><td>69/81</td><td>31 → 38</td><td>13</td><td>197,521</td><td>$0.0320</td><td>79/81</td><td>$0.3698</td></tr></table>
+<figure><img src="figures/repair.png" alt="Official parse on the first attempt and after repair"><figcaption>Figure 2. SysML answers (GEN, MOD, ALN; 39 per approach) that pass the official parse on the first attempt and after the repair loop. P0 has no loop.</figcaption></figure>
+
+<h2>4. How the failures split</h2>
+<table><tr><th>Class</th><th>flash</th><th>max</th><th>OpenCode</th><th>Claude Code</th></tr>
+<tr><td>query-renamed</td><td>15</td><td>2</td><td>0</td><td>0</td></tr>
+<tr><td>missed-topic</td><td>10</td><td>7</td><td>0</td><td>0</td></tr>
+<tr><td>aln-missing-pair</td><td>12</td><td>3</td><td>0</td><td>0</td></tr>
+<tr><td>missing-phrase</td><td>8</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>syntax-connection</td><td>6</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>agent-timeout</td><td>0</td><td>0</td><td>2</td><td>2</td></tr>
+<tr><td>checklist-missing</td><td>3</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>syntax-reference</td><td>3</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>invented-number</td><td>0</td><td>0</td><td>1</td><td>2</td></tr>
+<tr><td>no-sysml</td><td>0</td><td>0</td><td>1</td><td>1</td></tr></table>
+<p>Each failing cell gets one class from its saved evidence (<code>bench/classify_failures.py</code>, <code>analysis/failure-classes-20261006.jsonl</code>); <code>docs/failure_taxonomy.md</code> explains the classes with examples.</p>
+
+<h2>5. Per task</h2>
+<table><tr><th>Task</th><th>flash</th><th>max</th><th>OpenCode</th><th>Claude Code</th></tr>
+<tr><td>GEN-01</td><td>10/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>GEN-02</td><td>11/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>GEN-03</td><td>10/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>GEN-04</td><td>12/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>GEN-05</td><td>9/12</td><td>12/12</td><td>2/3</td><td>3/3</td></tr>
+<tr><td>MOD-01</td><td>12/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>MOD-02</td><td>12/12</td><td>12/12</td><td>2/3</td><td>3/3</td></tr>
+<tr><td>MOD-03</td><td>12/12</td><td>12/12</td><td>3/3</td><td>2/3</td></tr>
+<tr><td>MOD-04</td><td>12/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>MOD-05</td><td>12/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>ALN-01</td><td>6/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>ALN-02</td><td>2/12</td><td>9/12</td><td>2/3</td><td>1/3</td></tr>
+<tr><td>ALN-03</td><td>12/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>QRY-01</td><td>4/12</td><td>10/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>QRY-02</td><td>8/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>QRY-03</td><td>12/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>QRY-04</td><td>9/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>QRY-05</td><td>12/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>AMB-01</td><td>5/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>AMB-02</td><td>9/12</td><td>5/12</td><td>2/3</td><td>3/3</td></tr>
+<tr><td>AMB-03</td><td>12/12</td><td>12/12</td><td>3/3</td><td>1/3</td></tr>
+<tr><td>AMB-04</td><td>12/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>RT-01</td><td>12/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>RT-02</td><td>12/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>RT-03</td><td>12/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>RT-04</td><td>10/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr>
+<tr><td>RT-05</td><td>6/12</td><td>12/12</td><td>3/3</td><td>3/3</td></tr></table>
+
+<h2>6. Side benchmarks named in the brief</h2>
+<table><tr><th>Candidate</th><th>SysEngBench</th><th>PURE</th></tr>
+<tr><td>Direct · qwen3.8-flash</td><td>283/300</td><td>6/6</td></tr>
+<tr><td>Direct · qwen3.8-max</td><td>291/300</td><td>6/6</td></tr>
+<tr><td>OpenCode · qwen3.8-flash</td><td>272/300</td><td>6/6</td></tr>
+<tr><td>Claude Code · qwen3.8-flash</td><td>291/300</td><td>6/6</td></tr></table>
+<p>SysEngBench (rabell/SysEngBench, MIT): 100 questions fixed with seed 20261006, 10 per prompt, 3 repeats; always answering B scores 51/100 on this subset. PURE (Zenodo 7118517, CC BY 4.0): two excerpts, three repeats, extracted sentences must equal the key. Neither is added to the exam score.</p>
+
+<h2>7. Runs that do not count</h2>
+<table><tr><th>Batch</th><th>Score</th><th>Why it does not count</th><th>Folder</th></tr>
+<tr><td>OpenCode, workspace inside the repository</td><td>77/81</td><td>The agent could read the whole repository and read answer keys in several runs, including the key of the task it was solving (GEN-01, GEN-02, GEN-05). Not a clean score.</td><td>analysis/opencode-qwen3.8-flash-20261006T070152</td></tr>
+<tr><td>Claude Code, tools denied</td><td>60/81</td><td>Every Bash and Write call was denied (43 and 10), so the agent never ran the validator; not the same setup as OpenCode.</td><td>analysis/claude-qwen3.8-flash-20261006T070153</td></tr>
+<tr><td>OpenCode, ALN runs of the first sandboxed batch</td><td>6/9</td><td>ALN runs of the first sandboxed batch. ./validate passed the files in the order the agent gave them, and the Pilot&#x27;s verdict depends on that order: with the agent&#x27;s own file first, 8 alignment packages that fail in the scorer&#x27;s order (sources first) passed the agent&#x27;s check, and the agent submitted them. Every ALN run of both agents was rerun with ./validate in the scorer&#x27;s order (decision 026); the rerun replaces these rows.</td><td>analysis/opencode-jail-qwen3.8-flash-20261006T133737 (replaced by analysis/opencode-jail-aln-qwen3.8-flash-20261006T152723)</td></tr>
+<tr><td>Claude Code, ALN runs of the first sandboxed batch</td><td>1/9</td><td>ALN runs of the first sandboxed batch. ./validate passed the files in the order the agent gave them, and the Pilot&#x27;s verdict depends on that order: with the agent&#x27;s own file first, 8 alignment packages that fail in the scorer&#x27;s order (sources first) passed the agent&#x27;s check, and the agent submitted them. Every ALN run of both agents was rerun with ./validate in the scorer&#x27;s order (decision 026); the rerun replaces these rows.</td><td>analysis/claude-jail-qwen3.8-flash-20261006T133739 (replaced by analysis/claude-jail-aln-qwen3.8-flash-20261006T152725)</td></tr>
+<tr><td>2026-10-03 matrix (24 tasks, old repair loop, old AMB/RT rules)</td><td>224/288</td><td>qwen3.8-flash, P1 repair with 3 rounds and only the latest error lines, re-scored once on 2026-10-03; kept as the record of the old rules, not comparable cell for cell.</td><td>analysis/heldout-20261003T*</td></tr></table>
+<p>Validator order. The official Pilot 0.62 can give a different verdict for the same files in a different order: an alignment package that writes a nested usage as <code>Pkg::part::sub</code> fails with <code>Must be an accessible feature (use dot notation for nesting)</code> when the source models come first, as in the scorer, and passes when the package comes first. Re-validating every graded ALN answer with the package first changed (<code>bench/check_validator_order.py</code>): direct flash 0 of 36; direct max 0 of 36; OpenCode 0 of 9; Claude Code 0 of 7; OpenCode first batch (superseded) 3 of 9; Claude Code first batch (superseded) 5 of 6; gold packages 0 of 3. <code>./validate</code> now passes the files in the scorer's order (decision 026).</p>
+
+<h2>8. What it cost</h2>
+<p>Prices checked 2026-10-03, China (Beijing): qwen3.8-flash input $0.113, cached $0.014, output $0.382 per million tokens; qwen3.8-max input $1.65, cached $0.206, output $4.951 per million tokens. 4 Part 2 runs recorded only requirements, designs and trade-offs, not alignment and read-back; later runs record everything. 5 MOD change runs predate usage logging; later runs record everything. 5 Claude Code runs hit the 900 s limit before Claude Code reported its usage (it reports only when a run ends); their tokens are not in these sums, so Claude Code&#x27;s cost is a lower bound. The paper 1 replication (4 calls, qwen3.8-max) and the trial runs of 2026-10-06 are recorded in their own folders and not summed here.</p>
+<table><tr><th>Group</th><th>Item</th><th>Model</th><th>Input tokens</th><th>Of which cached</th><th>Output tokens</th><th>USD</th></tr>
+<tr><td>Direct calls (81 cells per approach)</td><td>P0 · qwen3.8-flash</td><td>qwen3.8-flash</td><td>34,080</td><td>0</td><td>12,784</td><td>$0.0087</td></tr>
+<tr><td>Direct calls (81 cells per approach)</td><td>P1 · qwen3.8-flash</td><td>qwen3.8-flash</td><td>63,112</td><td>11,008</td><td>16,439</td><td>$0.0123</td></tr>
+<tr><td>Direct calls (81 cells per approach)</td><td>P2 · qwen3.8-flash</td><td>qwen3.8-flash</td><td>92,026</td><td>1,024</td><td>36,503</td><td>$0.0242</td></tr>
+<tr><td>Direct calls (81 cells per approach)</td><td>P3 · qwen3.8-flash</td><td>qwen3.8-flash</td><td>150,117</td><td>30,720</td><td>47,404</td><td>$0.0320</td></tr>
+<tr><td>Direct calls (81 cells per approach)</td><td>P0 · qwen3.8-max</td><td>qwen3.8-max</td><td>34,080</td><td>0</td><td>12,859</td><td>$0.1199</td></tr>
+<tr><td>Direct calls (81 cells per approach)</td><td>P1 · qwen3.8-max</td><td>qwen3.8-max</td><td>34,080</td><td>0</td><td>12,647</td><td>$0.1188</td></tr>
+<tr><td>Direct calls (81 cells per approach)</td><td>P2 · qwen3.8-max</td><td>qwen3.8-max</td><td>89,577</td><td>0</td><td>38,259</td><td>$0.3372</td></tr>
+<tr><td>Direct calls (81 cells per approach)</td><td>P3 · qwen3.8-max</td><td>qwen3.8-max</td><td>101,742</td><td>0</td><td>40,782</td><td>$0.3698</td></tr>
+<tr><td>Agents in the sandbox (81 runs each)</td><td>OpenCode (81 runs)</td><td>qwen3.8-flash</td><td>23,274,893</td><td>21,470,720</td><td>463,909</td><td>$0.6817</td></tr>
+<tr><td>Agents in the sandbox (81 runs each)</td><td>Claude Code (81 runs)</td><td>qwen3.8-flash</td><td>17,398,757</td><td>16,263,680</td><td>414,434</td><td>$0.5143</td></tr>
+<tr><td>Side benchmarks</td><td>SysEngBench · flash</td><td>qwen3.8-flash</td><td>24,075</td><td>2,048</td><td>2,962</td><td>$0.0036</td></tr>
+<tr><td>Side benchmarks</td><td>SysEngBench · max</td><td>qwen3.8-max</td><td>24,075</td><td>2,048</td><td>2,136</td><td>$0.0473</td></tr>
+<tr><td>Side benchmarks</td><td>SysEngBench · OpenCode</td><td>qwen3.8-flash</td><td>837,868</td><td>729,088</td><td>46,530</td><td>$0.0403</td></tr>
+<tr><td>Side benchmarks</td><td>SysEngBench · Claude Code</td><td>qwen3.8-flash</td><td>2,957,612</td><td>2,735,104</td><td>119,331</td><td>$0.1090</td></tr>
+<tr><td>Side benchmarks</td><td>PURE · flash</td><td>qwen3.8-flash</td><td>1,254</td><td>0</td><td>231</td><td>$0.0002</td></tr>
+<tr><td>Side benchmarks</td><td>PURE · max</td><td>qwen3.8-max</td><td>1,254</td><td>0</td><td>222</td><td>$0.0032</td></tr>
+<tr><td>Side benchmarks</td><td>PURE · OpenCode</td><td>qwen3.8-flash</td><td>637,272</td><td>577,536</td><td>21,106</td><td>$0.0229</td></tr>
+<tr><td>Side benchmarks</td><td>PURE · Claude Code</td><td>qwen3.8-flash</td><td>664,065</td><td>620,032</td><td>9,601</td><td>$0.0173</td></tr>
+<tr><td>Other experiments</td><td>Graph retrieval, query tasks (5)</td><td>qwen3.8-max</td><td>990</td><td>0</td><td>145</td><td>$0.0024</td></tr>
+<tr><td>Discarded runs (spent, not counted)</td><td>OpenCode, workspace inside the repository (81 runs)</td><td>qwen3.8-flash</td><td>18,163,285</td><td>16,782,080</td><td>338,904</td><td>$0.5205</td></tr>
+<tr><td>Discarded runs (spent, not counted)</td><td>Claude Code, tools denied (81 runs)</td><td>qwen3.8-flash</td><td>334,549</td><td>4,277,760</td><td>208,957</td><td>$0.1397</td></tr>
+<tr><td>Discarded runs (spent, not counted)</td><td>OpenCode, ALN runs replaced by the rerun (9 runs)</td><td>qwen3.8-flash</td><td>6,020,562</td><td>5,613,824</td><td>183,173</td><td>$0.1945</td></tr>
+<tr><td>Discarded runs (spent, not counted)</td><td>Claude Code, ALN runs replaced by the rerun (9 runs)</td><td>qwen3.8-flash</td><td>2,618,044</td><td>2,478,848</td><td>145,471</td><td>$0.1060</td></tr>
+<tr><td>Part 2 prototype</td><td>One run (average of 4 fully recorded)</td><td>qwen3.8-max</td><td>3,996</td><td>0</td><td>1,846</td><td>$0.0157</td></tr>
+<tr><td>MOD change chain</td><td>One run</td><td>qwen3.8-max</td><td>727</td><td>0</td><td>441</td><td>$0.0034</td></tr></table>
+
+<h2>9. What these results cannot support</h2>
+<table><tr><th>Claim</th><th>Why not</th></tr>
+<tr><td>The models are ready to design maritime systems</td><td>27 synthetic tasks with one author and one reviewer; a Pilot PASS is syntax, and the budgets are static sums.</td></tr>
+<tr><td>One approach is reliably better than another</td><td>Three repeats per cell and repeat groups that disagree; no confidence intervals were computed.</td></tr>
+<tr><td>The agents beat the direct calls in general, or the reverse</td><td>One model (flash), one pinned version of each agent, one sandbox setup, and different help: the direct prompts carry the SysML rules, the agents have the validator in a loop they run themselves. Agents spend many more tokens per answer.</td></tr>
+<tr><td>Alignment pairs are semantically right whenever the Pilot passes</td><td>The Pilot checks that names resolve; the ALN keys and the person in 2.3 decide meaning.</td></tr>
+<tr><td>Results transfer to other model families</td><td>Only Qwen models were run.</td></tr>
+</table>
+
+<h2>10. Files</h2>
+<p>Scored batches: <code>analysis/heldout-qwen3.8-flash-20261006T070150/results.jsonl</code>, <code>analysis/heldout-qwen3.8-max-20261006T070151/results.jsonl</code>, <code>analysis/opencode-jail-qwen3.8-flash-20261006T133737/results.jsonl</code>, <code>analysis/claude-jail-qwen3.8-flash-20261006T133739/results.jsonl</code>; agents' ALN rows: <code>analysis/opencode-jail-aln-qwen3.8-flash-20261006T152723/results.jsonl</code>, <code>analysis/claude-jail-aln-qwen3.8-flash-20261006T152725/results.jsonl</code>. Per-task table: <code>per_task.csv</code>. Status page: <code>STATUS.md</code>. Decisions 019 (task vs design verdict), 022 (repair loop), 023 (retrieval), 024 (alignment), 025 (no judges, second review, freeze), 026 (agent sandbox).</p>
+<p>This page only summarises results already on disk; it calls no model.</p>
+</main>
+</html>

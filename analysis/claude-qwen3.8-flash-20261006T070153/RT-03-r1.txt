@@ -1,0 +1,7 @@
+**Restated requirements**
+
+The model defines one requirement: `RadarShare`, a requirement definition inside the package `RoundTripRadar`.
+
+- The UAV radar shares tracks with the command ship.
+
+That is the entirety of the model's stated content — a single requirement, expressed in its `doc` comment, with no additional constraints, performance values, or verification conditions given.

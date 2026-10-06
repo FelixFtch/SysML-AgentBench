@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 260825,
+  "stop_reason": "end_turn",
+  "session_id": "5a09c634-7710-4426-aab2-ad22757ada8d",
+  "total_cost_usd": 0.461121,
+  "usage": {
+    "input_tokens": 14687,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 188672,
+    "output_tokens": 11734,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 14687,
+      "outputTokens": 11734,
+      "cacheReadInputTokens": 188672,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.461121,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "PASS\n\n```sysml\npackage AlignRadar {\n    private import UavSensorSpec::*;\n    private import RadarVendor::*;\n\n    alias SearchRadar for RadarVendor::RadarModule_def;\n    alias Camera for RadarVendor::GimbalCamera_def;\n    alias rangeKm for RadarVendor::RadarModule_def::maxRangeKm;\n\n    allocation searchRadarAlloc allocate UavSensorSpec::uav.searchRadar to RadarVendor::payload.radar;\n    allocation eoCameraAlloc allocate UavSensorSpec::uav.eoCamera to RadarVendor::payload.gimbal;\n}\n```\n\n```json\n{\"mappings\": [{\"oem_element\": \"UavSensorSpec::SearchRadar\", \"supplier_element\": \"RadarVendor::RadarModule_def\", \"mapping_type\": \"alias\", \"rationale\": \"The specification's search radar definition corresponds to the vendor's radar module definition: both are the UAV's radar sensor part definition.\"}, {\"oem_element\": \"UavSensorSpec::Camera\", \"supplier_element\": \"RadarVendor::GimbalCamera_def\", \"mapping_type\": \"alias\", \"rationale\": \"The specification's camera definition corresponds to the vendor's gimbal camera definition: both are the UAV's electro-optical camera part definition.\"}, {\"oem_element\": \"UavSensorSpec::SearchRadar::rangeKm\", \"supplier_element\": \"RadarVendor::RadarModule_def::maxRangeKm\", \"mapping_type\": \"alias\", \"rationale\": \"Both attributes are Real-valued radar range figures on the matching radar definitions; the spec's range is the radar's range limit, so rangeKm aliases maxRangeKm.\"}, {\"oem_element\": \"UavSensorSpec::uav.searchRadar\", \"supplier_element\": \"RadarVendor::payload.radar\", \"mapping_type\": \"allocation\", \"rationale\": \"The specification's radar usage on the UAV is allocated to the vendor's radar usage on the payload; these are the corresponding part usages of the aliased radar definitions.\"}, {\"oem_element\": \"UavSensorSpec::uav.eoCamera\", \"supplier_element\": \"RadarVendor::payload.gimbal\", \"mapping_type\": \"allocation\", \"rationale\": \"The specification's EO camera usage on the UAV is allocated to the vendor's gimbal usage on the payload; these are the corresponding part usages of the aliased camera definitions.\"}], \"unmatched\": [\"UavSensorSpec::uav\", \"RadarVendor::payload\", \"RadarVendor::RadarModule_def::massKg\"]}\n```",
+  "ttft_ms": 6728,
+  "type": "result",
+  "duration_ms": 274039,
+  "uuid": "321875c0-7098-4d53-81a8-ceb3c267139e",
+  "ttft_stream_ms": 6318,
+  "time_to_request_ms": 55,
+  "first_content_frame_ms": 6319,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

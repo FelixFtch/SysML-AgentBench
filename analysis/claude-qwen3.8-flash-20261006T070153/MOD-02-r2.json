@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 29988,
+  "stop_reason": "end_turn",
+  "session_id": "dde79be8-3360-47de-bc27-eb442de4d570",
+  "total_cost_usd": 0.07634099999999999,
+  "usage": {
+    "input_tokens": 3912,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 51712,
+    "output_tokens": 1237,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 3912,
+      "outputTokens": 1237,
+      "cacheReadInputTokens": 51712,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.07634099999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 4,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage VesselAlign {\n    port def ImageryPort;\n    port def TrackPort;\n    part def Camera { port imagery : ImageryPort; }\n    part def AisReceiver { port tracks : TrackPort; }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n    }\n    part vessel {\n        part camera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n    }\n    requirement def TimeAlign {\n        doc /* tracks and imagery share a timestamp */\n    }\n    connect vessel.camera.imagery to vessel.processor.imageryIn;\n    connect vessel.ais.tracks to vessel.processor.trackIn;\n}\n```",
+  "ttft_ms": 9361,
+  "type": "result",
+  "duration_ms": 30166,
+  "uuid": "d0ad3733-b947-466a-921e-b8236677eedc",
+  "ttft_stream_ms": 3997,
+  "time_to_request_ms": 103,
+  "first_content_frame_ms": 3998,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

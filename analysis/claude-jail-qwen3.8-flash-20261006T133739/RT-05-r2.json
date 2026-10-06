@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 75780,
+  "stop_reason": "end_turn",
+  "session_id": "4ece5c56-ea71-4101-ad5c-9137b940baa1",
+  "total_cost_usd": 0.147559,
+  "usage": {
+    "input_tokens": 10707,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 91648,
+    "output_tokens": 1928,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 10707,
+      "outputTokens": 1928,
+      "cacheReadInputTokens": 91648,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.147559,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 8,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. The task was read-only restatement, so no model edits were made.\n\n**Files changed:** `answer.md` (new) — the only file written.\n\n**Validation status:** `./validate RoundTripFusion input/model.sysml` → `\"status\": \"PASS\"`, zero diagnostics, zero warnings (input model untouched).\n\n**Check results:** No failing checks to report. Requirement restated in answer.md: the model contains package `RoundTripFusion` with part `commandShip` (ports `fromUsv`, `fromUav`; attribute `fusionLatencyS : Real = 2.0`) and `requirement def Fusion` whose doc states fusion latency is 2 seconds and the command ship accepts two uplinks.\n\n**Open questions / notes:** none blocking. I added a \"Notes on scope\" section to answer.md flagging that the model does not formally bind `Fusion` to `commandShip` or assert that `fromUsv`/`fromUav` are the \"two uplinks\" — that pairing is only suggested by names and the doc comment, so I stated it as an observation rather than a requirement, per the \"do not add facts\" rule.",
+  "ttft_ms": 10535,
+  "type": "result",
+  "duration_ms": 81857,
+  "uuid": "6b2d3956-204c-42d9-9b8a-372d723d8b43",
+  "ttft_stream_ms": 9956,
+  "time_to_request_ms": 49,
+  "first_content_frame_ms": 9956,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

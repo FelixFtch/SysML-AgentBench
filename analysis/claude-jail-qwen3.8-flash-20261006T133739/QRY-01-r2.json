@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 107147,
+  "stop_reason": "end_turn",
+  "session_id": "c5af1a99-c5ad-442c-bcd4-4f7049e4d02b",
+  "total_cost_usd": 0.238855,
+  "usage": {
+    "input_tokens": 13980,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 188160,
+    "output_tokens": 2995,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 13980,
+      "outputTokens": 2995,
+      "cacheReadInputTokens": 188160,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.238855,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Confirmed against the validator's model.json: the four top-level platform part usages qualify exactly as `MaritimeISR::usv`, `MaritimeISR::uav`, `MaritimeISR::commandShip`, `MaritimeISR::shore` (the other PartUsages like `eoCamera`, `processor` are nested inside part definitions, not platform parts).\n\n**Final answer per AGENTS.md §7:**\n\n- **Files changed:** `answer.md` (new). No `.sysml` files were edited — this is a read-only query task.\n- **Validation status:** `./validate MaritimeISR input/model.sysml` → **PASS**, 0 diagnostics, 0 warnings (official Pilot 0.62).\n- **Answer written to `answer.md`:**\n  ```json\n  {\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}\n  ```\n  These are the four package-level `part` usages at `input/model.sysml:61-64`, cross-checked against the validator's exported `model.json` qualified names.\n- **Open questions:** none.",
+  "ttft_ms": 5307,
+  "type": "result",
+  "duration_ms": 116905,
+  "uuid": "2c4d9905-2c8b-41ef-b52b-c1b7e07f1b12",
+  "ttft_stream_ms": 3864,
+  "time_to_request_ms": 94,
+  "first_content_frame_ms": 3864,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

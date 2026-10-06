@@ -1,0 +1,7 @@
+**Restatement of the model's requirements (RT-01)**
+
+The model `RoundTripShare` defines one requirement:
+
+- **Share** — The unmanned surface vessel sends camera imagery to the shore.
+
+That is the full set of requirements stated in the model; no further constraints, behaviors, or facts are specified.

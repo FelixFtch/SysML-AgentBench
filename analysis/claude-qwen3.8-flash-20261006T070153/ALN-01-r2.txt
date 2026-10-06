@@ -1,0 +1,78 @@
+```sysml
+package AlignCamera {
+    private import UsvPayloadSpec::*;
+    private import OptronicsKit::*;
+
+    // Definition-level and feature-level alignment (supplier elements aliased under spec short names)
+    alias ImageryPort for OptronicsKit::VideoOut;
+    alias Camera for OptronicsKit::EoCameraUnit;
+    alias Processor for OptronicsKit::VideoSink;
+    alias imagery for OptronicsKit::EoCameraUnit::videoOut;
+    alias drawW for OptronicsKit::EoCameraUnit::powerDrawW;
+    alias imageryIn for OptronicsKit::VideoSink::videoIn;
+
+    // Usage-level alignment
+    allocation eoCameraToCameraUnit allocate UsvPayloadSpec.usv.eoCamera to OptronicsKit.kit.cameraUnit;
+    allocation processorToRecorder allocate UsvPayloadSpec.usv.processor to OptronicsKit.kit.recorder;
+}
+```
+
+```json
+{
+  "mappings": [
+    {
+      "oem_element": "UsvPayloadSpec::ImageryPort",
+      "supplier_element": "OptronicsKit::VideoOut",
+      "mapping_type": "alias",
+      "rationale": "Both are the port type carried by the camera's single video output and consumed by the downstream unit; same structural role."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Camera",
+      "supplier_element": "OptronicsKit::EoCameraUnit",
+      "mapping_type": "alias",
+      "rationale": "The electro-optical camera definition in the spec corresponds to the supplier's EoCameraUnit; both expose one video port and a power-draw attribute."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Processor",
+      "supplier_element": "OptronicsKit::VideoSink",
+      "mapping_type": "alias",
+      "rationale": "Both are the sole consumer definition of the camera's video stream, with exactly one input port of the aligned video port type."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Camera::imagery",
+      "supplier_element": "OptronicsKit::EoCameraUnit::videoOut",
+      "mapping_type": "alias",
+      "rationale": "The camera's outbound imagery/video port in the spec is the supplier's videoOut port on the corresponding unit."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Camera::drawW",
+      "supplier_element": "OptronicsKit::EoCameraUnit::powerDrawW",
+      "mapping_type": "alias",
+      "rationale": "Both are Real attributes expressing the unit's total electrical power draw in watts."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Processor::imageryIn",
+      "supplier_element": "OptronicsKit::VideoSink::videoIn",
+      "mapping_type": "alias",
+      "rationale": "The downstream unit's single video input port on each side of the stream."
+    },
+    {
+      "oem_element": "UsvPayloadSpec.usv.eoCamera",
+      "supplier_element": "OptronicsKit.kit.cameraUnit",
+      "mapping_type": "allocation",
+      "rationale": "The spec's EO camera usage is satisfied by the supplier kit's cameraUnit instance of the aliased EoCameraUnit definition."
+    },
+    {
+      "oem_element": "UsvPayloadSpec.usv.processor",
+      "supplier_element": "OptronicsKit.kit.recorder",
+      "mapping_type": "allocation",
+      "rationale": "The spec's video-consuming processor usage occupies the identical role in the topology — sole sink of the camera output — as the kit's recorder."
+    }
+  ],
+  "unmatched": [
+    "UsvPayloadSpec::usv",
+    "OptronicsKit::EoCameraUnit::heaterW",
+    "OptronicsKit::kit"
+  ]
+}
+```

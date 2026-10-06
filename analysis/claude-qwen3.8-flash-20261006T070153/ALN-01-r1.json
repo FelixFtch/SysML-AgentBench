@@ -1,0 +1,102 @@
+{
+  "duration_api_ms": 351760,
+  "stop_reason": "end_turn",
+  "session_id": "774213b4-0e4a-4de7-8d87-c49d36aeae44",
+  "total_cost_usd": 0.563935,
+  "usage": {
+    "input_tokens": 6672,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 108800,
+    "output_tokens": 19047,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 6672,
+      "outputTokens": 19047,
+      "cacheReadInputTokens": 108800,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.563935,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_79d2dd32eb2143319f0b2b5b",
+      "tool_input": {
+        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T071756-P-CODE-2-ALN-01/ 2>/dev/null; ls /data/robotics/RTRC/mvp/agent-runs/20261006T071756-P-CODE-2-ALN-01/workspace 2>/dev/null",
+        "description": "Inspect run folder layout"
+      }
+    },
+    {
+      "tool_name": "Write",
+      "tool_use_id": "call_e297446fc0c949648e8c4d96",
+      "tool_input": {
+        "file_path": "/data/robotics/RTRC/mvp/agent-runs/20261006T071756-P-CODE-2-ALN-01/workspace/AlignCamera.sysml",
+        "content": "package AlignCamera {\n    private import UsvPayloadSpec::*;\n    private import OptronicsKit::*;\n\n    alias ImageryPort for OptronicsKit::VideoOut;\n    alias Camera for OptronicsKit::EoCameraUnit;\n    alias drawW for OptronicsKit::EoCameraUnit::powerDrawW;\n    alias imagery for OptronicsKit::EoCameraUnit::videoOut;\n\n    allocation usvToKit allocate UsvPayloadSpec::usv to OptronicsKit::kit;\n    allocation eoCameraToCameraUnit allocate UsvPayloadSpec::usv::eoCamera to OptronicsKit::kit::cameraUnit;\n}\n"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 6,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```sysml\npackage AlignCamera {\n    private import UsvPayloadSpec::*;\n    private import OptronicsKit::*;\n\n    alias ImageryPort for OptronicsKit::VideoOut;\n    alias Camera for OptronicsKit::EoCameraUnit;\n    alias drawW for OptronicsKit::EoCameraUnit::powerDrawW;\n    alias imagery for OptronicsKit::EoCameraUnit::videoOut;\n\n    allocation eoCameraToCameraUnit allocate UsvPayloadSpec::usv::eoCamera to OptronicsKit::kit::cameraUnit;\n}\n```\n\n```json\n{\n  \"mappings\": [\n    {\n      \"oem_element\": \"UsvPayloadSpec::ImageryPort\",\n      \"supplier_element\": \"OptronicsKit::VideoOut\",\n      \"mapping_type\": \"alias\",\n      \"rationale\": \"Both are port definitions for the same analog video/imagery signal interface carried from the camera to its consumer.\"\n    },\n    {\n      \"oem_element\": \"UsvPayloadSpec::Camera\",\n      \"supplier_element\": \"OptronicsKit::EoCameraUnit\",\n      \"mapping_type\": \"alias\",\n      \"rationale\": \"The spec's electro-optical camera definition is the same payload device as the supplier's EoCameraUnit: one video output port plus a total power-draw attribute.\"\n    },\n    {\n      \"oem_element\": \"UsvPayloadSpec::Camera::drawW\",\n      \"supplier_element\": \"OptronicsKit::EoCameraUnit::powerDrawW\",\n      \"mapping_type\": \"alias\",\n      \"rationale\": \"Both Real attributes express the camera's total electrical power draw in watts.\"\n    },\n    {\n      \"oem_element\": \"UsvPayloadSpec::Camera::imagery\",\n      \"supplier_element\": \"OptronicsKit::EoCameraUnit::videoOut\",\n      \"mapping_type\": \"alias\",\n      \"rationale\": \"Both are the camera's outbound imagery/video port usage on the same port definition (ImageryPort ~ VideoOut).\"\n    },\n    {\n      \"oem_element\": \"UsvPayloadSpec::usv::eoCamera\",\n      \"supplier_element\": \"OptronicsKit::kit::cameraUnit\",\n      \"mapping_type\": \"allocation\",\n      \"rationale\": \"The spec's EO camera usage in the vehicle is the part instance supplied by the kit's cameraUnit usage of the aliased definition Camera ~ EoCameraUnit.\"\n    }\n  ],\n  \"unmatched\": [\n    \"UsvPayloadSpec::Processor\",\n    \"UsvPayloadSpec::Processor::imageryIn\",\n    \"UsvPayloadSpec::usv\",\n    \"UsvPayloadSpec::usv::processor\",\n    \"OptronicsKit::VideoSink\",\n    \"OptronicsKit::VideoSink::videoIn\",\n    \"OptronicsKit::EoCameraUnit::heaterW\",\n    \"OptronicsKit::kit\",\n    \"OptronicsKit::kit::recorder\"\n  ]\n}\n```",
+  "ttft_ms": 66756,
+  "type": "result",
+  "duration_ms": 351925,
+  "uuid": "09cadecd-7466-47a8-bce9-6166d570d407",
+  "ttft_stream_ms": 6120,
+  "time_to_request_ms": 95,
+  "first_content_frame_ms": 6121,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

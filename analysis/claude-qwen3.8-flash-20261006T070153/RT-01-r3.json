@@ -1,0 +1,94 @@
+{
+  "duration_api_ms": 37660,
+  "stop_reason": "end_turn",
+  "session_id": "92a36d9c-3bfc-4ecb-ab96-72812bcca1c7",
+  "total_cost_usd": 0.088206,
+  "usage": {
+    "input_tokens": 4741,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 87552,
+    "output_tokens": 829,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 4741,
+      "outputTokens": 829,
+      "cacheReadInputTokens": 87552,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.088206,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_e12702cde23040a695ad7cb2",
+      "tool_input": {
+        "command": "find /data/robotics/RTRC/mvp/agent-runs/20261006T080433-P-CODE-2-RT-01 -type f | head -50",
+        "description": "Find files in the run directory"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 6,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**Restatement of the model's requirements (RT-01)**\n\nThe model `RoundTripShare` defines one requirement:\n\n- **Share** — The unmanned surface vessel sends camera imagery to the shore.\n\nThat is the full set of requirements stated in the model; no further constraints, behaviors, or facts are specified.",
+  "ttft_ms": 7717,
+  "type": "result",
+  "duration_ms": 37797,
+  "uuid": "4062ee3b-95fd-42cf-96ec-599f49dc7f3b",
+  "ttft_stream_ms": 5165,
+  "time_to_request_ms": 67,
+  "first_content_frame_ms": 5165,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

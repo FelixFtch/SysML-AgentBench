@@ -1,0 +1,76 @@
+```sysml
+package AlignCamera {
+    private import UsvPayloadSpec::*;
+    private import OptronicsKit::*;
+
+    alias ImageryPort for OptronicsKit::VideoOut;
+    alias Camera for OptronicsKit::EoCameraUnit;
+    alias imagery for OptronicsKit::EoCameraUnit::videoOut;
+    alias drawW for OptronicsKit::EoCameraUnit::powerDrawW;
+    alias Processor for OptronicsKit::VideoSink;
+    alias imageryIn for OptronicsKit::VideoSink::videoIn;
+
+    allocation eoCameraToCameraUnit allocate UsvPayloadSpec.usv.eoCamera to OptronicsKit.kit.cameraUnit;
+    allocation processorToRecorder allocate UsvPayloadSpec.usv.processor to OptronicsKit.kit.recorder;
+}
+```
+
+```json
+{
+  "mappings": [
+    {
+      "oem_element": "UsvPayloadSpec::ImageryPort",
+      "supplier_element": "OptronicsKit::VideoOut",
+      "mapping_type": "alias",
+      "rationale": "Both are port definitions typing the output end and the input end of the single camera-to-consumer video connection; same structural and semantic role."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Camera",
+      "supplier_element": "OptronicsKit::EoCameraUnit",
+      "mapping_type": "alias",
+      "rationale": "The specification's camera definition corresponds to the supplier's electro-optical camera unit; both model the imaging payload device."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Camera::imagery",
+      "supplier_element": "OptronicsKit::EoCameraUnit::videoOut",
+      "mapping_type": "alias",
+      "rationale": "Both is the camera's outbound imagery/video port typed by the aligned port definition and is the source end of the connection in each model."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Camera::drawW",
+      "supplier_element": "OptronicsKit::EoCameraUnit::powerDrawW",
+      "mapping_type": "alias",
+      "rationale": "Both is the Real-valued total power draw of the camera unit in watts; only the names differ."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Processor",
+      "supplier_element": "OptronicsKit::VideoSink",
+      "mapping_type": "alias",
+      "rationale": "Role-equivalent: both is the imagery/video consumer that receives the camera stream over the aligned input port, despite the process-vs-record naming difference."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Processor::imageryIn",
+      "supplier_element": "OptronicsKit::VideoSink::videoIn",
+      "mapping_type": "alias",
+      "rationale": "Both is the inbound imagery/video port typed by the aligned port definition and is the sink end of the connection in each model."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::usv::eoCamera",
+      "supplier_element": "OptronicsKit::kit::cameraUnit",
+      "mapping_type": "allocation",
+      "rationale": "The specification's eoCamera usage (typed by Camera) is satisfied by the kit's cameraUnit, the usage of the aligned EoCameraUnit definition."
+    },
+    {
+      "oem_element": "UsvPayloadSpec::usv::processor",
+      "supplier_element": "OptronicsKit::kit::recorder",
+      "mapping_type": "allocation",
+      "rationale": "The specification's processor usage (typed by Processor) is satisfied by the kit's recorder, the only usage of the aligned VideoSink definition."
+    }
+  ],
+  "unmatched": [
+    "OptronicsKit::EoCameraUnit::heaterW",
+    "UsvPayloadSpec::usv",
+    "OptronicsKit::kit"
+  ]
+}
+```

@@ -1,0 +1,10 @@
+{
+  "cohort": "opencode",
+  "model": "qwen3.8-flash",
+  "version": "1.18.27",
+  "jailed": true,
+  "timeout_s": 900,
+  "repeats": 1,
+  "workers": 2,
+  "started": "20261006T133028"
+}

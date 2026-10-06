@@ -1,0 +1,7 @@
+**Restated requirements**
+
+- There is a package named `RoundTripFusion`, which privately imports `ScalarValues`.
+- The package defines a part usages named `commandShip`.
+- `commandShip` has two ports: `fromUsv` and `fromUav`.
+- `commandShip` has an attribute `fusionLatencyS` of type `Real` with value `2.0`.
+- The package defines a requirement definition `Fusion`, whose documentation states: fusion latency is 2 seconds and the command ship accepts two uplinks.

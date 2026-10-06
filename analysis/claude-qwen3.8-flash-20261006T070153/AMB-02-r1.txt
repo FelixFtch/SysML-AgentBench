@@ -1,0 +1,15 @@
+I've reviewed the only input provided (`input/requirements.md`). Per its own instruction, the right move is to ask rather than proceed, because the requirement as stated cannot be checked or designed against.
+
+**Status:** No artifacts written. The sole requirement — "vessel power use must be as low as possible" — has no verifiable number or unit, and nothing in the workspace supplies one.
+
+**What's missing (I need these before doing any design or analysis):**
+
+1. **A bound or target.** "As low as possible" is an optimization direction, not a checkable requirement. Please give either:
+   - a limit with units (e.g., max total power in kW at a defined operating point), and/or
+   - a target with acceptance criteria (e.g., energy per nautical mile in kWh/NM, or a mission-energy budget in kWh).
+2. **Operating conditions the number applies to.** Power use is meaningless without: vessel type/displacement, speed(s), duty cycle or mission profile (duration at each load state), sea/environmental conditions, and which loads are in scope (propulsion only, or propulsion + hotel/auxiliary + sensors).
+3. **Constraints that must hold while power is reduced.** Required range/endurance, minimum speed, payload/electrical load mandates, available power source architecture (battery capacity in kWh, generator ratings in kW, bus voltages).
+4. **Units and measurement basis.** Whether limits are instantaneous power (kW) or energy (kWh), and at shaft, bus, or prime-mover output.
+5. **Conflict resolution.** The task ID is "P-CODE" but the requirements file forbids SysML and (so far) forbids writing anything numeric without a source. Please confirm what deliverable is actually expected once the numbers above exist (e.g., a Python power-budget/optimization script, a trade study, or a requirements document).
+
+I won't invent placeholder values — please supply the items above (at minimum #1 and #2) and I'll proceed with the analysis.

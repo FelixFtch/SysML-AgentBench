@@ -1,6 +1,7 @@
-"""Run pinned OpenCode v1.18.27 on one task directory.
+"""Run pinned OpenCode v1.18.27 on one task directory, inside the sandbox of agents/external/jail.py.
 
-The workspace contains the task input only. Gold is not copied in.
+The workspace holds the task input, the rules file and ./validate (the official Pilot). Gold, past runs and earlier
+sessions are not visible (decision 026). The prompt suffix is the same one Claude Code gets.
 """
 from __future__ import annotations
 
@@ -9,6 +10,7 @@ import os
 import shutil
 import subprocess
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -16,6 +18,8 @@ ROOT = Path(__file__).resolve().parents[2]
 BINARY = ROOT / "tools" / "opencode" / "opencode"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+
+from agents.external.jail import PROMPT_SUFFIX, fake_home, prepare_workspace, wrap  # noqa: E402
 
 
 def _base_url() -> str:
@@ -26,15 +30,15 @@ def _base_url() -> str:
     return url
 
 
-def run_opencode(task_dir: Path) -> dict:
+def run_opencode(task_dir: Path, *, jailed: bool = True) -> dict:
     if not BINARY.is_file():
         raise FileNotFoundError(f"Missing pinned binary {BINARY}")
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     case_id = task_dir.name
-    work = ROOT / "mvp" / "agent-runs" / f"{stamp}-P-CODE-{case_id}"
+    work = ROOT / "mvp" / "agent-runs" / f"{stamp}-{uuid.uuid4().hex[:4]}-P-CODE-{case_id}"
     workspace = work / "workspace"
-    shutil.copytree(task_dir / "input", workspace / "input")
-    shutil.copy2(ROOT / "AGENTS.md", workspace / "AGENTS.md")
+    workspace.mkdir(parents=True)
+    prepare_workspace(task_dir, workspace)
     model = os.environ.get("MVP_LLM_MODEL", "qwen3.8-flash")
     config = {
         "model": f"qwen/{model}",
@@ -45,18 +49,25 @@ def run_opencode(task_dir: Path) -> dict:
         }},
     }
     (workspace / "opencode.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
-    prompt = (workspace / "input" / "requirements.md").read_text(encoding="utf-8")
-    prompt += "\n\nWrite the answer into answer.md in this workspace. Follow AGENTS.md."
-    completed = subprocess.run(
-        [str(BINARY), "run", "--pure", "--auto", "--format", "json",
-         "--dir", str(workspace), "--model", f"qwen/{model}", prompt],
-        cwd=workspace, env=os.environ.copy(), text=True, capture_output=True,
-        timeout=int(os.environ.get("BENCH_AGENT_TIMEOUT", "900")),
-    )
-    (work / "stdout.jsonl").write_text(completed.stdout, encoding="utf-8")
-    (work / "stderr.txt").write_text(completed.stderr, encoding="utf-8")
+    prompt = (workspace / "input" / "requirements.md").read_text(encoding="utf-8") + PROMPT_SUFFIX
+    argv = [str(BINARY), "run", "--pure", "--auto", "--format", "json", "--dir", str(workspace), "--model", f"qwen/{model}", prompt]
+    home = None
+    if jailed:
+        home = fake_home(work.name)
+        argv = wrap(argv, workspace, home)
+    try:
+        completed = subprocess.run(argv, cwd=workspace, env=os.environ.copy(), text=True, capture_output=True,
+                                   timeout=int(os.environ.get("BENCH_AGENT_TIMEOUT", "900")))
+        stdout, stderr, returncode = completed.stdout, completed.stderr, completed.returncode
+    except subprocess.TimeoutExpired as exc:
+        stdout = exc.stdout.decode() if isinstance(exc.stdout, bytes) else (exc.stdout or "")
+        stderr, returncode = f"timeout after {exc.timeout}s", "timeout"
+    finally:
+        if home:
+            shutil.rmtree(home, ignore_errors=True)
+    (work / "stdout.jsonl").write_text(stdout, encoding="utf-8")
+    (work / "stderr.txt").write_text(stderr, encoding="utf-8")
     answer = workspace / "answer.md"
-    text = answer.read_text(encoding="utf-8") if answer.is_file() else completed.stdout
-    return {"configuration": "P-CODE", "task_id": case_id, "returncode": completed.returncode,
-            "text": text, "workspace": str(workspace), "sysml_status": None, "run_dir": None,
-            "engine_run": None}
+    text = answer.read_text(encoding="utf-8") if answer.is_file() else stdout
+    return {"configuration": "P-CODE", "task_id": case_id, "returncode": returncode, "jailed": jailed,
+            "text": text, "workspace": str(workspace), "sysml_status": None, "run_dir": None, "engine_run": None}

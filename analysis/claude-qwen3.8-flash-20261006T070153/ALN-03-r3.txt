@@ -1,0 +1,48 @@
+```sysml
+package AlignRadar {
+    import UavSensorSpec::*;
+    import RadarVendor::*;
+
+    alias SearchRadar for RadarVendor::RadarModule_def;
+    alias Camera for RadarVendor::GimbalCamera_def;
+
+    allocation searchRadarAllocation allocate UavSensorSpec.uav.searchRadar to RadarVendor.payload.radar;
+    allocation eoCameraAllocation allocate UavSensorSpec.uav.eoCamera to RadarVendor.payload.gimbal;
+}
+```
+
+```json
+{
+  "mappings": [
+    {
+      "oem_element": "UavSensorSpec::SearchRadar",
+      "supplier_element": "RadarVendor::RadarModule_def",
+      "mapping_type": "alias",
+      "rationale": "Both are part definitions for the UAV's search radar payload; the vendor's RadarModule_def is the supplier realization of the specified SearchRadar."
+    },
+    {
+      "oem_element": "UavSensorSpec::Camera",
+      "supplier_element": "RadarVendor::GimbalCamera_def",
+      "mapping_type": "alias",
+      "rationale": "The specification's generic electro-optical camera definition corresponds to the supplier's GimbalCamera_def, the vendor's camera payload element."
+    },
+    {
+      "oem_element": "UavSensorSpec::uav::searchRadar",
+      "supplier_element": "RadarVendor::payload::radar",
+      "mapping_type": "allocation",
+      "rationale": "The radar part usage on the specified uav is fulfilled by the vendor's radar part usage on its payload assembly (typed by the aliased RadarModule_def)."
+    },
+    {
+      "oem_element": "UavSensorSpec::uav::eoCamera",
+      "supplier_element": "RadarVendor::payload::gimbal",
+      "mapping_type": "allocation",
+      "rationale": "The EO camera part usage on the specified uav is fulfilled by the vendor's gimbal part usage on its payload assembly (typed by the aliased GimbalCamera_def)."
+    }
+  ],
+  "unmatched": [
+    "UavSensorSpec::SearchRadar::rangeKm",
+    "RadarVendor::RadarModule_def::maxRangeKm",
+    "RadarVendor::RadarModule_def::massKg"
+  ]
+}
+```

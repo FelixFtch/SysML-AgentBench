@@ -1,0 +1,5 @@
+The workspace model at `input/model.sysml` matches the given model; three connect statements have an endpoint on `commandShip` (lines 70, 74, 75): `commandShip.fromUsv`, `commandShip.fromUav`, and `commandShip.toShore`.
+
+```json
+{"connections": 3}
+```

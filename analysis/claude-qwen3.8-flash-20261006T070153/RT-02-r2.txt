@@ -1,0 +1,10 @@
+**Restated requirements (RT-02)**
+
+Everything the model states, in sentences — no facts added:
+
+1. The package `RoundTripPower` defines a part `usv` that has a real-valued attribute `powerLimitW` with the value 60.0.
+2. The package defines a requirement `KeepPower`, whose stated requirement is: *the unmanned surface vessel power limit is 60 W.*
+
+Notes on fidelity:
+- The only requirement statement in the model is the `doc` text of `KeepPower`; the `powerLimitW = 60.0` attribute on `usv` is the model's numerical expression of that same 60 W limit (the "W" is carried by the attribute name and the requirement text).
+- The model does **not** state any behavior, verification method, priority, owner, or any constraint beyond the single 60 W limit, so none is restated here.

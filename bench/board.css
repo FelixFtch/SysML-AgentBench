@@ -367,6 +367,8 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ---------- cost ---------- */
 .panel.cost { grid-column: 1 / -1; }
+.panel.wide { grid-column: span 2; }
+#score-panels { align-items: start; }
 .cost-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .cost-head h4 { margin: 0; }
 .price-row { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -616,6 +618,7 @@ button.mini:hover { background: #eef3f7; }
   .md { grid-template-columns: 1fr; }
   .md .list { position: static; }
   .case-head, .console, .original, .approve-row, .attempt .body, .two-col, .three-col, .io, .answers, .paper-cols, .panels, .caps, .proposals, .meters3 { grid-template-columns: 1fr; }
+  .panel.wide { grid-column: auto; }
   .io > div + div { border-left: 0; border-top: 1px solid var(--line-2); }
   .kpi-row { grid-template-columns: 1fr 1fr; }
   .op-guide { grid-template-columns: 1fr; }

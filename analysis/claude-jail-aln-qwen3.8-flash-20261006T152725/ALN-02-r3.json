@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 607794,
+  "stop_reason": "end_turn",
+  "session_id": "83f82331-4d7c-4386-9d61-3a5837fdd3c5",
+  "total_cost_usd": 1.0045060000000001,
+  "usage": {
+    "input_tokens": 22900,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 397312,
+    "output_tokens": 27654,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 22900,
+      "outputTokens": 27654,
+      "cacheReadInputTokens": 397312,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 1.0045060000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 19,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Both checks are complete. Final validation run against the exact `AlignLink.sysml` in the workspace returned `PASS` with 0 diagnostics.\n\n**Files changed**\n- `AlignLink.sysml` (new) — the alignment package\n- `answer.md` (new) — the required sysml + json answer blocks\n- Baselines under `input/baseline/` untouched (verified hashes unchanged by the validator runs).\n\n**Validation status**\n- `./validate AlignLink AlignLink.sysml input/baseline/ShipLinkIcd.sysml input/baseline/VendorRadioPack.sysml` → `PASS`, 0 diagnostics, 0 warnings.\n- Failing checks encountered and fixed during iteration, verbatim:\n  - `Must be an accessible feature (use dot notation for nesting)` (×2) — from `::` between nested usage segments in `allocate` paths.\n  - `Couldn't resolve reference to Feature 'ShipLinkIcd'.` (and siblings) — from plain-dot package-qualified paths.\n  - Resolution: the Pilot 0.62 syntax that passes is `ShipLinkIcd::usv.radio` (package-qualified head with `::`, nesting in dot notation), matching the requirement's `<Spec::path.with.dots>` phrasing.\n\n**Mapping decisions**\n- 8 aliases (2 port defs, 2 part defs, 3 features, 1 attribute) and 3 allocations (all 3 corresponding part-usage pairs).\n- Left unmapped on purpose: `ShipLinkIcd::CommandShip::fromUav`, `VendorRadioPack::ControlIn`, `VendorRadioPack::RadioUnit::control`, `VendorRadioPack::RadioUnit::txPowerW`, `VendorRadioPack::ShipTerminal::linkB`.\n\n**Open questions**\n1. `fromUav` ↔ `linkB`: both are the second link port on the ship endpoint and neither is in a `connect`, but the ICD port is UAV-specific inbound while the vendor port is an unlabeled spare. I did not pair them (rule 4). If you consider a second DataLink port semantically equivalent, I can add `alias fromUav for VendorRadioPack::ShipTerminal::linkB;` and revalidate.\n2. `HealthPort` ↔ `StatusOut` is directional-analogous (outbound status), but `ControlIn` has no inbound counterpart in the ICD at all — treated as vendor-only, unmapped.",
+  "ttft_ms": 9054,
+  "type": "result",
+  "duration_ms": 653102,
+  "uuid": "d7f8b87e-7886-41fd-9e50-3bfefe58d6e6",
+  "ttft_stream_ms": 8887,
+  "time_to_request_ms": 46,
+  "first_content_frame_ms": 8887,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

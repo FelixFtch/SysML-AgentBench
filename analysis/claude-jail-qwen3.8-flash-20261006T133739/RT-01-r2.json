@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 68079,
+  "stop_reason": "end_turn",
+  "session_id": "1bc142e5-83a6-4887-a331-b80c260613de",
+  "total_cost_usd": 0.13270500000000002,
+  "usage": {
+    "input_tokens": 8537,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 93440,
+    "output_tokens": 1732,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 8537,
+      "outputTokens": 1732,
+      "cacheReadInputTokens": 93440,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.13270500000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Following the task rules, here is the final report.\n\n## Files changed\n- `answer.md` (new) — the restatement of the model's requirements.\n- No edits to `input/model.sysml`, `input/requirements.md`, or any other input file (rule 6: unrelated model elements unchanged; this task was read/restate only).\n\n## Validation status\nRan `./validate RoundTripShare input/model.sysml` against the unmodified input model:\n- **status: `PASS`** (official-pilot-xtext-emf adapter, SysML v2 Pilot 2026-08, kernel 0.62.0)\n- **diagnostics: `[]`** — no errors or warnings; `warning_count: 0`, `return_code: 0`.\n- No failing checks to report.\n\n## Check results / model content\nThe model is minimal: package `RoundTripShare` with one `requirement def Share` carrying a single `doc` comment: *\"The unmanned surface vessel sends camera imagery to the shore.\"* That is the only requirement present.\n\n## Answer written to `answer.md`\n> The model states one requirement, named `Share`: the unmanned surface vessel sends camera imagery to the shore. Nothing else — no subject binding, constraints, rates, limits, budgets, or verification relationships — is declared in the model, so nothing further was restated (per the \"do not add facts\" instruction).\n\n## Open questions\nNone blocking. Note for the record: validation scope excludes engineering budgets and complete unit/dimension verification, but the model contains no such content, so this does not affect the result.",
+  "ttft_ms": 8700,
+  "type": "result",
+  "duration_ms": 71498,
+  "uuid": "9c144291-94d7-4ea0-b5f3-56d303268d74",
+  "ttft_stream_ms": 8388,
+  "time_to_request_ms": 79,
+  "first_content_frame_ms": 8388,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

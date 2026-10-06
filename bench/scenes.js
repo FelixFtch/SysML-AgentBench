@@ -12,7 +12,7 @@
   const MONO = "'JetBrains Mono', ui-monospace, Menlo, monospace";
   const C = { img: "#5fd3c6", trk: "#f2b33d", lnk: "#b6a1f0", pwr: "#f0d08a", ok: "#63c890", bad: "#ff8a80", lock: "#f6c768",
     dim: "#6f8a9c", add: "#ff9f43", txt: "#e6f2f6", sub: "#a9c3cf" };
-  const TYPE = { GEN: "generate a new model", MOD: "modify an existing model", QRY: "query a model", AMB: "ask, don't guess", RT: "model back to text" };
+  const TYPE = { GEN: "generate a new model", MOD: "modify an existing model", ALN: "align two models", QRY: "query a model", AMB: "ask, don't guess", RT: "model back to text" };
   let seq = 0;
 
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -824,7 +824,7 @@
 
   function fallback(p, ctx) {
     const boat = usv(p, 160, 160, 1.1, { radio: true });
-    return { s: boat.svg, title: `${ctx.task || "new task"} · ${TYPE[ctx.type] || ""}`,
+    return { s: boat.svg, title: [ctx.task || "new task", TYPE[ctx.type]].filter(Boolean).join(" · "),
       board: board(ctx, "No dedicated scene for this task", [{ head: "NOTE", items: [{ text: "New tasks use a generic picture.", state: "info" }, { text: "The verdict is in the full process below.", state: "info" }] }]) };
   }
 

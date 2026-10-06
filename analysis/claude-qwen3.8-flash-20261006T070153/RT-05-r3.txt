@@ -1,0 +1,17 @@
+File writes in the workspace are currently blocked by permissions, so here is the answer inline.
+
+**Restated requirements (prose only — no added facts):**
+
+The model is a package named `RoundTripFusion` that privately imports `ScalarValues`.
+
+The package contains one part usage, named `commandShip`, with one attribute and two ports:
+
+- The part `commandShip` has an attribute named `fusionLatencyS`, typed `Real`, with the value 2.0.
+- The part `commandShip` has a port named `fromUsv`.
+- The part `commandShip` has a port named `fromUav`.
+
+The package also defines a requirement definition named `Fusion`, whose documentation reads: "Fusion latency is 2 seconds and the command ship accepts two uplinks."
+
+To note what I deliberately did **not** assert beyond the model: the prose's "two uplinks" corresponds to the two ports `fromUsv` and `fromUav` in this same package, but the model contains no connections, no requirement subject binding, and no stated relationship between `Fusion` and `commandShip` — the `requirement def` is a definition carrying only that doc comment.
+
+I tried to save this as `output/answer.md` (and `answer.md`) in the workspace, but both Write calls were denied by the permission prompt. If you approve the write (or tell me the expected output path), I'll save the file there.

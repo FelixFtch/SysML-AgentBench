@@ -1,0 +1,10 @@
+I've read the only input file (`input/requirements.md`), and per its own instruction, I need to stop and ask rather than proceed — the conflict is exactly the one the document describes:
+
+**The unit of the uplink value is unresolved.**
+
+- One sentence states the uplink is **8** (unitless).
+- Another states the uplink is **8 MHz**.
+
+**My question:** Is the uplink value **8 MHz** (a frequency, and the unitless "8" was a typo), or is "8" meant to be a different quantity with its own unit (e.g., 8 Mbps data rate, 8 channels, a ratio) — in which case the "8 MHz" sentence is the one that's wrong?
+
+Until this is settled, I won't write any SysML or invent a value, since a check that depends on this number cannot be performed meaningfully with the unit in conflict.

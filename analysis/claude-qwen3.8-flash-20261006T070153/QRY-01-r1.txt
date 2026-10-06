@@ -1,0 +1,5 @@
+The four platform part usages are declared at the top level of the `MaritimeISR` package (lines 61–64 of `input/model.sysml`): `usv : UnmannedSurfaceVessel`, `uav : FixedWingUav`, `commandShip : CommandShip`, and `shore : ShoreStation`.
+
+```json
+{"platforms": ["MaritimeISR::usv", "MaritimeISR::uav", "MaritimeISR::commandShip", "MaritimeISR::shore"]}
+```

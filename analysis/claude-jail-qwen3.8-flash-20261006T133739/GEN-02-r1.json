@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 152248,
+  "stop_reason": "end_turn",
+  "session_id": "221b432e-addc-40c9-96f8-b14b33ad1a45",
+  "total_cost_usd": 0.29063999999999995,
+  "usage": {
+    "input_tokens": 14398,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 230400,
+    "output_tokens": 4138,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 14398,
+      "outputTokens": 4138,
+      "cacheReadInputTokens": 230400,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.29063999999999995,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 13,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary of the work:\n\n**Files changed**\n- Created `UavSearch.sysml` — the model (workspace had no pre-existing model file)\n- Created `answer.md` — final answer with the model, validation status, and requirement-by-requirement check table\n\n**Validation status**\n- `./validate UavSearch UavSearch.sysml` → **PASS**, 0 diagnostics, 0 warnings, return code 0 (official SysML v2 Pilot 0.62 validator)\n\n**Check results** — verified against the linked `model.json`:\n1. `TrackPort`, `ImageryPort`, `LinkPort` → 3 PortDefinitions ✓\n2. `Radar` with `tracks : TrackPort` ✓\n3. `Camera` with `imagery : ImageryPort` ✓\n4. `Processor` with `trackIn`, `imageryIn`, `uplink` ✓\n5. `Radio` with `fromProcessor`, `toShore` (both LinkPort) ✓\n6. Part usage `uav` containing `searchRadar`, `eoCamera`, `processor`, `radio` ✓\n7. Three connections (`tracks→trackIn`, `imagery→imageryIn`, `uplink→fromProcessor`) resolved as 3 ConnectionUsages ✓\n\nNo numeric limits were invented — the requirement specifies none, and the model contains none.\n\n**Open questions:** none. One modeling note: `uav` is written as an anonymous `part uav` usage (per requirement 6, which says \"part usage\" but gives no `part def` name to use), and `radio.toShore` is defined but left unconnected since requirement 7 specifies no connection for it.",
+  "ttft_ms": 8128,
+  "type": "result",
+  "duration_ms": 158338,
+  "uuid": "e6ea2eeb-9e17-400a-aeaf-207a5b343de1",
+  "ttft_stream_ms": 7631,
+  "time_to_request_ms": 65,
+  "first_content_frame_ms": 7632,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

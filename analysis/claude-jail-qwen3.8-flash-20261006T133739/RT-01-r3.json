@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 63268,
+  "stop_reason": "end_turn",
+  "session_id": "09333a5a-91fe-48e9-9711-58f40bb6cedf",
+  "total_cost_usd": 0.1282,
+  "usage": {
+    "input_tokens": 8706,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 93440,
+    "output_tokens": 1518,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 8706,
+      "outputTokens": 1518,
+      "cacheReadInputTokens": 93440,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.1282,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Following the task rules, final report:\n\n**Files changed:** `answer.md` (new). No model files were edited — the task was a read-and-restate, not a model change.\n\n**Validation status:** I ran `./validate RoundTripShare input/model.sysml` on the unchanged input model: **PASS**, 0 diagnostics, 0 warnings.\n\n**Check results (verbatim from the validator):** `\"diagnostics\": []`, `\"status\": \"PASS\"`.\n\n**Restated requirements** (in `answer.md`), strictly from the model with no added facts:\n- The model defines a requirement named `Share` in the package `RoundTripShare`.\n- The requirement's documentation states: an unmanned surface vessel sends camera imagery to the shore.\n\nThe model contains no numbers, rates, limits, or budgets to restate — the only requirement content is that single doc sentence.\n\n**Open questions:** None.",
+  "ttft_ms": 8157,
+  "type": "result",
+  "duration_ms": 66569,
+  "uuid": "17493f98-bf98-4d92-bca9-688c91fe401a",
+  "ttft_stream_ms": 7876,
+  "time_to_request_ms": 56,
+  "first_content_frame_ms": 7876,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

@@ -28,6 +28,7 @@ Decisions 001–015 (2026-10-02) are recorded in the execution plan v2.0, sectio
 | [020](020-part2-blank-task-prototype.md) | Part 2 prototype: blank brief → requirements → two designs → Pilot → alignment → checks → human approval → memory |
 | [021](021-cost-at-list-price.md) | Cost reported in USD at official list price; every new run records usage |
 | [022](022-repair-loop-full-errors-cumulative.md) | Repair loop sends the complete error list in one cumulative conversation, cap 20; P1–P3 all repair |
-| [023](023-vector-retrieval-paper2.md) | Paper 2's retrieval implemented: MiniLM + FAISS over Pilot-parsed cards, connections included; exam P3 uses a leak-free official-examples library |
+| [023](023-vector-retrieval-paper2.md) | Paper 2's retrieval implemented: MiniLM + FAISS over Pilot-parsed cards, connections included; exam P3 uses a leak-free official-examples library. Amended 2026-10-06: no fallback, pinned stack and MiniLM snapshot |
 | [024](024-paper1-alignment-tasks.md) | Paper 1 replicated on its own example (mappings transfer, packages fail the Pilot); alignment becomes scored task type ALN, three sealed tasks, 27 in the bank |
 | [025](025-no-model-judges.md) | Model judges dropped; second review of the 27 keys done and recorded; bank frozen (`bench/FREEZE.md`, tag `freeze-2026-10-06`) |
+| [026](026-agent-sandbox.md) | Agents run in a bubblewrap sandbox with the same workspace, rules, tools and `./validate`; the first two agent batches of 2026-10-06 are discarded (OpenCode read keys, Claude Code had tools denied); `./validate` passes files in the scorer's order after the Pilot's order dependence was found, and the agents' ALN runs were rerun |

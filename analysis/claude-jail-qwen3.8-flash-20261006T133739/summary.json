@@ -1,0 +1,18 @@
+{
+  "cohort": "claude",
+  "model": "qwen3.8-flash",
+  "jailed": true,
+  "tools": [
+    "Bash",
+    "Read",
+    "Write",
+    "Edit",
+    "Glob",
+    "Grep"
+  ],
+  "max_turns": 60,
+  "timeout_s": 900,
+  "repeats": 3,
+  "workers": 3,
+  "started": "20261006T133739"
+}

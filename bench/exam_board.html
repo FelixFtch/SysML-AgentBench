@@ -15,8 +15,8 @@
       <p class="lead">Scores come only from the official SysML v2 Pilot and answer keys written in advance. The model's prompt never contains the answer key. Every number is synthetic, not an RTX specification. Passing the syntax check means the model parses, not that the design is accepted.</p>
     </div>
     <div class="kpis">
-      <div class="kpi"><span>Exam score · main model</span><b id="kpi-total">—</b><small id="kpi-total-sub">288 cells · official Pilot + answer keys</small></div>
-      <div class="kpi"><span>Judge agrees with the tool</span><b id="kpi-jev">—</b><small id="kpi-jev-sub">Jev · observes only, not scored</small></div>
+      <div class="kpi"><span>Exam · direct qwen3.8-flash</span><b id="kpi-total">—</b><small id="kpi-total-sub">324 cells · official Pilot + answer keys</small></div>
+      <div class="kpi"><span>Exam · direct qwen3.8-max</span><b id="kpi-max">—</b><small id="kpi-max-sub">the stronger model on the same cells</small></div>
       <div class="kpi"><span>Memory</span><b id="kpi-mem">—</b><small id="kpi-mem-sub">existing model cards + approved designs</small></div>
     </div>
   </div>
@@ -31,7 +31,7 @@
     <h5>Part 1 · Exam</h5>
     <a href="#s11"><b>1.1</b>Exam flow<span class="op-dot">①</span></a>
     <a href="#s12"><b>1.2</b>Scores</a>
-    <a href="#s13"><b>1.3</b>288-cell matrix<span class="op-dot">②</span></a>
+    <a href="#s13"><b>1.3</b>Exam matrix<span class="op-dot">②</span></a>
     <a href="#s14"><b>1.4</b>One cell, end to end</a>
     <a href="#s15"><b>1.5</b>Console<span class="op-dot">③</span></a>
     <a href="#s16"><b>1.6</b>OpenCode's tool calls</a>
@@ -47,7 +47,7 @@
     <!-- ================= PART 0 ================= -->
     <header class="part-head">
       <span class="part-num">0</span>
-      <div><h2>Start here</h2><p>This page has two parts. Part 1 is an exam: 24 sealed tasks, to see how much models and agents get right without the answer key. Part 2 is a real scenario: from a blank task brief, an agent retrieves existing models, writes requirements and two designs, passes official validation, aligns with an existing model, checks the budgets, and a person decides.</p></div>
+      <div><h2>Start here</h2><p>This page has two parts. Part 1 is an exam: 27 sealed tasks, to see how much models and agents get right without the answer key. Part 2 is a real scenario: from a blank task brief, an agent retrieves existing models, writes requirements and two designs, passes official validation, aligns with an existing model, checks the budgets, and a person decides.</p></div>
     </header>
 
     <section class="card" id="s01">
@@ -69,24 +69,24 @@
     <!-- ================= PART 1 ================= -->
     <header class="part-head" id="part1">
       <span class="part-num">1</span>
-      <div><h2>Exam: 24 sealed tasks, 288 scored cells</h2><p>One model (qwen3.8-flash) with four approaches (P0 one-shot, P1 repair from errors, P2 outline first, P3 outline + retrieved notes), each cell repeated 3 times. Two off-the-shelf agents, OpenCode and Claude Code, also did the 24 tasks once each. The tools score; model judges only observe.</p></div>
+      <div><h2>Exam: 27 sealed tasks, four candidates</h2><p>Direct calls to qwen3.8-flash and to qwen3.8-max, each with four approaches (P0 one-shot, P1 repair loop, P2 outline first, P3 retrieval + outline) and 3 repeats: 324 cells per model. Two off-the-shelf agents on qwen3.8-flash, OpenCode and Claude Code, in a sandbox without the answer keys: 27 tasks × 3 repeats each. The bank and the scorers are frozen (bench/FREEZE.md). Only the official Pilot and the answer keys score; no model judges.</p></div>
     </header>
 
     <section class="card op" id="s11">
-      <div class="sec-head"><span class="sec-num">1.1</span><div><h3>Exam flow: how one cell gets its score</h3><p class="sec-lead">Every cell runs left to right. The top row is sealed material, opened only at the marked step; the bottom row is the conditional repair loop and the observing judges. Pick a cell in 1.3 or start a run in 1.5 and this diagram lights up with that cell's real record.</p></div><div class="sec-tools"><span class="op-pill">Action ①</span></div></div>
+      <div class="sec-head"><span class="sec-num">1.1</span><div><h3>Exam flow: how one cell gets its score</h3><p class="sec-lead">Every cell runs left to right. The top row is sealed material, opened only at the marked step; the bottom row is the conditional repair loop. Pick a cell in 1.3 or start a run in 1.5 and this diagram lights up with that cell's real record.</p></div><div class="sec-tools"><span class="op-pill">Action ①</span></div></div>
       <div class="op-guide"><span class="op-badge">Action ①</span><div><b>You can</b>Click any node to see its input, output and who runs it; use the buttons at the top right to light up only one paper's nodes.</div><div><b>What happens</b>A description opens under the diagram. Colours follow the selected cell: green passed, red failed, grey skipped, yellow running.</div><div><b>Time</b>Instant; reads the archive, no model call.</div></div>
       <div id="flow-bench"></div>
     </section>
 
     <section class="card" id="s12">
-      <div class="sec-head"><span class="sec-num">1.2</span><div><h3>Scores: pass rates, tokens, how accurate the judges are, and cost</h3><p class="sec-lead">The headline numbers. Pass rates by approach, task type and agent; tokens recorded for this batch; how often the two model judges agree with the official tool; and, at the bottom, tokens converted to USD at Alibaba Cloud's and TypeSafe's official prices.</p></div></div>
+      <div class="sec-head"><span class="sec-num">1.2</span><div><h3>Scores: four candidates, approaches, side benchmarks and cost</h3><p class="sec-lead">Pass rates by task type for the four candidates; the four approaches with each direct model, with how often the official parse passed on the first attempt and after repair; the side benchmarks the brief names; the runs that do not count and why; and tokens converted to USD at Alibaba Cloud's official prices.</p></div></div>
       <div class="kpi-row" id="kpis"></div>
       <div class="panels" id="score-panels"></div>
     </section>
 
     <section class="card op" id="s13">
-      <div class="sec-head"><span class="sec-num">1.3</span><div><h3>288-cell matrix: every cell opens</h3><p class="sec-lead">Each row is a task; each column is one repeat of one approach; the two rightmost columns are the agents. The row end is that task's pass count; the column foot is that column's pass rate. The guide below explains every code.</p></div><div class="sec-tools"><div class="seg-toggle" id="mx-mode"><button data-mode="tool" class="on">Tool verdict</button><button data-mode="jev">Is Jev right?</button><button data-mode="qwen">Is qwen right?</button></div></div></div>
-      <div class="op-guide"><span class="op-badge">Action ②</span><div><b>You can</b>Click any cell; switch the buttons above to colour cells by the tool's verdict or by whether a judge agrees with the tool.</div><div><b>What happens</b>1.4 shows that cell end to end, and the 1.1 diagram lights up with it.</div><div><b>Time</b>Instant; reads the archive.</div></div>
+      <div class="sec-head"><span class="sec-num">1.3</span><div><h3>Exam matrix: every cell opens</h3><p class="sec-lead">Each row is a task. The first twelve columns are the direct model chosen with the buttons (four approaches × three repeats); the last six are OpenCode and Claude Code on qwen3.8-flash, three runs each. The row end is the direct model's pass count; the column foot is that column's pass rate.</p></div><div class="sec-tools"><div class="seg-toggle" id="mx-mode"><button data-model="flash" class="on">Direct · flash</button><button data-model="max">Direct · max</button></div></div></div>
+      <div class="op-guide"><span class="op-badge">Action ②</span><div><b>You can</b>Click any cell; switch the buttons above between the two direct models.</div><div><b>What happens</b>1.4 shows that cell end to end, and the 1.1 diagram lights up with it.</div><div><b>Time</b>Instant; reads the archive.</div></div>
       <div class="glossary" id="mx-guide"></div>
       <div class="mx-tools"><div class="legend" id="mx-legend"></div></div>
       <div class="mx-wrap" id="matrix"></div>
@@ -101,12 +101,12 @@
 
     <section class="card op" id="s15">
       <div class="sec-head"><span class="sec-num">1.5</span><div><h3>Console: re-run a task, or write your own</h3><p class="sec-lead">Both use the same flow as 1.1. A new task also needs an answer key, which is opened only for scoring.</p></div><div class="sec-tools"><span class="op-pill">Action ③</span></div></div>
-      <div class="op-guide"><span class="op-badge">Action ③</span><div><b>You can</b>Left: pick a sealed task and an approach to re-run. Right: write a task statement and answer key for a new task, or fill in an example.</div><div><b>What happens</b>Real calls to the model you choose, validated by the official Pilot. The 1.1 diagram lights up live; when it finishes, 1.4 shows the whole run, the tokens used and their cost in USD at official prices. The default is qwen3.8-flash, the same model as the 288-cell matrix; results are shown separately and not added to the 288.</div><div><b>Time</b>P0 about 20–40 s; P1 up to 3 repairs, about 1–2 min. One run at a time.</div></div>
+      <div class="op-guide"><span class="op-badge">Action ③</span><div><b>You can</b>Left: pick a sealed task and an approach to re-run. Right: write a task statement and answer key for a new task, or fill in an example.</div><div><b>What happens</b>Real calls to the model you choose, validated by the official Pilot. The 1.1 diagram lights up live; when it finishes, 1.4 shows the whole run, the tokens used and their cost in USD at official prices. The default is qwen3.8-flash, the same model as the exam matrix; results are shown separately and not added to it.</div><div><b>Time</b>P0 about 20–40 s; P1 up to 3 repairs, about 1–2 min. One run at a time.</div></div>
       <div class="console">
         <section>
           <h4>Re-run a sealed task</h4>
-          <div class="row"><label>Task<select id="run-task"></select></label><label>Approach<select id="run-config"><option value="P0">P0 one-shot</option><option value="P1">P1 repair from errors (≤3)</option><option value="P2">P2 outline first</option><option value="P3">P3 outline + retrieved notes</option></select></label></div>
-          <label>Model<select id="run-model"><option value="qwen3.8-flash">qwen3.8-flash (same as the 288-cell matrix, comparable)</option><option value="qwen3.8-max">qwen3.8-max (stronger, costlier, read separately)</option></select></label>
+          <div class="row"><label>Task<select id="run-task"></select></label><label>Approach<select id="run-config"><option value="P0">P0 one-shot</option><option value="P1">P1 repair loop (≤20)</option><option value="P2">P2 outline first</option><option value="P3">P3 retrieval + outline</option></select></label></div>
+          <label>Model<select id="run-model"><option value="qwen3.8-flash">qwen3.8-flash (same as the exam matrix, comparable)</option><option value="qwen3.8-max">qwen3.8-max (stronger, costlier, read separately)</option></select></label>
           <p class="hint" id="run-config-note"></p>
           <button class="cta" id="run-go">Start the re-run</button>
           <div class="mini-steps" id="run-mini"></div>
@@ -118,7 +118,7 @@
           <div class="row"><label>Type<select id="new-type"><option value="GEN">GEN · generate a new model</option><option value="MOD">MOD · modify an existing model</option><option value="QRY">QRY · query a model</option><option value="AMB">AMB · ambiguous: ask, don't guess</option><option value="RT">RT · round trip: model back to text</option></select></label><label>Package name (GEN/MOD)<input id="new-package" value="Inbox"></label></div>
           <label>Task statement (the only text the agent sees)<textarea id="new-req" rows="5" placeholder="Package name: ..."></textarea></label>
           <label>Answer key (YAML for GEN/MOD/AMB/RT, JSON for QRY; hidden from the agent)<textarea id="new-gold" rows="5"></textarea></label>
-          <div class="row"><label>Approach<select id="new-config"><option value="P0">P0 one-shot</option><option value="P1">P1 repair from errors</option><option value="P2">P2 outline first</option><option value="P3">P3 outline + retrieved notes</option></select></label><label>Model<select id="new-model"><option value="qwen3.8-flash">qwen3.8-flash</option><option value="qwen3.8-max">qwen3.8-max</option></select></label></div>
+          <div class="row"><label>Approach<select id="new-config"><option value="P0">P0 one-shot</option><option value="P1">P1 repair from errors</option><option value="P2">P2 outline first</option><option value="P3">P3 retrieval + outline</option></select></label><label>Model<select id="new-model"><option value="qwen3.8-flash">qwen3.8-flash</option><option value="qwen3.8-max">qwen3.8-max</option></select></label></div>
           <button class="cta" id="new-go">Create task and run</button>
           <div class="status" id="new-status">Not started.</div>
         </section>
@@ -126,7 +126,7 @@
     </section>
 
     <section class="card" id="s16">
-      <div class="sec-head"><span class="sec-num">1.6</span><div><h3>Which tools OpenCode called on MOD-05</h3><p class="sec-lead">OpenCode is an agent that reads and writes files and runs commands. Below are its tool calls on MOD-05, in order. It also ran the official validation, and power was still 78 W: the design is over budget, but the limit and every value to keep are unchanged, so under the current scorer it answered the task correctly.</p></div></div>
+      <div class="sec-head"><span class="sec-num">1.6</span><div><h3>Which tools OpenCode called on MOD-05</h3><p class="sec-lead">OpenCode reads and writes files and runs commands. Below are its tool calls on MOD-05 in the sandbox, in order: it sees only the task input, AGENTS.md and ./validate, not the answer keys. The design is over budget by construction (78 W against 60 W); the task verdict passes when the limit and every value to keep are unchanged.</p></div></div>
       <div class="trace" id="trace"></div>
     </section>
 

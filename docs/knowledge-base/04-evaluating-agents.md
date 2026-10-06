@@ -1,0 +1,16 @@
+# 4. Evaluating agents fairly
+
+What this project learned about measuring AI agents on modeling work, mostly by getting it wrong first. Each item names the record where it happened.
+
+1. **Write the answer keys before any run, have a second person review them, and freeze them with hashes.** Changes after the freeze are recorded as amendments with the evidence that the scored results still stand (`bench/FREEZE.md`, `REVIEW.md`, decision 025).
+2. **Let the official tool and the keys decide; do not use a model as judge.** Two model judges agreed with the Pilot on only 226 and 157 of 288 answers and passed models that do not parse (decision 025).
+3. **Keep the task verdict and the design verdict apart.** Under an earlier rule, an honest over-budget answer failed while raising the limit or lowering another value passed; the split fixed that (decision 019).
+4. **Isolate the agent from the answers.** Working in a folder inside the repository, OpenCode opened held-out task folders in 23 of 81 runs and read the answer key of the task it was solving in several. The scored agents run in a bubblewrap sandbox that shows only the task, the rules file and the validator; the results page server, which serves keys on localhost, is stopped while they run (decision 026).
+5. **Grant the tools you mean to test.** Claude Code started without pre-approved tools had all 43 Bash and 10 Write calls denied, so it never ran the validator; that batch is discarded (decision 026).
+6. **Give the agent exactly the scorer's check.** The Pilot can pass an alignment package listed before its sources and fail it listed after; the agents' `./validate` passed files in their order, the scorer in its own, and 8 of 15 alignment answers passed the agents' check and failed the scorer. The wrapper now uses the scorer's order and those runs were rerun (decision 026, `bench/check_validator_order.py`).
+7. **Do not let a fallback change the method silently.** Retrieval used to fall back to word ranking when the embedding stack was missing. It never did in a scored run, but a reader could not have known that without checking every record; now a missing dependency stops the run (decision 023, amendment).
+8. **Repeat and report the spread.** Three repeats per cell; report how many repeat groups disagree (direct flash 24 of 108, max 8 of 108) and the first-attempt result next to the final one inside a repaired cell.
+9. **Decide the answer channel and the time limit before the run.** Agents write `answer.md`; when it is missing the runner takes the final output. A run that hits the 900 s limit without `answer.md` fails even if its workspace holds a passing model.
+10. **Count cost at list price, cached input included, and say what is missing.** Agents re-send the workspace at every step, so most of their input is cached. Claude Code reports usage only when a run ends; its runs that hit the limit have no usage, so its total is a lower bound (decision 021).
+11. **Compute the trivial baseline of every side benchmark.** On the SysEngBench subset, always answering B scores 51 of 100 (`docs/sysengbench-appendix.md`).
+12. **Keep everything, overwrite nothing.** Discarded batches stay on disk with the reason; superseded rows stay next to the rerun that replaces them; both are listed with their cost (`bench/batches.py`).

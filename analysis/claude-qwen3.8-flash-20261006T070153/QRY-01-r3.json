@@ -1,0 +1,102 @@
+{
+  "duration_api_ms": 134997,
+  "stop_reason": "end_turn",
+  "session_id": "758df131-7bd3-4781-9057-eb220d608db6",
+  "total_cost_usd": 0.240271,
+  "usage": {
+    "input_tokens": 7815,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 110592,
+    "output_tokens": 5836,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 7815,
+      "outputTokens": 5836,
+      "cacheReadInputTokens": 110592,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.240271,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_b8797026cf7e46b79d099b44",
+      "tool_input": {
+        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T075745-P-CODE-2-QRY-01/workspace/input; echo \"---\"; find /data/robotics/RTRC/mvp/agent-runs/20261006T075745-P-CODE-2-QRY-01 -maxdepth 2 | head -50",
+        "description": "Inspect input directory and run folder"
+      }
+    },
+    {
+      "tool_name": "Bash",
+      "tool_use_id": "call_058f659ea3a743dbb1cf207c",
+      "tool_input": {
+        "command": "find /data/robotics/RTRC -maxdepth 3 -iname '*FREEZE*' -o -maxdepth 3 -iname '*.sysml' 2>/dev/null | head -40; echo '==='; ls /data/robotics/RTRC 2>/dev/null",
+        "description": "Look for frozen ground truth and SysML tooling in repo"
+      }
+    }
+  ],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "I verified against `input/model.sysml`: the four platform part usages are declared at package level (lines 61–64) — `usv : UnmannedSurfaceVessel`, `uav : FixedWingUav`, `commandShip : CommandShip`, `shore : ShoreStation` — distinct from the nested component usages (eoCamera, processor, fusion, etc.) inside the part definitions.\n\n```json\n{\"platforms\": [\"usv\", \"uav\", \"commandShip\", \"shore\"]}\n```",
+  "ttft_ms": 19461,
+  "type": "result",
+  "duration_ms": 135162,
+  "uuid": "785f6746-d506-4c6c-a8ef-5b0bf0531623",
+  "ttft_stream_ms": 7451,
+  "time_to_request_ms": 80,
+  "first_content_frame_ms": 7451,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

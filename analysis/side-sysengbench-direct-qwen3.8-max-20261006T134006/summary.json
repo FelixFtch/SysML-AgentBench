@@ -1,0 +1,14 @@
+{
+  "bench": "sysengbench",
+  "candidate": "direct",
+  "model": "qwen3.8-max",
+  "repeats": 3,
+  "started": "20261006T134006",
+  "dataset": "rabell/SysEngBench test.csv",
+  "sha256": "194024435b0cf494bb3e782e25c78e5f2b862f91e4e1d78ca499d05ea027a93d",
+  "subset": "analysis/sysengbench/ids-100.txt",
+  "seed": 20261006,
+  "questions": 100,
+  "per_prompt": 10,
+  "always_B_on_subset": 51
+}

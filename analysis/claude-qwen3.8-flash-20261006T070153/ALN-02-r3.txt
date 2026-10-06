@@ -1,0 +1,50 @@
+```sysml
+package AlignLink {
+    private import ShipLinkIcd::*;
+    private import VendorRadioPack::*;
+
+    // Definition-level aliases (specification element for supplier element)
+    alias LinkPort for VendorRadioPack::DataLink;
+    alias HealthPort for VendorRadioPack::StatusOut;
+    alias Radio for VendorRadioPack::RadioUnit;
+    alias CommandShip for VendorRadioPack::ShipTerminal;
+
+    // Port aliases inside part definitions
+    alias toShore for VendorRadioPack::RadioUnit::dataOut;
+    alias health for VendorRadioPack::RadioUnit::status;
+    alias fromUsv for VendorRadioPack::ShipTerminal::linkA;
+
+    // Attribute aliases
+    alias uplinkMbps for VendorRadioPack::RadioUnit::linkRateMbps;
+
+    // Usage-level allocations (specification part usage -> supplier part usage)
+    allocation usvAllocatedToVessel allocate ShipLinkIcd.usv to VendorRadioPack.vessel;
+    allocation radioAllocatedToRadioUnit allocate ShipLinkIcd.usv.radio to VendorRadioPack.vessel.radioUnit;
+    allocation commandShipAllocatedToTerminal allocate ShipLinkIcd.commandShip to VendorRadioPack.terminal;
+}
+```
+
+```json
+{
+  "mappings": [
+    {"oem_element": "ShipLinkIcd::LinkPort", "supplier_element": "VendorRadioPack::DataLink", "mapping_type": "alias", "rationale": "Both port definitions type the ship data-link connection; every LinkPort-typed port corresponds to a DataLink-typed port in the vendor pack."},
+    {"oem_element": "ShipLinkIcd::HealthPort", "supplier_element": "VendorRadioPack::StatusOut", "mapping_type": "alias", "rationale": "The ICD health-reporting interface corresponds to the vendor status-output interface; same direction and purpose (radio health/status out)."},
+    {"oem_element": "ShipLinkIcd::Radio", "supplier_element": "VendorRadioPack::RadioUnit", "mapping_type": "alias", "rationale": "Same role: the radio mounted on the unmanned vessel; member ports/attributes align one-for-one (see below), confirming the definitions correspond."},
+    {"oem_element": "ShipLinkIcd::CommandShip", "supplier_element": "VendorRadioPack::ShipTerminal", "mapping_type": "alias", "rationale": "Both define the shore/ship-side terminal part that receives radio data links; the command ship usage maps to the terminal usage."},
+    {"oem_element": "ShipLinkIcd::Radio::toShore", "supplier_element": "VendorRadioPack::RadioUnit::dataOut", "mapping_type": "alias", "rationale": "The radio's outbound data port toward the ship; in both models this port is the source end of the vessel-to-terminal data connection."},
+    {"oem_element": "ShipLinkIcd::Radio::health", "supplier_element": "VendorRadioPack::RadioUnit::status", "mapping_type": "alias", "rationale": "Radio health/status reporting port; types themselves are aliased (HealthPort ~ StatusOut)."},
+    {"oem_element": "ShipLinkIcd::Radio::uplinkMbps", "supplier_element": "VendorRadioPack::RadioUnit::linkRateMbps", "mapping_type": "alias", "rationale": "Both are Real attributes expressing the link data rate in Mbps for the same radio; uplink rate is the vendor's advertised link rate."},
+    {"oem_element": "ShipLinkIcd::CommandShip::fromUsv", "supplier_element": "VendorRadioPack::ShipTerminal::linkA", "mapping_type": "alias", "rationale": "In both models this is the terminal port that terminates the unmanned vessel's radio link (source of connect ... to commandShip.fromUsv / connect ... to terminal.linkA)."},
+    {"oem_element": "ShipLinkIcd::usv", "supplier_element": "VendorRadioPack::vessel", "mapping_type": "allocation", "rationale": "The ICD's unmanned-surface-vehicle part usage is realized by the vendor's vessel part usage; both contain exactly one radio part usage typed by the aliased definitions."},
+    {"oem_element": "ShipLinkIcd::usv::radio", "supplier_element": "VendorRadioPack::vessel::radioUnit", "mapping_type": "allocation", "rationale": "The radio usage nested in usv corresponds positionally and typologically (Radio ~ RadioUnit) to the radioUnit usage nested in vessel."},
+    {"oem_element": "ShipLinkIcd::commandShip", "supplier_element": "VendorRadioPack::terminal", "mapping_type": "allocation", "rationale": "The top-level command-ship usage is realized by the vendor terminal usage; both are the far end of the vessel-radio-to-terminal connection."}
+  ],
+  "unmatched": [
+    "ShipLinkIcd::CommandShip::fromUav",
+    "VendorRadioPack::ControlIn",
+    "VendorRadioPack::RadioUnit::control",
+    "VendorRadioPack::RadioUnit::txPowerW",
+    "VendorRadioPack::ShipTerminal::linkB"
+  ]
+}
+```

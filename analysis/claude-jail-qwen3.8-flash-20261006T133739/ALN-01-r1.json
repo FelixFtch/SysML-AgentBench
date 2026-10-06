@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 625771,
+  "stop_reason": "end_turn",
+  "session_id": "ceba5e0d-ca77-4d5c-95ad-0b6da903d34f",
+  "total_cost_usd": 1.033806,
+  "usage": {
+    "input_tokens": 22183,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 344832,
+    "output_tokens": 30019,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 22183,
+      "outputTokens": 30019,
+      "cacheReadInputTokens": 344832,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 1.033806,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 17,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Final summary per the workspace rules:\n\n**Files changed**\n- `AlignCamera.sysml` (new) — the alignment package, also embedded verbatim in `answer.md`\n- `answer.md` (new) — deliverable: one fenced `sysml` block + one fenced `json` block, nothing else\n- Baselines `input/baseline/*.sysml` left untouched\n\n**Validation status**\n- `./validate AlignCamera AlignCamera.sysml input/baseline/UsvPayloadSpec.sysml input/baseline/OptronicsKit.sysml` → **PASS**, 0 diagnostics, 0 warnings (evidence: `validation/20261006T100413538339823/`, official Pilot 0.62 toolchain)\n\n**Check results / notes**\n- First attempt used the dot-separated usage paths literally shown in the task (`allocate UsvPayloadSpec.usv.eoCamera to ...`); the official validator FAILed with six linking errors (verbatim: `Couldn't resolve reference to Feature 'UsvPayloadSpec'.`, `... 'usv'.`, `... 'eoCamera'.`, `... 'OptronicsKit'.`, `... 'kit'.`, `... 'cameraUnit'.`) — the Pilot does not resolve dot-chained qualified paths in allocations. I did not invent a workaround: I only switched to the standard `::` qualified-name spelling (the form the task's own rule 2 mandates) and re-validated until PASS. If the dot form is a scoring requirement rather than prose, that's the one open question — it cannot validate as written.\n- Mapped 4 aliases (ImageryPort↔VideoOut, Camera↔EoCameraUnit, imagery↔videoOut, drawW↔powerDrawW) and 1 allocation (usv.eoCamera↔kit.cameraUnit).\n- Deliberately unmapped per rule 4: `Processor`/`imageryIn` vs `VideoSink`/`videoIn` (record-vs-process meaning differs), `usv` vs `kit` (whole vehicle ≠ payload kit), `processor`, `recorder`, and supplier-only `heaterW` (no spec counterpart).",
+  "ttft_ms": 8630,
+  "type": "result",
+  "duration_ms": 641720,
+  "uuid": "09afff25-6ba9-4a18-a11a-d65615e96e6e",
+  "ttft_stream_ms": 8262,
+  "time_to_request_ms": 66,
+  "first_content_frame_ms": 8263,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

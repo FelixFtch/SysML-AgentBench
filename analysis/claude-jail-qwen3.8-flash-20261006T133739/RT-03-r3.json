@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 208539,
+  "stop_reason": "end_turn",
+  "session_id": "9fc8b72a-5772-4549-9e6e-366053ce0998",
+  "total_cost_usd": 0.319232,
+  "usage": {
+    "input_tokens": 18108,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 208384,
+    "output_tokens": 4980,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 18108,
+      "outputTokens": 4980,
+      "cacheReadInputTokens": 208384,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.319232,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the task rules:\n\n**Files changed:** `answer.md` (created). No `.sysml` files were edited — RT-03 is a read-and-restate task, and `input/model.sysml` is the read-only source.\n\n**What the model says (restructured into sentences):** The model contains exactly one requirement — `RoundTripRadar::RadarShare`, a `requirement def` whose only content is a doc comment: **\"The UAV radar shares tracks with the command ship.\"** The linker confirms the definition has no subject bindings, constraints, or other features (the extra features in the AST are library-inherited from `Requirements::RequirementCheck`), so there is nothing else to restate, and I added no facts.\n\n**Validation status:** Ran `./validate RoundTripRadar input/model.sysml` on the unchanged input — official status **PASS**, zero diagnostics, zero warnings (SysML v2 Pilot 0.62, `official-pilot-xtext-emf`).\n\n**Failing checks:** None.\n\n**Open questions:** None — the requirement is stated completely in one sentence and no values were missing.",
+  "ttft_ms": 16928,
+  "type": "result",
+  "duration_ms": 214634,
+  "uuid": "ebb38f9f-6a74-43cf-8c46-85cce56f9217",
+  "ttft_stream_ms": 15976,
+  "time_to_request_ms": 64,
+  "first_content_frame_ms": 15976,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

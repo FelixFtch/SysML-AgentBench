@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 157981,
+  "stop_reason": "end_turn",
+  "session_id": "5d2057a1-e686-49a5-840d-94879768c031",
+  "total_cost_usd": 0.374677,
+  "usage": {
+    "input_tokens": 25813,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 295424,
+    "output_tokens": 3916,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 25813,
+      "outputTokens": 3916,
+      "cacheReadInputTokens": 295424,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.374677,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 13,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Answer written to `answer.md`.\n\n**Files changed:** `answer.md` (created only — no model edits; this was a read-only query).\n\n**Answer:**\n```json\n{\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60.0}\n```\n\n**Validation status:** `./validate MaritimeISR input/model.sysml` → **PASS**, 0 diagnostics, 0 warnings (official-pilot-xtext-emf, SysML v2 Pilot 2026-08 / kernel 0.62.0).\n\n**Check results:** Verified against the official parsed model JSON, not just the source text: the `AttributeUsage` with `qualifiedName: \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\"` owns a `LiteralRational` with `value: 60.0`. (Note there is a second, distinct `MaritimeISR::FixedWingUav::powerLimitW = 120.0`; the question asked for the USV's.)\n\n**Open questions:** None.",
+  "ttft_ms": 4868,
+  "type": "result",
+  "duration_ms": 166454,
+  "uuid": "fa4af84a-f5b8-468f-8b77-8f8b6f724f0f",
+  "ttft_stream_ms": 4583,
+  "time_to_request_ms": 49,
+  "first_content_frame_ms": 4583,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

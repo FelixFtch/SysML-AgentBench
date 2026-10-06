@@ -1,0 +1,12 @@
+# MiniLM + FAISS retrieval (decision 023): exam approach P3, Part 2 step ① Retrieve, graph-retrieval QRY.
+# Required; there is no other ranking. Install: pip install --user -r requirements-retrieval.txt
+# Check (versions, pinned MiniLM snapshot, a test search): python3 bench/vector_index.py --check
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.14.1+cpu
+faiss-cpu==1.15.1
+sentence-transformers==6.1.0
+transformers==5.18.0
+huggingface-hub==1.33.0
+tokenizers==0.23.2
+safetensors==0.8.0
+numpy==2.2.6

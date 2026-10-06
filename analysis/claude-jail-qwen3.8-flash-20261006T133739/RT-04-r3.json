@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 96766,
+  "stop_reason": "end_turn",
+  "session_id": "e624a034-adbd-41cc-92b0-0b3c245709cd",
+  "total_cost_usd": 0.188126,
+  "usage": {
+    "input_tokens": 10802,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 133632,
+    "output_tokens": 2692,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 10802,
+      "outputTokens": 2692,
+      "cacheReadInputTokens": 133632,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.188126,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 9,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary of the work:\n\n**Task:** RT-04 asks to read the model and restate its requirements in sentences without adding facts. This is a restatement task, not a model-editing task, so no `.sysml` file was changed.\n\n**Model contents** (`input/model.sysml`, package `RoundTripArchive`): one `requirement def Archive` with a doc stating the shore archive keeps tracks for 30 days on a 50 Mbit/s backhaul, plus part `shore` with `backhaulMbps : Real = 50.0` and `archiveDays : Real = 30.0`.\n\n**Files changed:** `answer.md` (created) — restates the requirement as two sentences: (1) the shore archive keeps tracks for 30 days; (2) it operates on a 50 Mbit/s backhaul, noting the two `shore` attributes that carry those values. No other facts added.\n\n**Validation status:** `./validate RoundTripArchive input/model.sysml` → official status **PASS**, `\"diagnostics\": []`, 0 warnings (adapter `official-pilot-xtext-emf`, Pilot 0.62 / kernel 0.62.0). No failing checks to report verbatim.\n\n**Open questions:** none — the doc text and attribute values are consistent, and nothing required was missing or ambiguous.",
+  "ttft_ms": 9101,
+  "type": "result",
+  "duration_ms": 100319,
+  "uuid": "e3e68df6-77b8-4eac-9b24-b32cc182af40",
+  "ttft_stream_ms": 8366,
+  "time_to_request_ms": 82,
+  "first_content_frame_ms": 8366,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

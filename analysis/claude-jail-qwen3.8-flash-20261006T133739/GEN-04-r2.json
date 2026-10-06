@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 292843,
+  "stop_reason": "end_turn",
+  "session_id": "365299d5-b448-4d55-ac9e-ea2a3d662b3e",
+  "total_cost_usd": 0.523521,
+  "usage": {
+    "input_tokens": 23453,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 467712,
+    "output_tokens": 6896,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-flash": {
+      "inputTokens": 23453,
+      "outputTokens": 6896,
+      "cacheReadInputTokens": 467712,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.523521,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-flash",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 22,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the task rules:\n\n**Files changed**\n- `ShoreArchive.sysml` — new model file (package `ShoreArchive` with `port def LinkPort`, `part def Processor`, part usage `shore` containing `port fromCommand : LinkPort`, nested `part archive : Processor`, attributes `backhaulMbps : Real = 50.0` and `archiveDays : Real = 30.0`, and `requirement def ShoreArchiveRetention` with the 30-day doc comment).\n- `answer.md` — new, records the above.\n- Nothing under `input/requirements.md` or any gold/requirements files was edited; no numbers were changed.\n\n**Validation status**\n`./validate ShoreArchive ShoreArchive.sysml` → official Pilot 0.62 validator, **PASS**, exit 0, `diagnostics: []`, `warning_count: 0`. Evidence in `validation/20261006T101329599724608/`.\n\n**Check results** (each requirement confirmed against the exported model/AST):\n1. `PortDefinition LinkPort` + `PartDefinition Processor` — present ✓\n2. `PartUsage shore` (a usage, not a def) with `PortUsage fromCommand` typed `LinkPort` and nested `PartUsage archive` typed `Processor` ✓\n3. Both `AttributeUsage`s on `shore`, both typed `ScalarValues::Real`, with `LiteralRational` values `50.0` and `30.0` bound via `FeatureValue` ✓\n4. `RequirementDefinition ShoreArchiveRetention` with `Documentation` \"The shore archive keeps relayed tracks for 30 days.\" ✓\n\n**Open questions:** none — all values were specified by the task and used verbatim.",
+  "ttft_ms": 6355,
+  "type": "result",
+  "duration_ms": 298838,
+  "uuid": "78bdded9-462a-410b-ad99-2dd484fa586b",
+  "ttft_stream_ms": 5713,
+  "time_to_request_ms": 76,
+  "first_content_frame_ms": 5713,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

@@ -1,0 +1,7 @@
+{
+  "cohort": "opencode",
+  "model": "qwen3.8-flash",
+  "version": "1.18.27",
+  "repeats": 3,
+  "started": "20261006T070152"
+}

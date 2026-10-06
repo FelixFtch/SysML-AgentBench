@@ -117,7 +117,7 @@ def propose_tradeoffs(brief: str, failing: list[str]) -> dict:
             "\"dataRateMbps\": 18, \"retentionHours\": 8, \"uploadMbps\": 18}}]}. Give 3 proposals that differ. The 60 W limit cannot change."
         )},
         {"role": "user", "content": f"Brief:\n{brief}\n\nFailing checks: {', '.join(failing) or 'none'}\n\nCatalogue:\n{json.dumps(menu, ensure_ascii=False)}\n\nParameter choices:\n{json.dumps(params)}"},
-    ], max_tokens=1200)
+    ], max_tokens=2500)
     parsed = extract_json(reply["text"])
     proposals = parsed.get("proposals") if isinstance(parsed, dict) else None
     if not isinstance(proposals, list):
@@ -700,6 +700,11 @@ def _validate_design(key: str, written: dict, folder: Path, progress) -> dict:
     return design
 
 
+VARIANT_A = "Design A: the straightforward allocation that follows the brief literally."
+VARIANT_B = ("Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery "
+             "through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A.")
+
+
 def run(brief: str, progress) -> dict:
     from agents.llm import USAGE_LOG, usage_summary
     load_env()
@@ -729,8 +734,7 @@ def run(brief: str, progress) -> dict:
              f"{len(req['unsourced'])} requirements carry numbers that are not in the brief." if req["unsourced"] else "Every number in the requirements is in the brief.")
 
     designs = []
-    for key, variant in (("A", "Design A: the straightforward allocation that follows the brief literally."),
-                         ("B", "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A.")):
+    for key, variant in (("A", VARIANT_A), ("B", VARIANT_B)):
         progress("design", "run", f"The model writes design {key}. The prompt holds the rules, the attribute contract and the retrieved elements.")
         written = write_design(brief, req["requirements"], f"Design{key}", variant, record["retrieval"].get("cards"))
         design = _validate_design(key, written, folder, progress)

@@ -1,0 +1,4 @@
+# Langflow shell for the RTRC flows (langflow/README.md). A separate environment from the benchmark:
+#   python3.12 -m venv .venv-langflow && .venv-langflow/bin/pip install -r requirements-langflow.txt
+langflow==1.12.5
+lfx==1.12.5

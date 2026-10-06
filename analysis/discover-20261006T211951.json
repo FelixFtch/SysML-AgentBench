@@ -1,0 +1,2941 @@
+{
+  "id": "20261006T211951",
+  "brief": "A harbor patrol unmanned surface vessel carries a visible camera drawing 41 W and an edge computer drawing 25 W. Add an infrared camera drawing 12 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 18 Mbps over one 8 Mbps uplink.",
+  "synthetic": true,
+  "langflow": {
+    "mode": "live",
+    "agent": "direct",
+    "model": "qwen3.8-flash",
+    "started": "2026-10-06T21:19:51+00:00",
+    "timings": {
+      "retrieve": {
+        "started": "2026-10-06T21:19:51+00:00",
+        "seconds": 0.7,
+        "model_calls": 0
+      },
+      "requirements": {
+        "started": "2026-10-06T21:19:52+00:00",
+        "seconds": 7.2,
+        "model_calls": 1
+      },
+      "adapt": {
+        "started": "2026-10-06T21:20:06+00:00",
+        "seconds": 13.0,
+        "model_calls": 2
+      },
+      "validate": {
+        "started": "2026-10-06T21:20:19+00:00",
+        "seconds": 202.4,
+        "model_calls": 20
+      },
+      "align": {
+        "started": "2026-10-06T21:23:41+00:00",
+        "seconds": 14.1,
+        "model_calls": 1
+      },
+      "checks": {
+        "started": "2026-10-06T21:24:07+00:00",
+        "seconds": 2.7,
+        "model_calls": 1
+      },
+      "tradeoffs": {
+        "started": "2026-10-06T21:24:09+00:00",
+        "seconds": 13.2,
+        "model_calls": 1
+      }
+    },
+    "path": "reuse",
+    "similar_project": {
+      "name": "MaritimeISR",
+      "path": "scenario/maritime-isr/MaritimeISR.sysml",
+      "package": "MaritimeISR",
+      "brief": ""
+    },
+    "branch": "reuse",
+    "failing": [
+      "Official syntax",
+      "Total power vs limit",
+      "Upload vs uplink"
+    ],
+    "eligible": [],
+    "review": {
+      "at": "2026-10-06T21:24:23+00:00",
+      "text": "run 20261006T211951 · review for a person\nBrief: A harbor patrol unmanned surface vessel carries a visible camera drawing 41 W and an edge computer drawing 25 W. Add an infrared camera drawing 12 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 18 Mbps over one 8 Mbps uplink.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER FAIL, LINK FAIL, STORE PASS, TRACE PASS\n  approval: The POWER check did not pass (FAIL); it cannot go into memory.\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261006T212019-f0d0c0f8&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261006T211951/DesignA.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nDesign B: official Pilot FAIL after 21 parse(s); SYNTAX FAIL\n  approval: The official parse did not pass; it cannot go into memory.\nAlignment: 5/5 pairs verified; package PASS\nGate: No design passes all four checks, so none can go into memory. Pick a trade-off and send the brief back."
+    },
+    "decision": {
+      "action": "reject",
+      "note": "pipeline test, not a design decision",
+      "at": "2026-10-06T21:24:23+00:00"
+    },
+    "finished": "2026-10-06T21:24:23+00:00",
+    "grades": {
+      "branch": "reuse",
+      "path": "reuse",
+      "designs": {
+        "A": {
+          "official_pilot": "PASS",
+          "parses": 1,
+          "first_pass_attempt": 1,
+          "checks": {
+            "POWER": "FAIL",
+            "LINK": "FAIL",
+            "STORE": "PASS",
+            "TRACE": "PASS"
+          },
+          "read_back_complete": true
+        },
+        "B": {
+          "official_pilot": "FAIL",
+          "parses": 21,
+          "first_pass_attempt": null,
+          "checks": {
+            "SYNTAX": "FAIL"
+          },
+          "read_back_complete": false
+        }
+      },
+      "alignment": {
+        "proposed": 5,
+        "verified": 5,
+        "package": "PASS"
+      },
+      "eligible": [],
+      "approved": [],
+      "seconds": 253.3,
+      "model_calls": 26
+    }
+  },
+  "retrieval": {
+    "method": "hybrid",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "threshold": 0.3,
+    "name_bonus": 0.1,
+    "index_key": "ebfd88c5869a633e",
+    "sources": [
+      {
+        "name": "MaritimeISR",
+        "label": "Existing maritime model MaritimeISR",
+        "path": "scenario/maritime-isr/MaritimeISR.sysml",
+        "cards": 63
+      },
+      {
+        "name": "approved 20261003T144529·A",
+        "label": "Approved design 20261003T144529 · A",
+        "path": "mvp/runs/20261003T144549-729f1302",
+        "cards": 44
+      },
+      {
+        "name": "approved 20261003T150116·A",
+        "label": "Approved design 20261003T150116 · A",
+        "path": "mvp/runs/20261003T150134-3563f91d",
+        "cards": 45
+      }
+    ],
+    "library_size": 152,
+    "query_words": [
+      "camera",
+      "carries",
+      "computer",
+      "drawing",
+      "edge",
+      "harbor",
+      "hours",
+      "imagery",
+      "infrared",
+      "limit",
+      "locally",
+      "mbps",
+      "patrol",
+      "power",
+      "recorded",
+      "shore",
+      "storage",
+      "surface",
+      "unmanned",
+      "uplink",
+      "uploaded",
+      "vessel",
+      "visible",
+      "8",
+      "12",
+      "18",
+      "25",
+      "41",
+      "60",
+      "128"
+    ],
+    "words": [
+      "camera",
+      "computer",
+      "edge",
+      "hours",
+      "imagery",
+      "infrared",
+      "limit",
+      "locally",
+      "mbps",
+      "power",
+      "recorded",
+      "shore",
+      "storage",
+      "surface",
+      "unmanned",
+      "uplink",
+      "uploaded",
+      "vessel",
+      "visible",
+      "8",
+      "12",
+      "18",
+      "60",
+      "128"
+    ],
+    "nodes": [
+      {
+        "id": "222bbb5d-3348-4aa8-a752-fa78cdaad5db",
+        "text": "PortUsage MaritimeISR::Camera::imagery",
+        "type": "PortUsage",
+        "name": "MaritimeISR::Camera::imagery",
+        "short": "imagery",
+        "role": "seed",
+        "score": 0.7735,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "1da2b6c0-c514-4608-8006-4a594305585e",
+        "text": "PartDefinition MaritimeISR::Camera",
+        "type": "PartDefinition",
+        "name": "MaritimeISR::Camera",
+        "short": "Camera",
+        "role": "seed",
+        "score": 0.6053,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+        "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0",
+        "type": "AttributeUsage",
+        "name": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW",
+        "short": "powerLimitW",
+        "value": 60.0,
+        "role": "seed",
+        "score": 0.6045,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "0282b2b5-4182-484f-bf17-fba65bc7923e",
+        "text": "PortDefinition MaritimeISR::ImageryPort",
+        "type": "PortDefinition",
+        "name": "MaritimeISR::ImageryPort",
+        "short": "ImageryPort",
+        "role": "seed",
+        "score": 0.5472,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "e45964fc-9f09-4c8d-8b5c-d4d997e14d84",
+        "text": "PartDefinition MaritimeISR::UnmannedSurfaceVessel",
+        "type": "PartDefinition",
+        "name": "MaritimeISR::UnmannedSurfaceVessel",
+        "short": "UnmannedSurfaceVessel",
+        "role": "neighbor",
+        "via": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+        "score": 0.4923,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "0f716893-49f7-4d1c-a665-6774ae8f5a68",
+        "text": "ConjugatedPortDefinition MaritimeISR::ImageryPort::'~ImageryPort'",
+        "type": "ConjugatedPortDefinition",
+        "name": "MaritimeISR::ImageryPort::'~ImageryPort'",
+        "short": "'~ImageryPort'",
+        "role": "neighbor",
+        "via": "0282b2b5-4182-484f-bf17-fba65bc7923e",
+        "score": 0.4205,
+        "source": "MaritimeISR"
+      }
+    ],
+    "edges": [
+      {
+        "from": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+        "to": "e45964fc-9f09-4c8d-8b5c-d4d997e14d84",
+        "kind": "owner"
+      },
+      {
+        "from": "0282b2b5-4182-484f-bf17-fba65bc7923e",
+        "to": "0f716893-49f7-4d1c-a665-6774ae8f5a68",
+        "kind": "owner"
+      }
+    ],
+    "cards": [
+      "PortUsage MaritimeISR::Camera::imagery",
+      "PartDefinition MaritimeISR::Camera",
+      "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0",
+      "PortDefinition MaritimeISR::ImageryPort",
+      "PartDefinition MaritimeISR::UnmannedSurfaceVessel",
+      "ConjugatedPortDefinition MaritimeISR::ImageryPort::'~ImageryPort'"
+    ],
+    "numbers": {
+      "MaritimeISR::UnmannedSurfaceVessel::powerLimitW": 60.0
+    },
+    "path": "reuse",
+    "note": "Reusable values found in existing models: reuse path."
+  },
+  "requirements": {
+    "requirements": [
+      {
+        "id": "R1",
+        "text": "The vessel shall have a total power limit of 60 W.",
+        "quantity": {
+          "name": "powerLimitW",
+          "value": 60,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R2",
+        "text": "The visible camera shall draw 41 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 41,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R3",
+        "text": "The edge computer shall draw 25 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 25,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R4",
+        "text": "The infrared camera shall draw 12 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 12,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R5",
+        "text": "Imagery shall be recorded locally at a data rate of 18 Mbps.",
+        "quantity": {
+          "name": "dataRateMbps",
+          "value": 18,
+          "unit": "Mbps"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R6",
+        "text": "Local recording shall support a retention period of 8 hours.",
+        "quantity": {
+          "name": "retentionHours",
+          "value": 8,
+          "unit": "hours"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R7",
+        "text": "Local storage capacity shall be 128 GB.",
+        "quantity": {
+          "name": "storageGB",
+          "value": 128,
+          "unit": "GB"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R8",
+        "text": "Imagery shall be uploaded to shore at an upload rate of 18 Mbps.",
+        "quantity": {
+          "name": "uploadMbps",
+          "value": 18,
+          "unit": "Mbps"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R9",
+        "text": "The uplink capacity shall be 8 Mbps.",
+        "quantity": {
+          "name": "uplinkMbps",
+          "value": 8,
+          "unit": "Mbps"
+        },
+        "unsourced_numbers": []
+      }
+    ],
+    "questions": [],
+    "unsourced": [],
+    "model": "qwen3.8-flash",
+    "usage": {
+      "prompt_tokens": 272,
+      "total_tokens": 909,
+      "completion_tokens": 637,
+      "prompt_tokens_details": {
+        "cached_tokens": 0,
+        "text_tokens": 272
+      }
+    }
+  },
+  "designs": [
+    {
+      "key": "A",
+      "source": "package DesignA {\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def UnmannedSurfaceVessel {\n        part eoCamera : Camera {\n            attribute drawW : Real = 41.0;\n        }\n        part irCamera : Camera {\n            attribute drawW : Real = 12.0;\n        }\n        part processor : Processor {\n            attribute drawW : Real = 25.0;\n        }\n        part radio : Radio;\n        \n        attribute powerLimitW : Real = 60.0;\n        attribute dataRateMbps : Real = 18.0;\n        attribute retentionHours : Real = 8.0;\n        attribute storageGB : Real = 128.0;\n        attribute uploadMbps : Real = 18.0;\n        attribute uplinkMbps : Real = 8.0;\n    }\n\n    part usv : UnmannedSurfaceVessel;\n\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.irCamera.imagery to usv.processor.imageryIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n}\n",
+      "sysml_status": "PASS",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "PASS",
+          "diagnostics": [],
+          "sha": "70a083c15638",
+          "same_as_previous": false,
+          "run_id": "20261006T212019-f0d0c0f8",
+          "text": "package DesignA {\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def UnmannedSurfaceVessel {\n        part eoCamera : Camera {\n            attribute drawW : Real = 41.0;\n        }\n        part irCamera : Camera {\n            attribute drawW : Real = 12.0;\n        }\n        part processor : Processor {\n            attribute drawW : Real = 25.0;\n        }\n        part radio : Radio;\n        \n        attribute powerLimitW : Real = 60.0;\n        attribute dataRateMbps : Real = 18.0;\n        attribute retentionHours : Real = 8.0;\n        attribute storageGB : Real = 128.0;\n        attribute uploadMbps : Real = 18.0;\n        attribute uplinkMbps : Real = 8.0;\n    }\n\n    part usv : UnmannedSurfaceVessel;\n\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.irCamera.imagery to usv.processor.imageryIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n}\n"
+        }
+      ],
+      "repair_rounds": 0,
+      "max_rounds": 20,
+      "first_pass_attempt": 1,
+      "diagnostics": [],
+      "run_dir": "/data/robotics/RTRC/mvp/runs/20261006T212019-f0d0c0f8",
+      "model": "qwen3.8-flash",
+      "usage": {
+        "prompt_tokens": 1600,
+        "total_tokens": 2226,
+        "completion_tokens": 626,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 1600
+        }
+      },
+      "prompt_parts": [
+        {
+          "key": "rules",
+          "label": "Rules",
+          "paper": "p3",
+          "text": "You write SysML v2 textual notation.\nRules:\n- Output one fenced code block tagged sysml, and no prose before or after it.\n- The file contains exactly one package whose name is given in the task.\n- When you use Real, write `private import ScalarValues::*;` as the first line inside the package. In this toolchain an import inside a package needs the visibility keyword; a bare `import` is rejected. Do not import anything else.\n- Use only names the task requires. Do not invent numeric limits.\n- Do not change a number the task tells you to keep.\n- The first line inside the package is exactly: private import ScalarValues::*;\n- Declare attributes as `attribute name : Real = 12.0;` inside part usages, not part definitions, so values are literals.\n"
+        },
+        {
+          "key": "contract",
+          "label": "Template · attribute contract",
+          "paper": "p3",
+          "text": "attribute powerLimitW : Real = 60;  // R1\nattribute drawW : Real = 41;  // R2\nattribute drawW : Real = 25;  // R3\nattribute drawW : Real = 12;  // R4\nattribute dataRateMbps : Real = 18;  // R5\nattribute retentionHours : Real = 8;  // R6\nattribute storageGB : Real = 128;  // R7\nattribute uploadMbps : Real = 18;  // R8\nattribute uplinkMbps : Real = 8;  // R9"
+        },
+        {
+          "key": "baseline",
+          "label": "Similar project to adapt · MaritimeISR",
+          "paper": "p2",
+          "text": "package MaritimeISR {\n    /* Synthetic maritime ISR reference model. Numbers are not RTX specifications.\n       Ground truth for the benchmark: frozen before any agent is scored against it. */\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def TrackPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def AisReceiver {\n        port tracks : TrackPort;\n    }\n    part def Radar {\n        port tracks : TrackPort;\n    }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n        port trackOut : TrackPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def UnmannedSurfaceVessel {\n        part eoCamera : Camera;\n        part irCamera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 60.0;\n        attribute uplinkMbps : Real = 8.0;\n        attribute storageGB : Real = 128.0;\n    }\n    part def FixedWingUav {\n        part eoCamera : Camera;\n        part searchRadar : Radar;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 120.0;\n        attribute downlinkMbps : Real = 20.0;\n    }\n    part def CommandShip {\n        port fromUsv : LinkPort;\n        port fromUav : LinkPort;\n        port toShore : LinkPort;\n        part fusion : Processor;\n        attribute fusionLatencyS : Real = 2.0;\n    }\n    part def ShoreStation {\n        port fromCommand : LinkPort;\n        part archive : Processor;\n        attribute backhaulMbps : Real = 50.0;\n    }\n\n    part usv : UnmannedSurfaceVessel;\n    part uav : FixedWingUav;\n    part commandShip : CommandShip;\n    part shore : ShoreStation;\n\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.irCamera.imagery to usv.processor.imageryIn;\n    connect usv.ais.tracks to usv.processor.trackIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n    connect usv.radio.toShore to commandShip.fromUsv;\n    connect uav.searchRadar.tracks to uav.processor.trackIn;\n    connect uav.eoCamera.imagery to uav.processor.imageryIn;\n    connect uav.processor.uplink to uav.radio.fromProcessor;\n    connect uav.radio.toShore to commandShip.fromUav;\n    connect commandShip.toShore to shore.fromCommand;\n\n    requirement def LocalRawRetention {\n        doc /* USV raw imagery is retained locally. Numeric retention is a separate synthetic budget, not implied here. */\n    }\n    requirement def PowerLimitUnchanged {\n        doc /* Synthetic: USV input power limit stays 60 W. An agent must not edit this limit to make a design pass. */\n    }\n    requirement def TrackSharing {\n        doc /* Synthetic: USV AIS tracks and UAV radar tracks are shared to the command ship, then to the shore archive. */\n    }\n}\n"
+        },
+        {
+          "key": "task",
+          "label": "Brief + requirements",
+          "paper": "",
+          "text": "A harbor patrol unmanned surface vessel carries a visible camera drawing 41 W and an edge computer drawing 25 W. Add an infrared camera drawing 12 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 18 Mbps over one 8 Mbps uplink.\n\nR1: The vessel shall have a total power limit of 60 W.\nR2: The visible camera shall draw 41 W.\nR3: The edge computer shall draw 25 W.\nR4: The infrared camera shall draw 12 W.\nR5: Imagery shall be recorded locally at a data rate of 18 Mbps.\nR6: Local recording shall support a retention period of 8 hours.\nR7: Local storage capacity shall be 128 GB.\nR8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps.\nR9: The uplink capacity shall be 8 Mbps."
+        },
+        {
+          "key": "variant",
+          "label": "What this variant must do",
+          "paper": "",
+          "text": "Design A: adapt the similar existing project. Start from its model: keep its structure, part names and port names where they fit the brief; change only what the requirements need; add what is missing; leave out what the brief does not need. Every number must come from the requirements, and a stated limit is never changed."
+        }
+      ],
+      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261006T211951/DesignA.sysml",
+      "numbers": {
+        "DesignA::UnmannedSurfaceVessel::uploadMbps": 18.0,
+        "DesignA::UnmannedSurfaceVessel::irCamera::drawW": 12.0,
+        "DesignA::UnmannedSurfaceVessel::uplinkMbps": 8.0,
+        "DesignA::UnmannedSurfaceVessel::powerLimitW": 60.0,
+        "DesignA::UnmannedSurfaceVessel::storageGB": 128.0,
+        "DesignA::UnmannedSurfaceVessel::eoCamera::drawW": 41.0,
+        "DesignA::UnmannedSurfaceVessel::retentionHours": 8.0,
+        "DesignA::UnmannedSurfaceVessel::processor::drawW": 25.0,
+        "DesignA::UnmannedSurfaceVessel::dataRateMbps": 18.0
+      },
+      "connections": [
+        [
+          "DesignA::usv.eoCamera.imagery",
+          "DesignA::usv.processor.imageryIn"
+        ],
+        [
+          "DesignA::usv.irCamera.imagery",
+          "DesignA::usv.processor.imageryIn"
+        ],
+        [
+          "DesignA::usv.processor.uplink",
+          "DesignA::usv.radio.fromProcessor"
+        ]
+      ],
+      "elements": [
+        "DesignA",
+        "DesignA::Camera",
+        "DesignA::Camera::imagery",
+        "DesignA::ImageryPort",
+        "DesignA::LinkPort",
+        "DesignA::Processor",
+        "DesignA::Processor::imageryIn",
+        "DesignA::Processor::uplink",
+        "DesignA::R1",
+        "DesignA::R2",
+        "DesignA::R3",
+        "DesignA::R4",
+        "DesignA::R5",
+        "DesignA::R6",
+        "DesignA::R7",
+        "DesignA::R8",
+        "DesignA::R9",
+        "DesignA::Radio",
+        "DesignA::Radio::fromProcessor",
+        "DesignA::Radio::toShore",
+        "DesignA::UnmannedSurfaceVessel",
+        "DesignA::UnmannedSurfaceVessel::dataRateMbps",
+        "DesignA::UnmannedSurfaceVessel::eoCamera",
+        "DesignA::UnmannedSurfaceVessel::eoCamera::drawW",
+        "DesignA::UnmannedSurfaceVessel::irCamera",
+        "DesignA::UnmannedSurfaceVessel::irCamera::drawW",
+        "DesignA::UnmannedSurfaceVessel::powerLimitW",
+        "DesignA::UnmannedSurfaceVessel::processor",
+        "DesignA::UnmannedSurfaceVessel::processor::drawW",
+        "DesignA::UnmannedSurfaceVessel::radio",
+        "DesignA::UnmannedSurfaceVessel::retentionHours",
+        "DesignA::UnmannedSurfaceVessel::storageGB",
+        "DesignA::UnmannedSurfaceVessel::uplinkMbps",
+        "DesignA::UnmannedSurfaceVessel::uploadMbps",
+        "DesignA::usv",
+        "ScalarValues",
+        "ScalarValues::Real"
+      ],
+      "checks": [
+        {
+          "id": "POWER",
+          "label": "Total power vs limit",
+          "formula": "sum of all drawW ≤ powerLimitW",
+          "status": "FAIL",
+          "actual": 78.0,
+          "limit": 60.0,
+          "unit": "W"
+        },
+        {
+          "id": "LINK",
+          "label": "Upload vs uplink",
+          "formula": "uploadMbps ≤ uplinkMbps",
+          "status": "FAIL",
+          "actual": 18.0,
+          "limit": 8.0,
+          "unit": "Mbps"
+        },
+        {
+          "id": "STORE",
+          "label": "Recording storage",
+          "formula": "dataRateMbps × retentionHours × 3600 ÷ 8000 ≤ storageGB",
+          "status": "PASS",
+          "actual": 64.8,
+          "limit": 128.0,
+          "unit": "GB"
+        },
+        {
+          "id": "TRACE",
+          "label": "Numbered requirements in the model",
+          "formula": "each requirement's attribute name and value appear in the official parse",
+          "status": "PASS",
+          "actual": 9,
+          "limit": 9,
+          "unit": "reqs"
+        },
+        {
+          "id": "CONNECT",
+          "label": "Connections",
+          "status": "INFO",
+          "actual": 3,
+          "unit": "links"
+        }
+      ],
+      "read_back": "The vessel shall have a total power limit of 60 W.\nThe visible camera shall draw 41 W.\nThe edge computer shall draw 25 W.\nThe infrared camera shall draw 12 W.\nImagery shall be recorded locally at a data rate of 18 Mbps.\nLocal recording shall support a retention period of 8 hours.\nLocal storage capacity shall be 128 GB.\nImagery shall be uploaded to shore at an upload rate of 18 Mbps.\nThe uplink capacity shall be 8 Mbps.",
+      "read_back_numbers": {
+        "8": true,
+        "12": true,
+        "18": true,
+        "25": true,
+        "41": true,
+        "60": true,
+        "128": true
+      },
+      "diagram": "http://127.0.0.1:8781/diagram?run=20261006T212019-f0d0c0f8&view=connections",
+      "cameo_export": "analysis/cameo-exports/20261006T211951/DesignA.sysml"
+    },
+    {
+      "key": "B",
+      "source": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n",
+      "sysml_status": "FAIL",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 33,
+              "column": 28,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 33,
+              "column": 43,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 36,
+              "column": 21,
+              "message": "no viable alternative at input 'Camera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 37,
+              "column": 28,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 37,
+              "column": 43,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 40,
+              "column": 21,
+              "message": "no viable alternative at input 'Recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 23,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 38,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 42,
+              "column": 24,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 42,
+              "column": 39,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 45,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 46,
+              "column": 23,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 46,
+              "column": 38,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 47,
+              "column": 24,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 47,
+              "column": 39,
+              "message": "no viable alternative at input 'MaritimeISR'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 36,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 40,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 45,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 51,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 42,
+              "column": 52,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 46,
+              "column": 51,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 47,
+              "column": 52,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 50,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 61,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 64,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "WARNING",
+              "line": 64,
+              "column": 9,
+              "message": "Duplicate of inherited member name 'ImageryPort' from Recorder, Recorder"
+            },
+            {
+              "severity": "ERROR",
+              "line": 66,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "WARNING",
+              "line": 66,
+              "column": 9,
+              "message": "Duplicate of inherited member name 'ImageryPort' from EdgeComputer, EdgeComputer"
+            }
+          ],
+          "sha": "139920805e9a",
+          "same_as_previous": false,
+          "run_id": "20261006T212024-c82f597d",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVessel {\n        port imageryPort : PortDefinition MaritimeISR::ImageryPort;\n    }\n\n    part definition Camera {\n        port imageryPort : PortDefinition MaritimeISR::ImageryPort;\n    }\n\n    part definition Recorder {\n        port inPort : PortDefinition MaritimeISR::ImageryPort;\n        port outPort : PortDefinition MaritimeISR::ImageryPort;\n    }\n\n    part definition EdgeComputer {\n        port inPort : PortDefinition MaritimeISR::ImageryPort;\n        port outPort : PortDefinition MaritimeISR::ImageryPort;\n    }\n\n    part vessel : UnmannedSurfaceVessel {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : Camera {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : Camera {\n            attribute drawW : Real = 12;\n        }\n        part recorder : Recorder {\n        }\n        part edgeComputer : EdgeComputer {\n            attribute drawW : Real = 25;\n        }\n\n        connect visibleCamera.imageryPort to recorder.inPort;\n        connect infraredCamera.imageryPort to recorder.inPort;\n        connect recorder.outPort to edgeComputer.inPort;\n        connect edgeComputer.outPort to vessel.imageryPort;\n    }\n}\n"
+        },
+        {
+          "attempt": 2,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'ImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 39,
+              "column": 21,
+              "message": "no viable alternative at input 'Camera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 43,
+              "column": 21,
+              "message": "no viable alternative at input 'Recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 48,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputer'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 39,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 43,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 48,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 36,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 40,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 45,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 49,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 50,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 53,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 61,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 64,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 67,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 69,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 73,
+              "column": 17,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 73,
+              "column": 46,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 74,
+              "column": 17,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 74,
+              "column": 47,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 75,
+              "column": 17,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 75,
+              "column": 37,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 76,
+              "column": 17,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 76,
+              "column": 41,
+              "message": "A usage must be typed by definitions."
+            }
+          ],
+          "sha": "43de58b9d815",
+          "same_as_previous": false,
+          "run_id": "20261006T212035-8b8ff79b",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    port definition ImageryPort {\n    }\n\n    part definition UnmannedSurfaceVessel {\n        port imageryPort : ImageryPort;\n    }\n\n    part definition Camera {\n        port imageryPort : ImageryPort;\n    }\n\n    part definition Recorder {\n        port inPort : ImageryPort;\n        port outPort : ImageryPort;\n    }\n\n    part definition EdgeComputer {\n        port inPort : ImageryPort;\n        port outPort : ImageryPort;\n    }\n\n    part vessel : UnmannedSurfaceVessel {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : Camera {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : Camera {\n            attribute drawW : Real = 12;\n        }\n        part recorder : Recorder {\n        }\n        part edgeComputer : EdgeComputer {\n            attribute drawW : Real = 25;\n        }\n\n        connect visibleCamera.imageryPort to recorder.inPort;\n        connect infraredCamera.imageryPort to recorder.inPort;\n        connect recorder.outPort to edgeComputer.inPort;\n        connect edgeComputer.outPort to vessel.imageryPort;\n    }\n}\n"
+        },
+        {
+          "attempt": 3,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'ImageryPortDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 39,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 43,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 48,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 39,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 43,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 48,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 36,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 40,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 45,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 49,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 50,
+              "column": 9,
+              "message": "A port must be typed by port definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 53,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 61,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 64,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 67,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 69,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 73,
+              "column": 17,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 73,
+              "column": 46,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 74,
+              "column": 17,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 74,
+              "column": 47,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 75,
+              "column": 17,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 75,
+              "column": 37,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 76,
+              "column": 17,
+              "message": "A usage must be typed by definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 76,
+              "column": 41,
+              "message": "A usage must be typed by definitions."
+            }
+          ],
+          "sha": "3ff31bb2637e",
+          "same_as_previous": false,
+          "run_id": "20261006T212045-87ddd464",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    port definition ImageryPortDef {\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n        port imageryPort : ImageryPortDef;\n    }\n\n    part definition CameraDef {\n        port imageryPort : ImageryPortDef;\n    }\n\n    part definition RecorderDef {\n        port inPort : ImageryPortDef;\n        port outPort : ImageryPortDef;\n    }\n\n    part definition EdgeComputerDef {\n        port inPort : ImageryPortDef;\n        port outPort : ImageryPortDef;\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n\n        connect visibleCamera.imageryPort to recorder.inPort;\n        connect infraredCamera.imageryPort to recorder.inPort;\n        connect recorder.outPort to edgeComputer.inPort;\n        connect edgeComputer.outPort to vessel.imageryPort;\n    }\n}\n"
+        },
+        {
+          "attempt": 4,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 45,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 48,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 45,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 48,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 53,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "WARNING",
+              "line": 54,
+              "column": 23,
+              "message": "Duplicate of inherited member name 'drawW' from CameraDef"
+            },
+            {
+              "severity": "ERROR",
+              "line": 56,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "WARNING",
+              "line": 57,
+              "column": 23,
+              "message": "Duplicate of inherited member name 'drawW' from CameraDef"
+            },
+            {
+              "severity": "ERROR",
+              "line": 59,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 61,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "WARNING",
+              "line": 62,
+              "column": 23,
+              "message": "Duplicate of inherited member name 'drawW' from EdgeComputerDef"
+            }
+          ],
+          "sha": "bb6c96439b77",
+          "same_as_previous": false,
+          "run_id": "20261006T212055-3b3f0d32",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n    }\n\n    part definition CameraDef {\n        attribute drawW : Real = 0;\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n        attribute drawW : Real = 0;\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 5,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": false,
+          "run_id": "20261006T212104-0d8accbe",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 6,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212114-dbd2bfc7",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 7,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212124-7410f0bb",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 8,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212133-7c5ad1a2",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 9,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212143-a61f85ea",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 10,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212153-482f7b94",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 11,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212203-f7d27dcc",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 12,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212212-096fc432",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 13,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212222-196fb0f8",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 14,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212231-64d963fd",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 15,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212240-7def2392",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 16,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212249-a66619c4",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 17,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212259-e5d64304",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 18,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212308-c4902d4d",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 19,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212318-8810141a",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 20,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212328-3c3c5a84",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        },
+        {
+          "attempt": 21,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 32,
+              "column": 21,
+              "message": "no viable alternative at input 'UnmannedSurfaceVesselDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 35,
+              "column": 21,
+              "message": "no viable alternative at input 'CameraDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 38,
+              "column": 21,
+              "message": "no viable alternative at input 'RecorderDef'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 41,
+              "column": 21,
+              "message": "no viable alternative at input 'EdgeComputerDef'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 32,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 35,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 38,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 41,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "ERROR",
+              "line": 44,
+              "column": 5,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 52,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 55,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 58,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            },
+            {
+              "severity": "ERROR",
+              "line": 60,
+              "column": 9,
+              "message": "An occurrence, item or part must be typed by occurrence definitions."
+            }
+          ],
+          "sha": "623d467b19a9",
+          "same_as_previous": true,
+          "run_id": "20261006T212338-254b071c",
+          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The vessel shall have a total power limit of 60 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 41 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 25 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 12 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 18 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Local recording shall support a retention period of 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: Local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 8 Mbps. */\n    }\n\n    part definition UnmannedSurfaceVesselDef {\n    }\n\n    part definition CameraDef {\n    }\n\n    part definition RecorderDef {\n    }\n\n    part definition EdgeComputerDef {\n    }\n\n    part vessel : UnmannedSurfaceVesselDef {\n        attribute powerLimitW : Real = 60;\n        attribute dataRateMbps : Real = 18;\n        attribute retentionHours : Real = 8;\n        attribute storageGB : Real = 128;\n        attribute uploadMbps : Real = 18;\n        attribute uplinkMbps : Real = 8;\n\n        part visibleCamera : CameraDef {\n            attribute drawW : Real = 41;\n        }\n        part infraredCamera : CameraDef {\n            attribute drawW : Real = 12;\n        }\n        part recorder : RecorderDef {\n        }\n        part edgeComputer : EdgeComputerDef {\n            attribute drawW : Real = 25;\n        }\n    }\n}\n"
+        }
+      ],
+      "repair_rounds": 20,
+      "max_rounds": 20,
+      "first_pass_attempt": null,
+      "diagnostics": [
+        "no viable alternative at input 'UnmannedSurfaceVesselDef'",
+        "no viable alternative at input 'CameraDef'",
+        "no viable alternative at input 'RecorderDef'",
+        "no viable alternative at input 'EdgeComputerDef'",
+        "Duplicate of other owned member name",
+        "Duplicate of other owned member name",
+        "Duplicate of other owned member name",
+        "Duplicate of other owned member name",
+        "An occurrence, item or part must be typed by occurrence definitions.",
+        "An occurrence, item or part must be typed by occurrence definitions.",
+        "An occurrence, item or part must be typed by occurrence definitions.",
+        "An occurrence, item or part must be typed by occurrence definitions.",
+        "An occurrence, item or part must be typed by occurrence definitions."
+      ],
+      "run_dir": "/data/robotics/RTRC/mvp/runs/20261006T212338-254b071c",
+      "model": "qwen3.8-flash",
+      "usage": {
+        "prompt_tokens": 852,
+        "total_tokens": 1502,
+        "completion_tokens": 650,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "text_tokens": 852
+        }
+      },
+      "prompt_parts": [
+        {
+          "key": "rules",
+          "label": "Rules",
+          "paper": "p3",
+          "text": "You write SysML v2 textual notation.\nRules:\n- Output one fenced code block tagged sysml, and no prose before or after it.\n- The file contains exactly one package whose name is given in the task.\n- When you use Real, write `private import ScalarValues::*;` as the first line inside the package. In this toolchain an import inside a package needs the visibility keyword; a bare `import` is rejected. Do not import anything else.\n- Use only names the task requires. Do not invent numeric limits.\n- Do not change a number the task tells you to keep.\n- The first line inside the package is exactly: private import ScalarValues::*;\n- Declare attributes as `attribute name : Real = 12.0;` inside part usages, not part definitions, so values are literals.\n"
+        },
+        {
+          "key": "contract",
+          "label": "Template · attribute contract",
+          "paper": "p3",
+          "text": "attribute powerLimitW : Real = 60;  // R1\nattribute drawW : Real = 41;  // R2\nattribute drawW : Real = 25;  // R3\nattribute drawW : Real = 12;  // R4\nattribute dataRateMbps : Real = 18;  // R5\nattribute retentionHours : Real = 8;  // R6\nattribute storageGB : Real = 128;  // R7\nattribute uploadMbps : Real = 18;  // R8\nattribute uplinkMbps : Real = 8;  // R9"
+        },
+        {
+          "key": "examples",
+          "label": "Examples · retrieved existing elements",
+          "paper": "p2",
+          "text": "PortUsage MaritimeISR::Camera::imagery\nPartDefinition MaritimeISR::Camera\nAttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0\nPortDefinition MaritimeISR::ImageryPort\nPartDefinition MaritimeISR::UnmannedSurfaceVessel\nConjugatedPortDefinition MaritimeISR::ImageryPort::'~ImageryPort'"
+        },
+        {
+          "key": "task",
+          "label": "Brief + requirements",
+          "paper": "",
+          "text": "A harbor patrol unmanned surface vessel carries a visible camera drawing 41 W and an edge computer drawing 25 W. Add an infrared camera drawing 12 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 18 Mbps over one 8 Mbps uplink.\n\nR1: The vessel shall have a total power limit of 60 W.\nR2: The visible camera shall draw 41 W.\nR3: The edge computer shall draw 25 W.\nR4: The infrared camera shall draw 12 W.\nR5: Imagery shall be recorded locally at a data rate of 18 Mbps.\nR6: Local recording shall support a retention period of 8 hours.\nR7: Local storage capacity shall be 128 GB.\nR8: Imagery shall be uploaded to shore at an upload rate of 18 Mbps.\nR9: The uplink capacity shall be 8 Mbps."
+        },
+        {
+          "key": "variant",
+          "label": "What this variant must do",
+          "paper": "",
+          "text": "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A."
+        }
+      ],
+      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261006T211951/DesignB.sysml",
+      "checks": [
+        {
+          "id": "SYNTAX",
+          "label": "Official syntax",
+          "status": "FAIL",
+          "detail": "The parse failed, so nothing was computed."
+        }
+      ],
+      "diagram": "",
+      "cameo_export": null
+    }
+  ],
+  "alignment": {
+    "mappings": [
+      {
+        "design": "DesignA::Camera",
+        "existing": "MaritimeISR::Camera",
+        "reason": "Both define a Camera part definition with an imagery port.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias Camera for MaritimeISR::Camera;",
+        "index": 0
+      },
+      {
+        "design": "DesignA::Camera::imagery",
+        "existing": "MaritimeISR::Camera::imagery",
+        "reason": "Direct mapping of the imagery port within the Camera definition.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias imagery for MaritimeISR::Camera::imagery;",
+        "index": 1
+      },
+      {
+        "design": "DesignA::ImageryPort",
+        "existing": "MaritimeISR::ImageryPort",
+        "reason": "Both define the ImageryPort interface used by cameras and processors.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias ImageryPort for MaritimeISR::ImageryPort;",
+        "index": 2
+      },
+      {
+        "design": "DesignA::UnmannedSurfaceVessel",
+        "existing": "MaritimeISR::UnmannedSurfaceVessel",
+        "reason": "Both define the top-level Unmanned Surface Vessel system component.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias UnmannedSurfaceVessel for MaritimeISR::UnmannedSurfaceVessel;",
+        "index": 3
+      },
+      {
+        "design": "DesignA::UnmannedSurfaceVessel::powerLimitW",
+        "existing": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW",
+        "reason": "Direct mapping of the power limit attribute on the USV.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias powerLimitW for MaritimeISR::UnmannedSurfaceVessel::powerLimitW;",
+        "index": 4
+      }
+    ],
+    "verified": 5,
+    "declared": 5,
+    "refused": [],
+    "proposed": 5,
+    "existing_names": [
+      "MaritimeISR::Camera",
+      "MaritimeISR::Camera::imagery",
+      "MaritimeISR::ImageryPort",
+      "MaritimeISR::ImageryPort::'~ImageryPort'",
+      "MaritimeISR::UnmannedSurfaceVessel",
+      "MaritimeISR::UnmannedSurfaceVessel::powerLimitW"
+    ],
+    "model": "qwen3.8-flash",
+    "constructs": "alias for definitions and definition features, allocation for usages",
+    "note": "Mappings are proposals. Code checks both names exist, writes alias and allocation statements from the two parses, then the official Pilot parses the alignment package. Neither source model is edited. A person accepts or rejects each pair.",
+    "package": {
+      "name": "AlignA_20261006T211951",
+      "source": "package AlignA_20261006T211951 {\n    doc /* Alignment package written by code from the model's verified mappings. Neither source model is edited. */\n    private import DesignA::*;\n    private import MaritimeISR::*;\n    alias Camera for MaritimeISR::Camera;\n    alias imagery for MaritimeISR::Camera::imagery;\n    alias ImageryPort for MaritimeISR::ImageryPort;\n    alias UnmannedSurfaceVessel for MaritimeISR::UnmannedSurfaceVessel;\n    alias powerLimitW for MaritimeISR::UnmannedSurfaceVessel::powerLimitW;\n}\n",
+      "files": [
+        "MaritimeISR.sysml",
+        "DesignA.sysml",
+        "AlignA_20261006T211951.sysml"
+      ],
+      "sysml_status": "PASS",
+      "run_id": "20261006T212347-d5827e9e",
+      "diagnostics": []
+    }
+  },
+  "tradeoffs": {
+    "proposals": [],
+    "error": "JSONDecodeError: Unterminated string starting at: line 33 column 20 (char 2654)"
+  },
+  "usage": {
+    "calls": 26,
+    "by_model": {
+      "qwen3.8-flash": {
+        "calls": 26,
+        "prompt_tokens": 237850,
+        "completion_tokens": 14026,
+        "cached_tokens": 204032
+      }
+    }
+  },
+  "gate": {
+    "answer": "awaiting-person",
+    "eligible": [],
+    "effect": "No design passes all four checks, so none can go into memory. Pick a trade-off and send the brief back."
+  },
+  "cameo": [
+    {
+      "design": "A",
+      "result": "not checked yet",
+      "note": "",
+      "at": "2026-10-06T21:46:15+00:00"
+    }
+  ]
+}

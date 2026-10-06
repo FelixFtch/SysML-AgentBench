@@ -117,18 +117,18 @@ Not recommended for anything scored:
 ## 8. Human input in detail
 
 - After ⑤, when all four checks pass for at least one design, the run reaches Human Input. Its Form Content is the same approval text the page shows (`approval_block`): requirements, numbers and their sources, the four checks, the read-back, the alignment summary, and links to the model diagrams.
-- The User Actions "Approve design A", "Approve design B" and "Reject" become three branches. The approve branches call RTRC Approve, which writes memory exactly as the page's Approve button does. Reject ends with a Chat Output that records the reason.
-- Langflow checkpoints the run, so approving later does not re-run ①–⑤. Programmatic approval uses the Workflow API (beta): a background run reports `suspended`, and `POST /api/v2/workflows/{job_id}/resume` with `{"action_id": "approve_design_a"}` resumes it.
+- The User Choices "Approve design A", "Approve design B", "Reject" and "Send back" become four branches, each with its own RTRC Record node and Chat Output (as built; see §15 for why branches are not joined). The approve records write memory exactly as the page's Approve button does, through the same gate.
+- Langflow checkpoints the run, so approving later does not re-run ①–⑦. Programmatic approval uses the Workflow API (beta): a background run reports `suspended`, `GET /api/v2/workflows/pending?flow_id=…` gives the request id, and `POST /api/v2/workflows/{job_id}/resume` with `{"request_id": …, "decision": {"action_id": "approve_design_a"}}` resumes it.
 - Per-pair alignment review stays on page 2.3. Run Flow cannot contain Human Input, and one pause per pair would be unusable.
 
 ## 9. Integrity and security checklist
 
 - Langflow 1.12.5 and lfx 1.12.5, pinned in a new `requirements-langflow.txt`, installed only in `.venv-langflow`.
 - Start through `scripts/langflow.sh`:
-  - `LANGFLOW_AUTO_LOGIN=False`, a strong `LANGFLOW_SUPERUSER_PASSWORD` and `LANGFLOW_SECRET_KEY` from `.env` (gitignored);
-  - bind to 127.0.0.1:7860;
+  - `LANGFLOW_AUTO_LOGIN=False`, a strong `LANGFLOW_SUPERUSER_PASSWORD` and `LANGFLOW_SECRET_KEY` from `.langflow/secrets.env` (gitignored, created by `scripts/langflow_secrets.py`);
+  - bind to 127.0.0.1:7860, CORS limited to that origin;
   - `LANGFLOW_COMPONENTS_PATH=langflow/components`;
-  - `LANGFLOW_COMPONENT_CATEGORY_BLOCKLIST` covering code-execution and file-system categories (prototypes, Python REPL, file system) so no flow can read the repository.
+  - `LANGFLOW_ALLOW_CUSTOM_COMPONENTS=False` and `LANGFLOW_CUSTOM_COMPONENT_ADMIN_ONLY=True`: only built-in components and ours run, edited or pasted code is refused, and the built-in code-execution components are disabled. (Correction: the category blocklist named here before does not exist in Langflow 1.12.5.)
 - The shell service binds 127.0.0.1:8781, requires a token header, and holds no answer keys. Its token and the Langflow API key are removed from the environment handed to sandboxed agents (the runners currently pass `os.environ` through, so this is a code change).
 - While any agent run is in progress: the results page is stopped (as now), and Langflow either requires a key (auth on) or is stopped.
 - Exported flows are scanned for keys before commit, with the same read-only secret scan as now.
@@ -222,3 +222,16 @@ The user reviewed the flow drawn in the canvas "The Langflow agent flow to build
 ## 14. Correction to decision 003
 
 Decision 003 (2026-10-02) gives three reasons. "A builder is not an evaluator" and "two implementations would fork the evidence" still hold, and this plan keeps a single implementation. "It has no native approval gate" no longer holds: since 1.11 Langflow has the Human Input component and agent tool approval, with checkpointed pause and resume.
+
+## 15. Build status (2026-10-06)
+
+Built and tested; guide in `langflow/README.md`, decision 030.
+
+- **Built:** the shell service; 13 RTRC nodes; seven flows as code (agent flow, F0, F1, F2, F3, F5, Cameo check) imported into the project "RTRC SysML-AgentBench"; the secure start script; the parity test.
+- **Tested:** every flow headless; Human Input pause and resume from the terminal, through the v2 Workflow API and by clicking the card in the editor; a live agent-flow run through the Langflow server (run 20261006T215846, on page 2.3); a live direct exam cell and a live OpenCode exam cell (with the results page stopped; the shell refuses while it runs); parity on run 20261006T211951.
+- **Changed from the plan:**
+  - Human Input branches are not joined again: in 1.12.5 a node fed by two branches receives the review text on both, and a node after two branch nodes fails. RTRC Approve is merged into RTRC Record, one per choice. The MOD gate sits after the read-back for the same reason.
+  - Security uses `LANGFLOW_ALLOW_CUSTOM_COMPONENTS=False` (§9). No model key is configured in Langflow, so the Simple Agent template and the MCP Tools registration of phase 0 were not done; the RTRC nodes do not need them.
+  - The agent flow's adapt step (reuse) is new; on the page both designs are always new.
+- **Not built yet:** the Langflow knowledge-base mirror of the memory (§7, option A). Langflow 1.12.5 knowledge bases embed only through OpenAI, Google, Ollama, WatsonX or Azure, not a local MiniLM, so the mirror needs either the Qwen key stored in Langflow (DashScope's OpenAI-compatible embeddings) or a local Ollama. F0 shows the cards as a table until that is decided.
+- **Open finding:** Part 2's repair loop has no stop on identical resubmissions (design B used all 20 repairs in both live runs, 16 of 21 attempts identical to the previous one); kept so the flow matches the page.

@@ -1,0 +1,2368 @@
+{
+  "name": "RTRC Cameo check (when licensed)",
+  "description": "Export a run's designs for Cameo and record the person's check.",
+  "endpoint_name": "rtrc-cameo-check",
+  "is_component": false,
+  "tags": [
+    "rtrc",
+    "cameo"
+  ],
+  "data": {
+    "nodes": [
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "files": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "file_path": "",
+                "fileTypes": [
+                  "csv",
+                  "json",
+                  "pdf",
+                  "txt",
+                  "md",
+                  "mdx",
+                  "yaml",
+                  "yml",
+                  "xml",
+                  "html",
+                  "htm",
+                  "docx",
+                  "py",
+                  "sh",
+                  "sql",
+                  "js",
+                  "ts",
+                  "tsx",
+                  "jpg",
+                  "jpeg",
+                  "png",
+                  "bmp",
+                  "image"
+                ],
+                "temp_file": true,
+                "list": true,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "files",
+                "value": "",
+                "display_name": "Files",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Files to be sent with the message.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "file",
+                "_input_type": "FileInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from lfx.base.data.utils import IMG_FILE_TYPES, TEXT_FILE_TYPES\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.inputs.inputs import BoolInput\nfrom lfx.io import (\n    DropdownInput,\n    FileInput,\n    MessageTextInput,\n    MultilineInput,\n    Output,\n)\nfrom lfx.schema.image import get_file_paths\nfrom lfx.schema.message import Message\nfrom lfx.services.deps import get_settings_service\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_USER,\n    MESSAGE_SENDER_USER,\n)\nfrom lfx.utils.file_path_security import (\n    component_file_access_scopes,\n    enforce_local_file_access,\n    is_local_file_access_restricted,\n)\n\n\nclass ChatInput(ChatComponent):\n    display_name = \"Chat Input\"\n    description = \"Get chat inputs from the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatInput\"\n    minimized = True\n\n    inputs = [\n        MultilineInput(\n            name=\"input_value\",\n            display_name=\"Input Text\",\n            value=\"\",\n            info=\"Message to be passed as input.\",\n            input_types=[],\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_USER,\n            info=\"Type of sender.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_USER,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        FileInput(\n            name=\"files\",\n            display_name=\"Files\",\n            file_types=TEXT_FILE_TYPES + IMG_FILE_TYPES,\n            info=\"Files to be sent with the message.\",\n            advanced=True,\n            is_list=True,\n            temp_file=True,\n        ),\n    ]\n    outputs = [\n        Output(display_name=\"Chat Message\", name=\"message\", method=\"message_response\"),\n    ]\n\n    async def message_response(self) -> Message:\n        # Ensure files is a list and filter out empty/None values\n        files = self.files if self.files else []\n        if files and not isinstance(files, list):\n            files = [files]\n        # Filter out None/empty values\n        files = [f for f in files if f is not None and f != \"\"]\n\n        # Build endpoints inject caller-controlled file references directly into\n        # ChatInput. Resolve and validate local references before the Message can\n        # later read them while constructing model attachment content.\n        if files:\n            settings_service = get_settings_service()\n            storage_type = getattr(getattr(settings_service, \"settings\", None), \"storage_type\", \"local\")\n            # The storage factory falls back to local storage for unsupported\n            # values, so only the explicitly configured S3 backend may bypass\n            # filesystem containment.\n            if str(storage_type).lower() != \"s3\" and is_local_file_access_restricted():\n                scope_ids = list(component_file_access_scopes(self))\n                # Public executions replace graph.flow_id with a per-visitor\n                # virtual ID. Only the server-populated source provenance may\n                # restore the already-validated public attachment namespace.\n                source_flow_id = getattr(self.graph, \"source_flow_id\", None)\n                if source_flow_id:\n                    scope_ids.append(source_flow_id)\n                for file_path in get_file_paths(files):\n                    enforce_local_file_access(file_path, scope_ids=scope_ids)\n\n        session_id = self.session_id or self.graph.session_id or \"\"\n        message = await Message.create(\n            text=self.input_value,\n            sender=self.sender,\n            sender_name=self.sender_name,\n            session_id=session_id,\n            context_id=self.context_id,\n            files=files,\n        )\n        if session_id and isinstance(message, Message) and self.should_store_message:\n            stored_message = await self.send_message(\n                message,\n            )\n            self.message.value = stored_message\n            message = stored_message\n\n        self.status = message\n        return message\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "context_id": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "context_id",
+                "value": "",
+                "display_name": "Context ID",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "input_value": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Input Text",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [],
+                "dynamic": false,
+                "info": "Message to be passed as input.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "sender": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "sender",
+                "value": "User",
+                "display_name": "Sender Type",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Type of sender.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "sender_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "sender_name",
+                "value": "User",
+                "display_name": "Sender Name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "session_id": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "session_id",
+                "value": "",
+                "display_name": "Session ID",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "should_store_message": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "should_store_message",
+                "value": true,
+                "display_name": "Store Messages",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              }
+            },
+            "description": "Type a saved run id, for example 20261006T211951.",
+            "icon": "MessagesSquare",
+            "base_classes": [
+              "Message"
+            ],
+            "display_name": "Run id",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "minimized": true,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "Chat Message",
+                "method": "message_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "ChatInput",
+          "id": "ChatInput-run"
+        },
+        "id": "ChatInput-run",
+        "type": "genericNode",
+        "position": {
+          "x": 40,
+          "y": 368
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "input_value": {
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Inputs",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Data",
+                  "JSON",
+                  "DataFrame",
+                  "Table",
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Message to be passed as output.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "other",
+                "_input_type": "HandleInput"
+              },
+              "clean_data": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "clean_data",
+                "value": true,
+                "display_name": "Basic Clean Data",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Whether to clean data before converting to string.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from collections.abc import Generator\nfrom typing import Any\n\nimport orjson\nfrom fastapi.encoders import jsonable_encoder\n\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.helpers.data import safe_convert\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, HandleInput, MessageTextInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\nfrom lfx.schema.properties import Source\nfrom lfx.template.field.base import Output\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_AI,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatOutput(ChatComponent):\n    display_name = \"Chat Output\"\n    description = \"Display a chat message in the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatOutput\"\n    minimized = True\n\n    inputs = [\n        HandleInput(\n            name=\"input_value\",\n            display_name=\"Inputs\",\n            info=\"Message to be passed as output.\",\n            input_types=[\"Data\", \"JSON\", \"DataFrame\", \"Table\", \"Message\"],\n            required=True,\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_AI,\n            advanced=True,\n            info=\"Type of sender.\",\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_AI,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"data_template\",\n            display_name=\"Data Template\",\n            value=\"{text}\",\n            advanced=True,\n            info=\"Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.\",\n        ),\n        BoolInput(\n            name=\"clean_data\",\n            display_name=\"Basic Clean Data\",\n            value=True,\n            advanced=True,\n            info=\"Whether to clean data before converting to string.\",\n        ),\n    ]\n    outputs = [\n        Output(\n            display_name=\"Output Message\",\n            name=\"message\",\n            method=\"message_response\",\n        ),\n    ]\n\n    def _build_source(self, id_: str | None, display_name: str | None, source: str | None) -> Source:\n        source_dict = {}\n        if id_:\n            source_dict[\"id\"] = id_\n        if display_name:\n            source_dict[\"display_name\"] = display_name\n        if source:\n            # Handle case where source is a ChatOpenAI object\n            if hasattr(source, \"model_name\"):\n                source_dict[\"source\"] = source.model_name\n            elif hasattr(source, \"model\"):\n                source_dict[\"source\"] = str(source.model)\n            else:\n                source_dict[\"source\"] = str(source)\n        return Source(**source_dict)\n\n    async def message_response(self) -> Message:\n        # First convert the input to string if needed\n        text = self.convert_to_string()\n\n        # Get source properties\n        source, _, display_name, source_id = self.get_properties_from_source_component()\n\n        # Create or use existing Message object\n        if isinstance(self.input_value, Message) and not self.is_connected_to_chat_input():\n            message = self.input_value\n            # Update message properties\n            message.text = text\n            # Preserve existing session_id from the incoming message if it exists\n            existing_session_id = message.session_id\n        else:\n            message = Message(text=text)\n            existing_session_id = None\n\n        # Set message properties\n        message.sender = self.sender\n        message.sender_name = self.sender_name\n        # Preserve session_id from incoming message, or use component/graph session_id\n        message.session_id = (\n            self.session_id or existing_session_id or (self.graph.session_id if hasattr(self, \"graph\") else None) or \"\"\n        )\n        message.context_id = self.context_id\n        message.flow_id = self.graph.flow_id if hasattr(self, \"graph\") else None\n        message.properties.source = self._build_source(source_id, display_name, source)\n\n        # Store message if needed\n        if message.session_id and self.should_store_message:\n            stored_message = await self.send_message(message)\n            self.message.value = stored_message\n            message = stored_message\n\n        # Set accumulated token usage from all upstream LLM vertices.\n        # This must happen AFTER send_message() because streaming captures\n        # usage from chunks and would overwrite accumulated totals.\n        if hasattr(self, \"_vertex\") and self._vertex is not None:\n            accumulated_usage = self._vertex._accumulate_upstream_token_usage()  # noqa: SLF001\n            if accumulated_usage:\n                message.properties.usage = accumulated_usage\n                if self.should_store_message and message.get_id():\n                    message = await self._update_stored_message(message)\n                    await self._send_message_event(message, id_=message.get_id())\n\n        self.status = message\n        return message\n\n    def _serialize_data(self, data: Data) -> str:\n        \"\"\"Serialize Data object to JSON string.\"\"\"\n        # Convert data.data to JSON-serializable format\n        serializable_data = jsonable_encoder(data.data)\n        # Serialize with orjson, enabling pretty printing with indentation\n        json_bytes = orjson.dumps(serializable_data, option=orjson.OPT_INDENT_2)\n        # Convert bytes to string and wrap in Markdown code blocks\n        return \"```json\\n\" + json_bytes.decode(\"utf-8\") + \"\\n```\"\n\n    def _validate_input(self) -> None:\n        \"\"\"Validate the input data and raise ValueError if invalid.\"\"\"\n        if self.input_value is None:\n            msg = \"Input data cannot be None\"\n            raise ValueError(msg)\n        if isinstance(self.input_value, list) and not all(\n            isinstance(item, Message | Data | DataFrame | str) for item in self.input_value\n        ):\n            invalid_types = [\n                type(item).__name__\n                for item in self.input_value\n                if not isinstance(item, Message | Data | DataFrame | str)\n            ]\n            msg = f\"Expected Data or DataFrame or Message or str, got {invalid_types}\"\n            raise TypeError(msg)\n        if not isinstance(\n            self.input_value,\n            Message | Data | DataFrame | str | list | Generator | type(None),\n        ):\n            type_name = type(self.input_value).__name__\n            msg = f\"Expected Data or DataFrame or Message or str, Generator or None, got {type_name}\"\n            raise TypeError(msg)\n\n    def convert_to_string(self) -> str | Generator[Any, None, None]:\n        \"\"\"Convert input data to string with proper error handling.\"\"\"\n        self._validate_input()\n        clean_data: bool = getattr(self, \"clean_data\", False)\n        if isinstance(self.input_value, list):\n            return \"\\n\".join([safe_convert(item, clean_data=clean_data) for item in self.input_value])\n        if isinstance(self.input_value, Generator):\n            return self.input_value\n        return safe_convert(self.input_value, clean_data=clean_data)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "context_id": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "context_id",
+                "value": "",
+                "display_name": "Context ID",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "data_template": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "data_template",
+                "value": "{text}",
+                "display_name": "Data Template",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "sender": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "sender",
+                "value": "Machine",
+                "display_name": "Sender Type",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Type of sender.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "sender_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "sender_name",
+                "value": "AI",
+                "display_name": "Sender Name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "session_id": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "session_id",
+                "value": "",
+                "display_name": "Session ID",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "should_store_message": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "should_store_message",
+                "value": true,
+                "display_name": "Store Messages",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              }
+            },
+            "description": "Display a chat message in the Playground.",
+            "icon": "MessagesSquare",
+            "base_classes": [
+              "Message"
+            ],
+            "display_name": "Chat Output: opens cleanly",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "minimized": true,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "Output Message",
+                "method": "message_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "ChatOutput",
+          "id": "ChatOutput-opens"
+        },
+        "id": "ChatOutput-opens",
+        "type": "genericNode",
+        "position": {
+          "x": 1920,
+          "y": 368
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"RTRC Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official\nPilot's verdict (interoperability evidence). The Pilot stays the judge.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nRESULTS = [\"Opens cleanly\", \"Errors in Cameo\", \"Not checked yet\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcCameoRecord(Component):\n    display_name = \"RTRC Cameo record\"\n    description = \"Put one after each Human Input branch. Stores the person's Cameo check of a design next to the official Pilot's verdict.\"\n    icon = \"clipboard-list\"\n    name = \"RtrcCameoRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"result\", display_name=\"This branch\", options=RESULTS, value=RESULTS[-1]),\n        DropdownInput(name=\"key\", display_name=\"Design\", options=[\"A\", \"B\"], value=\"A\"),\n        StrInput(name=\"note\", display_name=\"Note (for example the Cameo error)\", value=\"\", required=False),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.result}: not chosen\"\n            return Message(text=\"\")\n        match = RUN.search(text)\n        if not match:\n            raise ValueError(\"No run id in the incoming message\")\n        body = _call(\"/cameo/result\", {\"run\": match.group(1), \"key\": self.key, \"result\": self.result.lower(), \"note\": str(self.note or \"\")})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "key": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "A",
+                  "B"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "key",
+                "value": "A",
+                "display_name": "Design",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "note": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "note",
+                "value": "",
+                "display_name": "Note (for example the Cameo error)",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "result": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Opens cleanly",
+                  "Errors in Cameo",
+                  "Not checked yet"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "result",
+                "value": "Opens cleanly",
+                "display_name": "This branch",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "upstream": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "upstream",
+                "value": {
+                  "text_key": "text",
+                  "data": {
+                    "text": "",
+                    "files": [],
+                    "sender": null,
+                    "sender_name": null,
+                    "session_id": "",
+                    "context_id": "",
+                    "run_id": null,
+                    "timestamp": "2026-10-06 00:00:00 UTC",
+                    "flow_id": null,
+                    "error": false,
+                    "edit": false,
+                    "properties": {
+                      "edited": false,
+                      "source": {
+                        "id": null,
+                        "display_name": null,
+                        "source": null
+                      },
+                      "allow_markdown": false,
+                      "state": "complete",
+                      "targets": []
+                    },
+                    "category": "message",
+                    "content_blocks": [],
+                    "duration": null,
+                    "session_metadata": null
+                  },
+                  "default_value": "",
+                  "files": [],
+                  "session_id": "",
+                  "context_id": "",
+                  "timestamp": "2026-10-06 00:00:00 UTC",
+                  "error": false,
+                  "edit": false,
+                  "properties": {
+                    "edited": false,
+                    "source": {
+                      "id": null,
+                      "display_name": null,
+                      "source": null
+                    },
+                    "allow_markdown": false,
+                    "state": "complete",
+                    "targets": []
+                  },
+                  "category": "message",
+                  "content_blocks": [],
+                  "text": ""
+                },
+                "display_name": "From the person's choice",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              }
+            },
+            "description": "Stored next to the official Pilot's verdict as agreement (interoperability).",
+            "icon": "clipboard-list",
+            "base_classes": [
+              "Message"
+            ],
+            "display_name": "Record: opens cleanly",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "Message",
+                "method": "record",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "RtrcCameoRecord",
+          "id": "RtrcCameoRecord-opens"
+        },
+        "id": "RtrcCameoRecord-opens",
+        "type": "genericNode",
+        "position": {
+          "x": 1450,
+          "y": 368
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"RTRC Cameo export: writes a run's officially parsed designs as .sysml files for Cameo's SysML v2 edition and says\nhow to check them. Cameo has no headless command, so a person opens the file; the result is recorded with RTRC Cameo record.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageTextInput, Output\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"(\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcCameoExport(Component):\n    display_name = \"RTRC Cameo export (when licensed)\"\n    description = \"Exports a run's designs for Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement.\"\n    icon = \"upload\"\n    name = \"RtrcCameoExport\"\n\n    inputs = [MessageTextInput(name=\"run_id\", display_name=\"Run id\", value=\"\", info=\"A run id such as 20261006T211951, or a message that contains it.\")]\n    outputs = [Output(display_name=\"Instructions\", name=\"message\", method=\"export\")]\n\n    def export(self) -> Message:\n        match = RUN.search(str(getattr(self.run_id, \"text\", self.run_id) or \"\"))\n        if not match:\n            raise ValueError(\"Give a run id\")\n        body = _call(\"/cameo/export\", {\"run\": match.group(1)})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "run_id": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "run_id",
+                "value": "",
+                "display_name": "Run id",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "A run id such as 20261006T211951, or a message that contains it.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              }
+            },
+            "description": "Writes the run's passing designs as .sysml files for Cameo's SysML v2 edition.",
+            "icon": "upload",
+            "base_classes": [
+              "Message"
+            ],
+            "display_name": "Export for Cameo (when licensed)",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "Instructions",
+                "method": "export",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "RtrcCameoExport",
+          "id": "RtrcCameoExport-export"
+        },
+        "id": "RtrcCameoExport-export",
+        "type": "genericNode",
+        "position": {
+          "x": 510,
+          "y": 368
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "input_value": {
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Inputs",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Data",
+                  "JSON",
+                  "DataFrame",
+                  "Table",
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Message to be passed as output.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "other",
+                "_input_type": "HandleInput"
+              },
+              "clean_data": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "clean_data",
+                "value": true,
+                "display_name": "Basic Clean Data",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Whether to clean data before converting to string.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from collections.abc import Generator\nfrom typing import Any\n\nimport orjson\nfrom fastapi.encoders import jsonable_encoder\n\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.helpers.data import safe_convert\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, HandleInput, MessageTextInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\nfrom lfx.schema.properties import Source\nfrom lfx.template.field.base import Output\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_AI,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatOutput(ChatComponent):\n    display_name = \"Chat Output\"\n    description = \"Display a chat message in the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatOutput\"\n    minimized = True\n\n    inputs = [\n        HandleInput(\n            name=\"input_value\",\n            display_name=\"Inputs\",\n            info=\"Message to be passed as output.\",\n            input_types=[\"Data\", \"JSON\", \"DataFrame\", \"Table\", \"Message\"],\n            required=True,\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_AI,\n            advanced=True,\n            info=\"Type of sender.\",\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_AI,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"data_template\",\n            display_name=\"Data Template\",\n            value=\"{text}\",\n            advanced=True,\n            info=\"Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.\",\n        ),\n        BoolInput(\n            name=\"clean_data\",\n            display_name=\"Basic Clean Data\",\n            value=True,\n            advanced=True,\n            info=\"Whether to clean data before converting to string.\",\n        ),\n    ]\n    outputs = [\n        Output(\n            display_name=\"Output Message\",\n            name=\"message\",\n            method=\"message_response\",\n        ),\n    ]\n\n    def _build_source(self, id_: str | None, display_name: str | None, source: str | None) -> Source:\n        source_dict = {}\n        if id_:\n            source_dict[\"id\"] = id_\n        if display_name:\n            source_dict[\"display_name\"] = display_name\n        if source:\n            # Handle case where source is a ChatOpenAI object\n            if hasattr(source, \"model_name\"):\n                source_dict[\"source\"] = source.model_name\n            elif hasattr(source, \"model\"):\n                source_dict[\"source\"] = str(source.model)\n            else:\n                source_dict[\"source\"] = str(source)\n        return Source(**source_dict)\n\n    async def message_response(self) -> Message:\n        # First convert the input to string if needed\n        text = self.convert_to_string()\n\n        # Get source properties\n        source, _, display_name, source_id = self.get_properties_from_source_component()\n\n        # Create or use existing Message object\n        if isinstance(self.input_value, Message) and not self.is_connected_to_chat_input():\n            message = self.input_value\n            # Update message properties\n            message.text = text\n            # Preserve existing session_id from the incoming message if it exists\n            existing_session_id = message.session_id\n        else:\n            message = Message(text=text)\n            existing_session_id = None\n\n        # Set message properties\n        message.sender = self.sender\n        message.sender_name = self.sender_name\n        # Preserve session_id from incoming message, or use component/graph session_id\n        message.session_id = (\n            self.session_id or existing_session_id or (self.graph.session_id if hasattr(self, \"graph\") else None) or \"\"\n        )\n        message.context_id = self.context_id\n        message.flow_id = self.graph.flow_id if hasattr(self, \"graph\") else None\n        message.properties.source = self._build_source(source_id, display_name, source)\n\n        # Store message if needed\n        if message.session_id and self.should_store_message:\n            stored_message = await self.send_message(message)\n            self.message.value = stored_message\n            message = stored_message\n\n        # Set accumulated token usage from all upstream LLM vertices.\n        # This must happen AFTER send_message() because streaming captures\n        # usage from chunks and would overwrite accumulated totals.\n        if hasattr(self, \"_vertex\") and self._vertex is not None:\n            accumulated_usage = self._vertex._accumulate_upstream_token_usage()  # noqa: SLF001\n            if accumulated_usage:\n                message.properties.usage = accumulated_usage\n                if self.should_store_message and message.get_id():\n                    message = await self._update_stored_message(message)\n                    await self._send_message_event(message, id_=message.get_id())\n\n        self.status = message\n        return message\n\n    def _serialize_data(self, data: Data) -> str:\n        \"\"\"Serialize Data object to JSON string.\"\"\"\n        # Convert data.data to JSON-serializable format\n        serializable_data = jsonable_encoder(data.data)\n        # Serialize with orjson, enabling pretty printing with indentation\n        json_bytes = orjson.dumps(serializable_data, option=orjson.OPT_INDENT_2)\n        # Convert bytes to string and wrap in Markdown code blocks\n        return \"```json\\n\" + json_bytes.decode(\"utf-8\") + \"\\n```\"\n\n    def _validate_input(self) -> None:\n        \"\"\"Validate the input data and raise ValueError if invalid.\"\"\"\n        if self.input_value is None:\n            msg = \"Input data cannot be None\"\n            raise ValueError(msg)\n        if isinstance(self.input_value, list) and not all(\n            isinstance(item, Message | Data | DataFrame | str) for item in self.input_value\n        ):\n            invalid_types = [\n                type(item).__name__\n                for item in self.input_value\n                if not isinstance(item, Message | Data | DataFrame | str)\n            ]\n            msg = f\"Expected Data or DataFrame or Message or str, got {invalid_types}\"\n            raise TypeError(msg)\n        if not isinstance(\n            self.input_value,\n            Message | Data | DataFrame | str | list | Generator | type(None),\n        ):\n            type_name = type(self.input_value).__name__\n            msg = f\"Expected Data or DataFrame or Message or str, Generator or None, got {type_name}\"\n            raise TypeError(msg)\n\n    def convert_to_string(self) -> str | Generator[Any, None, None]:\n        \"\"\"Convert input data to string with proper error handling.\"\"\"\n        self._validate_input()\n        clean_data: bool = getattr(self, \"clean_data\", False)\n        if isinstance(self.input_value, list):\n            return \"\\n\".join([safe_convert(item, clean_data=clean_data) for item in self.input_value])\n        if isinstance(self.input_value, Generator):\n            return self.input_value\n        return safe_convert(self.input_value, clean_data=clean_data)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "context_id": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "context_id",
+                "value": "",
+                "display_name": "Context ID",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "data_template": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "data_template",
+                "value": "{text}",
+                "display_name": "Data Template",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "sender": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "sender",
+                "value": "Machine",
+                "display_name": "Sender Type",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Type of sender.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "sender_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "sender_name",
+                "value": "AI",
+                "display_name": "Sender Name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "session_id": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "session_id",
+                "value": "",
+                "display_name": "Session ID",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "should_store_message": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "should_store_message",
+                "value": true,
+                "display_name": "Store Messages",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              }
+            },
+            "description": "Display a chat message in the Playground.",
+            "icon": "MessagesSquare",
+            "base_classes": [
+              "Message"
+            ],
+            "display_name": "Chat Output: errors in cameo",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "minimized": true,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "Output Message",
+                "method": "message_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "ChatOutput",
+          "id": "ChatOutput-errors"
+        },
+        "id": "ChatOutput-errors",
+        "type": "genericNode",
+        "position": {
+          "x": 1920,
+          "y": 838
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"RTRC Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official\nPilot's verdict (interoperability evidence). The Pilot stays the judge.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nRESULTS = [\"Opens cleanly\", \"Errors in Cameo\", \"Not checked yet\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcCameoRecord(Component):\n    display_name = \"RTRC Cameo record\"\n    description = \"Put one after each Human Input branch. Stores the person's Cameo check of a design next to the official Pilot's verdict.\"\n    icon = \"clipboard-list\"\n    name = \"RtrcCameoRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"result\", display_name=\"This branch\", options=RESULTS, value=RESULTS[-1]),\n        DropdownInput(name=\"key\", display_name=\"Design\", options=[\"A\", \"B\"], value=\"A\"),\n        StrInput(name=\"note\", display_name=\"Note (for example the Cameo error)\", value=\"\", required=False),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.result}: not chosen\"\n            return Message(text=\"\")\n        match = RUN.search(text)\n        if not match:\n            raise ValueError(\"No run id in the incoming message\")\n        body = _call(\"/cameo/result\", {\"run\": match.group(1), \"key\": self.key, \"result\": self.result.lower(), \"note\": str(self.note or \"\")})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "key": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "A",
+                  "B"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "key",
+                "value": "A",
+                "display_name": "Design",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "note": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "note",
+                "value": "",
+                "display_name": "Note (for example the Cameo error)",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "result": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Opens cleanly",
+                  "Errors in Cameo",
+                  "Not checked yet"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "result",
+                "value": "Errors in Cameo",
+                "display_name": "This branch",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "upstream": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "upstream",
+                "value": {
+                  "text_key": "text",
+                  "data": {
+                    "text": "",
+                    "files": [],
+                    "sender": null,
+                    "sender_name": null,
+                    "session_id": "",
+                    "context_id": "",
+                    "run_id": null,
+                    "timestamp": "2026-10-06 00:00:00 UTC",
+                    "flow_id": null,
+                    "error": false,
+                    "edit": false,
+                    "properties": {
+                      "edited": false,
+                      "source": {
+                        "id": null,
+                        "display_name": null,
+                        "source": null
+                      },
+                      "allow_markdown": false,
+                      "state": "complete",
+                      "targets": []
+                    },
+                    "category": "message",
+                    "content_blocks": [],
+                    "duration": null,
+                    "session_metadata": null
+                  },
+                  "default_value": "",
+                  "files": [],
+                  "session_id": "",
+                  "context_id": "",
+                  "timestamp": "2026-10-06 00:00:00 UTC",
+                  "error": false,
+                  "edit": false,
+                  "properties": {
+                    "edited": false,
+                    "source": {
+                      "id": null,
+                      "display_name": null,
+                      "source": null
+                    },
+                    "allow_markdown": false,
+                    "state": "complete",
+                    "targets": []
+                  },
+                  "category": "message",
+                  "content_blocks": [],
+                  "text": ""
+                },
+                "display_name": "From the person's choice",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              }
+            },
+            "description": "Stored next to the official Pilot's verdict as agreement (interoperability).",
+            "icon": "clipboard-list",
+            "base_classes": [
+              "Message"
+            ],
+            "display_name": "Record: errors in cameo",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "Message",
+                "method": "record",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "RtrcCameoRecord",
+          "id": "RtrcCameoRecord-errors"
+        },
+        "id": "RtrcCameoRecord-errors",
+        "type": "genericNode",
+        "position": {
+          "x": 1450,
+          "y": 838
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "input_value": {
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Inputs",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Data",
+                  "JSON",
+                  "DataFrame",
+                  "Table",
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Message to be passed as output.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "other",
+                "_input_type": "HandleInput"
+              },
+              "clean_data": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "clean_data",
+                "value": true,
+                "display_name": "Basic Clean Data",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Whether to clean data before converting to string.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from collections.abc import Generator\nfrom typing import Any\n\nimport orjson\nfrom fastapi.encoders import jsonable_encoder\n\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.helpers.data import safe_convert\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, HandleInput, MessageTextInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\nfrom lfx.schema.properties import Source\nfrom lfx.template.field.base import Output\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_AI,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatOutput(ChatComponent):\n    display_name = \"Chat Output\"\n    description = \"Display a chat message in the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatOutput\"\n    minimized = True\n\n    inputs = [\n        HandleInput(\n            name=\"input_value\",\n            display_name=\"Inputs\",\n            info=\"Message to be passed as output.\",\n            input_types=[\"Data\", \"JSON\", \"DataFrame\", \"Table\", \"Message\"],\n            required=True,\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_AI,\n            advanced=True,\n            info=\"Type of sender.\",\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_AI,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"data_template\",\n            display_name=\"Data Template\",\n            value=\"{text}\",\n            advanced=True,\n            info=\"Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.\",\n        ),\n        BoolInput(\n            name=\"clean_data\",\n            display_name=\"Basic Clean Data\",\n            value=True,\n            advanced=True,\n            info=\"Whether to clean data before converting to string.\",\n        ),\n    ]\n    outputs = [\n        Output(\n            display_name=\"Output Message\",\n            name=\"message\",\n            method=\"message_response\",\n        ),\n    ]\n\n    def _build_source(self, id_: str | None, display_name: str | None, source: str | None) -> Source:\n        source_dict = {}\n        if id_:\n            source_dict[\"id\"] = id_\n        if display_name:\n            source_dict[\"display_name\"] = display_name\n        if source:\n            # Handle case where source is a ChatOpenAI object\n            if hasattr(source, \"model_name\"):\n                source_dict[\"source\"] = source.model_name\n            elif hasattr(source, \"model\"):\n                source_dict[\"source\"] = str(source.model)\n            else:\n                source_dict[\"source\"] = str(source)\n        return Source(**source_dict)\n\n    async def message_response(self) -> Message:\n        # First convert the input to string if needed\n        text = self.convert_to_string()\n\n        # Get source properties\n        source, _, display_name, source_id = self.get_properties_from_source_component()\n\n        # Create or use existing Message object\n        if isinstance(self.input_value, Message) and not self.is_connected_to_chat_input():\n            message = self.input_value\n            # Update message properties\n            message.text = text\n            # Preserve existing session_id from the incoming message if it exists\n            existing_session_id = message.session_id\n        else:\n            message = Message(text=text)\n            existing_session_id = None\n\n        # Set message properties\n        message.sender = self.sender\n        message.sender_name = self.sender_name\n        # Preserve session_id from incoming message, or use component/graph session_id\n        message.session_id = (\n            self.session_id or existing_session_id or (self.graph.session_id if hasattr(self, \"graph\") else None) or \"\"\n        )\n        message.context_id = self.context_id\n        message.flow_id = self.graph.flow_id if hasattr(self, \"graph\") else None\n        message.properties.source = self._build_source(source_id, display_name, source)\n\n        # Store message if needed\n        if message.session_id and self.should_store_message:\n            stored_message = await self.send_message(message)\n            self.message.value = stored_message\n            message = stored_message\n\n        # Set accumulated token usage from all upstream LLM vertices.\n        # This must happen AFTER send_message() because streaming captures\n        # usage from chunks and would overwrite accumulated totals.\n        if hasattr(self, \"_vertex\") and self._vertex is not None:\n            accumulated_usage = self._vertex._accumulate_upstream_token_usage()  # noqa: SLF001\n            if accumulated_usage:\n                message.properties.usage = accumulated_usage\n                if self.should_store_message and message.get_id():\n                    message = await self._update_stored_message(message)\n                    await self._send_message_event(message, id_=message.get_id())\n\n        self.status = message\n        return message\n\n    def _serialize_data(self, data: Data) -> str:\n        \"\"\"Serialize Data object to JSON string.\"\"\"\n        # Convert data.data to JSON-serializable format\n        serializable_data = jsonable_encoder(data.data)\n        # Serialize with orjson, enabling pretty printing with indentation\n        json_bytes = orjson.dumps(serializable_data, option=orjson.OPT_INDENT_2)\n        # Convert bytes to string and wrap in Markdown code blocks\n        return \"```json\\n\" + json_bytes.decode(\"utf-8\") + \"\\n```\"\n\n    def _validate_input(self) -> None:\n        \"\"\"Validate the input data and raise ValueError if invalid.\"\"\"\n        if self.input_value is None:\n            msg = \"Input data cannot be None\"\n            raise ValueError(msg)\n        if isinstance(self.input_value, list) and not all(\n            isinstance(item, Message | Data | DataFrame | str) for item in self.input_value\n        ):\n            invalid_types = [\n                type(item).__name__\n                for item in self.input_value\n                if not isinstance(item, Message | Data | DataFrame | str)\n            ]\n            msg = f\"Expected Data or DataFrame or Message or str, got {invalid_types}\"\n            raise TypeError(msg)\n        if not isinstance(\n            self.input_value,\n            Message | Data | DataFrame | str | list | Generator | type(None),\n        ):\n            type_name = type(self.input_value).__name__\n            msg = f\"Expected Data or DataFrame or Message or str, Generator or None, got {type_name}\"\n            raise TypeError(msg)\n\n    def convert_to_string(self) -> str | Generator[Any, None, None]:\n        \"\"\"Convert input data to string with proper error handling.\"\"\"\n        self._validate_input()\n        clean_data: bool = getattr(self, \"clean_data\", False)\n        if isinstance(self.input_value, list):\n            return \"\\n\".join([safe_convert(item, clean_data=clean_data) for item in self.input_value])\n        if isinstance(self.input_value, Generator):\n            return self.input_value\n        return safe_convert(self.input_value, clean_data=clean_data)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "context_id": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "context_id",
+                "value": "",
+                "display_name": "Context ID",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "data_template": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "data_template",
+                "value": "{text}",
+                "display_name": "Data Template",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "sender": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "sender",
+                "value": "Machine",
+                "display_name": "Sender Type",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Type of sender.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "sender_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "sender_name",
+                "value": "AI",
+                "display_name": "Sender Name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "session_id": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "session_id",
+                "value": "",
+                "display_name": "Session ID",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "should_store_message": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "should_store_message",
+                "value": true,
+                "display_name": "Store Messages",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              }
+            },
+            "description": "Display a chat message in the Playground.",
+            "icon": "MessagesSquare",
+            "base_classes": [
+              "Message"
+            ],
+            "display_name": "Chat Output: not checked yet",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "minimized": true,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "Output Message",
+                "method": "message_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "ChatOutput",
+          "id": "ChatOutput-notchecked"
+        },
+        "id": "ChatOutput-notchecked",
+        "type": "genericNode",
+        "position": {
+          "x": 1920,
+          "y": 1308
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"RTRC Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official\nPilot's verdict (interoperability evidence). The Pilot stays the judge.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nRESULTS = [\"Opens cleanly\", \"Errors in Cameo\", \"Not checked yet\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcCameoRecord(Component):\n    display_name = \"RTRC Cameo record\"\n    description = \"Put one after each Human Input branch. Stores the person's Cameo check of a design next to the official Pilot's verdict.\"\n    icon = \"clipboard-list\"\n    name = \"RtrcCameoRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"result\", display_name=\"This branch\", options=RESULTS, value=RESULTS[-1]),\n        DropdownInput(name=\"key\", display_name=\"Design\", options=[\"A\", \"B\"], value=\"A\"),\n        StrInput(name=\"note\", display_name=\"Note (for example the Cameo error)\", value=\"\", required=False),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.result}: not chosen\"\n            return Message(text=\"\")\n        match = RUN.search(text)\n        if not match:\n            raise ValueError(\"No run id in the incoming message\")\n        body = _call(\"/cameo/result\", {\"run\": match.group(1), \"key\": self.key, \"result\": self.result.lower(), \"note\": str(self.note or \"\")})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "key": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "A",
+                  "B"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "key",
+                "value": "A",
+                "display_name": "Design",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "note": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "note",
+                "value": "",
+                "display_name": "Note (for example the Cameo error)",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "result": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Opens cleanly",
+                  "Errors in Cameo",
+                  "Not checked yet"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "result",
+                "value": "Not checked yet",
+                "display_name": "This branch",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "upstream": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "upstream",
+                "value": {
+                  "text_key": "text",
+                  "data": {
+                    "text": "",
+                    "files": [],
+                    "sender": null,
+                    "sender_name": null,
+                    "session_id": "",
+                    "context_id": "",
+                    "run_id": null,
+                    "timestamp": "2026-10-06 00:00:00 UTC",
+                    "flow_id": null,
+                    "error": false,
+                    "edit": false,
+                    "properties": {
+                      "edited": false,
+                      "source": {
+                        "id": null,
+                        "display_name": null,
+                        "source": null
+                      },
+                      "allow_markdown": false,
+                      "state": "complete",
+                      "targets": []
+                    },
+                    "category": "message",
+                    "content_blocks": [],
+                    "duration": null,
+                    "session_metadata": null
+                  },
+                  "default_value": "",
+                  "files": [],
+                  "session_id": "",
+                  "context_id": "",
+                  "timestamp": "2026-10-06 00:00:00 UTC",
+                  "error": false,
+                  "edit": false,
+                  "properties": {
+                    "edited": false,
+                    "source": {
+                      "id": null,
+                      "display_name": null,
+                      "source": null
+                    },
+                    "allow_markdown": false,
+                    "state": "complete",
+                    "targets": []
+                  },
+                  "category": "message",
+                  "content_blocks": [],
+                  "text": ""
+                },
+                "display_name": "From the person's choice",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              }
+            },
+            "description": "Stored next to the official Pilot's verdict as agreement (interoperability).",
+            "icon": "clipboard-list",
+            "base_classes": [
+              "Message"
+            ],
+            "display_name": "Record: not checked yet",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "Message",
+                "method": "record",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "RtrcCameoRecord",
+          "id": "RtrcCameoRecord-notchecked"
+        },
+        "id": "RtrcCameoRecord-notchecked",
+        "type": "genericNode",
+        "position": {
+          "x": 1450,
+          "y": 1308
+        }
+      },
+      {
+        "id": "HumanInput-cameo",
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"Human Input node: pause a flow for a human decision, then route on the pick (LE-1449).\n\nThe User Choices picker chooses which actions the human can take (presets like\nApprove/Reject/Escalate, or custom); each becomes a branch output. On first execution\nthe node requests a pause carrying a ``node_input`` request; on resume the injected\ndecision selects exactly one branch (the others are stopped). With Enable Fallback on,\na ``fallback`` branch is added for when no user action is answered (e.g. after timeout).\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom datetime import datetime, timezone\nfrom typing import Any\n\nfrom lfx.custom import Component\nfrom lfx.inputs.inputs import ActionPickerInput, BoolInput, DurationInput\nfrom lfx.io import MultilineInput, Output\nfrom lfx.schema.message import Message\n\nHUMAN_INPUT_REQUIRED = \"human_input_required\"\n_KIND_NODE_INPUT = \"node_input\"\n_FALLBACK_ACTION = \"fallback\"\n_UNIT_SECONDS = {\"Minutes\": 60, \"Hours\": 3600, \"Days\": 86400}\n\n\ndef _action_id(label: str) -> str:\n    \"\"\"Stable branch id for a human-facing action label (e.g. 'Request Changes' -> 'request_changes').\"\"\"\n    return str(label).strip().lower().replace(\" \", \"_\")\n\n\nclass HumanInput(Component):\n    display_name = \"Human Input\"\n    description = \"Pause the flow for a human-in-the-loop (HITL) decision and route on the chosen action.\"\n    icon = \"HumanInput\"\n    name = \"HumanInput\"\n    metadata = {\"keywords\": [\"hitl\", \"human-in-the-loop\", \"decision\"]}\n\n    inputs = [\n        MultilineInput(\n            name=\"prompt\",\n            display_name=\"Input\",\n            info=\"Content shown to the human for review.\",\n            value=\"\",\n        ),\n        ActionPickerInput(\n            name=\"decisions\",\n            display_name=\"User Choices\",\n            info=\"Choices the human can pick; each becomes a branch output. Pick from the list or type a custom one.\",\n            value=[\"Approve\", \"Reject\"],\n            real_time_refresh=True,\n            required=True,\n        ),\n        DurationInput(\n            name=\"timeout\",\n            display_name=\"Timeout\",\n            info=\"A response received after this window is rerouted to the fallback path (when enabled) \"\n            \"instead of the chosen action. The run stays paused until a response arrives or the \"\n            \"server's suspended-run deadline expires it. Set to 0 to wait indefinitely.\",\n            options=[\"Minutes\", \"Hours\", \"Days\"],\n            value={\"value\": 3, \"unit\": \"Days\"},\n            advanced=True,\n            show=False,\n        ),\n        BoolInput(\n            name=\"enable_fallback\",\n            display_name=\"Enable Fallback\",\n            info=\"Add a 'fallback' output taken when the answer arrives after the timeout window.\",\n            value=False,\n            advanced=True,\n            real_time_refresh=True,\n        ),\n    ]\n\n    # Default branch outputs mirror the default ``decisions`` so a freshly dragged\n    # node shows handles immediately (update_outputs only fires on a field change).\n    outputs: list[Output] = [\n        Output(display_name=\"Approve\", name=\"branch_approve\", method=\"route_branch\", group_outputs=True),\n        Output(display_name=\"Reject\", name=\"branch_reject\", method=\"route_branch\", group_outputs=True),\n    ]\n\n    async def update_frontend_node(self, new_frontend_node: dict, current_frontend_node: dict) -> dict:\n        \"\"\"Rebuild branch outputs from the saved User Choices so loaded/refreshed flows keep their handles.\"\"\"\n        new_frontend_node = await super().update_frontend_node(new_frontend_node, current_frontend_node)\n        template = new_frontend_node.get(\"template\", {})\n        decisions = (template.get(\"decisions\") or {}).get(\"value\")\n        self.update_outputs(new_frontend_node, \"decisions\", decisions if decisions is not None else [])\n        self._sync_timeout_visibility(template)\n        return new_frontend_node\n\n    @staticmethod\n    def _sync_timeout_visibility(template: dict) -> None:\n        \"\"\"Timeout only matters when the fallback branch exists to reroute to.\"\"\"\n        if \"timeout\" in template:\n            template[\"timeout\"][\"show\"] = bool((template.get(\"enable_fallback\") or {}).get(\"value\"))\n\n    def update_build_config(self, build_config: dict, field_value: Any, field_name: str | None = None) -> dict:\n        if field_name == \"enable_fallback\" and \"timeout\" in build_config:\n            build_config[\"timeout\"][\"show\"] = bool(field_value)\n        return build_config\n\n    def update_outputs(self, frontend_node: dict, field_name: str, field_value: Any) -> dict:\n        \"\"\"One branch output per selected action (+ optional fallback) + a stable action output.\"\"\"\n        if field_name not in (\"decisions\", \"enable_fallback\"):\n            return frontend_node\n        template = frontend_node.get(\"template\", {})\n\n        def _other(field: str, attr_default):\n            if field in template:\n                return (template.get(field) or {}).get(\"value\")\n            return getattr(self, attr_default[0], attr_default[1])\n\n        actions = field_value if field_name == \"decisions\" else _other(\"decisions\", (\"decisions\", []))\n        fallback_on = (\n            field_value if field_name == \"enable_fallback\" else _other(\"enable_fallback\", (\"enable_fallback\", False))\n        )\n        outputs: list[Output] = []\n        seen: set[str] = set()\n        for label in actions or []:\n            action_id = _action_id(label)\n            if not action_id or action_id in seen:\n                continue\n            seen.add(action_id)\n            outputs.append(\n                Output(\n                    display_name=str(label).strip(),\n                    name=f\"branch_{action_id}\",\n                    method=\"route_branch\",\n                    group_outputs=True,\n                )\n            )\n        if fallback_on:\n            outputs.append(\n                Output(\n                    display_name=\"Fallback\",\n                    name=f\"branch_{_FALLBACK_ACTION}\",\n                    method=\"route_branch\",\n                    group_outputs=True,\n                )\n            )\n        frontend_node[\"outputs\"] = outputs\n        return frontend_node\n\n    def _actions(self) -> list[tuple[str, str]]:\n        \"\"\"Selected actions as (action_id, label) pairs, de-duplicated by id.\"\"\"\n        seen: set[str] = set()\n        actions: list[tuple[str, str]] = []\n        for label in getattr(self, \"decisions\", []) or []:\n            action_id = _action_id(label)\n            if not action_id or action_id in seen:\n                continue\n            seen.add(action_id)\n            actions.append((action_id, str(label).strip()))\n        return actions\n\n    def _rendered_prompt(self) -> str:\n        return str(getattr(self, \"prompt\", \"\") or \"\")\n\n    def _timeout_seconds(self) -> int:\n        timeout = getattr(self, \"timeout\", None) or {}\n        if not isinstance(timeout, dict):\n            return 0\n        unit = timeout.get(\"unit\", \"Days\") or \"Days\"\n        return int(timeout.get(\"value\", 0) or 0) * _UNIT_SECONDS.get(unit, _UNIT_SECONDS[\"Days\"])\n\n    def _request_id(self) -> str:\n        run_id = str(getattr(self.graph, \"run_id\", \"\") or \"\")\n        return f\"{self._id}:{run_id}\"\n\n    def _injected_decision(self) -> dict | None:\n        decisions = getattr(self.graph, \"human_input_decisions\", None) if self.graph is not None else None\n        if not isinstance(decisions, dict):\n            return None\n        return decisions.get(self._request_id())\n\n    def _allowed_decisions(self) -> list[str]:\n        ids = [action_id for action_id, _ in self._actions()]\n        if getattr(self, \"enable_fallback\", False):\n            ids.append(_FALLBACK_ACTION)\n        return ids\n\n    def _pause_request(self) -> dict[str, Any]:\n        return {\n            \"request_id\": self._request_id(),\n            \"kind\": _KIND_NODE_INPUT,\n            \"prompt\": self._rendered_prompt(),\n            \"options\": [{\"action_id\": action_id, \"label\": label} for action_id, label in self._actions()],\n            \"allowed_decisions\": self._allowed_decisions(),\n            \"timeout_seconds\": self._timeout_seconds(),\n            \"fallback_action\": _FALLBACK_ACTION if getattr(self, \"enable_fallback\", False) else None,\n            \"paused_at\": datetime.now(timezone.utc).isoformat(),\n        }\n\n    def _has_downstream_consumer(self) -> bool:\n        \"\"\"True if any branch output feeds a downstream node.\n\n        A node with no outgoing edges runs as an isolated start vertex; pausing it would\n        suspend the whole run for a decision that routes nowhere (and, alongside an Agent's\n        own tool-approval pause, leave that pause unresolved on resume). The successor_map is\n        absent only outside a prepared graph (standalone/tests), where the old behavior holds.\n        \"\"\"\n        graph = getattr(self, \"graph\", None)\n        successor_map = getattr(graph, \"successor_map\", None)\n        if not isinstance(successor_map, dict):\n            return True\n        return bool(successor_map.get(self._id))\n\n    def _suspend(self) -> None:\n        self.graph.request_pause(reason=HUMAN_INPUT_REQUIRED, data=self._pause_request())\n        self.status = \"Awaiting human input\"\n\n    def route_branch(self) -> Message:\n        decision = self._injected_decision()\n        if decision is None:\n            if not self._has_downstream_consumer():\n                self.status = \"Skipped: no connected outputs\"\n                return Message(text=self._rendered_prompt())\n            self._suspend()\n            return Message(text=\"\")\n        chosen = decision.get(\"action_id\")\n        non_chosen = [action_id for action_id in self._allowed_decisions() if action_id != chosen]\n        for action_id in non_chosen:\n            self.stop(f\"branch_{action_id}\")\n        return Message(text=self._rendered_prompt())\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "decisions": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [],
+                "combobox": true,
+                "toggle": false,
+                "list": true,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "decisions",
+                "value": [
+                  "Opens cleanly",
+                  "Errors in Cameo",
+                  "Not checked yet"
+                ],
+                "display_name": "User Choices",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Choices the human can pick; each becomes a branch output. Pick from the list or type a custom one.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "actionPicker",
+                "_input_type": "ActionPickerInput"
+              },
+              "enable_fallback": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "enable_fallback",
+                "value": false,
+                "display_name": "Enable Fallback",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Add a 'fallback' output taken when the answer arrives after the timeout window.",
+                "real_time_refresh": true,
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "prompt": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "multiline": true,
+                "ai_enabled": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "prompt",
+                "value": "",
+                "display_name": "Input",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Content shown to the human for review.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "copy_field": false,
+                "password": false,
+                "type": "str",
+                "_input_type": "MultilineInput"
+              },
+              "timeout": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": false,
+                "name": "timeout",
+                "value": {
+                  "value": 3,
+                  "unit": "Days"
+                },
+                "display_name": "Timeout",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "A response received after this window is rerouted to the fallback path (when enabled) instead of the chosen action. The run stays paused until a response arrives or the server's suspended-run deadline expires it. Set to 0 to wait indefinitely.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "options": [
+                  "Minutes",
+                  "Hours",
+                  "Days"
+                ],
+                "type": "duration",
+                "_input_type": "DurationInput"
+              }
+            },
+            "description": "Open the exported file in Cameo's SysML v2 edition and pick the result. Until RTRC provides the license: Not checked yet.",
+            "icon": "HumanInput",
+            "base_classes": [
+              "Message"
+            ],
+            "display_name": "Person opens it in Cameo",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "branch_opens_cleanly",
+                "display_name": "Opens cleanly",
+                "method": "route_branch",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": true,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "branch_errors_in_cameo",
+                "display_name": "Errors in Cameo",
+                "method": "route_branch",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": true,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "branch_not_checked_yet",
+                "display_name": "Not checked yet",
+                "method": "route_branch",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": true,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {
+              "keywords": [
+                "hitl",
+                "human-in-the-loop",
+                "decision"
+              ]
+            },
+            "tool_mode": false
+          },
+          "type": "HumanInput",
+          "id": "HumanInput-cameo"
+        },
+        "type": "genericNode",
+        "position": {
+          "x": 980,
+          "y": 368
+        }
+      },
+      {
+        "id": "note-cameo",
+        "type": "noteNode",
+        "position": {
+          "x": 40,
+          "y": -20
+        },
+        "width": 460,
+        "height": 308,
+        "style": {
+          "width": 460,
+          "height": 308
+        },
+        "measured": {
+          "width": 460,
+          "height": 308
+        },
+        "data": {
+          "id": "note-cameo",
+          "type": "note",
+          "node": {
+            "description": "# Cameo check (when RTRC provides the license)\n\nRTRC works in Cameo. This flow exports a run's officially parsed designs and records whether they open cleanly in Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement, the interoperability evidence the brief asks for. Cameo has no headless command, so a person opens the file.",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "ChatInput-run",
+        "target": "RtrcCameoExport-export",
+        "data": {
+          "sourceHandle": {
+            "dataType": "ChatInput",
+            "id": "ChatInput-run",
+            "name": "message",
+            "output_types": [
+              "Message"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "run_id",
+            "id": "RtrcCameoExport-export",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-runœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œrun_idœ, œidœ: œRtrcCameoExport-exportœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-run{œdataTypeœ:œChatInputœ,œidœ:œChatInput-runœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcCameoExport-export{œfieldNameœ:œrun_idœ,œidœ:œRtrcCameoExport-exportœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "HumanInput-cameo",
+        "target": "RtrcCameoRecord-errors",
+        "data": {
+          "sourceHandle": {
+            "dataType": "HumanInput",
+            "id": "HumanInput-cameo",
+            "name": "branch_errors_in_cameo",
+            "output_types": [
+              "Message"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "upstream",
+            "id": "RtrcCameoRecord-errors",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-cameoœ, œnameœ: œbranch_errors_in_cameoœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcCameoRecord-errorsœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-cameo{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-cameoœ,œnameœ:œbranch_errors_in_cameoœ,œoutput_typesœ:[œMessageœ]}-RtrcCameoRecord-errors{œfieldNameœ:œupstreamœ,œidœ:œRtrcCameoRecord-errorsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "HumanInput-cameo",
+        "target": "RtrcCameoRecord-notchecked",
+        "data": {
+          "sourceHandle": {
+            "dataType": "HumanInput",
+            "id": "HumanInput-cameo",
+            "name": "branch_not_checked_yet",
+            "output_types": [
+              "Message"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "upstream",
+            "id": "RtrcCameoRecord-notchecked",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-cameoœ, œnameœ: œbranch_not_checked_yetœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcCameoRecord-notcheckedœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-cameo{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-cameoœ,œnameœ:œbranch_not_checked_yetœ,œoutput_typesœ:[œMessageœ]}-RtrcCameoRecord-notchecked{œfieldNameœ:œupstreamœ,œidœ:œRtrcCameoRecord-notcheckedœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "HumanInput-cameo",
+        "target": "RtrcCameoRecord-opens",
+        "data": {
+          "sourceHandle": {
+            "dataType": "HumanInput",
+            "id": "HumanInput-cameo",
+            "name": "branch_opens_cleanly",
+            "output_types": [
+              "Message"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "upstream",
+            "id": "RtrcCameoRecord-opens",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-cameoœ, œnameœ: œbranch_opens_cleanlyœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcCameoRecord-opensœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-cameo{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-cameoœ,œnameœ:œbranch_opens_cleanlyœ,œoutput_typesœ:[œMessageœ]}-RtrcCameoRecord-opens{œfieldNameœ:œupstreamœ,œidœ:œRtrcCameoRecord-opensœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "RtrcCameoExport-export",
+        "target": "HumanInput-cameo",
+        "data": {
+          "sourceHandle": {
+            "dataType": "RtrcCameoExport",
+            "id": "RtrcCameoExport-export",
+            "name": "message",
+            "output_types": [
+              "Message"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "prompt",
+            "id": "HumanInput-cameo",
+            "inputTypes": [
+              "Message"
+            ],
+            "type": "str"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œRtrcCameoExportœ, œidœ: œRtrcCameoExport-exportœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œpromptœ, œidœ: œHumanInput-cameoœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-RtrcCameoExport-export{œdataTypeœ:œRtrcCameoExportœ,œidœ:œRtrcCameoExport-exportœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-HumanInput-cameo{œfieldNameœ:œpromptœ,œidœ:œHumanInput-cameoœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "RtrcCameoRecord-errors",
+        "target": "ChatOutput-errors",
+        "data": {
+          "sourceHandle": {
+            "dataType": "RtrcCameoRecord",
+            "id": "RtrcCameoRecord-errors",
+            "name": "message",
+            "output_types": [
+              "Message"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ChatOutput-errors",
+            "inputTypes": [
+              "Data",
+              "JSON",
+              "DataFrame",
+              "Table",
+              "Message"
+            ],
+            "type": "other"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œRtrcCameoRecordœ, œidœ: œRtrcCameoRecord-errorsœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-errorsœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcCameoRecord-errors{œdataTypeœ:œRtrcCameoRecordœ,œidœ:œRtrcCameoRecord-errorsœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-errors{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-errorsœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "RtrcCameoRecord-notchecked",
+        "target": "ChatOutput-notchecked",
+        "data": {
+          "sourceHandle": {
+            "dataType": "RtrcCameoRecord",
+            "id": "RtrcCameoRecord-notchecked",
+            "name": "message",
+            "output_types": [
+              "Message"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ChatOutput-notchecked",
+            "inputTypes": [
+              "Data",
+              "JSON",
+              "DataFrame",
+              "Table",
+              "Message"
+            ],
+            "type": "other"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œRtrcCameoRecordœ, œidœ: œRtrcCameoRecord-notcheckedœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-notcheckedœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcCameoRecord-notchecked{œdataTypeœ:œRtrcCameoRecordœ,œidœ:œRtrcCameoRecord-notcheckedœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-notchecked{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-notcheckedœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "RtrcCameoRecord-opens",
+        "target": "ChatOutput-opens",
+        "data": {
+          "sourceHandle": {
+            "dataType": "RtrcCameoRecord",
+            "id": "RtrcCameoRecord-opens",
+            "name": "message",
+            "output_types": [
+              "Message"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ChatOutput-opens",
+            "inputTypes": [
+              "Data",
+              "JSON",
+              "DataFrame",
+              "Table",
+              "Message"
+            ],
+            "type": "other"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œRtrcCameoRecordœ, œidœ: œRtrcCameoRecord-opensœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-opensœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcCameoRecord-opens{œdataTypeœ:œRtrcCameoRecordœ,œidœ:œRtrcCameoRecord-opensœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-opens{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-opensœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.55
+    }
+  }
+}

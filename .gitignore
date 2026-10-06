@@ -42,6 +42,12 @@ __pycache__/
 /tools/.mamba/
 /bench/viz/build/
 /analysis/diagrams/
+
+# Langflow shell working state (a live run's record is analysis/discover-<run>.json)
+/analysis/langflow-runs/
+/analysis/langflow-console/
+/analysis/langflow-gates.jsonl
+/analysis/cameo-exports/
 /tools/opencode/opencode
 /tools/opencode/*.tar.gz
 

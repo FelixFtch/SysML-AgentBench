@@ -10,5 +10,6 @@ The reusable part of SysML-AgentBench: how to run AI-assisted early-stage system
 | [4. Evaluating agents fairly](04-evaluating-agents.md) | building a benchmark or comparing agents: the traps this project fell into and the fixes |
 | [5. Extending the task bank and rerunning](05-extending-the-bank.md) | adding tasks and answer keys, running batches, regenerating the results |
 | [6. Glossary](06-glossary.md) | meeting a term used across the repository |
+| [The flows in Langflow](../../langflow/README.md) | showing or running the agent flow, the exam cells or the MOD chain in Langflow, with a person's decision as a Human Input node |
 
 Where the evidence lives: decision records [`docs/decisions/`](../decisions/) (016–027 cover 2026-10-03 to 2026-10-06), failure classes [`docs/failure_taxonomy.md`](../failure_taxonomy.md), the freeze [`bench/FREEZE.md`](../../bench/FREEZE.md) and second review [`REVIEW.md`](../../bench/tasks/t4_maritime_isr/heldout/REVIEW.md), the exam report `analysis/report/exam-20261006/index.html`, and the results page (`python3 bench/exam_board.py`, http://127.0.0.1:8770/).

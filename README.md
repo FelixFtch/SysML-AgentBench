@@ -10,6 +10,7 @@ Sponsor: RTX Technology Research Center (RTRC). Faculty advisor: Prof. George Bo
 |---|---|
 | [`STATUS.md`](STATUS.md) | **Current numbers**, generated from saved results by `python3 scripts/make_status.py` |
 | `python3 bench/exam_board.py` → http://127.0.0.1:8770/ | Results page and demo: the 27-task exam cell by cell for four candidates, live runs, the MOD change chain, the Part 2 prototype, cost |
+| `scripts/langflow.sh --import` → http://127.0.0.1:7860/ · [`langflow/README.md`](langflow/README.md) | The same flows in Langflow 1.12.5: the agent flow (new design or adapt a similar project, a person's decision as a Human Input node), memory, exam cells, results, MOD chain, Cameo check; Qwen only |
 | [`analysis/report/exam-20261006/index.html`](analysis/report/exam-20261006/index.html) | Exam report, rebuilt by `python3 analysis/report/build_exam_report.py` |
 | [`docs/report/D4-draft.md`](docs/report/D4-draft.md) | Report draft (D4) |
 | [`docs/knowledge-base/`](docs/knowledge-base/README.md) | Process knowledge base (D7): the process, Pilot notes, what helps, evaluating agents fairly, extending the bank, glossary |

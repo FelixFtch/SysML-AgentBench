@@ -1,0 +1,39 @@
+{
+  "mappings": [
+    {
+      "oem_element": "UsvPayloadSpec::Camera",
+      "supplier_element": "OptronicsKit::EoCameraUnit",
+      "mapping_type": "alias",
+      "rationale": "camera part definition"
+    },
+    {
+      "oem_element": "UsvPayloadSpec::ImageryPort",
+      "supplier_element": "OptronicsKit::VideoOut",
+      "mapping_type": "alias",
+      "rationale": "imagery port definition"
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Camera::imagery",
+      "supplier_element": "OptronicsKit::EoCameraUnit::videoOut",
+      "mapping_type": "alias",
+      "rationale": "imagery output port"
+    },
+    {
+      "oem_element": "UsvPayloadSpec::Camera::drawW",
+      "supplier_element": "OptronicsKit::EoCameraUnit::powerDrawW",
+      "mapping_type": "alias",
+      "rationale": "electrical draw"
+    },
+    {
+      "oem_element": "UsvPayloadSpec::usv.eoCamera",
+      "supplier_element": "OptronicsKit::kit.cameraUnit",
+      "mapping_type": "allocation",
+      "rationale": "the camera instance"
+    }
+  ],
+  "unmatched": [
+    "OptronicsKit::EoCameraUnit::heaterW",
+    "OptronicsKit::VideoSink",
+    "UsvPayloadSpec::Processor"
+  ]
+}

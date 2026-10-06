@@ -1,0 +1,37 @@
+{
+  "mappings": [
+    {
+      "oem_element": "UavSensorSpec::SearchRadar",
+      "supplier_element": "RadarVendor::RadarModule_def",
+      "mapping_type": "alias",
+      "rationale": "radar definition"
+    },
+    {
+      "oem_element": "UavSensorSpec::SearchRadar::rangeKm",
+      "supplier_element": "RadarVendor::RadarModule_def::maxRangeKm",
+      "mapping_type": "alias",
+      "rationale": "range attribute"
+    },
+    {
+      "oem_element": "UavSensorSpec::Camera",
+      "supplier_element": "RadarVendor::GimbalCamera_def",
+      "mapping_type": "alias",
+      "rationale": "camera definition"
+    },
+    {
+      "oem_element": "UavSensorSpec::uav.searchRadar",
+      "supplier_element": "RadarVendor::payload.radar",
+      "mapping_type": "allocation",
+      "rationale": "radar instance"
+    },
+    {
+      "oem_element": "UavSensorSpec::uav.eoCamera",
+      "supplier_element": "RadarVendor::payload.gimbal",
+      "mapping_type": "allocation",
+      "rationale": "camera instance"
+    }
+  ],
+  "unmatched": [
+    "RadarVendor::RadarModule_def::massKg"
+  ]
+}

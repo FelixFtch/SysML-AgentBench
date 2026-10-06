@@ -20,7 +20,11 @@ In that matrix all 10 P1 generate-task failures used the 3 repairs and resubmitt
 - Each record carries `attempts`, `repair_rounds`, `max_rounds`, `first_pass_attempt` and `resubmitted_unchanged`. The first-attempt result inside a repaired cell is what P0 used to measure.
 - The exam console (1.5) and the Part 2 design validation use the same function and the same cap.
 
-## Trial, GEN-03, qwen3.8-flash, P1, cap 20, three repeats (`analysis/trial-repair-20261006T045705/`)
+## Trials, GEN-03, P1, cap 20, three repeats each
+
+Correction: the first trial ran on **qwen3.8-max**, not flash. `bench/experiment.load_env()` used to let `.env` override a model set on the command line; fixed the same day (environment wins). Both trials are kept.
+
+qwen3.8-max (`analysis/trial-repair-max-20261006T045705/`):
 
 | Repeat | Official syntax | First PASS at attempt | Repairs | Unchanged resubmits | Task verdict |
 |---|---|---|---|---|---|
@@ -28,9 +32,17 @@ In that matrix all 10 P1 generate-task failures used the 3 repairs and resubmitt
 | 2 | PASS | 4 | 3 | 0 | PASS |
 | 3 | PASS | 2 | 1 | 0 | PASS |
 
-All three first attempts were byte-identical (`import ScalarValues::*;` inside the package; the pinned Pilot accepts `private import ScalarValues::*;` and rejects the bare form with `mismatched input 'import' expecting '}'`). Under the old loop this task was 0/3 on P1 with the same text resubmitted four times. The trial cost about 4,600 flash tokens.
+qwen3.8-flash, the matrix model (`analysis/trial-repair-flash-20261006T055816/`):
 
-The trial changes three things at once (full errors with positions, cumulative memory, an explicit resubmit instruction), so it does not say which one mattered. It does say the "resubmitted unchanged" behaviour was a property of the loop, not a fixed property of the model.
+| Repeat | Official syntax | First PASS at attempt | Repairs | Unchanged resubmits | Task verdict |
+|---|---|---|---|---|---|
+| 1 | FAIL | — | 20 (cap) | 18 | FAIL: from attempt 4 on it resubmitted the same file (bare `import ScalarValues::Real;` and `part fusion : Processor in commandShip;`) against the same 8 errors |
+| 2 | PASS | 4 | 3 | 1 | PASS |
+| 3 | PASS | 5 | 4 | 2 | PASS |
+
+Every first attempt failed on the same line: `import ScalarValues::*;` inside the package. The pinned Pilot accepts `private import` / `public import` and rejects the bare form with `mismatched input 'import' expecting '}'` (probe in the conversation record of 2026-10-06). The rules did not mention the keyword; the P3 notes did, but they reached only the outline prompt. Under the old loop this task was 0/3 on flash P1 with the same text resubmitted four times. With memory and full errors flash passes 2/3 and still locks onto one wrong file in 1/3; max passes syntax 3/3.
+
+Guard added after the flash trial: after three consecutive byte-identical resubmissions the loop stops (`BENCH_REPAIR_IDENTICAL_STOP`, default 3, 0 disables) and records `stop_reason`; the first identical resubmission gets one extra sentence in the feedback saying the text did not change. A stop by this guard is a failure like a stop at the cap.
 
 ## Open
 

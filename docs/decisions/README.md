@@ -29,3 +29,4 @@ Decisions 001–015 (2026-10-02) are recorded in the execution plan v2.0, sectio
 | [021](021-cost-at-list-price.md) | Cost reported in USD at official list price; every new run records usage |
 | [022](022-repair-loop-full-errors-cumulative.md) | Repair loop sends the complete error list in one cumulative conversation, cap 20; P1–P3 all repair |
 | [023](023-vector-retrieval-paper2.md) | Paper 2's retrieval implemented: MiniLM + FAISS over Pilot-parsed cards, connections included; exam P3 uses a leak-free official-examples library |
+| [024](024-paper1-alignment-tasks.md) | Paper 1 replicated on its own example (mappings transfer, packages fail the Pilot); alignment becomes scored task type ALN, three sealed tasks, 27 in the bank |

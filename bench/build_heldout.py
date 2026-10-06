@@ -554,7 +554,7 @@ Do not change 60 to make the power sum fit.
         _write(folder / "gold" / "assertions.yaml", yaml.safe_dump(
             {"task_id": task_id, "must_mention": phrases[task_id]}, sort_keys=False))
 
-    ids = sorted(path.name for path in HELD.iterdir() if (path / "case.yaml").is_file())
+    ids = sorted(path.name for path in HELD.iterdir() if (path / "case.yaml").is_file() and not path.name.startswith("ALN-"))
     if len(ids) != 24:
         raise SystemExit(f"Expected 24 tasks, found {len(ids)}: {ids}")
     index = HELD / "index.jsonl"
@@ -566,6 +566,10 @@ Do not change 60 to make the power sum fit.
                     "RT-01", "RT-02", "RT-03", "RT-04", "RT-05"]:
         case = yaml.safe_load((HELD / task_id / "case.yaml").read_text(encoding="utf-8"))
         lines.append(json.dumps({"id": task_id, "type": case["type"], "path": f"bench/tasks/t4_maritime_isr/heldout/{task_id}"}))
+    # The three alignment tasks are written by bench/build_aln_tasks.py and stay in the index.
+    for path in sorted(HELD.glob("ALN-*")):
+        if (path / "case.yaml").is_file():
+            lines.append(json.dumps({"id": path.name, "type": "ALN", "path": f"bench/tasks/t4_maritime_isr/heldout/{path.name}"}))
     index.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"wrote {len(lines)} tasks")
 

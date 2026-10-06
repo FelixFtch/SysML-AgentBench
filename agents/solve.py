@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,9 +28,22 @@ from agents.llm import chat, extract_sysml  # noqa: E402
 
 CORPUS = ROOT / "bench" / "corpus"
 DEFAULT_ROUNDS = int(os.environ.get("BENCH_REPAIR_ROUNDS", "20"))
+# Stop early after this many consecutive byte-identical resubmissions; 0 disables the guard.
+IDENTICAL_STOP = int(os.environ.get("BENCH_REPAIR_IDENTICAL_STOP", "3"))
 REPAIR_NOTE = ("Official validation failed: attempt {attempt}, repair {repair} of at most {cap}. "
                "The complete error list from the official SysML v2 Pilot follows. Fix the model and "
                "resubmit the whole file in one fenced sysml block. Do not change numbers the task said to keep.")
+IDENTICAL_NOTE = ("Your last submission was byte-identical to the one before it and produced the same errors. "
+                  "Resubmitting the same text will fail again; change the file.")
+ALIGN_RULES = """You align two independently written SysML v2 packages without editing either of them.
+Rules:
+- Output one fenced code block tagged sysml containing exactly one package with the name given in the task, then one fenced code block tagged json, and no prose.
+- The package may contain only import statements, `alias <Name> for <Qualified::Name>;` declarations and `allocation <name> allocate <a.b.c> to <x.y.z>;` declarations. Do not declare parts, ports, attributes or definitions of your own.
+- In this toolchain an import inside a package needs a visibility keyword: write `private import Pkg::*;` or `public import Pkg::*;`, never a bare `import`.
+- Alias names are the specification's short names; alias targets are fully qualified with `::` at every level (`Pkg::Def::feature`). Allocation ends are usage paths: the package name, `::`, then the nested usages joined with dots (`Pkg::usv.radio`), never a dot after the package name.
+- Alias a definition only to a definition and a feature only to a feature; map usages to usages with allocations.
+- Do not map elements whose meaning differs; list them under "unmatched" in the json report instead.
+"""
 SYSML_RULES = """You write SysML v2 textual notation.
 Rules:
 - Output one fenced code block tagged sysml, and no prose before or after it.
@@ -111,6 +125,11 @@ def _generate(prompt: str, *, prefix: list[dict] | None = None) -> dict:
 def _answer(case: dict, prompt: str, *, prefix: list[dict] | None = None) -> dict:
     if case["type"] in {"GEN", "MOD"}:
         return _generate(prompt, prefix=prefix)
+    if case["type"] == "ALN":
+        messages = [{"role": "system", "content": ALIGN_RULES}]
+        messages.extend(prefix or [])
+        messages.append({"role": "user", "content": prompt})
+        return chat(messages)
     kind = {"QRY": "Reply with one JSON object and no prose, using the field names required by the task.",
             "AMB": "If a required number or unit is missing, ask for it in one question. Do not invent a number and do not output SysML.",
             "RT": "Restate only the requirements that are written in the given model. Plain sentences. Do not add numbers that are not in the model."}
@@ -142,19 +161,28 @@ def format_diagnostics(diagnostics: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def companions_of(case: dict, task_dir: Path | None) -> list[Path]:
+    """Source files that are validated together with the answer but are not part of it (ALN tasks)."""
+    if case.get("type") != "ALN" or not task_dir:
+        return []
+    return [task_dir / "input" / "baseline" / name for name in case.get("sources") or []]
+
+
 def validate_with_repair(case: dict, prompt: str, text: str, folder: Path, *, prefix: list[dict] | None,
                          label: str, max_rounds: int, calls: list[dict],
-                         on_attempt: Callable[[dict, str, str], None] | None = None) -> dict:
+                         on_attempt: Callable[[dict, str, str], None] | None = None,
+                         companions: list[Path] | None = None) -> dict:
     """Validate one submission with the official Pilot; on failure, repair in one cumulative conversation.
 
     Attempt 1 is the text already written. Each failed attempt appends the model's text and the full
     error list to the same message list, so later repairs see every earlier version and every earlier
     error. Each version and its diagnostics are saved under folder/attempts/. Stops at PASS or when
-    max_rounds repairs have been made.
+    max_rounds repairs have been made. `companions` are read-only source files parsed together with
+    the answer (the two models an alignment package imports).
     """
     from mvp.engine import run_submitted_model
 
-    messages = [{"role": "system", "content": SYSML_RULES}]
+    messages = [{"role": "system", "content": ALIGN_RULES if case.get("type") == "ALN" else SYSML_RULES}]
     messages.extend(prefix or [])
     messages.append({"role": "user", "content": prompt})
     attempts_dir = folder / "attempts"
@@ -163,6 +191,8 @@ def validate_with_repair(case: dict, prompt: str, text: str, folder: Path, *, pr
     engine_run = run_dir = None
     status = None
     previous_sha = None
+    identical_streak = 0
+    stop_reason = None
     attempt = 0
     while True:
         attempt += 1
@@ -177,7 +207,7 @@ def validate_with_repair(case: dict, prompt: str, text: str, folder: Path, *, pr
         else:
             path = folder / f"{case['package']}.sysml"
             path.write_text(source, encoding="utf-8")
-            validated = run_submitted_model([path], case["package"], label=label)
+            validated = run_submitted_model(list(companions or []) + [path], case["package"], label=label)
             engine_run = run_id = validated["run_id"]
             run_dir = validated["run_dir"]
             status = validated["sysml"]["status"]
@@ -191,21 +221,43 @@ def validate_with_repair(case: dict, prompt: str, text: str, folder: Path, *, pr
         (attempts_dir / f"attempt-{attempt:02d}.diagnostics.json").write_text(
             json.dumps(diagnostics, ensure_ascii=False, indent=2), encoding="utf-8")
         feedback = format_diagnostics(diagnostics)
+        identical_streak = identical_streak + 1 if entry["same_as_previous"] else 0
         if on_attempt:
             on_attempt(entry, text, feedback)
         previous_sha = sha
-        if status == "PASS" or attempt > max_rounds:
+        if status == "PASS":
+            stop_reason = "pass"
+            break
+        if attempt > max_rounds:
+            stop_reason = "cap"
+            break
+        if IDENTICAL_STOP and identical_streak >= IDENTICAL_STOP:
+            stop_reason = f"identical x{identical_streak}"
             break
         note = REPAIR_NOTE.format(attempt=attempt, repair=attempt, cap=max_rounds)
+        if case.get("type") == "ALN":
+            note += " Also repeat the fenced json report (mappings and unmatched) after the sysml block."
+        if entry["same_as_previous"]:
+            note += " " + IDENTICAL_NOTE
+            entry["nudged"] = True
         messages.append({"role": "user", "content": note + "\n" + feedback})
         repaired = chat(messages)
         calls.append({"step": f"repair-{attempt}", "usage": repaired["usage"], "model": repaired.get("model")})
         text = repaired["text"]
     (folder / "conversation.json").write_text(json.dumps(messages, ensure_ascii=False, indent=2), encoding="utf-8")
     first_pass = next((item["attempt"] for item in attempts if item["status"] == "PASS"), None)
+    carried = False
+    if case.get("type") == "ALN" and "```json" not in text:
+        # Repairs resubmit the package; the JSON report from the latest reply that had one still stands.
+        for earlier in reversed([m["content"] for m in messages if m["role"] == "assistant"]):
+            block = re.search(r"```json\s*\n.*?```", earlier, flags=re.S)
+            if block:
+                text = text.rstrip() + "\n\n" + block.group(0)
+                carried = True
+                break
     return {"text": text, "sysml_status": status, "engine_run": engine_run, "run_dir": run_dir,
             "attempts": attempts, "repair_rounds": len(attempts) - 1, "max_rounds": max_rounds,
-            "first_pass_attempt": first_pass,
+            "first_pass_attempt": first_pass, "stop_reason": stop_reason, "report_carried_forward": carried,
             "resubmitted_unchanged": sum(1 for item in attempts if item["same_as_previous"])}
 
 
@@ -233,16 +285,18 @@ def solve(task_dir: Path, config: str, *, max_rounds: int | None = None) -> dict
     calls.append({"step": "write", "usage": written["usage"], "model": written["model"]})
     text = written["text"]
     loop = {"sysml_status": None, "engine_run": None, "run_dir": None, "attempts": [], "repair_rounds": 0,
-            "max_rounds": 0, "first_pass_attempt": None, "resubmitted_unchanged": 0}
-    if case["type"] in {"GEN", "MOD"}:
+            "max_rounds": 0, "first_pass_attempt": None, "resubmitted_unchanged": 0, "stop_reason": None}
+    if case["type"] in {"GEN", "MOD", "ALN"}:
         loop = validate_with_repair(case, prompt, text, folder, prefix=prefix, label=f"{config}-{case['id']}",
-                                    max_rounds=rounds_for(config, max_rounds), calls=calls)
+                                    max_rounds=rounds_for(config, max_rounds), calls=calls,
+                                    companions=companions_of(case, task_dir))
         text = loop["text"]
     (folder / "response.txt").write_text(text, encoding="utf-8")
     record = {"configuration": config, "task_id": case["id"], "type": case["type"],
               "provider_model": calls[-1].get("model") or calls[0].get("model"),
               "calls": calls, "repair_rounds": loop["repair_rounds"], "max_rounds": loop["max_rounds"],
               "first_pass_attempt": loop["first_pass_attempt"], "resubmitted_unchanged": loop["resubmitted_unchanged"],
+              "stop_reason": loop.get("stop_reason"),
               "attempts": loop["attempts"], "sysml_status": loop["sysml_status"],
               "engine_run": loop["engine_run"], "run_dir": loop["run_dir"], "response_path": str(folder / "response.txt")}
     (folder / "solve.json").write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")

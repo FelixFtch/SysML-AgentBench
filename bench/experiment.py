@@ -34,11 +34,18 @@ def load_env() -> None:
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, value = line.split("=", 1)
-        os.environ[key.strip()] = value.strip().strip('"').strip("'")
+        # A variable already set in the environment wins, so `MVP_LLM_MODEL=qwen3.8-flash python3 ...`
+        # really selects flash. Before 2026-10-06 .env silently overrode it (the two GEN-03 trials ran on max).
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
 
 def grade(task_dir: Path, solved: dict) -> dict:
     kind = yaml.safe_load((task_dir / "case.yaml").read_text(encoding="utf-8"))["type"]
+    if kind == "ALN":
+        from bench.score_alignment import score_alignment
+        run_dir = Path(solved["run_dir"]) if solved.get("run_dir") else None
+        return score_alignment(run_dir, task_dir / "gold" / "assertions.yaml", solved.get("text") or "",
+                               sysml_status=solved.get("sysml_status"))
     if kind in {"GEN", "MOD"}:
         if not solved.get("run_dir"):
             return {"status": "FAIL", "sysml_status": solved.get("sysml_status"),
@@ -88,6 +95,12 @@ def main() -> None:
                                    "repair_rounds": solved.get("repair_rounds"),
                                    "max_rounds": solved.get("max_rounds"),
                                    "first_pass_attempt": solved.get("first_pass_attempt"),
+                                   "stop_reason": solved.get("stop_reason"),
+                                   **({"reason": scored.get("reason"), "precision": scored.get("precision"), "recall": scored.get("recall"),
+                                       "must_map": {k: scored["must_map"][k] for k in ("hit", "expected")} if scored.get("must_map") else None,
+                                       "violations": len((scored.get("must_not_map") or {}).get("violations") or []),
+                                       "unmatched": {k: scored["unmatched"][k] for k in ("hit", "expected")} if scored.get("unmatched") else None}
+                                      if item["type"] == "ALN" else {}),
                                    "resubmitted_unchanged": solved.get("resubmitted_unchanged"),
                                    "attempts": [{key: value for key, value in item.items() if key != "diagnostics"}
                                                 | {"errors": len(item.get("diagnostics") or [])}

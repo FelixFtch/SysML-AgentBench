@@ -25,11 +25,23 @@ def main() -> None:
     failures = []
     for line in (HELD / "index.jsonl").read_text(encoding="utf-8").splitlines():
         item = json.loads(line)
-        if item["type"] not in {"GEN", "MOD"}:
+        if item["type"] not in {"GEN", "MOD", "ALN"}:
             continue
         task = HELD / item["id"]
         case = yaml.safe_load((task / "case.yaml").read_text(encoding="utf-8"))
         model = next((task / "gold" / "reference").glob("*.sysml"))
+        if item["type"] == "ALN":
+            from bench.score_alignment import score_alignment
+            sources = [task / "input" / "baseline" / name for name in case["sources"]]
+            validated = run_submitted_model(sources + [model], case["package"], label=f"gold-{item['id']}")
+            report = (task / "gold" / "reference" / "report.json").read_text(encoding="utf-8")
+            scored = score_alignment(Path(validated["run_dir"]), task / "gold" / "assertions.yaml",
+                                     "```json\n" + report + "\n```", sysml_status=validated["sysml"]["status"])
+            ok = validated["sysml"]["status"] == "PASS" and scored["status"] == "PASS"
+            print(item["id"], validated["sysml"]["status"], scored["status"], "map", scored["must_map"]["hit"], "/", scored["must_map"]["expected"])
+            if not ok:
+                failures.append({"id": item["id"], "score": scored, "sysml": validated["sysml"]["status"]})
+            continue
         validated = run_submitted_model([model], case["package"], label=f"gold-{item['id']}")
         scored = score_run(Path(validated["run_dir"]), task / "gold" / "assertions.yaml")
         ok = scored["structure_pass"] and validated["sysml"]["status"] == "PASS" and scored["status"] == "PASS"

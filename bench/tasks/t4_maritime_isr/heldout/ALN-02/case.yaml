@@ -1,0 +1,11 @@
+id: ALN-02
+type: ALN
+scenario_family: t4_maritime_isr
+split: heldout
+package: AlignLink
+sources:
+- ShipLinkIcd.sysml
+- VendorRadioPack.sysml
+synthetic: true
+status: single-author
+second_reviewer: pending

@@ -1,0 +1,440 @@
+[
+ {
+  "question": "Q1",
+  "variant": "authors as published",
+  "threshold": 0.35,
+  "answer": "Based on the provided model context, there is no information available regarding the torque of a motor in a high performance electric vehicle. The context section appears to be empty. Please provide the relevant SysML v2 model context so I can answer your question accurately.",
+  "context_bytes": 0,
+  "pass": false,
+  "groups": [
+   {
+    "any_of": [
+     "600"
+    ],
+    "found": false
+   }
+  ]
+ },
+ {
+  "question": "Q1",
+  "variant": "authors, URI fix",
+  "threshold": 0.35,
+  "answer": "Based on the provided model context, the torque of the motor in the high performance electric vehicle (`highPerformanceEV`) is **600.0**.\n\nThis is defined by the following relationship in the model:\n- `ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/torque member 600.0`",
+  "context_bytes": 8058,
+  "pass": true,
+  "groups": [
+   {
+    "any_of": [
+     "600"
+    ],
+    "found": true
+   }
+  ]
+ },
+ {
+  "question": "Q1",
+  "variant": "authors as published",
+  "threshold": 0.45,
+  "answer": "Based on the provided context, there is no model information available to answer your question. The context section is empty, so I cannot determine the torque of the motor in the high performance electric vehicle. Please provide the relevant SysML v2 model context so I can assist you.",
+  "context_bytes": 0,
+  "pass": false,
+  "groups": [
+   {
+    "any_of": [
+     "600"
+    ],
+    "found": false
+   }
+  ]
+ },
+ {
+  "question": "Q1",
+  "variant": "authors, URI fix",
+  "threshold": 0.45,
+  "answer": "Based on the provided model context, the torque of the motor in the high performance electric vehicle (`highPerformanceEV`) is **600.0**.\n\nThis is indicated by the following relationship in the context:\n- `ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/torque member 600.0`",
+  "context_bytes": 4604,
+  "pass": true,
+  "groups": [
+   {
+    "any_of": [
+     "600"
+    ],
+    "found": true
+   }
+  ]
+ },
+ {
+  "question": "Q1",
+  "variant": "ours",
+  "threshold": 0.3,
+  "answer": "Based on the provided model context, the torque of the motor in the high performance electric vehicle (`highPerformanceEV`) is **600.0**.",
+  "context_bytes": 624,
+  "pass": true,
+  "groups": [
+   {
+    "any_of": [
+     "600"
+    ],
+    "found": true
+   }
+  ]
+ },
+ {
+  "question": "Q1",
+  "variant": "ours + doc",
+  "threshold": 0.3,
+  "answer": "Based on the provided model context, the torque of the motor in the high performance electric vehicle (`highPerformanceEV`) is **600.0**.",
+  "context_bytes": 741,
+  "pass": true,
+  "groups": [
+   {
+    "any_of": [
+     "600"
+    ],
+    "found": true
+   }
+  ]
+ },
+ {
+  "question": "Q2",
+  "variant": "authors as published",
+  "threshold": 0.35,
+  "answer": "Based on the provided context, there is no model information available to answer your question. The context section in your prompt is empty. Please provide the relevant SysML v2 model context so I can assist you.",
+  "context_bytes": 0,
+  "pass": false,
+  "groups": [
+   {
+    "any_of": [
+     "upgraded",
+     "upgrade"
+    ],
+    "found": false
+   },
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": false
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": false
+   }
+  ]
+ },
+ {
+  "question": "Q2",
+  "variant": "authors, URI fix",
+  "threshold": 0.35,
+  "answer": "Based on the provided model context, the high performance electric vehicle (`highPerformanceEV`) is described by the following comment:\n\n> \"Instance representing a high-performance electric vehicle with upgraded battery and motor.\"",
+  "context_bytes": 9962,
+  "pass": true,
+  "groups": [
+   {
+    "any_of": [
+     "upgraded",
+     "upgrade"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": true
+   }
+  ]
+ },
+ {
+  "question": "Q2",
+  "variant": "authors as published",
+  "threshold": 0.45,
+  "answer": "Based on the provided context, there is no model information available to answer your question. The context section in your prompt is empty. Please provide the relevant SysML v2 model context so I can assist you.",
+  "context_bytes": 0,
+  "pass": false,
+  "groups": [
+   {
+    "any_of": [
+     "upgraded",
+     "upgrade"
+    ],
+    "found": false
+   },
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": false
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": false
+   }
+  ]
+ },
+ {
+  "question": "Q2",
+  "variant": "authors, URI fix",
+  "threshold": 0.45,
+  "answer": "Based on the provided model context, the high performance electric vehicle (`highPerformanceEV`) is described by the following comment:\n\n**\"Instance representing a high-performance electric vehicle with upgraded battery and motor.\"**",
+  "context_bytes": 1299,
+  "pass": true,
+  "groups": [
+   {
+    "any_of": [
+     "upgraded",
+     "upgrade"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": true
+   }
+  ]
+ },
+ {
+  "question": "Q2",
+  "variant": "ours",
+  "threshold": 0.3,
+  "answer": "Based on the provided model context, there is no information explaining what the high performance electric vehicle (`highPerformanceEV`) is **for** (its purpose or intended use). The context only defines it as a `PartUsage` within the `ElectricVehicleModel::VehicleInstances` package and lists its components (motor, battery, cooling) along with a motor efficiency value of 0.96.",
+  "context_bytes": 610,
+  "pass": false,
+  "groups": [
+   {
+    "any_of": [
+     "upgraded",
+     "upgrade"
+    ],
+    "found": false
+   },
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": true
+   }
+  ]
+ },
+ {
+  "question": "Q2",
+  "variant": "ours + doc",
+  "threshold": 0.3,
+  "answer": "Based on the provided model context, the high performance electric vehicle (`highPerformanceEV`) is an instance representing a high-performance electric vehicle with an upgraded battery and motor.",
+  "context_bytes": 706,
+  "pass": true,
+  "groups": [
+   {
+    "any_of": [
+     "upgraded",
+     "upgrade"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": true
+   }
+  ]
+ },
+ {
+  "question": "Q3",
+  "variant": "authors as published",
+  "threshold": 0.35,
+  "answer": "Based on the provided context, no model information was included. Therefore, I cannot answer what the electric vehicle consists of. Please provide the relevant SysML v2 model context so I can assist you accurately.",
+  "context_bytes": 0,
+  "pass": false,
+  "groups": [
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": false
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": false
+   },
+   {
+    "any_of": [
+     "cooling"
+    ],
+    "found": false
+   }
+  ]
+ },
+ {
+  "question": "Q3",
+  "variant": "authors, URI fix",
+  "threshold": 0.35,
+  "answer": "Based on the provided model context, the electric vehicle consists of a **battery**, a **motor**, and a **cooling system** as internal parts.\n\nThis is supported by:\n- The comment on `ElectricVehicleModel/PartDefinitions/ElectricVehicle`: *\"This is a composite system definition representing a vehicle's energy and cooling architecture. It composes a battery, motor, and cooling system as internal parts.\"*\n- The members of `ElectricVehicle`:\n  - `ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery`\n  - `ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor`\n  - `ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling`",
+  "context_bytes": 18154,
+  "pass": true,
+  "groups": [
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "cooling"
+    ],
+    "found": true
+   }
+  ]
+ },
+ {
+  "question": "Q3",
+  "variant": "authors as published",
+  "threshold": 0.45,
+  "answer": "Based on the provided context, no model information was included. Therefore, I cannot answer what the electric vehicle consists of. Please provide the relevant SysML v2 model context so I can assist you accurately.",
+  "context_bytes": 0,
+  "pass": false,
+  "groups": [
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": false
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": false
+   },
+   {
+    "any_of": [
+     "cooling"
+    ],
+    "found": false
+   }
+  ]
+ },
+ {
+  "question": "Q3",
+  "variant": "authors, URI fix",
+  "threshold": 0.45,
+  "answer": "Based on the provided model context, the electric vehicle consists of a **battery**, **motor**, and **cooling system** as internal parts.\n\nThis is explicitly stated in the comment for `ElectricVehicleModel/PartDefinitions/ElectricVehicle`:\n\n> \"This is a composite system definition representing a vehicle's energy and cooling architecture. It composes a battery, motor, and cooling system as internal parts.\"",
+  "context_bytes": 12496,
+  "pass": true,
+  "groups": [
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "cooling"
+    ],
+    "found": true
+   }
+  ]
+ },
+ {
+  "question": "Q3",
+  "variant": "ours",
+  "threshold": 0.3,
+  "answer": "Based on the provided model context, the electric vehicle (`highPerformanceEV`) consists of the following parts:\n\n- **motor** (PartUsage)\n- **battery** (PartUsage)\n- **cooling** (PartUsage)",
+  "context_bytes": 632,
+  "pass": true,
+  "groups": [
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "cooling"
+    ],
+    "found": true
+   }
+  ]
+ },
+ {
+  "question": "Q3",
+  "variant": "ours + doc",
+  "threshold": 0.3,
+  "answer": "Based on the provided model context, the electric vehicle instances consist of the following parts:\n\nFor the **highPerformanceEV** (a high-performance electric vehicle with upgraded battery and motor), it consists of:\n- **motor** (which includes attributes for `efficiency` of 0.96 and `torque` of 600.0)\n- **battery**\n- **cooling**\n\nAdditionally, there is a **baseModelVehicle**, which represents a standard electric vehicle configuration, though its specific internal parts are not detailed in the provided context.",
+  "context_bytes": 767,
+  "pass": true,
+  "groups": [
+   {
+    "any_of": [
+     "battery"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "motor"
+    ],
+    "found": true
+   },
+   {
+    "any_of": [
+     "cooling"
+    ],
+    "found": true
+   }
+  ]
+ }
+]

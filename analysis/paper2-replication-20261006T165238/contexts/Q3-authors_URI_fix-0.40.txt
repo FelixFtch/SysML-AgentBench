@@ -1,0 +1,149 @@
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV label highPerformanceEV
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery label battery
+- ElectricVehicleModel/PartDefinitions/Motor/torque label torque
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery member ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery/capacity
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/VehicleInstances/cityCompactEV/cooling
+- ElectricVehicleModel/PartDefinitions member ElectricVehicleModel/PartDefinitions/ElectricVehicle
+- ElectricVehicleModel/PartDefinitions member ElectricVehicleModel/PartDefinitions/CoolingSystem
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/cooling/coolantTemp isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances imports ElectricVehicleModel/PartDefinitions
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor
+- ElectricVehicleModel/PartDefinitions/Motor type PartDefinition
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery/voltage isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle comment Instance representing a standard electric vehicle configuration.
+
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/VehicleInstances/cityCompactEV/motor
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV type PartUsage
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/battery/capacity isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor type PartUsage
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery type PartUsage
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor/torque isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle member ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/motor member ElectricVehicleModel/VehicleInstances/cityCompactEV/motor/efficiency
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle type PartDefinition
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling type PartUsage
+- ElectricVehicleModel/PartDefinitions/Motor/torque type AttributeUsage
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle member ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle member ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery/voltage isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/VehicleInstances/cityCompactEV/battery
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle member ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/battery type PartUsage
+- ElectricVehicleModel/PartDefinitions/Battery/capacity label capacity
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/torque isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/PartDefinitions type Package
+- ElectricVehicleModel member ElectricVehicleModel/VehicleInstances
+- ElectricVehicleModel/VehicleInstances/cityCompactEV type PartUsage
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery member ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery/voltage
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor member ElectricVehicleModel/PartDefinitions/Motor/efficiency
+- ElectricVehicleModel/VehicleInstances/cityCompactEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery type PartUsage
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle member ElectricVehicleModel/VehicleInstances/baseModelVehicle/cooling
+- ElectricVehicleModel/PartDefinitions member ElectricVehicleModel/PartDefinitions/Motor
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/battery member ElectricVehicleModel/VehicleInstances/cityCompactEV/battery/voltage
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor member ElectricVehicleModel/PartDefinitions/Motor/torque
+- ElectricVehicleModel/PartDefinitions/Motor/efficiency type AttributeUsage
+- ElectricVehicleModel/PartDefinitions/CoolingSystem member ElectricVehicleModel/PartDefinitions/CoolingSystem/coolantTemp
+- ElectricVehicleModel/PartDefinitions/Motor/efficiency isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/efficiency isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling
+- ElectricVehicleModel/VehicleInstances member ElectricVehicleModel/VehicleInstances/cityCompactEV
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling member ElectricVehicleModel/PartDefinitions/CoolingSystem/coolantTemp
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery member ElectricVehicleModel/PartDefinitions/Battery/voltage
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor label motor
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV comment Instance representing a high-performance electric vehicle with upgraded battery and motor.
+
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/battery label battery
+- ElectricVehicleModel/PartDefinitions/Battery/voltage isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery member ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery/voltage
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/motor member ElectricVehicleModel/VehicleInstances/cityCompactEV/motor/torque
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/motor/torque isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances type Package
+- ElectricVehicleModel/PartDefinitions/Motor comment This part defines an electric motor.
+Attributes include torque and efficiency, used for performance evaluation.
+
+- ElectricVehicleModel/PartDefinitions/Battery comment This part represents a battery component, storing electric energy.
+It includes attributes for voltage and charge capacity. 
+
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/motor label motor
+- ElectricVehicleModel/VehicleInstances member ElectricVehicleModel/PartDefinitions/ElectricVehicle
+- ElectricVehicleModel/VehicleInstances member ElectricVehicleModel/PartDefinitions/CoolingSystem
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor member ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor/efficiency
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery label battery
+- ElectricVehicleModel/PartDefinitions/Battery member ElectricVehicleModel/PartDefinitions/Battery/voltage
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/cooling/coolantTemp isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/PartDefinitions/CoolingSystem label CoolingSystem
+- ElectricVehicleModel type Package
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/motor/efficiency isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances member ElectricVehicleModel/PartDefinitions/Battery
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/VehicleInstances/highPerformanceEV/cooling
+- ScalarValues/Real type DataType
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle label ElectricVehicle
+- ElectricVehicleModel label ElectricVehicleModel
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor member ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/torque
+- ElectricVehicleModel/VehicleInstances label VehicleInstances
+- ElectricVehicleModel member ElectricVehicleModel/PartDefinitions
+- ElectricVehicleModel/PartDefinitions/Motor member ElectricVehicleModel/PartDefinitions/Motor/efficiency
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor label motor
+- ElectricVehicleModel/VehicleInstances member ElectricVehicleModel/VehicleInstances/highPerformanceEV
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle type PartUsage
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle isDefinedBy ElectricVehicleModel/PartDefinitions/ElectricVehicle
+- ElectricVehicleModel/VehicleInstances member ElectricVehicleModel/VehicleInstances/baseModelVehicle
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/motor type PartUsage
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery member ElectricVehicleModel/PartDefinitions/Battery/capacity
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle comment This is a composite system definition representing a vehicle's energy and cooling architecture.
+It composes a battery, motor, and cooling system as internal parts.
+
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor member ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor/torque
+- ElectricVehicleModel/PartDefinitions/Motor member ElectricVehicleModel/PartDefinitions/Motor/torque
+- ElectricVehicleModel/PartDefinitions/CoolingSystem type PartDefinition
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery isDefinedBy ElectricVehicleModel/PartDefinitions/Battery
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery label battery
+- ScalarValues/Real label Real
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor
+- ElectricVehicleModel/PartDefinitions/Battery/capacity type AttributeUsage
+- ElectricVehicleModel/PartDefinitions/Motor/efficiency label efficiency
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery/capacity isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery type PartUsage
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle label baseModelVehicle
+- ElectricVehicleModel/VehicleInstances/cityCompactEV isDefinedBy ElectricVehicleModel/PartDefinitions/ElectricVehicle
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/cooling/coolantTemp isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/PartDefinitions/Battery/capacity isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances member ElectricVehicleModel/PartDefinitions/Motor
+- ElectricVehicleModel/PartDefinitions/CoolingSystem/coolantTemp isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/battery member ElectricVehicleModel/VehicleInstances/cityCompactEV/battery/capacity
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor member ElectricVehicleModel/VehicleInstances/highPerformanceEV/motor/efficiency
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle member ElectricVehicleModel/PartDefinitions/ElectricVehicle/battery
+- ElectricVehicleModel/PartDefinitions member ElectricVehicleModel/PartDefinitions/Battery
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor type PartUsage
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle member ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor
+- ElectricVehicleModel/PartDefinitions/Battery member ElectricVehicleModel/PartDefinitions/Battery/capacity
+- ElectricVehicleModel/VehicleInstances/cityCompactEV/battery/voltage isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor type PartUsage
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling label cooling
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle member ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV member ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/motor isDefinedBy ElectricVehicleModel/PartDefinitions/Motor
+- ElectricVehicleModel/PartDefinitions/Motor label Motor
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV isDefinedBy ElectricVehicleModel/PartDefinitions/ElectricVehicle
+- ElectricVehicleModel/PartDefinitions label PartDefinitions
+- ElectricVehicleModel/VehicleInstances/cityCompactEV comment Instance representing a compact city vehicle optimized for efficiency and lower power.
+
+- ElectricVehicleModel/PartDefinitions/ElectricVehicle/cooling isDefinedBy ElectricVehicleModel/PartDefinitions/CoolingSystem
+- ElectricVehicleModel imports ScalarValues
+- ElectricVehicleModel/PartDefinitions/Battery label Battery
+- ElectricVehicleModel/PartDefinitions/Motor/torque isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances/cityCompactEV label cityCompactEV
+- ElectricVehicleModel member ScalarValues/Real
+- ElectricVehicleModel/PartDefinitions/Battery type PartDefinition
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor label motor
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery member ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery/capacity
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle/motor/efficiency isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/PartDefinitions/CoolingSystem comment This part represents the cooling system responsible for thermal regulation.
+It includes an attribute indicating coolant temperature.
+
+- ElectricVehicleModel/VehicleInstances/highPerformanceEV/battery/capacity isDefinedBy ScalarValues/Real
+- ElectricVehicleModel/VehicleInstances/baseModelVehicle member ElectricVehicleModel/VehicleInstances/baseModelVehicle/battery

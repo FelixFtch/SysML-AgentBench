@@ -1,0 +1,8 @@
+AttributeUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::motor::torque 600.0
+AttributeUsage ElectricVehicleModel::VehicleInstances::cityCompactEV::motor::torque 300.0
+AttributeUsage ElectricVehicleModel::PartDefinitions::Motor::torque
+AttributeUsage ElectricVehicleModel::VehicleInstances::baseModelVehicle::motor::torque 450.0
+PartUsage ElectricVehicleModel::VehicleInstances::highPerformanceEV::motor
+PartUsage ElectricVehicleModel::VehicleInstances::cityCompactEV::motor
+PartDefinition ElectricVehicleModel::PartDefinitions::Motor doc: This part defines an electric motor. Attributes include torque and efficiency, used for performance evaluation.
+PartUsage ElectricVehicleModel::VehicleInstances::baseModelVehicle::motor

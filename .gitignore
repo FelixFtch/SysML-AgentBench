@@ -59,3 +59,4 @@ checkpoints.db
 
 # SysEngBench dataset copy (MIT; registered in datasets/SOURCES.md, fetched by bench/run_side.py)
 /analysis/sysengbench/test.csv
+/analysis/paper2-replication-*/authors-faiss.index

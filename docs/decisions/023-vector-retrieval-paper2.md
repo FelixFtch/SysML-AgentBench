@@ -33,4 +33,4 @@ By the user's decision the word-ranking fallback is gone from P3 (`agents/solve.
 
 ## Not reproduced from the paper
 
-Its input is the SysML v2 API's JSON-LD turned into RDF; ours is the Pilot's JSON export. Its radius search on an L2 index with 0.35 was calibrated on its vehicle model and is not reused. Its F1 of 0.904 is on its own three questions. The exact-name bonus is ours, added because 384-dimensional sentence vectors blur short identifiers like `usv`.
+Its input is the SysML v2 API's JSON-LD turned into RDF; ours is the Pilot's JSON export. Its threshold of 0.35 was calibrated on its vehicle model and is not reused. (Corrected 2026-10-06 by the replication, decision 027: this paragraph first called it an L2 radius; the authors' code uses an inner-product index over unit vectors, so 0.35 is a cosine threshold.) Its F1 of 0.904 is on its own three questions. The exact-name bonus is ours, added because 384-dimensional sentence vectors blur short identifiers like `usv`.

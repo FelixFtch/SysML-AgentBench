@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 99335,
+  "stop_reason": "end_turn",
+  "session_id": "935df159-10a3-41f8-ab1b-707522d1daca",
+  "total_cost_usd": 0.25898299999999996,
+  "usage": {
+    "input_tokens": 14474,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 139776,
+    "output_tokens": 4669,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-max": {
+      "inputTokens": 14474,
+      "outputTokens": 4669,
+      "cacheReadInputTokens": 139776,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.25898299999999996,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-max",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 11,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "I stopped rather than modeled, per the explicit instruction in `input/requirements.md`.\n\n**Files changed:** `answer.md` created (the required deliverable). No `.sysml` file written — none existed to edit, and the requirement says *\"If a number or unit needed for a check is missing or in conflict, ask. Do not invent a value and do not write SysML.\"*\n\n**Validation status:** not run — **0 of 50** `./validate` calls used. No model file exists, and `./validate` also needs a `<PackageName>` that is stated nowhere in the inputs.\n\n**Check results:** none possible. The only implied check — tracks shared vessel→shore \"in real time\" — has no pass/fail criterion: \"real time\" carries no numeric bound, and latency and bandwidth are both explicitly stated as not given.\n\n**Open questions** (full list in `answer.md`):\n1. Max vessel→shore latency, and unit — and is it sensor-to-display or link-only, per-update or a percentile?\n2. Bandwidth budget and unit — hard ceiling, guaranteed minimum, or both?\n3. Is \"real time\" meant to resolve to a number, or stay qualitative?\n4. Track count, update rate, per-update message size — needed for any bandwidth computation.\n5. Are the values genuinely missing, or is the deliberate absence the point of AMB-01 (i.e. is this written stop-and-ask the expected deliverable)?\n6. What package name should the model declare, and is one `.sysml` file expected?\n7. Should latency/bandwidth be encoded as SysML `requirement` constraints, given the validator's own scope note that it \"excludes engineering budgets and complete unit/dimension verification\"?\n\nOne thing worth flagging: a validator PASS would not confirm any budget is met — it checks parse/link/static rules only, so the numbers above are needed regardless of tooling.\n\nIf the values can't be produced, I've proposed (but not applied) the alternative: model the requirement with the unquantified \"real time\" clause and no fabricated budget, then validate. I'll wait for your call before writing any SysML.",
+  "ttft_ms": 5041,
+  "type": "result",
+  "duration_ms": 99538,
+  "uuid": "4e35126c-42dd-47a7-8aae-21b6674f1370",
+  "ttft_stream_ms": 2535,
+  "time_to_request_ms": 75,
+  "first_content_frame_ms": 2535,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

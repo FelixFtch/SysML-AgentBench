@@ -1,47 +1,47 @@
-# 公开工程资料补充核验与实际接入
+# Public engineering material: follow-up checks and actual integration
 
-日期：2026-09-22。范围：只选取能落地演示的两套资料；原始文件全部保留在 `mvp/public-data/`，未混入应用源码。本次不把公开资料称作 RTX 内部数据，也不将教程模型称作物理系统的正式设计。
+Date: 2026-09-22. Scope: only two sets of material that can be demonstrated end to end; every original file is kept in `mvp/public-data/` and not mixed into application source. Public material is not called RTX internal data, and tutorial models are not called formal designs of a physical system.
 
-## 1 NASA cFE：可追溯的真实公开需求输入
+## 1 NASA cFE: traceable, real public requirements as input
 
-- 一手来源：[nasa/cFE](https://github.com/nasa/cFE)，[固定版本CSV](https://github.com/nasa/cFE/blob/7d283938c9af5bd6e439f3fc307e61b0c7799640/docs/cFE_FunctionalRequirements.csv)。
-- 下载版本：`7d283938c9af5bd6e439f3fc307e61b0c7799640`，来自 `dev` 分支快照，不把它称为正式已验收发行版本。
-- 许可：仓库明确 [Apache-2.0 LICENSE](https://github.com/nasa/cFE/blob/7d283938c9af5bd6e439f3fc307e61b0c7799640/LICENSE)；保留LICENSE与README及原文档，不重新声明为本项目独占内容。
-- 已实际下载：完整 `cFE_FunctionalRequirements.csv`、`cfe requirements.docx`、LICENSE、README，共440,647字节。manifest记录原URL、commit、字节数与SHA-256。
-- CSV实测不是596条独立需求，而是596条数据记录：414个不同非空需求ID，另有182条无ID的文本续行。这些续行包含列表和要求正文，不能丢弃。
-- 已执行确定性解析：按紧邻前一个非空ID归并续行，保留每条原记录的所有字段、CSV记录号、物理行区间、源文件hash；输出414条 `imported_candidate`，其中82条Software Bus需求。归并规则显式写入报告，仍需领域人员确认新项目适用性。
-- 演示选择8条：cSB4301、cSB4303、cSB4305、cSB4305.3、cSB4305.6、cSB4307、cSB4332、cSB4328。涉及消息队列、订阅路由、溢出、尺寸上限、超时、默认配置与校验和。它们适合作为消息网关的历史需求参考，不能自动成为海事系统的新基线。
-- 没有填入`MISSION_DEFINED`/`PLATFORM_DEFINED`值；没有从NASA文档捏造相机速率、存储容量或功耗。
+- Primary source: [nasa/cFE](https://github.com/nasa/cFE), [CSV at a fixed version](https://github.com/nasa/cFE/blob/7d283938c9af5bd6e439f3fc307e61b0c7799640/docs/cFE_FunctionalRequirements.csv).
+- Downloaded version: `7d283938c9af5bd6e439f3fc307e61b0c7799640`, a snapshot of the `dev` branch; it is not called a formally accepted release.
+- License: the repository states [Apache-2.0](https://github.com/nasa/cFE/blob/7d283938c9af5bd6e439f3fc307e61b0c7799640/LICENSE); LICENSE, README and the original documents are kept, and the content is not re-declared as this project's own.
+- Actually downloaded: the complete `cFE_FunctionalRequirements.csv`, `cfe requirements.docx`, LICENSE and README, 440,647 bytes in total. The manifest records the original URL, commit, byte counts and SHA-256.
+- Measured: the CSV is not 596 independent requirements but 596 data records: 414 distinct non-empty requirement IDs plus 182 text continuation lines without an ID. The continuation lines hold lists and requirement text and must not be dropped.
+- Deterministic parsing done: continuation lines are merged into the nearest preceding non-empty ID, keeping every field of each original record, the CSV record number, the physical line range and the source-file hash. Output: 414 `imported_candidate` items, 82 of them Software Bus requirements. The merge rule is written into the report explicitly; whether the requirements apply to a new project still needs a domain expert.
+- Eight selected for the demonstration: cSB4301, cSB4303, cSB4305, cSB4305.3, cSB4305.6, cSB4307, cSB4332, cSB4328, covering message queues, subscription routing, overflow, size limits, timeouts, default configuration and checksums. They fit as historical requirement references for a message gateway; they do not automatically become a new baseline for the maritime system.
+- No `MISSION_DEFINED` / `PLATFORM_DEFINED` value was filled in, and no camera rate, storage capacity or power figure was invented from the NASA documents.
 
-### 实际需求→SysML导入
+### Real requirements → SysML import
 
-已生成 `mvp/public-data/nasa-cfe/derived/NASA_CFE_Imported.sysml`：1个RequirementDefinition、8个RequirementUsage。每项保留原ID、commit、原CSV SHA、CSV记录定位与`TEXT_IMPORTED_SEMANTIC_MAPPING_PENDING`状态。自然语言正文仍放在documentation中；没有生成形式谓词、satisfy关系或虚假的验证结论。
+Generated `mvp/public-data/nasa-cfe/derived/NASA_CFE_Imported.sysml`: one RequirementDefinition and eight RequirementUsages. Each keeps the original ID, the commit, the original CSV SHA, the CSV record location and the status `TEXT_IMPORTED_SEMANTIC_MAPPING_PENDING`. The natural-language text stays in documentation; no formal predicate, satisfy relation or false verification result was generated.
 
-官方0.62.0解析器、固定Release库实际执行结果：**PASS、0诊断、273 AST元素、3.932秒**；官方模型导出确认8个RequirementUsage和1个RequirementDefinition。完整运行证据在 `mvp/public-data/nasa-cfe/validation/`。
+Actual result with the official 0.62.0 parser and the pinned release library: **PASS, 0 diagnostics, 273 AST elements, 3.932 s**; the official model export confirms 8 RequirementUsages and 1 RequirementDefinition. Full run evidence is in `mvp/public-data/nasa-cfe/validation/`.
 
-此结果证明真实公开文档已进入可解析SysML工程，不能证明自然语言要求已完成语义形式化，也不能当作人工金标配对数据集。
+This shows that a real public document has entered a parseable SysML project. It does not show that the natural-language requirements have been formalized semantically, and it cannot serve as a human gold pairing dataset.
 
-## 2 官方Vehicle工程：外部多文件模型互操作
+## 2 The official Vehicle project: interoperability with an external multi-file model
 
-- 一手来源：[官方Vehicle Example](https://github.com/Systems-Modeling/SysML-v2-Release/tree/fb97b754f29588b8e9c7a35f370880cd15eb29e7/sysml/src/examples/Vehicle%20Example)。
-- 固定版本：`fb97b754f29588b8e9c7a35f370880cd15eb29e7`，2026-08。
-- 下载了未修改的VehicleDefinitions.sysml与VehicleUsages.sysml，以及该版本LICENSE、README。四文件共25,447字节。
-- [仓库说明](https://github.com/Systems-Modeling/SysML-v2-Release)明确包括的KerML/SysML模型采用EPL-2.0；原始代码及声明独立保留，不将此许可套到NASA文件或我们自己的代码。
-- 实际运行官方工具：**PASS、0诊断、493 AST元素、6.68秒**，输出原生API delta JSON和EMF引用/定位摘要。证据在 `mvp/public-data/sysml-official-vehicle/validation/`。
-- 可演示真实跨文件import、类型和port/interface、变型模型导入；不是实车参数，不是需求→模型正确率基准，不证明物理安全性。
+- Primary source: [the official Vehicle Example](https://github.com/Systems-Modeling/SysML-v2-Release/tree/fb97b754f29588b8e9c7a35f370880cd15eb29e7/sysml/src/examples/Vehicle%20Example).
+- Fixed version: `fb97b754f29588b8e9c7a35f370880cd15eb29e7`, 2026-08.
+- Downloaded the unmodified VehicleDefinitions.sysml and VehicleUsages.sysml, plus that version's LICENSE and README; 25,447 bytes for the four files.
+- The [repository notes](https://github.com/Systems-Modeling/SysML-v2-Release) state that the included KerML/SysML models are EPL-2.0; the original code and notices are kept separately, and this license is not applied to the NASA files or to our own code.
+- Actual run of the official tool: **PASS, 0 diagnostics, 493 AST elements, 6.68 s**, producing the native API delta JSON and an EMF reference/location summary. Evidence is in `mvp/public-data/sysml-official-vehicle/validation/`.
+- It demonstrates real cross-file imports, types, ports/interfaces and variant model import. It is not real vehicle data, not a requirements-to-model accuracy benchmark, and does not show physical safety.
 
-两套例子都提供`reference.json`，分别白名单ID `nasa-cfe` 和 `sysml-official-vehicle`。应用可按相对路径读取原模型，创建新run实际调用工具，并绑定文件hash。选择这两个公开例子不改变主产品的跨领域定位，也不预设RTX必须做车辆或航天。
+Both examples ship a `reference.json`, whitelisted as IDs `nasa-cfe` and `sysml-official-vehicle`. The application reads the original model by relative path, creates a new run that actually calls the tool, and binds the file hashes. Choosing these two public examples does not change the product's cross-domain positioning and does not presuppose that RTX must work on vehicles or spacecraft.
 
-## 3 Hugging Face实际核验：有样例，但不能直接当高质量gold
+## 3 Hugging Face, checked in practice: samples exist, but they are not high-quality gold
 
-核验了作者直接发布的 [rqualis/sysml_v2_instruction](https://huggingface.co/datasets/rqualis/sysml_v2_instruction)，固定仓库commit `9ae0e29051b58e84dc88cc21aeccd07af74494c0`。README文本声明Apache-2.0，但数据卡版本说明仍为v0.0.3；API返回的cardData为空。实际读取 `data/v0.5/train.jsonl` 为11行、仅4条不同记录，test为2行、2条不同记录。不是仅依赖搜索摘要中的行数。
+Checked the author-published [rqualis/sysml_v2_instruction](https://huggingface.co/datasets/rqualis/sysml_v2_instruction) at repository commit `9ae0e29051b58e84dc88cc21aeccd07af74494c0`. The README text states Apache-2.0, but the data card still says v0.0.3, and the cardData returned by the API is empty. Actually reading `data/v0.5/train.jsonl` gives 11 lines with only 4 distinct records; test has 2 lines and 2 distinct records. These counts come from the files, not from search-result summaries.
 
-此次没有建立其编译验证、独立工程评审或完整配套依赖证据，因此不放入正式gold评测，不下载混入我们的训练/检索库。可用于人工检查少量提示模板，但需去重、固定版本、真工具校验并重新审题。教程摘要类资料与SysEngBench知识选择题亦不等于需求—模型金标。
+No evidence of compile validation, independent engineering review or complete dependencies was established, so it is not put into the formal gold evaluation and not downloaded into our training or retrieval library. It can be used to inspect a few prompt templates by hand, after de-duplication, version pinning, real tool validation and re-review of the tasks. Tutorial summaries and the SysEngBench knowledge multiple-choice questions are not requirement–model gold either.
 
-另发现[Model Management Challenge 2026 satellite-config](https://github.com/mom-challenge/satellite-config)，其OWL目录、JSON BOM/通信网、CSV需求、报告及两个版本很贴近异构模型变更主题。不过本次仓库API没有识别到许可证，未进一步核验Zenodo记录许可，因此只记录为后续候选，未下载进演示，不将其称作已许可数据或本次实现成果。
+Also found [Model Management Challenge 2026 satellite-config](https://github.com/mom-challenge/satellite-config): its OWL directory, JSON BOM / communication network, CSV requirements, reports and two versions are close to the topic of heterogeneous model change. However, the repository API did not identify a license and the Zenodo record's license was not checked further, so it is only recorded as a later candidate; it was not downloaded into the demonstration and is not called licensed data or a result of this work.
 
-## 4 对产品定位的直接含义
+## 4 Direct implications for the product positioning
 
-旧资料接入应先保留原件与版本，再产生有定位的需求/实体候选；对确定格式使用确定性解析。Agent适合提出适用性判断、缺失配置问题和语义建模建议。知识图谱作为派生查询视图可辅助跨工件追溯；它不能替代源文件，也不能把“文本导入成功”升级成“需求已满足”。
+Integrating legacy material should first keep the originals and their versions, then produce located requirement/entity candidates, using deterministic parsing for known formats. Agents are suited to proposing applicability judgments, questions about missing configuration, and semantic modeling suggestions. A knowledge graph as a derived query view can help trace across artifacts; it cannot replace the source files, and it cannot turn "text imported successfully" into "requirement satisfied".
 
-当前已经有两个真实可复跑入口：公开工程模型→官方语义导出，以及公开旧需求→带来源的SysML requirement元素。后者刻意把尚未完成的语义映射暴露出来，是下一步agent工作的明确输入。
+There are now two real, re-runnable entry points: a public engineering model → the official semantic export, and public legacy requirements → SysML requirement elements with their sources. The second deliberately exposes the semantic mapping that is not yet done, which is a clear input for the next agent work.

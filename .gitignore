@@ -38,6 +38,10 @@ __pycache__/
 /datasets/pure/
 
 # pinned OpenCode binary, recreated from tools/opencode/VERSION
+/tools/graphviz/
+/tools/.mamba/
+/bench/viz/build/
+/analysis/diagrams/
 /tools/opencode/opencode
 /tools/opencode/*.tar.gz
 

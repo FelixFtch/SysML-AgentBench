@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 35355,
+  "stop_reason": "end_turn",
+  "session_id": "269fd05a-40cc-40d8-8270-dd0843b07a79",
+  "total_cost_usd": 0.15124500000000002,
+  "usage": {
+    "input_tokens": 10395,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 115840,
+    "output_tokens": 1654,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-max": {
+      "inputTokens": 10395,
+      "outputTokens": 1654,
+      "cacheReadInputTokens": 115840,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.15124500000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-max",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "**Final answer** (per AGENTS.md rule 7):\n\n```json\n{\"platforms\": [\"MaritimeISR::usv\", \"MaritimeISR::uav\", \"MaritimeISR::commandShip\", \"MaritimeISR::shore\"]}\n```\n\n- **Files changed:** `answer.md` (created). No model files edited — this was a read-only query.\n- **Validation status:** `./validate MaritimeISR input/model.sysml` → `PASS`, 0 diagnostics, 0 warnings.\n- **Check results:** The four platform part usages are declared at package level in `input/model.sysml:61-64`, typed by `UnmannedSurfaceVessel`, `FixedWingUav`, `CommandShip`, and `ShoreStation` respectively. I used SysML `::` qualified names since the answer asks for qualified names; short names are `usv`, `uav`, `commandShip`, `shore`.\n- **Open questions:** None — the query names the four usages and the model matches exactly.",
+  "ttft_ms": 4192,
+  "type": "result",
+  "duration_ms": 42242,
+  "uuid": "75cbad96-fe69-4833-b8db-8b3df8f6d30f",
+  "ttft_stream_ms": 1892,
+  "time_to_request_ms": 48,
+  "first_content_frame_ms": 1892,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

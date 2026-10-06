@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 70332,
+  "stop_reason": "end_turn",
+  "session_id": "e4f3345c-5fe5-4058-9fd9-45ba373734b9",
+  "total_cost_usd": 0.264793,
+  "usage": {
+    "input_tokens": 14373,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 214656,
+    "output_tokens": 3424,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-max": {
+      "inputTokens": 14373,
+      "outputTokens": 3424,
+      "cacheReadInputTokens": 214656,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.264793,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-max",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 13,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done.\n\n**Answer**\n\n```json\n{\"parts\": [\"MaritimeISR::FixedWingUav::eoCamera\", \"MaritimeISR::FixedWingUav::searchRadar\", \"MaritimeISR::FixedWingUav::processor\", \"MaritimeISR::FixedWingUav::radio\"]}\n```\n\nFour part usages, in declaration order (`input/model.sysml:41-44`), typed by `Camera`, `Radar`, `Processor`, `Radio`.\n\n**Files changed**\n- `answer.md` (new). No model file was edited — this was a read-only query, so rules 2, 5, and 6 were not engaged.\n\n**Validation status**\n- `./validate MaritimeISR input/model.sysml` → `\"status\": \"PASS\"`, `\"diagnostics\": []`, `\"warning_count\": 0`, `return_code: 0` (SysML-v2-Pilot 0.62.0, adapter `official-pilot-xtext-emf`). 2 of 50 validator calls used.\n\n**Check results / how I derived it**\n- I didn't rely on reading the source alone. The validator's own `model.json` was parsed: the `PartDefinition` with `qualifiedName == MaritimeISR::FixedWingUav` has `ownedFeature` = `eoCamera` (`PartUsage`), `searchRadar` (`PartUsage`), `processor` (`PartUsage`), `radio` (`PartUsage`), `powerLimitW` (`AttributeUsage`), `downlinkMbps` (`AttributeUsage`). The two attribute usages are excluded since the question asks for part usages.\n- Excluded as out-of-scope: package-level `part uav : FixedWingUav;` (line 62) is owned by `MaritimeISR`, not nested inside the definition; `irCamera`/`ais` belong to `UnmannedSurfaceVessel` (lines 31–33).\n\n**Open questions** — none. The question was unambiguous and every value came from the model, so nothing had to be invented or relaxed.",
+  "ttft_ms": 1686,
+  "type": "result",
+  "duration_ms": 82472,
+  "uuid": "e7df3365-8fad-4452-9f17-541dcb3e3982",
+  "ttft_stream_ms": 1368,
+  "time_to_request_ms": 59,
+  "first_content_frame_ms": 1368,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

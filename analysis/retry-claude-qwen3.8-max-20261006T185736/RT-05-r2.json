@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 78533,
+  "stop_reason": "end_turn",
+  "session_id": "dcd595b8-ef84-4e14-984a-d01d7d3acbb9",
+  "total_cost_usd": 0.24432399999999999,
+  "usage": {
+    "input_tokens": 12762,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 163328,
+    "output_tokens": 3954,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-max": {
+      "inputTokens": 12762,
+      "outputTokens": 3954,
+      "cacheReadInputTokens": 163328,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.24432399999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-max",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Final report per AGENTS.md rule 7:\n\n## Restatement (written to `answer.md`)\n\nThe model contains one requirement, `requirement def Fusion`, whose doc text restates as:\n\n- **The fusion latency is 2 seconds.** This is backed structurally by the `commandShip` attribute `fusionLatencyS : Real = 2.0`.\n- **The command ship accepts two uplinks.** These correspond to the `commandShip`'s exactly two ports, `fromUsv` and `fromUav`. The model doesn't say what \"Usv\"/\"Uav\" stand for, so nothing was claimed beyond the port names.\n- The package privately imports `ScalarValues::*` (the source of `Real`). No other requirements, constraints, rates, or budgets exist in the model.\n\n## Status\n\n- **Files changed:** `answer.md` (created). `input/model.sysml` and `input/requirements.md` were read-only and left unchanged — no model edits were needed for a restatement task.\n- **Validation:** `./validate RoundTripFusion input/model.sysml` → **PASS**, diagnostics `[]` (official SysML v2 Pilot 0.62 kernel, run twice for the JSON extraction; no errors or warnings either time).\n- **Failing checks:** none.\n- **Open questions:** none — every fact restated is present verbatim in the model; nothing was invented, and no requirement needed relaxing.",
+  "ttft_ms": 3411,
+  "type": "result",
+  "duration_ms": 85490,
+  "uuid": "6d836943-fbd4-42cd-bfa6-ea174bd612c0",
+  "ttft_stream_ms": 2302,
+  "time_to_request_ms": 46,
+  "first_content_frame_ms": 2302,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 42983,
+  "stop_reason": "end_turn",
+  "session_id": "5814d371-91c2-4c06-984a-e1cf1f0e77fe",
+  "total_cost_usd": 0.156079,
+  "usage": {
+    "input_tokens": 9472,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 117888,
+    "output_tokens": 1991,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-max": {
+      "inputTokens": 9472,
+      "outputTokens": 1991,
+      "cacheReadInputTokens": 117888,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.156079,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-max",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 8,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Per the AGENTS.md final-answer format:\n\n**Files changed**\n- `answer.md` (created) — contains the answer JSON. No `.sysml` files were modified; this was a read-only query.\n\n**Answer**\n\n```json\n{\n  \"platforms\": [\n    \"MaritimeISR::usv\",\n    \"MaritimeISR::uav\",\n    \"MaritimeISR::commandShip\",\n    \"MaritimeISR::shore\"\n  ]\n}\n```\n\nThese are the four package-level part usages in `input/model.sysml:61-64`: `usv : UnmannedSurfaceVessel`, `uav : FixedWingUav`, `commandShip : CommandShip`, `shore : ShoreStation`.\n\n**Validation status**\n- `./validate MaritimeISR input/model.sysml` → **PASS**, 0 diagnostics, 0 warnings (official Pilot 0.62 adapter).\n\n**Check results**\n- No failing checks to report; no limits, rates, or budgets were touched.\n\n**Open questions**\n- None. The four part usages match exactly the names stated in the task prompt, and the validator confirms the model links cleanly.",
+  "ttft_ms": 3781,
+  "type": "result",
+  "duration_ms": 50841,
+  "uuid": "069bb66a-36d7-4fe3-b891-1e88f58e496b",
+  "ttft_stream_ms": 1886,
+  "time_to_request_ms": 84,
+  "first_content_frame_ms": 1886,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

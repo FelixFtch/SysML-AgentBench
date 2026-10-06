@@ -16,7 +16,7 @@ Sponsor: RTX Technology Research Center (RTRC). Faculty advisor: Prof. George Bo
 | [`docs/failure_taxonomy.md`](docs/failure_taxonomy.md) | The failures of the four candidates by class |
 | [`bench/FREEZE.md`](bench/FREEZE.md) · [`REVIEW.md`](bench/tasks/t4_maritime_isr/heldout/REVIEW.md) | What is frozen (hashes, tag `freeze-2026-10-06-r2`, with the history of the freeze) and the second review of the 27 answer keys |
 | [`docs/decisions/`](docs/decisions/) | Decision records; 016–027 (2026-10-03 to 2026-10-06) override the plan where they differ |
-| [`plans/SysML_AgentBench_完整执行计划.md`](plans/SysML_AgentBench_完整执行计划.md) | Execution plan v2.0: deliverables, ground-truth method, task suite, schedule, decisions §18 |
+| [`plans/execution-plan-v2.md`](plans/execution-plan-v2.md) | Execution plan v2.0: deliverables, ground-truth method, task suite, schedule, decisions §18 |
 | [`plans/project-statement.md`](plans/project-statement.md) | Project statement v1.1 for sponsor signature (English) |
 | [`research/source-extracts/rtx-brief.txt`](research/source-extracts/rtx-brief.txt) | Sponsor brief (verbatim) |
 | [`mvp/README.md`](mvp/README.md) | Official toolchain, engine checks and evidence layer, used as the syntax adjudicator |
@@ -45,7 +45,7 @@ vendor/       symlink to full upstream clones (not in git; recreate with `python
 
 ## Quick checks
 
-Retrieval (paper 2) is MiniLM + FAISS only, with pinned versions: `pip install --user -r requirements-retrieval.txt`, then `python3 bench/vector_index.py --check` (versions, the pinned MiniLM snapshot, a test search). Without them retrieval stops with an error; there is no other ranking, and the results page refuses to start. (`rdflib` is needed only to rerun the paper 2 authors' code under `research/`.) The exam's retrieval library is built once with `python3 bench/build_examples_library.py` (official SysML-v2-Release examples through the Pilot, about 7 minutes). The agent sandbox needs `bwrap` (bubblewrap).
+Retrieval (paper 2) is MiniLM + FAISS only, with pinned versions: `pip install --user -r requirements-retrieval.txt`, then `python3 bench/vector_index.py --check` (versions, the pinned MiniLM snapshot, a test search). Without them retrieval stops with an error; there is no other ranking, and the results page refuses to start. (`rdflib` is needed only to rerun the paper 2 authors' code under `research/`.) The exam's retrieval library is built once with `python3 bench/build_examples_library.py` (official SysML-v2-Release examples through the Pilot, about 7 minutes). The agent sandbox needs `bwrap` (bubblewrap). Model diagrams on the page (`bench/model_diagram.py`: any officially parsed model, drawn from its parse, plus the Pilot's own tree view) need Graphviz in `tools/graphviz`: `micromamba create -p tools/graphviz -c conda-forge graphviz`.
 
 ```bash
 python3 -m unittest discover -s mvp/tests -v      # 11 toolchain boundary tests

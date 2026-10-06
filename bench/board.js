@@ -635,6 +635,32 @@ function notCounted(f) {
     <p class="note" style="margin:0">None of these runs is in any score above. They stay on disk; the cost of the discarded and replaced runs is listed in the cost panel below.</p>${groups.join("")}`;
 }
 
+function retryPanel(f) {
+  const r = f.retry || {};
+  const A = r.agents || {};
+  const keys = ["opencode", "claude"].filter((k) => A[k]);
+  if (!keys.length) return "";
+  const C = f.cohorts;
+  const scored = ["flash", "max", "opencode", "claude"];
+  const frac = (x) => (x && x.n ? `${x.pass}/${x.n}` : "—");
+  const name = (k) => A[k].label.split(" · ")[0];
+  const marks = (list) => list.map((s) => `<i class="rt-${s === "PASS" ? "pass" : "fail"}">${s === "PASS" ? "✓" : "✗"}</i>`).join("");
+  const head = `<thead><tr><th>Task</th>${scored.map((k) => `<th class="num">${esc(C[k].short)}<small> scored</small></th>`).join("")}${keys.map((k) => `<th class="num rt-new">${esc(name(k))} · max<small> retry</small></th>`).join("")}</tr></thead>`;
+  const body = (r.per_task || []).map((t) => `<tr><td>${esc(t.task_id)}</td>${scored.map((k) => `<td class="num">${frac(t.before[k])}</td>`).join("")}${keys.map((k) => `<td class="num rt-new">${t[k] && t[k].n ? `${t[k].pass}/${t[k].n} ${marks(t[k].statuses)}` : "—"}</td>`).join("")}</tr>`).join("");
+  const foot = `<tr><td><b>All ${(r.tasks || []).length} tasks</b></td>${scored.map((k) => `<td class="num"><b>${frac(r.before[k])}</b></td>`).join("")}${keys.map((k) => `<td class="num rt-new"><b>${A[k].pass}/${A[k].n}</b></td>`).join("")}</tr>`;
+  const stats = keys.map((k) => {
+    const a = A[k];
+    const fromModel = (a.pass_from || {})["workspace model"] || 0;
+    const sofar = a.n < a.planned ? ` (${a.n} of ${a.planned} runs so far)` : "";
+    return `<li><b>${esc(a.label)}</b>: ${a.pass}/${a.n} pass${sofar}${fromModel ? `, ${fromModel} of them scored from the model file before the agent wrote answer.md` : ""} · ${a.stopped_on_pass} stopped as soon as they passed · ${a.timeouts} hit ${Math.round(a.settings.timeout_s / 60)} min · at most ${a.validate_calls.max} <code>./validate</code> calls in a run (limit ${a.settings.validate_limit}) · median ${Math.round(a.elapsed_s.median ?? 0)} s per run · ${money(a.usd)}${k === "claude" ? " (from CCR's request log: Claude Code reports tokens only when a run ends)" : ""}</li>`;
+  }).join("");
+  const fails = keys.flatMap((k) => A[k].runs.filter((x) => x.status !== "PASS").map((x) => `<li>${esc(name(k))} · ${esc(x.task_id)} run ${x.repeat}: ${esc(x.class || "")}${x.detail ? ` · ${esc(x.detail)}` : ""}</li>`)).join("");
+  return `<h4>Extra run: the failed tasks retried with the agents on qwen3.8-max (not in any score)</h4>
+    <p class="note" style="margin:0 0 8px">Every task that failed at least once in the four scored candidates (${(r.tasks || []).length} of 27) was run again with both agents on qwen3.8-max, three runs each, in the same sandbox with the same rules and prompt (decision 029). Limits for this run: <code>./validate</code> at most 50 calls per run, 60 minutes per run (scored batches: 15), Claude Code 200 turns (scored batches: 60). A run stops as soon as its answer passes the key, checked from outside the sandbox, so the agent never sees the key: answer.md, or, before the agent has written one, the newest model file it wrote for the task's package. Both are more lenient than the scored rule, so read this as what the agents can reach, not as a score.</p>
+    <table class="rt-table">${head}<tbody>${body}${foot}</tbody></table>
+    <ul class="rt-stats">${stats}</ul>${fails ? `<h5 class="rt-h5">Retry runs that still failed</h5><ul class="rt-stats">${fails}</ul>` : ""}`;
+}
+
 function renderScores() {
   const f = S.facts;
   const C = f.cohorts;
@@ -668,6 +694,7 @@ function renderScores() {
       <p class="note">SysEngBench: ${anySeb ? `${anySeb.questions} questions fixed with seed 20261006, 10 per prompt, ${anySeb.repeats} repeats; always answering B would score ${anySeb.always_b}/${anySeb.questions} on this subset, because the dataset's key is mostly B and C.` : "not run yet."} PURE: the two sealed excerpts, 3 repeats; the extracted requirement sentences must equal the key.</p></div>
     <div class="panel full"><h4>Approaches with the same model (81 cells each)</h4><div class="two-col">${cfgTable("flash")}${cfgTable("max")}</div>
       <p class="note">Syntax 1st → final counts the 39 SysML answers (GEN, MOD, ALN) per approach: passing the official parse on the first attempt, and after the repair loop (P0 has no loop). Tokens and USD at the ${esc(f.costs.prices.region)} list price.</p></div>
+    ${f.retry && f.retry.agents ? `<div class="panel full">${retryPanel(f)}</div>` : ""}
     <div class="panel full">${notCounted(f)}</div>
     <div class="panel cost" id="cost-panel"></div>`;
   renderCost(false);
@@ -1013,6 +1040,40 @@ const VERDICT_RULE = {
   RT: "no model submitted: every required phrase must be written back",
 };
 
+/* Model diagram of any officially parsed answer, drawn by the server from its run folder (bench/model_diagram.py). */
+const DIAGRAM_VIEWS = [
+  ["connections", "Parts, ports and connections"],
+  ["tree", "Definition tree (the Pilot's own %viz)"],
+];
+function diagramHTML(runId, status, what) {
+  if (!runId) return `<p class="hint">No official parse, so there is no model to draw.</p>`;
+  if (status !== "PASS") return `<p class="hint">${esc(what)} did not pass the official parse, so there is no model to draw; the errors are in the official-syntax step.</p>`;
+  const src = `/api/diagram?run=${encodeURIComponent(runId)}&view=connections`;
+  return `<div class="dg" data-run="${esc(runId)}">
+      <div class="dg-head"><div class="block-h">${esc(what)}, drawn automatically from its official parse</div>
+        <div class="seg-toggle dg-views">${DIAGRAM_VIEWS.map(([v, t], i) => `<button type="button" data-view="${v}" class="${i ? "" : "on"}">${esc(t)}</button>`).join("")}</div></div>
+      <a class="dg-img dg-open" href="${src}" target="_blank" rel="noopener" title="Open full size"><img loading="lazy" alt="Diagram of the model in run ${esc(runId)}" src="${src}"></a>
+      <p class="note dg-msg">Every part, port and connection in the official parse of run ${esc(runId)}, nested as the model nests them, with attribute values. Drawn here, not by the Pilot, because the Pilot's own visualizer leaves out connections declared at package level; the second view is the Pilot's own drawing. Click to open full size.</p></div>`;
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest(".dg-views button");
+  if (!b) return;
+  const box = b.closest(".dg");
+  box.querySelectorAll(".dg-views button").forEach((x) => x.classList.toggle("on", x === b));
+  const src = `/api/diagram?run=${encodeURIComponent(box.dataset.run)}&view=${b.dataset.view}`;
+  box.querySelector(".dg-open").href = src;
+  box.querySelector(".dg-msg").textContent = b.dataset.view === "tree"
+    ? "The Pilot's own %viz TREE view: definitions, usages, typing and ports, as its Jupyter kernel draws them. The first drawing of a run takes a few seconds."
+    : `Every part, port and connection in the official parse of run ${box.dataset.run}, nested as the model nests them, with attribute values.`;
+  box.querySelector("img").src = src;
+});
+document.addEventListener("error", (e) => {
+  const img = e.target;
+  if (!(img instanceof HTMLImageElement) || !img.closest(".dg")) return;
+  fetch(img.src).then((r) => r.json()).then((j) => { img.closest(".dg").querySelector(".dg-msg").textContent = j.error || "The diagram could not be drawn."; })
+    .catch(() => { img.closest(".dg").querySelector(".dg-msg").textContent = "The diagram could not be drawn."; });
+}, true);
+
 function renderCell(d, live) {
   S.cell = d;
   S.cellLive = live;
@@ -1045,6 +1106,8 @@ function renderCell(d, live) {
       <div><div class="block-h">Answer key (hidden from the agent, opened only for scoring)</div><pre class="code light">${esc(d.gold || "(no answer key)")}</pre></div></div>
     <div class="stack"><div><div class="block-h">Agent's final answer</div><pre class="code">${esc(d.answer || last?.text || "(no answer yet)")}</pre></div>
       <div class="audit ${cls}"><b>Verdict: ${esc(status)}</b>${esc(stepDetail(d, "Check against key") || "")}${d.sysml_status ? ` Official syntax ${esc(d.sysml_status)}.` : ""}</div></div>`;
+  $("#cell-diagram").innerHTML = !modelTask ? "" : running ? `<p class="hint">The model diagram appears once the answer passes the official parse.</p>`
+    : diagramHTML(last?.run_id, last?.status, "The final answer");
   FLOW.bench.setState(benchStates(d, live));
   FLOW.bench.setCtrl(`<span class="hint">The 1.1 diagram now shows: ${esc(d.task_id)} · ${esc(d.cohort || "")}${d.configuration ? ` · ${esc(d.configuration)}` : ""}${d.repeat ? ` repeat ${esc(d.repeat)}` : ""}${live ? " (running)" : " (archive)"}</span>${live ? "" : `<button type="button" id="bench-replay">Replay this cell step by step</button>`}<a href="#s14" class="hint">See the full process in 1.4 →</a>`);
   const rp = $("#bench-replay");
@@ -1364,6 +1427,7 @@ function runDetailHTML(r, id) {
     if (dm[1] === "design") {
       return io("Model · Paper 3", `② Write design ${d.key}`, "Rules + template + examples + brief and requirements (each part's text below)", "A SysML package")
         + `<div class="block-h">The prompt has 5 parts (width = length)</div>${promptComposer(d.prompt_parts || [])}`
+        + `<div style="margin-top:12px">${diagramHTML((d.attempts || []).slice(-1)[0]?.run_id, d.sysml_status, `Design ${d.key}`)}</div>`
         + `<div class="block-h" style="margin-top:12px">The submitted model: structure from the official parse</div>${d.sysml_status === "PASS" ? structureHTML(d) : `<p class="hint">The parse failed, so there is no structure. See the code under "③ Official validation ${esc(d.key)}".</p>`}`
         + `<p class="hint" style="margin-top:6px">${esc(d.model || "")}${d.usage?.total_tokens ? ` · ${num(d.usage.total_tokens)} tokens` : ""}</p>`;
     }
@@ -1389,6 +1453,7 @@ function runDetailHTML(r, id) {
       + (pkg.source ? `<div class="two-col" style="margin-top:12px"><div><div class="block-h">Alignment package (${old ? "written by the agent" : "written by code from the verified pairs"}, a separate file)</div><pre class="code">${esc(pkg.source)}</pre></div>
           <div><div class="block-h">The official Pilot parses these three files together</div><div class="chips" style="margin-bottom:8px">${(pkg.files || []).map((f) => `<span class="chip">${esc(f)}</span>`).join("")}</div>
           <div class="audit ${pkg.sysml_status === "PASS" ? "pass" : "fail"}"><b>Official Pilot ${esc(pkg.sysml_status)}</b>${pkg.sysml_status === "PASS" ? "Every name in the alignment package resolves in the two source models." : esc((pkg.diagnostics || []).map((x) => x.message).join("; "))}</div><p class="hint mono" style="margin-top:6px">${esc(pkg.run_id || "")}</p></div></div>` : "")
+      + (pkg.run_id ? `<div style="margin-top:12px">${diagramHTML(pkg.run_id, pkg.sysml_status, "The alignment package")}</div>` : "")
       + `<div class="audit"><b>Limits</b>Neither source model was edited. A Pilot pass shows the names resolve, not that the two sides mean the same thing; that is what the Accept / Reject column records.</div>`;
   }
   if (id === "simulate") {

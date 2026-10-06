@@ -199,6 +199,10 @@ def _costs(cohorts: dict, side: dict) -> dict:
     graph = json.loads(graph_query_file().read_text(encoding="utf-8"))
     items.append({"id": "graph", "group_id": "other", "group": "Other experiments", "label": f"Graph retrieval, query tasks ({len(graph)})",
                   "model": "qwen3.8-max", **_call_tokens([item for item in graph if item.get("usage")])})
+    for agent, data in (_retry().get("agents") or {}).items():
+        items.append({"id": f"retry-{agent}", "group_id": "other", "group": "Other experiments",
+                      "label": f"Failed tasks retried · {data['label'].split(' · ')[0]} ({data['n']} runs)", "model": "qwen3.8-max",
+                      **data["usage"], "passes": data["pass"], "cells": data["n"]})
     for key, spec in DISCARDED.items():
         found = discarded_rows(key)
         if found:
@@ -298,6 +302,12 @@ def _knowledge() -> dict:
     }
 
 
+def _retry() -> dict:
+    """The failed tasks retried with the agents on qwen3.8-max (decision 029), as summarized by bench/summarize_retry.py."""
+    path = ANALYSIS / "retry-summary.json"
+    return json.loads(path.read_text(encoding="utf-8")) if path.is_file() else {}
+
+
 def facts() -> dict:
     cohorts = {}
     for cohort in COHORTS:
@@ -343,6 +353,7 @@ def facts() -> dict:
         "discarded": discarded,
         "superseded": superseded,
         "archive": ARCHIVE,
+        "retry": _retry(),
         "knowledge": _knowledge(),
         "costs": _costs(cohorts | {cohort: {"summary": entry["summary"], **({"configs": entry["configs"]} if "configs" in entry else {})}
                                    for cohort, entry in cohorts.items()}, side),

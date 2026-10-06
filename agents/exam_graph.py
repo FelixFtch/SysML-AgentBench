@@ -34,73 +34,73 @@ class State(TypedDict, total=False):
 
 def issue_task(state: State) -> State:
     case = _case()
-    return {"step": "题面已发出，标准答案未给考生", "agent": case.get("model") or ""}
+    return {"step": "Task statement issued; the answer key is not given to the candidate", "agent": case.get("model") or ""}
 
 
 def write_model(state: State) -> State:
     case = _case()
-    return {"step": "考生已写", "agent": case.get("model") or "", "syntax": "pass" if case.get("sysml_status") == "PASS" else "fail"}
+    return {"step": "The candidate wrote the model", "agent": case.get("model") or "", "syntax": "pass" if case.get("sysml_status") == "PASS" else "fail"}
 
 
 def official_syntax(state: State) -> State:
     case = _case()
     syntax: Literal["pass", "fail"] = "pass" if case.get("sysml_status") == "PASS" else "fail"
-    return {"step": "官方工具看过语法", "syntax": syntax}
+    return {"step": "The official tool checked the syntax", "syntax": syntax}
 
 
 def repair(state: State) -> State:
-    return {"step": "这次没有返工", "repairs": state.get("repairs", 0), "syntax": "pass"}
+    return {"step": "No repair was needed this time", "repairs": state.get("repairs", 0), "syntax": "pass"}
 
 
 def read_watts(state: State) -> State:
     check = (_case().get("checks") or [{}])[0]
     total = check.get("total_w")
     limit = check.get("limit_w")
-    power = f"{total} / {limit}" if total is not None else "未计算"
-    return {"step": "从解析结果读出瓦数", "power": power}
+    power = f"{total} / {limit}" if total is not None else "not computed"
+    return {"step": "Watts read from the official parse", "power": power}
 
 
 def score_list(state: State) -> State:
     case = _case()
-    return {"step": f"对照清单：题目判定 {case.get('status') or '待判'}，设计判定 {case.get('engineering_status') or '待判'}",
-            "score": case.get("status") or "待判"}
+    return {"step": f"Checked against the key: task verdict {case.get('status') or 'pending'}, design verdict {case.get('engineering_status') or 'pending'}",
+            "score": case.get("status") or "pending"}
 
 
 def approval(state: State) -> State:
     limit = _case().get("limit_in_model") or ""
-    return {"step": f"上限仍是 {limit}" if limit else "没有这次运行"}
+    return {"step": f"The limit is still {limit}" if limit else "No run recorded"}
 
 
 def archive(state: State) -> State:
     case = _case()
-    return {"step": "这次运行已存档", "score": case.get("status") or ""}
+    return {"step": "This run is archived", "score": case.get("status") or ""}
 
 
-def after_syntax(state: State) -> Literal["按报错再改", "读瓦数"]:
-    if state.get("syntax") == "fail" and state.get("repairs", 0) < 3:
-        return "按报错再改"
-    return "读瓦数"
+def after_syntax(state: State) -> Literal["Repair from errors", "Read values"]:
+    if state.get("syntax") == "fail" and state.get("repairs", 0) < 20:
+        return "Repair from errors"
+    return "Read values"
 
 
 def build():
     graph = StateGraph(State)
-    graph.add_node("发题面", issue_task)
-    graph.add_node("考生写模型", write_model)
-    graph.add_node("官方语法", official_syntax)
-    graph.add_node("按报错再改", repair)
-    graph.add_node("读瓦数", read_watts)
-    graph.add_node("对照清单", score_list)
-    graph.add_node("审批门", approval)
-    graph.add_node("存档", archive)
-    graph.add_edge(START, "发题面")
-    graph.add_edge("发题面", "考生写模型")
-    graph.add_edge("考生写模型", "官方语法")
-    graph.add_conditional_edges("官方语法", after_syntax, ["按报错再改", "读瓦数"])
-    graph.add_edge("按报错再改", "官方语法")
-    graph.add_edge("读瓦数", "对照清单")
-    graph.add_edge("对照清单", "审批门")
-    graph.add_edge("审批门", "存档")
-    graph.add_edge("存档", END)
+    graph.add_node("Issue task", issue_task)
+    graph.add_node("Write the answer", write_model)
+    graph.add_node("Official syntax", official_syntax)
+    graph.add_node("Repair from errors", repair)
+    graph.add_node("Read values", read_watts)
+    graph.add_node("Check against key", score_list)
+    graph.add_node("Approval gate", approval)
+    graph.add_node("Archive", archive)
+    graph.add_edge(START, "Issue task")
+    graph.add_edge("Issue task", "Write the answer")
+    graph.add_edge("Write the answer", "Official syntax")
+    graph.add_conditional_edges("Official syntax", after_syntax, ["Repair from errors", "Read values"])
+    graph.add_edge("Repair from errors", "Official syntax")
+    graph.add_edge("Read values", "Check against key")
+    graph.add_edge("Check against key", "Approval gate")
+    graph.add_edge("Approval gate", "Archive")
+    graph.add_edge("Archive", END)
     return graph.compile()
 
 

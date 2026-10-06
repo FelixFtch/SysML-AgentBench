@@ -1,93 +1,93 @@
-# SysML v2 工具厂商的 AI / MCP / agent 能力现状（核实日期 2026-10-02）
+# AI, MCP and agent capabilities of SysML v2 tool vendors (checked 2026-10-02)
 
-目的：回答"厂商工具是否已经自带 agent 能力、做到了什么程度、极限在哪"，以决定它们在 SysML-AgentBench 中的角色。来源分三类并分别标注：**官方文档/官方发布**、**厂商员工在社区的演示帖**、**第三方/社区项目与用户反馈**。未亲自运行任何厂商 AI 功能。
+Purpose: answer "do the vendor tools already have agent capabilities, how far do they go, and where are their limits", to decide their role in SysML-AgentBench. Sources fall into three kinds and are labeled as such: **official documentation / official releases**, **demonstration posts by vendor employees in community forums**, and **third-party / community projects and user feedback**. No vendor AI feature was run by us.
 
-## 1. 结论先行
+## 1. Conclusions first
 
-| 厂商 / 工具 | 自带 AI 生成 | 官方 MCP | 社区 MCP | agent 能用的无头接口 | 对我们的可用性 |
+| Vendor / tool | Built-in AI generation | Official MCP | Community MCP | Headless interface an agent can use | Usable for us |
 |---|---|---|---|---|---|
-| **Dassault CATIA Magic / Cameo** | **有**：2026x 内置 AI Assistant（从 stakeholder needs 生成候选架构）+ 3DEXPERIENCE 平台的 LEO Virtual Companion 做分析/精炼 | **有原型/早期可用**："CATIA Magic SysML v2 MCP（基于 Teamwork Cloud REST API）"，Dassault 员工 2025-12 与 2026-02 两次演示；下载链接在社区登录墙后 | `ajhcs/cameo-mcp-bridge`（MIT，162 工具，**仅 v1**）；`jgs-magic-sysmlv2-mcp`（商业） | Teamwork Cloud 的 OMG 标准 REST API（需企业服务器）；桌面端无官方无头校验 CLI | AI Assistant 需 Magic Cyber Systems Engineer / SoS Architect 2026x 许可（CE 是否含**未证实**，大概率不含）；MCP 需 TWC 服务器 → 对本项目**基本不可达**，除非 Bollas 的许可是 2026x 全功能版 |
-| **Sensmetry Syside** | 无生成功能；定位"AI 可读可写的模型" | **尚无**；路线图 **2026 Q3 承诺** "Syside & Sysand MCP servers for Claude, Copilot"，截至 10-02 未见发布公告 | 用户自制：把 `syside check` CLI 包成 MCP 或 Claude Code skill（论坛 2026-03/05） | `syside check` CLI、Python Automator API（均在付费 Modeler/Automator 内）；Syside Cloud 预装 Claude Code | CLI 需付费/试用；方法论上与我们一致（检查器在环） |
-| **Eclipse SysON（Obeo）** | 原型：2025-05 博客演示 LLM 助手（Mattermost 界面）；企业版定价表 "AI Integration: Soon" | 无 | `Casys-AI/mcp-syson`（MIT，31 工具：编辑、AQL 查询、需求追溯、图、值读写；自托管） | GraphQL / Sirius Web API；SysML v2 标准 API 交换 | 可用（Docker 自托管），作为图形查看与"读模型"工具的备选 |
-| **Siemens Systems Modeler for SysML v2** | 未见公开 AI 功能 | 无 | 无 | REST / OSLC | 无许可，不考虑 |
-| **OMG 官方 API 服务（pilot）** | — | — | `jgs-sysmlv2-api-mcp`（专有许可，35 工具，分阶段提交、每 agent 会话一个分支；兼容任何 OMG 标准 API 端点，含官方 pilot 与 TWC）；`redsteve/SysML-v2-API-MCP-Server`（MIT，C++） | OMG Systems Modeling API 1.0 REST（我们已克隆 `SysML-v2-API-Services`，未部署） | 可部署；是连接 Cameo TWC / SysON / 官方实现的**标准互操作层** |
+| **Dassault CATIA Magic / Cameo** | **Yes**: the built-in AI Assistant in 2026x (generates candidate architectures from stakeholder needs), plus the LEO Virtual Companion on the 3DEXPERIENCE platform for analysis and refinement | **Prototype / early access**: "CATIA Magic SysML v2 MCP (based on the Teamwork Cloud REST API)", demonstrated twice by a Dassault employee (2025-12 and 2026-02); the download link is behind the community login | `ajhcs/cameo-mcp-bridge` (MIT, 162 tools, **SysML v1 only**); `jgs-magic-sysmlv2-mcp` (commercial) | The OMG standard REST API of Teamwork Cloud (needs an enterprise server); no official headless validation CLI on the desktop | The AI Assistant needs a Magic Cyber Systems Engineer / SoS Architect 2026x license (whether the Community Edition includes it is **unconfirmed**, most likely not); the MCP needs a TWC server → **essentially out of reach** for this project unless Bollas's license is the full 2026x edition |
+| **Sensmetry Syside** | No generation; positioned as "models your AI can read and write" | **Not yet**; the roadmap **promises for 2026 Q3** "Syside & Sysand MCP servers for Claude, Copilot"; no release announcement as of 10-02 | User-built: wrapping the `syside check` CLI as an MCP server or a Claude Code skill (forum, 2026-03/05) | `syside check` CLI and the Python Automator API (both in the paid Modeler/Automator); Syside Cloud ships with Claude Code preinstalled | The CLI needs a paid plan or trial; methodologically the same as ours (checker in the loop) |
+| **Eclipse SysON (Obeo)** | Prototype: a 2025-05 blog post demonstrates an LLM assistant (Mattermost interface); the enterprise price list says "AI Integration: Soon" | None | `Casys-AI/mcp-syson` (MIT, 31 tools: editing, AQL queries, requirement tracing, diagrams, value read/write; self-hosted) | GraphQL / Sirius Web API; SysML v2 standard API exchange | Usable (self-hosted Docker) as a fallback for graphical viewing and "read the model" tools |
+| **Siemens Systems Modeler for SysML v2** | No public AI feature found | None | None | REST / OSLC | No license; not considered |
+| **OMG official API services (pilot)** | — | — | `jgs-sysmlv2-api-mcp` (proprietary license, 35 tools, staged commits, one branch per agent session; works with any OMG standard API endpoint, including the official pilot and TWC); `redsteve/SysML-v2-API-MCP-Server` (MIT, C++) | OMG Systems Modeling API 1.0 REST (we have cloned `SysML-v2-API-Services`, not deployed) | Deployable; the **standard interoperability layer** connecting Cameo TWC, SysON and the official implementation |
 
-**没有任何厂商提供"判断模型在工程语义上对不对"的能力。** 全部 AI/MCP 产物都属于三类：① 让 agent **读写**模型的管道（API/MCP）；② **语法/一致性检查器**（CLI）；③ Dassault 的"生成候选架构 → 人精炼"助手（**无公开评测数据**）。
+**No vendor offers a way to judge whether a model is right in engineering terms.** Every AI/MCP product falls into one of three kinds: ① pipes that let an agent **read and write** models (API/MCP); ② **syntax/consistency checkers** (CLI); ③ Dassault's "generate a candidate architecture → a person refines it" assistant (**no public evaluation data**).
 
-## 2. 逐家细节
+## 2. Vendor by vendor
 
-### 2.1 Dassault Systèmes（CATIA Magic / Cameo）
+### 2.1 Dassault Systèmes (CATIA Magic / Cameo)
 
-**官方来源**
-- 产品矩阵（docs.nomagic.com，2022x–2026x）：`AI Assistant` 行出现在 **Magic Cyber Systems Engineer 2026x / 2026x Refresh1、Magic Systems of Systems Architect、MagicDraw、Cameo Systems Modeler** 下。`SysML v2` 行同样自 2026x 起。
-- 网络研讨会 "AI for SysML v2"（events.3ds.com）：演示"内置 AI Assistant 从 stakeholder needs 生成初始候选架构 → LEO Virtual Companion（3DEXPERIENCE 平台）分析并迭代精炼"；议程明确包含"哪里仍需工程判断"。
-- 网络研讨会 "Integrating Tools Using AI Within SysML v2"（Daniel Brookshier，OMG 架构委员会成员）：主题是用 **Codex / Claude Code 等现成 coding agent 编写 Cameo 插件与 SysML v2 Open API 脚本**，含 "agents, test harnesses, best practices"。→ Dassault 的姿态：coding agent 当**扩展开发者**，通过 REST API 操作模型。
-- SysML v2 Community Edition（免费）：100% 标准一致、文本/图形双向同步、**≤500 主要元素**、面向学习。页面**未提及** AI Assistant。
-- Teamwork Cloud：完全符合 OMG SysML v2 API & Services；CI/CD 可创建/查询/评估；另有专有 Model Evaluation 扩展。
+**Official sources**
+- Product matrix (docs.nomagic.com, 2022x–2026x): the `AI Assistant` row appears under **Magic Cyber Systems Engineer 2026x / 2026x Refresh1, Magic Systems of Systems Architect, MagicDraw and Cameo Systems Modeler**. The `SysML v2` row also starts at 2026x.
+- Webinar "AI for SysML v2" (events.3ds.com): demonstrates "the built-in AI Assistant generates initial candidate architectures from stakeholder needs → the LEO Virtual Companion (3DEXPERIENCE platform) analyzes and refines them iteratively"; the agenda explicitly includes "where engineering judgment is still needed".
+- Webinar "Integrating Tools Using AI Within SysML v2" (Daniel Brookshier, member of the OMG Architecture Board): the topic is using **off-the-shelf coding agents such as Codex and Claude Code to write Cameo plug-ins and SysML v2 Open API scripts**, including "agents, test harnesses, best practices". → Dassault's stance: coding agents act as **extension developers** that operate on models through the REST API.
+- SysML v2 Community Edition (free): 100% standard-conformant, text and diagrams synchronized both ways, **≤ 500 main elements**, aimed at learning. The page **does not mention** the AI Assistant.
+- Teamwork Cloud: fully conforms to the OMG SysML v2 API & Services; CI/CD can create, query and evaluate; a proprietary Model Evaluation extension also exists.
 
-**厂商员工社区帖（3DSwym，作者 "SP"）**
-- 2025-12-18："SysML v2 Simulation, 3D CAD Result Visualization, and Report Generation using MCP"——MCP 串联仿真、CAD、报告。
-- 2026-02-24："Jama MCP + CATIA Magic SysML v2 MCP"——从 SysML v2 仿真抽需求 → 推到 Jama → 生成测试用例 → 回读执行仿真 → 结果写回 Jama。文末："CATIA Magic SysML v2 MCP (TWC REST API based) is available at -"（链接需登录）。
-- 另一帖（机械臂数字孪生）明确写 "prototype demo"。
+**Community posts by a vendor employee (3DSwym, author "SP")**
+- 2025-12-18: "SysML v2 Simulation, 3D CAD Result Visualization, and Report Generation using MCP": MCP chains simulation, CAD and reports.
+- 2026-02-24: "Jama MCP + CATIA Magic SysML v2 MCP": requirements extracted from a SysML v2 simulation → pushed to Jama → test cases generated → read back to run the simulation → results written back to Jama. The post ends with "CATIA Magic SysML v2 MCP (TWC REST API based) is available at -" (the link requires a login).
+- Another post (a robot-arm digital twin) explicitly says "prototype demo".
 
-**第三方**
-- `ajhcs/cameo-mcp-bridge`（MIT，2026-03 创建，21★，162 工具，Java 插件直连运行中的 Cameo）：原生校验、报告向导、需求导入导出（JSON/CSV）、仿真预览、Teamwork 只读探针。**已知限制**：图布局是主要痛点；不能重新归属元素；无批量操作；纯请求/响应无事件；**"SysML v2 profile support" 列在"欢迎贡献"——即当前仅 v1**。
-- `jgsystemsconsulting/jgs-magic-sysmlv2-mcp`：驱动运行中的 Cameo 做 v2，**专有许可**（免费层 + PRO 授权文件）。
+**Third parties**
+- `ajhcs/cameo-mcp-bridge` (MIT, created 2026-03, 21 stars, 162 tools, a Java plug-in connected to a running Cameo): native validation, report wizard, requirement import/export (JSON/CSV), simulation preview, read-only Teamwork probes. **Known limits**: diagram layout is the main pain point; elements cannot be re-owned; no batch operations; pure request/response without events; **"SysML v2 profile support" is listed under "contributions welcome", i.e. v1 only for now**.
+- `jgsystemsconsulting/jgs-magic-sysmlv2-mcp`: drives a running Cameo for v2, **proprietary license** (free tier plus a PRO license file).
 
-**能做到的极限（基于公开信息）**
-- 生成：有，但是黑盒（LLM 来源、提示、是否可配置第三方模型均未公开），输出是"候选架构"，官方自己把"人精炼"列为必需步骤；无任何公开成功率/质量数据。
-- MCP：真实存在、可用于集成演示（Jama、仿真、CAD），但**绑定 Teamwork Cloud 企业服务器**；桌面 CE 无法使用。
-- 无头校验：桌面端无官方 CLI；只能经 TWC API 或社区桥。
+**The limit of what it can do (from public information)**
+- Generation: exists, but as a black box (which LLM, which prompts, and whether third-party models can be configured are not public); the output is a "candidate architecture", and Dassault itself lists human refinement as a required step; there is no public success rate or quality data.
+- MCP: real and usable for integration demonstrations (Jama, simulation, CAD), but **tied to an enterprise Teamwork Cloud server**; not usable with the desktop Community Edition.
+- Headless validation: no official CLI on the desktop; only through the TWC API or a community bridge.
 
-### 2.2 Sensmetry（Syside / Sysand）
+### 2.2 Sensmetry (Syside / Sysand)
 
-**官方来源**
-- 产品页："With Syside, your AI assistant can read your models and contribute to them."——指通过 CLI/Python API，不是内置生成。
-- 路线图 2026 Q1：Syside Cloud "pre-configured with Syside Modeler, Automator, Sysand, **and Claude Code**"，1000+ 用户。
-- 路线图 2026 Q2（2026-05-13）：Q3 目标含 "**Syside & Sysand MCP servers** — to make it even easier for AI assistants (Claude, Copilot, etc.) to work with your SysML v2 models"；Syside/Sysand 同步到 v1；Derisker（ISO 26262/21434 安全分析，含 STPA/FMECA/FTA）Q3 公开稳定版。截至 2026-10-02 未检索到 MCP 发布公告。
-- 0.9.0（2026-05-10）：需求评估（`assumptions implies requirements`）、ReqIF、标准库 2026-03。
-- 许可：Editor 免费（仅 VS Code）；`syside check` CLI 与 Automator 在付费 Solo/Business；30 天试用。
+**Official sources**
+- Product page: "With Syside, your AI assistant can read your models and contribute to them." This refers to the CLI/Python API, not built-in generation.
+- Roadmap 2026 Q1: Syside Cloud "pre-configured with Syside Modeler, Automator, Sysand, **and Claude Code**", 1000+ users.
+- Roadmap 2026 Q2 (2026-05-13): Q3 goals include "**Syside & Sysand MCP servers** — to make it even easier for AI assistants (Claude, Copilot, etc.) to work with your SysML v2 models"; Syside/Sysand reach v1 together; Derisker (ISO 26262/21434 safety analysis including STPA/FMECA/FTA) reaches a public stable release in Q3. As of 2026-10-02 no MCP release announcement was found.
+- 0.9.0 (2026-05-10): requirement evaluation (`assumptions implies requirements`), ReqIF, the 2026-03 standard library.
+- Licensing: the Editor is free (VS Code only); the `syside check` CLI and Automator are in the paid Solo/Business plans; 30-day trial.
 
-**用户反馈（论坛 "Claude Code / AI Agent Sharing Thread"，2026-03-13 至 05-21）**
-- 做法演进：自制 MCP 包 `syside check` → 改为 Claude Code **skill**（减少 JSON 开销）；CLI 二进制在 VS Code 扩展目录 `bundled/syside-cli/bin/`。
-- 配合 `nomograph/sysml`（GitLab 团队出品）做模型索引：按名查元素、列相关元素，替代"agent 读一堆文本自己推连接"。
-- 用手写 `sysml-patterns.md` 规定建模模式（抽象 part + 多重性、ISQ 属性 `:>` vs `:` 的选择规则等）。
-- **核心未解问题（原话）**："defining what counts as 'good' modeling, aside from syntactically correct code… With better way to assess model quality, there could be a subagent write and check loop."——这正是本项目 Q3 与 gold-assertions 要解决的问题。
+**User feedback (forum thread "Claude Code / AI Agent Sharing Thread", 2026-03-13 to 05-21)**
+- How the practice evolved: a home-made MCP wrapping `syside check` → replaced by a Claude Code **skill** (less JSON overhead); the CLI binary sits in the VS Code extension folder `bundled/syside-cli/bin/`.
+- Combined with `nomograph/sysml` (from a GitLab team) to index models: look up elements by name and list related elements, instead of having the agent read a pile of text and infer the connections itself.
+- A hand-written `sysml-patterns.md` prescribes modeling patterns (abstract parts plus multiplicity, rules for choosing ISQ attributes `:>` versus `:`, and so on).
+- **The core open problem (verbatim)**: "defining what counts as 'good' modeling, aside from syntactically correct code… With better way to assess model quality, there could be a subagent write and check loop." This is exactly what this project's Q3 and gold assertions address.
 
-**极限**：没有生成功能；MCP 未发布；检查器只管语法/语义一致性，不管工程正确性；付费墙。
+**Limits**: no generation; the MCP is not released; the checker covers syntax and semantic consistency, not engineering correctness; behind a paywall.
 
-### 2.3 Obeo（Eclipse SysON）
+### 2.3 Obeo (Eclipse SysON)
 
-- 博客 2025-05-12：原型"AI 作为建模助手 / AI 作为模型的自然语言接口"，LLM + SysON + Mattermost；明确"AI 是助手不是决策者"；计划产品化。
-- Obeo Enterprise for SysON 定价表：**AI Integration = Soon**（标准版与定制版皆然）。
-- 社区 `Casys-AI/mcp-syson`（MIT，31 工具，7 类，含 6 个 MCP App 查看器；Docker 一键）。设计说明值得注意：**删除了早期的 LLM 驱动工具**，理由是"调用方已经是语言模型，再让宿主跑一个模型只增加间接性；生成 SysML 是调用方的事，`syson_element_insert_sysml` 负责写入"。
-- 极限：无官方 AI；社区 MCP 面向读写与查询，无校验以外的判断。
+- Blog 2025-05-12: prototype "AI as a modeling assistant / AI as a natural-language interface to the model", LLM + SysON + Mattermost; states clearly that "AI is an assistant, not the decision maker"; productization planned.
+- Obeo Enterprise for SysON price list: **AI Integration = Soon** (both the standard and custom editions).
+- Community `Casys-AI/mcp-syson` (MIT, 31 tools in 7 groups, including 6 MCP App viewers; one-command Docker). A design note worth noting: the early **LLM-driven tools were removed**, because "the caller is already a language model; having the host run another model only adds indirection; generating SysML is the caller's job, and `syson_element_insert_sysml` does the writing".
+- Limits: no official AI; the community MCP is for reading, writing and querying, with no judgment beyond validation.
 
 ### 2.4 Siemens
 
-未检索到 Systems Modeler for SysML v2 的 AI 助手或 MCP 公开信息（2026-10-02）。
+No public information on an AI assistant or MCP for Systems Modeler for SysML v2 was found (2026-10-02).
 
-### 2.5 标准 API 层（厂商中立）
+### 2.5 The standard API layer (vendor-neutral)
 
-- `jgs-sysmlv2-api-mcp` v1.0.1/2.0.0：35 工具，分五类（导航读、分阶段写、项目生命周期、分支/标签、基础设施）；写入经 **staged commit + token 确认**；支持"每个 agent 会话一个分支"；提供 Claude Code / Cursor / Codex / Gemini CLI 插件清单；文档含"本地 Docker 运行 OMG 参考 pilot"的配方。专有许可（免费 + PRO）。
-- 意义：**OMG 标准 REST API 是唯一同时被官方 pilot、Cameo TWC、SysON 实现的接口**。若部署官方 API 服务，agent 经同一 MCP 可对三种后端做同样操作——这是 Interoperability 维度可测的东西。
+- `jgs-sysmlv2-api-mcp` v1.0.1/2.0.0: 35 tools in five groups (navigation and reading, staged writing, project life cycle, branches and tags, infrastructure); writes go through a **staged commit plus token confirmation**; supports "one branch per agent session"; ships plug-in manifests for Claude Code, Cursor, Codex and Gemini CLI; the documentation includes a recipe for "running the OMG reference pilot locally in Docker". Proprietary license (free plus PRO).
+- Why it matters: **the OMG standard REST API is the only interface implemented by the official pilot, Cameo TWC and SysON alike**. With the official API services deployed, an agent can perform the same operations on all three back ends through one MCP server, which is something measurable on the Interoperability dimension.
 
-## 3. 相关学术工作（同一时期）
+## 3. Related academic work (same period)
 
-- UC3M（e-archivo）"An agent-based approach for the automatic generation of valid SysMLv2 models in industrial contexts"：LLM agent + RAG（检索 SysML v2 代码示例）+ 形式校验引擎的自纠正循环；对比 LLM_Raw / +RAG / +校验配置——与我们 P0/P2/P1 的消融结构同形。
-- LangGraph 多 agent 语义校验（14 模型，GPT-4o-mini vs DeepSeek-R1）：两模型在欠规格模型上分歧——印证"LLM 校验器需被评测"。
+- UC3M (e-archivo), "An agent-based approach for the automatic generation of valid SysMLv2 models in industrial contexts": an LLM agent + RAG (retrieving SysML v2 code examples) + a self-correcting loop with a formal validation engine; compares LLM_Raw / +RAG / +validation configurations, the same ablation shape as our P0/P2/P1.
+- LangGraph multi-agent semantic validation (14 models, GPT-4o-mini vs DeepSeek-R1): the two models disagree on under-specified models, which supports "an LLM validator must itself be evaluated".
 
-## 4. 对 SysML-AgentBench 的影响
+## 4. Implications for SysML-AgentBench
 
-1. **修正此前判断**："Dassault 只有宣传原型"不准确。Dassault 在 2026x 已把 AI Assistant 做进产品，并有基于 TWC 的 SysML v2 MCP 在内部/早期使用。但两者都在**企业许可与服务器**之后，公开信息不含任何质量数据。
-2. **新增可选被测配置 P-VENDOR**：若 Bollas 的许可是 Magic Cyber Systems Engineer 2026x（含 AI Assistant），把它当"厂商黑盒 agent"放进 T4 生成题：用其 AI Assistant 生成 → 导出 .sysml 文本 → 走我们的官方校验 + 断言 + 工程检查。这对 RTRC 价值很高（他们用 Cameo），但要先确认许可条款允许评测与发表。
-3. **设计路线被业界印证**：Obeo 社区 MCP "生成是调用方的事，工具只负责读写与查询"；SEI 三层；Sensmetry 用户用 CLI 当裁判——都与我们"工具层确定性、生成与判断分离"一致。
-4. **"什么是好模型"无人解决**：Sensmetry 论坛用户、Obeo 博客、Dassault 研讨会都把人工判断列为必需。我们的 gold assertions + 工程语义检查 + 失败分类是对这个空白的直接回答，应在报告里引用这些来源作为需求佐证。
-5. **标准 API 作为互操作实验**（可选，第 6 周后）：部署官方 API 服务（已克隆），经 `jgs-sysmlv2-api-mcp` 或自写薄桥，让同一 agent 对"官方 API 后端"操作；若日后拿到 TWC 或 SysON，可复用同一流程比较后端差异。
-6. **Syside MCP**：等待 Sensmetry 发布（原定 2026 Q3）；发布后可替代用户自制的 CLI 包装，但判定逻辑不变。
+1. **Correcting an earlier judgment**: "Dassault only has marketing prototypes" was inaccurate. Dassault has built the AI Assistant into the 2026x product and uses a TWC-based SysML v2 MCP internally / in early access. Both sit behind **enterprise licenses and servers**, and the public information contains no quality data.
+2. **A new optional candidate, P-VENDOR**: if Bollas's license is Magic Cyber Systems Engineer 2026x (with the AI Assistant), treat it as a "vendor black-box agent" on the T4 generation tasks: generate with its AI Assistant → export the .sysml text → run our official validation, assertions and engineering checks. This is very valuable to RTRC (they use Cameo), but first confirm that the license terms allow evaluation and publication.
+3. **The design direction is confirmed by industry**: Obeo's community MCP ("generation is the caller's job; the tool only reads, writes and queries"), SEI's three layers, and Sensmetry users who use the CLI as the judge all match our "deterministic tool layer, generation separate from judgment".
+4. **Nobody has solved "what is a good model"**: Sensmetry forum users, the Obeo blog and the Dassault webinars all list human judgment as required. Our gold assertions + engineering-semantic checks + failure classes answer this gap directly, and the report should cite these sources as evidence of the need.
+5. **The standard API as an interoperability experiment** (optional, after week 6): deploy the official API services (already cloned) and, through `jgs-sysmlv2-api-mcp` or a thin bridge of our own, let the same agent operate on the official API back end; if TWC or SysON become available later, the same procedure compares back ends.
+6. **Syside MCP**: wait for Sensmetry's release (planned for 2026 Q3); once released it can replace user-built CLI wrappers, and the judging logic stays the same.
 
-## 5. 待确认
+## 5. To confirm
 
-- Bollas 的 Cameo 许可：产品名与版本（是否 Magic Cyber Systems Engineer / SoS Architect 2026x）；是否含 AI Assistant；是否有 Teamwork Cloud；许可条款是否允许评测结果发表。
-- Dassault SysML v2 MCP 的实际获取途径（社区登录后链接）与前置条件。
-- Sensmetry MCP 是否已发布；学术许可申请。
+- Bollas's Cameo license: product name and version (Magic Cyber Systems Engineer / SoS Architect 2026x or not); whether it includes the AI Assistant; whether Teamwork Cloud is available; whether the license terms allow evaluation results to be published.
+- How to obtain Dassault's SysML v2 MCP in practice (the link behind the community login) and its prerequisites.
+- Whether Sensmetry's MCP has been released; the academic-license application.

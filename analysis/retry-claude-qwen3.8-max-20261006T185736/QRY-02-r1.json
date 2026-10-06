@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 177936,
+  "stop_reason": "end_turn",
+  "session_id": "c6917964-ebd2-4fcb-8a6d-0c45e9b31efc",
+  "total_cost_usd": 0.333499,
+  "usage": {
+    "input_tokens": 23057,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 252928,
+    "output_tokens": 3670,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "qwen,qwen3.8-max": {
+      "inputTokens": 23057,
+      "outputTokens": 3670,
+      "cacheReadInputTokens": 252928,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.333499,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "qwen,qwen3.8-max",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "```json\n{\"attribute\": \"MaritimeISR::UnmannedSurfaceVessel::powerLimitW\", \"value\": 60.0}\n```\n\n**Files changed:** `answer.md` (new). No `.sysml` files were modified; `input/requirements.md` left untouched.\n\n**Validation status:** `./validate MaritimeISR input/model.sysml` → `\"status\": \"PASS\"`, `\"diagnostics\": []`, `\"warning_count\": 0`, `return_code: 0` (428 AST elements, kernel 0.62.0).\n\n**Check results:** No failing checks — nothing to report verbatim.\n\n**How the value was established:** Beyond reading `input/model.sysml:36` (`attribute powerLimitW : Real = 60.0;`), I cross-checked the official parser's emitted `model.json`. It contains an `AttributeUsage` with `qualifiedName: MaritimeISR::UnmannedSurfaceVessel::powerLimitW`, typed by `ScalarValues::Real`, whose `FeatureValue` resolves to a `LiteralRational` with `value: 60.0` and `isDefault: false` — so 60.0 is the parsed value, not an inferred one. The sibling `MaritimeISR::FixedWingUav::powerLimitW` is `120.0`; the question named `UnmannedSurfaceVessel`.\n\n**Open questions:** None. No limits, rates, or budgets were altered.",
+  "ttft_ms": 2528,
+  "type": "result",
+  "duration_ms": 185089,
+  "uuid": "fc404625-b797-4d0b-85cd-5f4ffbd59c19",
+  "ttft_stream_ms": 2244,
+  "time_to_request_ms": 53,
+  "first_content_frame_ms": 2244,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

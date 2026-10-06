@@ -681,6 +681,16 @@ class Handler(BaseHTTPRequestHandler):
             body = json.dumps(_detail(row), ensure_ascii=False).encode()
             self._send(200, body, "application/json; charset=utf-8")
             return
+        if parsed.path == "/api/diagram":
+            from bench.model_diagram import DiagramError, render
+            query = parse_qs(parsed.query)
+            try:
+                svg = render(query.get("run", [""])[0], query.get("view", ["connections"])[0])
+            except DiagramError as exc:
+                self._send(404, json.dumps({"error": str(exc)}, ensure_ascii=False).encode(), "application/json; charset=utf-8")
+                return
+            self._send(200, svg.read_bytes(), "image/svg+xml")
+            return
         if parsed.path == "/api/facts":
             from bench.board_facts import facts
             self._send(200, json.dumps(facts(), ensure_ascii=False).encode(), "application/json; charset=utf-8")

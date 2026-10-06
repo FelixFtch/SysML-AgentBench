@@ -1,0 +1,112 @@
+{
+  "cohort": "retry-claude",
+  "agent": "claude",
+  "model": "qwen3.8-max",
+  "jailed": true,
+  "validate_limit": 50,
+  "timeout_s": 3600,
+  "stop_on_pass": true,
+  "poll_s": 15,
+  "tools": [
+    "Bash",
+    "Read",
+    "Write",
+    "Edit",
+    "Glob",
+    "Grep"
+  ],
+  "max_turns": 200,
+  "repeats": 3,
+  "tasks": [
+    "GEN-01",
+    "GEN-03",
+    "GEN-05",
+    "MOD-02",
+    "MOD-03",
+    "QRY-01",
+    "QRY-02",
+    "QRY-04",
+    "AMB-01",
+    "AMB-02",
+    "RT-04",
+    "RT-05",
+    "ALN-01",
+    "ALN-02"
+  ],
+  "failed_cells": {
+    "ALN-01": {
+      "flash": 7
+    },
+    "ALN-02": {
+      "flash": 10,
+      "max": 3,
+      "opencode": 1,
+      "claude": 2
+    },
+    "AMB-01": {
+      "flash": 6
+    },
+    "AMB-02": {
+      "flash": 3,
+      "max": 6
+    },
+    "GEN-01": {
+      "flash": 2
+    },
+    "GEN-03": {
+      "flash": 2
+    },
+    "GEN-05": {
+      "flash": 3,
+      "opencode": 1
+    },
+    "MOD-02": {
+      "opencode": 1
+    },
+    "MOD-03": {
+      "claude": 1
+    },
+    "QRY-01": {
+      "flash": 8,
+      "max": 2
+    },
+    "QRY-02": {
+      "flash": 3
+    },
+    "QRY-04": {
+      "flash": 3
+    },
+    "RT-04": {
+      "flash": 1
+    },
+    "RT-05": {
+      "flash": 6
+    }
+  },
+  "workers": 2,
+  "started": "20261006T185736",
+  "note": "Failed tasks retried with Claude Code on qwen3.8-max: ./validate at most 50 calls, 60 min, 200 turns, stop on first pass (user, 2026-10-06)",
+  "interrupted": [
+    {
+      "task_id": "GEN-01",
+      "work": "mvp/agent-runs/20261006T185736-f37c-retry-claude-GEN-01",
+      "usage": {},
+      "usage_reported": false
+    },
+    {
+      "task_id": "MOD-02",
+      "work": "mvp/agent-runs/20261006T190042-03d9-retry-claude-MOD-02",
+      "usage": {},
+      "usage_reported": false
+    }
+  ],
+  "resumed": [
+    {
+      "at": "20261006T190406",
+      "kept_rows": 2,
+      "interrupted_runs": 2,
+      "workers": 2,
+      "note": "Restarted so that a run also stops when the model file the agent wrote passes before answer.md exists (user: once it is right, go to the next run)"
+    }
+  ]
+}

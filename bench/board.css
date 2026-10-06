@@ -377,6 +377,21 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .nc-table td:first-child { font-weight: 600; color: var(--ink); width: 24%; }
 .nc-table td:nth-child(3) { color: var(--ink-2); }
 .nc-path { font-family: var(--mono); font-size: 11px; color: var(--ink-3); overflow-wrap: anywhere; }
+.rt-table th small { display: block; font-weight: 400; color: var(--ink-3); }
+.rt-table .rt-new { background: var(--pass-bg); }
+.rt-table i { font-style: normal; font-weight: 700; margin-left: 2px; }
+.rt-table i.rt-pass { color: var(--pass); }
+.rt-table i.rt-fail { color: var(--fail); }
+.rt-stats { margin: 8px 0 0; padding-left: 18px; font-size: 12.5px; color: var(--ink-2); }
+.rt-stats li { margin: 3px 0; }
+.rt-h5 { font-size: 12.5px; color: var(--navy); margin: 12px 0 0; }
+.diagram-slot:not(:empty) { margin-top: 14px; }
+.dg { border: 1px solid var(--line, #dfe6ee); border-radius: 10px; padding: 10px 12px; background: #fff; }
+.dg-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.dg-head .block-h { margin: 0; }
+.dg-img { display: block; overflow: auto; max-height: 640px; text-align: center; background: #fbfcfd; border-radius: 8px; }
+.dg-img img { max-width: 100%; height: auto; }
+.dg-msg { margin: 6px 0 0; }
 .cost-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .cost-head h4 { margin: 0; }
 .price-row { display: flex; flex-wrap: wrap; gap: 8px; }

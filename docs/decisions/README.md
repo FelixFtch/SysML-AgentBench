@@ -2,13 +2,13 @@
 
 One short file per significant decision: `NNN-slug.md` with date, options considered, decision, reason, and what would reverse it.
 
-Decisions 001–015 (2026-10-02) are recorded in the execution plan v2.0, section 18: `plans/SysML_AgentBench_完整执行计划.md`. New decisions go here as separate files and are also summarized in that table.
+Decisions 001–015 (2026-10-02) are recorded in the execution plan v2.0, section 18: `plans/execution-plan-v2.md`. New decisions go here as separate files and are also summarized in that table.
 
 | # | Decision |
 |---|---|
 | 001 | Project centre moves from "upgrade workbench product" to "agent benchmark" |
 | 002 | Keep official toolchain, engine checks, evidence packs; drop Workbench-as-product |
-| 003 | Langflow not a system component (optional demo shell only) |
+| 003 | Langflow not a system component (optional demo shell only). Correction 2026-10-06: its "no native approval gate" reason no longer holds (Human Input and agent tool approval since Langflow 1.11); the other reasons stand. Plan for the shell: `plans/langflow-shell-plan.md` |
 | 004 | Agent layer: LangGraph (fallback plain Python); not Pydantic AI |
 | 005 | Off-the-shelf agent baseline: OpenCode primary, Claude Code optional |
 | 006 | External benchmarks are calibration/seed only, not the main line |
@@ -33,4 +33,5 @@ Decisions 001–015 (2026-10-02) are recorded in the execution plan v2.0, sectio
 | [025](025-no-model-judges.md) | Model judges dropped; second review of the 27 keys done and recorded; bank frozen (`bench/FREEZE.md`, tag `freeze-2026-10-06`) |
 | [026](026-agent-sandbox.md) | Agents run in a bubblewrap sandbox with the same workspace, rules, tools and `./validate`; the first two agent batches of 2026-10-06 are discarded (OpenCode read keys, Claude Code had tools denied); `./validate` passes files in the scorer's order after the Pilot's order dependence was found, and the agents' ALN runs were rerun |
 | [027](027-paper2-replication.md) | Paper 2 replicated on its own EV model: the published notebook passes an empty context (one-line fix); precision matches the paper at 0.35, the 0.904 F1 at 0.45 does not; our retrieval matches the fixed pipeline once cards carry documentation (applied in 028) |
+| [029](029-retry-failed-tasks-agents-max.md) | The 14 tasks that failed anywhere retried with OpenCode and Claude Code on qwen3.8-max (≤50 `./validate` calls, 60 min, stop on first pass): 41/42 and 40/42; not a score |
 | [028](028-freeze-revision-2.md) | Freeze revision 2: retrieval cards carry documentation text; MOD-01 checks the radio it says to keep; AMB-02 accepts more ways to ask for the limit; an AMB number counts as invented only with SysML; saved answers re-scored (6 cells change), every direct P3 cell rerun |

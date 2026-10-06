@@ -1,0 +1,1612 @@
+{
+  "tasks": [
+    "GEN-01",
+    "GEN-03",
+    "GEN-05",
+    "MOD-02",
+    "MOD-03",
+    "QRY-01",
+    "QRY-02",
+    "QRY-04",
+    "AMB-01",
+    "AMB-02",
+    "RT-04",
+    "RT-05",
+    "ALN-01",
+    "ALN-02"
+  ],
+  "agents": {
+    "opencode": {
+      "label": "OpenCode · qwen3.8-max",
+      "folder": "retry-opencode-qwen3.8-max-20261006T185737",
+      "settings": {
+        "validate_limit": 50,
+        "timeout_s": 3600,
+        "max_turns": null,
+        "stop_on_pass": true,
+        "poll_s": 15,
+        "repeats": 3,
+        "workers": 2
+      },
+      "pass": 41,
+      "n": 42,
+      "planned": 42,
+      "pass_from": {
+        "answer.md": 32,
+        "workspace model": 9,
+        "final message": 0,
+        "stdout": 0
+      },
+      "stopped_on_pass": 17,
+      "timeouts": 0,
+      "errors": 0,
+      "interrupted": 2,
+      "validate_calls": {
+        "max": 5,
+        "median": 1.0,
+        "at_limit": 0
+      },
+      "elapsed_s": {
+        "median": 50.0,
+        "max": 1347
+      },
+      "usage": {
+        "input": 6687255,
+        "cached": 6070784,
+        "output": 219850
+      },
+      "usage_source": "per run (OpenCode step events), including runs cut off by a restart",
+      "usd": 3.3562,
+      "unreported_runs": 0,
+      "runs": [
+        {
+          "task_id": "ALN-01",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 522,
+          "validate_calls": 3,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": 0.2591
+        },
+        {
+          "task_id": "ALN-01",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 1347,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": 0.604
+        },
+        {
+          "task_id": "ALN-01",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 403,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": 0.2564
+        },
+        {
+          "task_id": "ALN-02",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 620,
+          "validate_calls": 5,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": 0.2558
+        },
+        {
+          "task_id": "ALN-02",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 710,
+          "validate_calls": 4,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": 0.3078
+        },
+        {
+          "task_id": "ALN-02",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 434,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": 0.2118
+        },
+        {
+          "task_id": "AMB-01",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 30,
+          "validate_calls": 0,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0212
+        },
+        {
+          "task_id": "AMB-01",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 34,
+          "validate_calls": 0,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0223
+        },
+        {
+          "task_id": "AMB-01",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 30,
+          "validate_calls": 0,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": 0.0172
+        },
+        {
+          "task_id": "AMB-02",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 47,
+          "validate_calls": 0,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0286
+        },
+        {
+          "task_id": "AMB-02",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 40,
+          "validate_calls": 0,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0289
+        },
+        {
+          "task_id": "AMB-02",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 51,
+          "validate_calls": 0,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0326
+        },
+        {
+          "task_id": "GEN-01",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 53,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0402
+        },
+        {
+          "task_id": "GEN-01",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 49,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": 0.0352
+        },
+        {
+          "task_id": "GEN-01",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 34,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": 0.0221
+        },
+        {
+          "task_id": "GEN-03",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 49,
+          "validate_calls": 2,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0474
+        },
+        {
+          "task_id": "GEN-03",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 51,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": 0.0397
+        },
+        {
+          "task_id": "GEN-03",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 67,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": 0.0484
+        },
+        {
+          "task_id": "GEN-05",
+          "repeat": 1,
+          "status": "FAIL",
+          "returncode": 0,
+          "elapsed_s": 240,
+          "validate_calls": 3,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.1922,
+          "class": "no-sysml",
+          "detail": "The candidate produced no validated model."
+        },
+        {
+          "task_id": "GEN-05",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 97,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": 0.0597
+        },
+        {
+          "task_id": "GEN-05",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 34,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": 0.0193
+        },
+        {
+          "task_id": "MOD-02",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 62,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0561
+        },
+        {
+          "task_id": "MOD-02",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 34,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": 0.0225
+        },
+        {
+          "task_id": "MOD-02",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 50,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": 0.0377
+        },
+        {
+          "task_id": "MOD-03",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 40,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.036
+        },
+        {
+          "task_id": "MOD-03",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 33,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": 0.022
+        },
+        {
+          "task_id": "MOD-03",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 45,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0331
+        },
+        {
+          "task_id": "QRY-01",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 42,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0352
+        },
+        {
+          "task_id": "QRY-01",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 25,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0225
+        },
+        {
+          "task_id": "QRY-01",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 50,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.034
+        },
+        {
+          "task_id": "QRY-02",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 56,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0536
+        },
+        {
+          "task_id": "QRY-02",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 29,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.026
+        },
+        {
+          "task_id": "QRY-02",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 80,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0633
+        },
+        {
+          "task_id": "QRY-04",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 88,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0783
+        },
+        {
+          "task_id": "QRY-04",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 32,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0265
+        },
+        {
+          "task_id": "QRY-04",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 79,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0572
+        },
+        {
+          "task_id": "RT-04",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 33,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0278
+        },
+        {
+          "task_id": "RT-04",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 52,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0329
+        },
+        {
+          "task_id": "RT-04",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 41,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0319
+        },
+        {
+          "task_id": "RT-05",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 60,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": 0.0329
+        },
+        {
+          "task_id": "RT-05",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 51,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0345
+        },
+        {
+          "task_id": "RT-05",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 38,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0283
+        }
+      ]
+    },
+    "claude": {
+      "label": "Claude Code · qwen3.8-max",
+      "folder": "retry-claude-qwen3.8-max-20261006T185736",
+      "settings": {
+        "validate_limit": 50,
+        "timeout_s": 3600,
+        "max_turns": 200,
+        "stop_on_pass": true,
+        "poll_s": 15,
+        "repeats": 3,
+        "workers": 2
+      },
+      "pass": 40,
+      "n": 42,
+      "planned": 42,
+      "pass_from": {
+        "answer.md": 27,
+        "workspace model": 13,
+        "final message": 0,
+        "stdout": 0
+      },
+      "stopped_on_pass": 31,
+      "timeouts": 0,
+      "errors": 0,
+      "interrupted": 2,
+      "validate_calls": {
+        "max": 6,
+        "median": 1.0,
+        "at_limit": 0
+      },
+      "elapsed_s": {
+        "median": 105.0,
+        "max": 2065
+      },
+      "usage": {
+        "input": 15926058,
+        "cached": 14981248,
+        "output": 499543
+      },
+      "usage_source": "CCR request log, 577 requests",
+      "usd": 7.1183,
+      "unreported_runs": 31,
+      "runs": [
+        {
+          "task_id": "ALN-01",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 1902,
+          "validate_calls": 6,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "ALN-01",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 1029,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "ALN-01",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 1212,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "ALN-02",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 2065,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "ALN-02",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 1059,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "ALN-02",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 1179,
+          "validate_calls": 3,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "AMB-01",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 330,
+          "validate_calls": 0,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "AMB-01",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 90,
+          "validate_calls": 0,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "AMB-01",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 101,
+          "validate_calls": 0,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0758
+        },
+        {
+          "task_id": "AMB-02",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 120,
+          "validate_calls": 0,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "AMB-02",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 74,
+          "validate_calls": 0,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.056
+        },
+        {
+          "task_id": "AMB-02",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 120,
+          "validate_calls": 0,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "GEN-01",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 79,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "GEN-01",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 94,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "GEN-01",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 140,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "GEN-03",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 90,
+          "validate_calls": 2,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.116
+        },
+        {
+          "task_id": "GEN-03",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 64,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "GEN-03",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 81,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "GEN-05",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 89,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0888
+        },
+        {
+          "task_id": "GEN-05",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 64,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "GEN-05",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 64,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "MOD-02",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 109,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "MOD-02",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 334,
+          "validate_calls": 0,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "MOD-02",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 143,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "MOD-03",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 183,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "MOD-03",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 94,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "MOD-03",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 94,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "workspace model",
+          "usd": null
+        },
+        {
+          "task_id": "QRY-01",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 75,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "QRY-01",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 43,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0492
+        },
+        {
+          "task_id": "QRY-01",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 52,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0498
+        },
+        {
+          "task_id": "QRY-02",
+          "repeat": 1,
+          "status": "FAIL",
+          "returncode": 0,
+          "elapsed_s": 186,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.1083,
+          "class": "query-no-json",
+          "detail": "Output contained no JSON value"
+        },
+        {
+          "task_id": "QRY-02",
+          "repeat": 2,
+          "status": "FAIL",
+          "returncode": 0,
+          "elapsed_s": 130,
+          "validate_calls": 2,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.1257,
+          "class": "query-no-json",
+          "detail": "Output contained no JSON value"
+        },
+        {
+          "task_id": "QRY-02",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 105,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "QRY-04",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 84,
+          "validate_calls": 2,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0849
+        },
+        {
+          "task_id": "QRY-04",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 49,
+          "validate_calls": 1,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0573
+        },
+        {
+          "task_id": "QRY-04",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 90,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "RT-04",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 165,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "RT-04",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 105,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "RT-04",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 105,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "RT-05",
+          "repeat": 1,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 105,
+          "validate_calls": 2,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        },
+        {
+          "task_id": "RT-05",
+          "repeat": 2,
+          "status": "PASS",
+          "returncode": 0,
+          "elapsed_s": 87,
+          "validate_calls": 2,
+          "stopped_on_pass": false,
+          "scored_from": "answer.md",
+          "usd": 0.0743
+        },
+        {
+          "task_id": "RT-05",
+          "repeat": 3,
+          "status": "PASS",
+          "returncode": "stopped-on-pass",
+          "elapsed_s": 150,
+          "validate_calls": 1,
+          "stopped_on_pass": true,
+          "scored_from": "answer.md",
+          "usd": null
+        }
+      ]
+    }
+  },
+  "per_task": [
+    {
+      "task_id": "GEN-01",
+      "before": {
+        "flash": {
+          "pass": 10,
+          "n": 12
+        },
+        "max": {
+          "pass": 12,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 3,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "GEN-03",
+      "before": {
+        "flash": {
+          "pass": 10,
+          "n": 12
+        },
+        "max": {
+          "pass": 12,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 3,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "GEN-05",
+      "before": {
+        "flash": {
+          "pass": 9,
+          "n": 12
+        },
+        "max": {
+          "pass": 12,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 2,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 2,
+        "n": 3,
+        "statuses": [
+          "FAIL",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "MOD-02",
+      "before": {
+        "flash": {
+          "pass": 12,
+          "n": 12
+        },
+        "max": {
+          "pass": 12,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 2,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "MOD-03",
+      "before": {
+        "flash": {
+          "pass": 12,
+          "n": 12
+        },
+        "max": {
+          "pass": 12,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 3,
+          "n": 3
+        },
+        "claude": {
+          "pass": 2,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "QRY-01",
+      "before": {
+        "flash": {
+          "pass": 4,
+          "n": 12
+        },
+        "max": {
+          "pass": 10,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 3,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "QRY-02",
+      "before": {
+        "flash": {
+          "pass": 9,
+          "n": 12
+        },
+        "max": {
+          "pass": 12,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 3,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 1,
+        "n": 3,
+        "statuses": [
+          "FAIL",
+          "FAIL",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "QRY-04",
+      "before": {
+        "flash": {
+          "pass": 9,
+          "n": 12
+        },
+        "max": {
+          "pass": 12,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 3,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "AMB-01",
+      "before": {
+        "flash": {
+          "pass": 6,
+          "n": 12
+        },
+        "max": {
+          "pass": 12,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 3,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "AMB-02",
+      "before": {
+        "flash": {
+          "pass": 9,
+          "n": 12
+        },
+        "max": {
+          "pass": 6,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 3,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "RT-04",
+      "before": {
+        "flash": {
+          "pass": 11,
+          "n": 12
+        },
+        "max": {
+          "pass": 12,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 3,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "RT-05",
+      "before": {
+        "flash": {
+          "pass": 6,
+          "n": 12
+        },
+        "max": {
+          "pass": 12,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 3,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "ALN-01",
+      "before": {
+        "flash": {
+          "pass": 5,
+          "n": 12
+        },
+        "max": {
+          "pass": 12,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 3,
+          "n": 3
+        },
+        "claude": {
+          "pass": 3,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    },
+    {
+      "task_id": "ALN-02",
+      "before": {
+        "flash": {
+          "pass": 2,
+          "n": 12
+        },
+        "max": {
+          "pass": 9,
+          "n": 12
+        },
+        "opencode": {
+          "pass": 2,
+          "n": 3
+        },
+        "claude": {
+          "pass": 1,
+          "n": 3
+        }
+      },
+      "opencode": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      },
+      "claude": {
+        "pass": 3,
+        "n": 3,
+        "statuses": [
+          "PASS",
+          "PASS",
+          "PASS"
+        ]
+      }
+    }
+  ],
+  "before": {
+    "flash": {
+      "pass": 114,
+      "n": 168
+    },
+    "max": {
+      "pass": 157,
+      "n": 168
+    },
+    "opencode": {
+      "pass": 39,
+      "n": 42
+    },
+    "claude": {
+      "pass": 39,
+      "n": 42
+    }
+  },
+  "cohort_labels": {
+    "flash": "Direct · qwen3.8-flash",
+    "max": "Direct · qwen3.8-max",
+    "opencode": "OpenCode · qwen3.8-flash",
+    "claude": "Claude Code · qwen3.8-flash"
+  }
+}

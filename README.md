@@ -40,6 +40,8 @@ vendor/       symlink to full upstream clones (not in git; recreate with `python
 
 ## Quick checks
 
+Retrieval (paper 2) needs `pip install --user faiss-cpu sentence-transformers rdflib` and, for a CPU-only box, `pip install --user torch --index-url https://download.pytorch.org/whl/cpu` first. Without them the code falls back to keyword ranking and says so in each record. The exam's retrieval library is built once with `python3 bench/build_examples_library.py` (official SysML-v2-Release examples through the Pilot, about 7 minutes).
+
 ```bash
 python3 -m unittest discover -s mvp/tests -v      # 11 toolchain boundary tests
 python3 -m unittest bench.test_score_pwr01 bench.test_score_answer   # scoring rule tests

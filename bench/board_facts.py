@@ -9,6 +9,13 @@ ROOT = Path(__file__).resolve().parents[1]
 ANALYSIS = ROOT / "analysis"
 
 
+def graph_query_file() -> Path:
+    """The newest graph-retrieval QRY batch. graph-query-max.json is the 2026-10-03 keyword run;
+    bench/graph_query.py now writes graph-query-<stamp>.json with the retrieval settings recorded."""
+    candidates = sorted(ANALYSIS.glob("graph-query-*.json"), key=lambda path: path.stat().st_mtime)
+    return candidates[-1]
+
+
 def _rows(pattern: str) -> list[dict]:
     rows = []
     for path in sorted(ANALYSIS.glob(pattern)):
@@ -167,7 +174,7 @@ def _costs(flash: list[dict]) -> dict:
     jev = json.loads((ANALYSIS / "jev-heldout-20261003.json").read_text(encoding="utf-8"))["summary"]["usage"]
     items.append({"id": "jev", "group_id": "judge", "group": "Judge", "label": "Jev judging 288 cells", "model": "jev-1.13.0",
                   "input": jev["input_tokens"], "cached": 0, "output": jev["output_tokens"], "calls": 36})
-    graph = json.loads((ANALYSIS / "graph-query-max.json").read_text(encoding="utf-8"))
+    graph = json.loads(graph_query_file().read_text(encoding="utf-8"))
     items.append({"id": "graph", "group_id": "other", "group": "Other experiments", "label": f"Graph retrieval, query tasks ({len(graph)})",
                   "model": "qwen3.8-max", **_call_tokens([item for item in graph if item.get("usage")])})
     sysengbench = json.loads((ANALYSIS / "sysengbench-jev.json").read_text(encoding="utf-8"))
@@ -317,7 +324,7 @@ def facts() -> dict:
             slot["false_pass"] += 1 if item.get("false_pass") else 0
             slot["false_fail"] += 1 if (item.get("agree") is False and not item.get("false_pass")) else 0
         jev["by_type"] = by_type
-    graph = {item["task_id"]: item for item in json.loads((ANALYSIS / "graph-query-max.json").read_text(encoding="utf-8"))}
+    graph = {item["task_id"]: item for item in json.loads(graph_query_file().read_text(encoding="utf-8"))}
     flips = 0
     groups: dict[tuple, set] = defaultdict(set)
     for row in flash:

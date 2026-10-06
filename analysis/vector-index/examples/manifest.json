@@ -1,0 +1,307 @@
+{
+  "built_at": "2026-10-06T05:43:17.761249+00:00",
+  "examples_root": "vendor/SysML-v2-Release/sysml/src/examples",
+  "license": "EPL-2.0 (SysML-v2-Release)",
+  "folders": [
+    {
+      "folder": "Analysis Examples",
+      "files": [
+        "AnalysisAnnotation.sysml",
+        "Dynamics.sysml",
+        "Turbojet Stage Analysis.sysml",
+        "Vehicle Analysis Demo.sysml"
+      ],
+      "package": "AnalysisAnnotation",
+      "status": "PASS",
+      "run_id": "20261006T053400-2d07f9bf",
+      "cards": 18
+    },
+    {
+      "folder": "Arrowhead Framework Example",
+      "files": [
+        "AHFCoreLib.sysml",
+        "AHFNorwayTopics.sysml",
+        "AHFProfileLib.sysml",
+        "AHFSequences.sysml"
+      ],
+      "package": "AHFNorway",
+      "status": "PASS",
+      "run_id": "20261006T053420-11769eb0",
+      "cards": 163
+    },
+    {
+      "folder": "Association Examples",
+      "files": [
+        "ProductSelection_N_ary.sysml",
+        "ProductSelection_OwnedEnds.sysml",
+        "ProductSelection_UnownedEnds.sysml"
+      ],
+      "package": "ProductSelection_N_ary_SysML",
+      "status": "PASS",
+      "run_id": "20261006T053452-cf1e6219",
+      "cards": 15
+    },
+    {
+      "folder": "Camera Example",
+      "files": [
+        "Camera.sysml",
+        "PictureTaking.sysml"
+      ],
+      "package": "PictureTaking",
+      "status": "PASS",
+      "run_id": "20261006T053500-b9e9fd38",
+      "cards": 9
+    },
+    {
+      "folder": "Cause and Effect Examples",
+      "files": [
+        "CauseAndEffectExample.sysml",
+        "MedicalDeviceFailure.sysml"
+      ],
+      "package": "CauseAndEffectExample",
+      "status": "PASS",
+      "run_id": "20261006T053505-1eba249a",
+      "cards": 36
+    },
+    {
+      "folder": "Comment Examples",
+      "files": [
+        "Comments.sysml"
+      ],
+      "package": "Comments",
+      "status": "PASS",
+      "run_id": "20261006T053513-48b29252",
+      "cards": 4
+    },
+    {
+      "folder": "Flashlight Example",
+      "files": [
+        "Flashlight Example.sysml"
+      ],
+      "package": "Flashlight Example",
+      "status": "PASS",
+      "run_id": "20261006T053516-a9a4dfed",
+      "cards": 46
+    },
+    {
+      "folder": "Geometry Examples",
+      "files": [
+        "CarWithEnvelopingShape.sysml",
+        "CarWithShapeAndCSG.sysml",
+        "ExternalShapeRefExample.sysml",
+        "SimpleQuadcopter.sysml",
+        "VehicleGeometryAndCoordinateFrames.sysml"
+      ],
+      "package": "CarWithEnvelopingShape",
+      "status": "PASS",
+      "run_id": "20261006T053526-e35f5085",
+      "cards": 10
+    },
+    {
+      "folder": "Import Tests",
+      "files": [
+        "AliasImport.sysml",
+        "CircularImport.sysml",
+        "PrivateImportTest.sysml",
+        "QualifiedNameImportTest.sysml"
+      ],
+      "package": "AliasImport",
+      "status": "PASS",
+      "run_id": "20261006T053608-f51afaf3",
+      "cards": 5
+    },
+    {
+      "folder": "Individuals Examples",
+      "files": [
+        "AnalysisIndividualExample.sysml",
+        "JohnIndividualExample.sysml"
+      ],
+      "package": "AnalysisIndividualExample",
+      "status": "PASS",
+      "run_id": "20261006T053612-f7e7ffbf",
+      "cards": 65
+    },
+    {
+      "folder": "Interaction Sequencing Examples",
+      "files": [
+        "ServerSequenceModel.sysml",
+        "ServerSequenceModelOutside.sysml",
+        "ServerSequenceOutsideRealization-2.sysml",
+        "ServerSequenceOutsideRealization-3.sysml",
+        "ServerSequenceRealization-2.sysml",
+        "ServerSequenceRealization-3.sysml"
+      ],
+      "package": "ServerSequenceModel",
+      "status": "PASS",
+      "run_id": "20261006T053620-20e6e756",
+      "cards": 29
+    },
+    {
+      "folder": "Mass Roll-up Example",
+      "files": [
+        "MassConstraintExample.sysml",
+        "MassRollup.sysml",
+        "Vehicles.sysml"
+      ],
+      "package": "MassConstraintExample",
+      "status": "PASS",
+      "run_id": "20261006T053701-3dd6f41a",
+      "cards": 55
+    },
+    {
+      "folder": "Metadata Examples",
+      "files": [
+        "IssueMetadataExample.sysml",
+        "RationaleMetadataExample.sysml",
+        "RequirementMetadataExample.sysml",
+        "RiskMetadataExample.sysml",
+        "VerificationMetadataExample.sysml"
+      ],
+      "package": "IssueMetadataExample",
+      "status": "PASS",
+      "run_id": "20261006T053711-4d28908b",
+      "cards": 19
+    },
+    {
+      "folder": "Packet Example",
+      "files": [
+        "PacketUsage.sysml",
+        "Packets.sysml"
+      ],
+      "package": "Packet Usage",
+      "status": "PASS",
+      "run_id": "20261006T053718-7c350b22",
+      "cards": 27
+    },
+    {
+      "folder": "Requirements Examples",
+      "files": [
+        "HSUVRequirements.sysml",
+        "RequirementDerivationExample.sysml",
+        "VehicleRequirementDerivation.sysml"
+      ],
+      "package": "HSUVRequirements",
+      "status": "PASS",
+      "run_id": "20261006T053722-2a379333",
+      "cards": 22
+    },
+    {
+      "folder": "Room Model",
+      "files": [
+        "RoomModel.sysml"
+      ],
+      "package": "RoomModel",
+      "status": "PASS",
+      "run_id": "20261006T053731-f215db8a",
+      "cards": 61
+    },
+    {
+      "folder": "Simple Tests",
+      "files": [
+        "ActionTest.sysml",
+        "AliasTest.sysml",
+        "AllocationTest.sysml",
+        "AnalysisTest.sysml",
+        "AssignmentTest.sysml",
+        "CalculationTest.sysml",
+        "CommentTest.sysml",
+        "ConjugationTest.sysml",
+        "ConnectionTest.sysml",
+        "ConstraintTest.sysml",
+        "ControlNodeTest.sysml",
+        "DecisionTest.sysml",
+        "DefaultValueTest.sysml",
+        "DependencyTest.sysml",
+        "EnumerationTest.sysml",
+        "FeaturePathTest.sysml",
+        "ImportTest.sysml",
+        "IndividualTest.sysml",
+        "InterfaceTest.sysml",
+        "ItemTest.sysml",
+        "MetadataTest.sysml",
+        "MultiplicityTest.sysml",
+        "OccurrenceTest.sysml",
+        "ParameterTest.sysml",
+        "PartTest.sysml",
+        "RequirementTest.sysml",
+        "RootPackageTest.sysml",
+        "StateTest.sysml",
+        "StructuredControlTest.sysml",
+        "TextualRepresentationTest.sysml",
+        "TradeStudyTest.sysml",
+        "UseCaseTest.sysml",
+        "VariabilityTest.sysml",
+        "VerificationTest.sysml",
+        "ViewTest.sysml"
+      ],
+      "package": "ActionTest",
+      "status": "PASS",
+      "run_id": "20261006T053738-e53a3802",
+      "cards": 30
+    },
+    {
+      "folder": "State Space Representation Examples",
+      "files": [
+        "CartSample.sysml",
+        "EVSample.sysml"
+      ],
+      "package": "CartSample",
+      "status": "PASS",
+      "run_id": "20261006T053826-ec4b9890",
+      "cards": 43
+    },
+    {
+      "folder": "Timeslice and Snapshot Examples",
+      "files": [
+        "TimeVaryingAttribute.sysml"
+      ],
+      "package": "TimeVaryingAttribute",
+      "status": "PASS",
+      "run_id": "20261006T053843-26bacf5a",
+      "cards": 20
+    },
+    {
+      "folder": "Variability Examples",
+      "files": [
+        "VehicleVariabilityModel.sysml"
+      ],
+      "package": "VehicleVariabilityModel",
+      "status": "PASS",
+      "run_id": "20261006T053848-3ab6dcde",
+      "cards": 74
+    },
+    {
+      "folder": "Vehicle Example",
+      "files": [
+        "SysML v2 Spec Annex A SimpleVehicleModel.sysml",
+        "VehicleDefinitions.sysml",
+        "VehicleIndividuals.sysml",
+        "VehicleUsages.sysml"
+      ],
+      "package": "SimpleVehicleModel",
+      "status": "ERROR",
+      "run_id": "20261006T053857-eaa54231",
+      "diagnostics": [
+        "java.lang.OutOfMemoryError: Java heap space"
+      ]
+    }
+  ],
+  "cards": 761,
+  "notes": 10,
+  "leak_check": {
+    "forbidden_tokens": [
+      "MaritimeISR",
+      "FusionNode",
+      "FourNode",
+      "ShoreArchive",
+      "RadioHealth",
+      "PowerBudget",
+      "UsvPlain",
+      "RoundTrip",
+      "fusionLatencyS",
+      "UnmannedSurfaceVessel",
+      "FixedWingUav"
+    ],
+    "example_cards_with_forbidden_token": []
+  }
+}

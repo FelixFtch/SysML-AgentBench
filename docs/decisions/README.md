@@ -28,3 +28,4 @@ Decisions 001–015 (2026-10-02) are recorded in the execution plan v2.0, sectio
 | [020](020-part2-blank-task-prototype.md) | Part 2 prototype: blank brief → requirements → two designs → Pilot → alignment → checks → human approval → memory |
 | [021](021-cost-at-list-price.md) | Cost reported in USD at official list price; every new run records usage |
 | [022](022-repair-loop-full-errors-cumulative.md) | Repair loop sends the complete error list in one cumulative conversation, cap 20; P1–P3 all repair |
+| [023](023-vector-retrieval-paper2.md) | Paper 2's retrieval implemented: MiniLM + FAISS over Pilot-parsed cards, connections included; exam P3 uses a leak-free official-examples library |

@@ -192,6 +192,33 @@ Build order and effort for the whole project:
 
 About 5–5.5 days without step 6. After step 2 the advisor/RTRC demo works.
 
-## 13. Correction to decision 003
+## 13. The main agent flow after the user's review (2026-10-06)
+
+The user reviewed the flow drawn in the canvas "The Langflow agent flow to build" and asked for three changes.
+
+**Qwen only for now.** RTRC has not answered which models may be used. Every agent option runs on Qwen (qwen3.8-flash or qwen3.8-max): directly through the OpenAI-compatible endpoint, or through Claude Code or OpenCode in the sandbox. OpenAI, Claude and the Cameo AI Assistant are later options and need no change to the flow.
+
+**The flow, with the paper each step applies:**
+
+1. Requirement / brief (Chat Input) and the agent choice.
+2. ① Search memory (**Paper 2**): cards from the official parse of MaritimeISR and approved designs; MiniLM + FAISS, cosine ≥ 0.30 plus the exact-name bonus; seeds plus one hop.
+3. ② Requirements, each number traced to the brief.
+4. Conditional Router "similar project found?" (the `reuse` / `new` label of ①).
+5. ③ New design (**Paper 3** create: rules + template + retrieved examples), or ③ Adapt the similar project (**Paper 3** modify: the similar model becomes the baseline; only what the new requirements need changes; stated limits never change). The adapt step is new code: it joins Part 2 with the MOD chain's editing logic.
+6. ④ Official SysML v2 Pilot (the judge), looping with Repair from errors (**Paper 3**'s correction rounds, with the Pilot's errors instead of a person; ≤ 20 repairs).
+7. ⑤ Align with memory (**Paper 1**): proposed pairs, checked by code, written by code as an alias / allocate package, parsed by the Pilot with both sources.
+8. ⑥ Checks and read-back (**Paper 3** query): power, upload, storage, trace from the parse; the model restates its model.
+9. Conditional Router "all four checks pass?"; if not, Trade-offs (catalog parts only, recomputed by code).
+10. ⑦ Model diagram (from the parse, plus the Pilot's tree view).
+11. ⑧ Person decides (Human Input; **Paper 1**'s human review): approve, reject or send back.
+12. Write to memory (**Paper 2**: the approved design becomes retrievable cards) and ⑨ record grades and times (verdicts, attempts, seconds, tokens, USD).
+
+**Cameo where it is needed, active once RTRC provides the license:**
+
+- Next to ④, a **Cameo check**: the node exports the .sysml file, a person opens it in Cameo's SysML v2 and records "opens cleanly" or the errors through Human Input; with Teamwork Cloud the node can call its standard SysML v2 API instead. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability).
+- Next to ⑦, **Open in Cameo**: RTRC reviews the design as diagrams in its own tool; the Langflow diagram stays the automatic preview.
+- Later, the **Cameo AI Assistant** as an agent option, only if the 2026x license includes it and its terms allow evaluation: its exported model enters at ④ and gets the same checks and the exam (F1).
+
+## 14. Correction to decision 003
 
 Decision 003 (2026-10-02) gives three reasons. "A builder is not an evaluator" and "two implementations would fork the evidence" still hold, and this plan keeps a single implementation. "It has no native approval gate" no longer holds: since 1.11 Langflow has the Human Input component and agent tool approval, with checkpointed pause and resume.

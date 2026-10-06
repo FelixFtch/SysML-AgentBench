@@ -10,3 +10,5 @@ These files are real records and are kept, but nothing on the results page, in S
 | `scripts/` | The scripts that produced the files above (`run_jev_heldout.py`, `judge_all.py`, `validator_agreement.py`, `run_sysengbench.py`). They read paths that have moved and are kept for reference only. |
 
 Conclusion carried into the report: a model judge is worse than the official tool plus the answer keys, so the benchmark has none. Jev cannot be an exam candidate either: its interface returns choices and scores, not text.
+
+Removed on 2026-10-06 by the user's decision, not archived: `agents/validator.py` (the second-model reviewer), `bench/walk_case.py` (the 2026-10-02 walk-through that could call it) and its two outputs `bench/tasks/t4_maritime_isr/dev/PWR-01/walk/{gold,p0}.json`. Nothing else used them. They remain in the git history up to commit `1182efd`.

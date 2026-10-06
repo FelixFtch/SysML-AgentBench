@@ -48,7 +48,7 @@ SYSML_RULES = """You write SysML v2 textual notation.
 Rules:
 - Output one fenced code block tagged sysml, and no prose before or after it.
 - The file contains exactly one package whose name is given in the task.
-- Import ScalarValues only when you use Real.
+- When you use Real, write `private import ScalarValues::*;` as the first line inside the package. In this toolchain an import inside a package needs the visibility keyword; a bare `import` is rejected. Do not import anything else.
 - Use only names the task requires. Do not invent numeric limits.
 - Do not change a number the task tells you to keep.
 """

@@ -1,0 +1,1 @@
+{"run_id": "20261006T063305", "index": 1, "design": "DesignA::ImageryPort", "existing": "MaritimeISR::ImageryPort", "construct": "alias", "decision": "accept", "note": "ImageryPort is the same port definition in both models", "reviewed_at": "2026-10-06T06:34:23.590221+00:00"}

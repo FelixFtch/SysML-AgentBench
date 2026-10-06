@@ -1,0 +1,3807 @@
+[
+ {
+  "id": "Analysis Examples:0159651d-d06c-586b-8811-22900cdc37c2",
+  "text": "MetadataDefinition AnalysisTooling::ToolExecution",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:0973335a-d5fb-45a4-9612-f6f26b528df1",
+  "text": "ReferenceUsage AnalysisAnnotation::ComputeDynamics::v_in",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:0bbc7db7-a9d7-4fa8-90e7-aecaa3507b7c",
+  "text": "ReferenceUsage AnalysisAnnotation::ComputeDynamics::whlpwr",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:1a97b5aa-ed50-4f2d-8846-250a81bf535e",
+  "text": "ReferenceUsage AnalysisAnnotation::ComputeDynamics::v_out",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:2baff8ef-aae1-57c9-838d-46abee0109e5",
+  "text": "AttributeUsage AnalysisTooling::ToolExecution::toolName",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:2f664561-142b-4250-9987-b42b65fa6c67",
+  "text": "ReferenceUsage AnalysisAnnotation::ComputeDynamics::Cd",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:3cc18da4-84f5-4446-a3ab-11d2be6a72fd",
+  "text": "ReferenceUsage AnalysisAnnotation::ComputeDynamics::x_in",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:4e927f98-8d7d-5bd1-a1ea-81cc460b41e3",
+  "text": "LibraryPackage AnalysisTooling",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:5f513dd7-f2a0-5f5a-813f-9eaeb8dcaccd",
+  "text": "AttributeUsage AnalysisTooling::ToolVariable::name",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:6090146b-d46d-54cf-98ab-1772b53d6181",
+  "text": "AttributeUsage AnalysisTooling::ToolExecution::uri",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:82ac6e75-7cb2-4106-b0af-ee6883750839",
+  "text": "ReferenceUsage AnalysisAnnotation::ComputeDynamics::a_out",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:9ed8a371-c712-4bad-a91d-6ad55c3a193c",
+  "text": "ReferenceUsage AnalysisAnnotation::ComputeDynamics::x_out",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:b45cff43-650c-474a-afd2-a73ec641fab5",
+  "text": "Package AnalysisAnnotation",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:c82fb7cf-2db0-45d2-9cce-5c2f782664c5",
+  "text": "ReferenceUsage AnalysisAnnotation::ComputeDynamics::Cf",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:d80f94b5-a225-4461-8ebb-8a0604e6e6c4",
+  "text": "ActionDefinition AnalysisAnnotation::ComputeDynamics",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:dddf075b-398f-4ada-babf-3b184f6ee114",
+  "text": "ReferenceUsage AnalysisAnnotation::ComputeDynamics::tm",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:f5350f20-28b1-495b-a6b0-7cef0e83d3d7",
+  "text": "ReferenceUsage AnalysisAnnotation::ComputeDynamics::dt",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Analysis Examples:faf363d5-40e8-5a6c-8a5e-ef0a2f2f56ed",
+  "text": "MetadataDefinition AnalysisTooling::ToolVariable",
+  "source": "official example · Analysis Examples"
+ },
+ {
+  "id": "Arrowhead Framework Example:00086d9b-cee5-4fca-a7bf-bce67335b1f4",
+  "text": "StateUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::APISPbehavior::WaitOnData",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:0058c078-3458-4f78-b7a0-dc1f74134b49",
+  "text": "ReferenceUsage AHFProfileMetadata::IDDMetadata::baseType",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:06487e10-3159-43b4-bdf9-4ba25fc80fe0",
+  "text": "LibraryPackage AHFCoreLib",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:0ac8280c-fac5-442d-bb09-a02ac70d9371",
+  "text": "AttributeDefinition AHFNorway::Subscribe_giveItems",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:0e187209-a1b0-4b25-885c-432f5f197fb1",
+  "text": "ConnectionUsage AHFNorway::AHFNorway_LocalCloudDD::connect[AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer.serviceDiscovery → AHFCoreLib::ArrowheadCore::service_registry.serviceDiscovery] AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer.serviceDiscovery AHFCoreLib::ArrowheadCore::service_registry.serviceDiscovery",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:1138610a-6a50-468f-a965-081acb63bc80",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::systemname",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:11e93f7e-b814-4727-b5d6-7251475e9ffc",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::portno",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:129cae2a-68d3-48dc-9349-cda680a3b05f",
+  "text": "AttributeUsage AHFProfileLib::SysD::address",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:15336a70-4721-45ef-a0f9-4e1da4f1fd48",
+  "text": "AttributeDefinition AHFNorway::CallGiveItems",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:164aeb80-8ac8-4c3f-bb7c-f07141624032",
+  "text": "ReferenceUsage AHFProfileMetadata::SysDMetadata::baseType",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:1a314cca-a2cf-4a74-bb5b-e52f6640ce6e",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::MQTT_APISP::entryAction::payload",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:1bc285cf-ada6-4f3c-9439-1ba4a92613cb",
+  "text": "AttributeUsage AHFProfileLib::IDD::encoding_kind",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:1c66153a-7e49-44b8-aeda-e02db5818510",
+  "text": "Usage AHFNorway::AHFNorway_LocalCloudDD::APISConsumer",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:1c97d162-a955-416b-a084-2115a79d672d",
+  "text": "PartDefinition AHFProfileLib::LocalCloudDesign",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:1e6a71e2-f706-4ae9-939f-f967568e7f2b",
+  "text": "ReferenceUsage AHFNorway::ResultGiveItems::ack",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:1f7c1513-5500-4e04-a559-8fa496f05def",
+  "text": "Usage AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:2016d678-4981-41df-9a3a-52d53bde014c",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::portno",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:20cc4c6d-1874-4d63-985a-1b09165b9832",
+  "text": "PartDefinition AHFProfileLib::SysDD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:215e9184-135d-45c6-8a76-efffc6be2103",
+  "text": "PortUsage AHFNorway::AHFNorway_LocalCloudDD::MQTTServer::getTopic",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:2391c0e2-188c-4c3a-9cdb-34dc4dceab3b",
+  "text": "Usage AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::serviceDiscovery",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:26505740-3d3e-4e6f-a25b-11dabde0776b",
+  "text": "PortDefinition AHFProfileLib::SD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:27895b49-75f9-4117-b7b9-a814ebde1f45",
+  "text": "AttributeDefinition AHFNorway::Return_Ack",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:2c8f8b6e-2c07-4614-bdd9-8f49374b9d9c",
+  "text": "SendActionUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::APISPbehavior::entryAction",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:3212c18a-24c9-4fe5-a59e-62f96d20fed0",
+  "text": "Usage AHFCoreLib::ArrowheadCore::orchestrationDesign",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:34530d4f-2fb9-4a4a-8a88-f257bf07a2ad",
+  "text": "StateUsage AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::MQTT_APISP",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:3463fe8b-c54d-4dcc-816b-81b3f4b18631",
+  "text": "Usage AHFCoreLib::ArrowheadCore::authorization_DD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:362dfa5a-0af7-4302-b545-ee3bcaa657b8",
+  "text": "PartDefinition AHFProfileLib::LocalCloudDD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:36b05655-4fad-4049-b1bf-0aef0bd711c6",
+  "text": "ActionUsage AHFNorway::AHFNorway_LocalCloudDD::MQTTServer::Serve::entryAction",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:36d091cd-9157-4d64-aa6c-1fa9e0f99a48",
+  "text": "ReferenceUsage AHFNorway::APIS_DD::APIS_HTTP::cll",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:36ee0b41-41c2-4498-93e2-046e3c462b9a",
+  "text": "ReferenceUsage AHFNorway::APIS_DD::APIS_HTTP::retrn",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:37011bd8-7a2f-4381-ad65-ab6c9570783f",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::giveItems::ack",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:379868dc-894b-4b8a-b885-912b6d36476c",
+  "text": "StateUsage AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::TellUbehavior",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:39c86266-7354-4c7f-9f88-547f0e4ee1f3",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::TellUbehavior::entryAction::sender",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:3a0e4ecc-c2d4-4f4a-ac83-a84897accd79",
+  "text": "PortUsage AHFProfileLib::SysD::services",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:3c916e92-ea84-4cda-824d-950094f398e5",
+  "text": "PartUsage AHFProfileMetadata::global_systemsdd",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:3df03202-6e78-4fff-ae4a-b0905e2e39dd",
+  "text": "ReferenceUsage AHFProfileMetadata::LocalCloudsMetadata::baseType",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:3e5e0da1-984e-4ca0-acb6-f45c43730bab",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::APISPbehavior::entryAction::payload",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:3f0854b8-67b0-4559-8744-b6ea899c259c",
+  "text": "ReferenceUsage AHFProfileMetadata::SDDDMetadata::baseType",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:3fd58432-d4db-4bb4-b5f9-784eff635bf8",
+  "text": "ReferenceUsage AHFNorway::APIS_DD::APIS_MQTT::retall",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:405ad1fb-8c08-4125-bd2c-3f4f4143671b",
+  "text": "ReferenceUsage AHFProfileMetadata::LocalCloudsDDMetadata::baseType",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:41e25d87-d0b2-44e4-9a29-7218ff97ffb9",
+  "text": "ReferenceUsage AHFNorway::Subscribe_giveItems::itms",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:44f27786-cec5-452c-b156-c0f288cd00c5",
+  "text": "MetadataDefinition AHFProfileMetadata::SysLocalCloudsMetadata",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:47491191-7dfa-45ff-bbbb-cf6c694381b8",
+  "text": "ReferenceUsage AHFNorway::Publish::nametopic",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:47f83fee-e78d-424e-bdad-606b024bf456",
+  "text": "MetadataDefinition AHFProfileMetadata::IDDMetadata",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:483bc97a-ef3b-5465-b121-365a53b49366",
+  "text": "MetadataDefinition SysML::Systems::PortUsage",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:4a75e1f1-9b36-43e5-840b-53bfa789b731",
+  "text": "LibraryPackage AHFProfileLib",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:4c39c0c6-e360-49bb-965d-4919316b7384",
+  "text": "Usage AHFCoreLib::ArrowheadCore::service_registry_DD::serviceDiscovery",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:4ca76e87-1c39-495b-8596-a89cd2d5c2b7",
+  "text": "PartUsage AHFProfileLib::SysLocalCloudsDD::locclouds",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:4dba0202-b03a-4737-9ebd-ad670d776db5",
+  "text": "ReferenceUsage AHFProfileMetadata::SysLocalCloudsMetadata::baseType",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:4dea7712-ce02-5503-8f54-1e7318e6bf38",
+  "text": "Feature Metaobjects::SemanticMetadata::baseType",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:52904e9d-8009-4277-bf53-3e60112f1f57",
+  "text": "ConjugatedPortDefinition AHFCoreLib::AuthorisationDD::'~AuthorisationDD'",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:53219e3c-6d49-4e6e-bbf2-227806fd236f",
+  "text": "AttributeUsage AHFNorway::APISService::intrfce_protocol {JSON}",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:5322af71-a3d7-47c0-a8dc-c88c5c7b6c52",
+  "text": "AttributeUsage AHFCoreLib::ArrowheadCore::authorization::protocol HTTP",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:53ed48db-c1ac-4e26-b4ab-0a305d865c51",
+  "text": "Usage AHFCoreLib::ArrowheadCore::service_registry_DD::serviceDiscovery::serviceDiscovery_HTTP",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:54be90cf-ff36-43ba-a078-3ac6cafa57a1",
+  "text": "ActionUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::giveItems",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:550f9923-23f8-5142-aa06-d7ff476876d7",
+  "text": "MetadataDefinition SysML::Systems::PartUsage",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:561769df-0fbd-480f-b9e3-11cdc0fbacd1",
+  "text": "LibraryPackage AHFProfileMetadata",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:57037347-e719-477f-98dc-06c017514d52",
+  "text": "AttributeUsage AHFProfileLib::SysD::portno",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:57512b06-000d-42eb-bb9f-ff20ddeeee2e",
+  "text": "ReferenceUsage AHFProfileMetadata::SDMetadata::baseType",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:5975f0b0-3e82-44a4-b967-0d6fae160df0",
+  "text": "PortDefinition AHFCoreLib::ServiceDiscovery",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:5f97f8ee-b084-4df0-a6ec-26e4b2285f00",
+  "text": "ActionUsage AHFProfileLib::SysDD::ServiceMethod",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:5fe5cf09-024f-4116-bb8a-3e5eb25275b8",
+  "text": "AttributeUsage AHFNorway::APISService::serviceURL pull",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:60f66efd-63ba-4bbe-8bcf-13a21cf26426",
+  "text": "ConjugatedPortDefinition AHFCoreLib::ServiceDiscoveryDD::'~ServiceDiscoveryDD'",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:638e882d-13b2-40dc-a4ff-661ca5bf2fa9",
+  "text": "SendActionUsage AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::TellUbehavior::entryAction",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:67d4a109-6668-4843-bd7b-6cb3c098d003",
+  "text": "StateUsage AHFNorway::AHFNorway_LocalCloudDD::MQTTServer::Serve::Idle",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:6861f85d-7ecc-44ee-b1a2-6833e43148b0",
+  "text": "PortUsage AHFProfileLib::SDDD::idds",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:6cffc86e-6f0c-4d77-b06f-23687f127253",
+  "text": "Usage AHFCoreLib::ArrowheadCore::authorization_DD::authorisation::authorisation_HTTP",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:6d9a6cca-d87e-4b9a-9069-10c83bf6dffb",
+  "text": "AttributeUsage AHFNorway::APISService::serviceDefinition APISPullService",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:6e33c288-2def-456b-a89e-6f2094aa2d80",
+  "text": "Usage AHFNorway::AHFNorway_LocalCloudDD::APISProducer",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:6f644392-ef57-4665-b986-8bfdaf5874b8",
+  "text": "ReferenceUsage AHFProfileMetadata::SysDDMetadata::baseType",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:6f645845-adc8-46b6-87cd-64bf0ef6012f",
+  "text": "MetadataDefinition AHFProfileMetadata::SDDDMetadata",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:71b12caf-2af9-428b-bfe8-f1a2ac0f008c",
+  "text": "ConjugatedPortDefinition AHFProfileLib::SDDD::'~SDDD'",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:722749cf-a8b3-4549-bbae-2f9a72882ce1",
+  "text": "MetadataDefinition AHFProfileMetadata::LocalCloudsMetadata",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:73f51e52-5c4a-4ce6-9ae3-7ab1ddf9ce9d",
+  "text": "AttributeUsage AHFProfileLib::SysD::systemname",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:76d9c0a1-0e9e-4610-94a3-1ac4f386642d",
+  "text": "Package AHFNorway",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:771559b7-39bc-4cbb-adc2-418ab290d29c",
+  "text": "AttributeUsage AHFProfileLib::SD::serviceURL",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:78a9388b-c683-4b1a-8bcf-3c0febabbc47",
+  "text": "ConnectionUsage AHFNorway::AHFNorway_LocalCloudDD::connect[AHFNorway::AHFNorway_LocalCloudDD::APISConsumer.serviceDiscovery → AHFCoreLib::ArrowheadCore::service_registry.serviceDiscovery] AHFNorway::AHFNorway_LocalCloudDD::APISConsumer.serviceDiscovery AHFCoreLib::ArrowheadCore::service_registry.serviceDiscovery",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:78e06716-9850-40f7-8e88-e0b67bcbeef3",
+  "text": "PartUsage AHFProfileLib::LocalCloudDesign::systems",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:79d5c13b-b85d-4e5c-813a-163f2b173250",
+  "text": "ConnectionUsage AHFNorway::AHFNorway_LocalCloudDD::connect[AHFNorway::AHFNorway_LocalCloudDD::APISProducer.serviceDiscovery → AHFCoreLib::ArrowheadCore::service_registry.serviceDiscovery] AHFNorway::AHFNorway_LocalCloudDD::APISProducer.serviceDiscovery AHFCoreLib::ArrowheadCore::service_registry.serviceDiscovery",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:7c14af80-05a1-4ff2-a142-b39e3708fc8c",
+  "text": "PartUsage AHFNorway::AHFNorway_LocalCloudDD::MQTTServer",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:80488510-758e-4b1b-887b-197e09b3a5da",
+  "text": "AttributeUsage AHFProfileLib::SD::serviceDefinition",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:809eacf1-c856-4fe7-9968-a6bb22d6d614",
+  "text": "StateUsage AHFNorway::AHFNorway_LocalCloudDD::MQTTServer::Serve::Publ",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:80aaa45e-87e2-4078-b4c6-4764a05119df",
+  "text": "PortUsage AHFProfileMetadata::global_sddd",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:84787583-84d9-49c1-a593-abf2585887d8",
+  "text": "PortDefinition AHFCoreLib::Authorisation",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:87b05985-cf69-4348-b9a5-0609e31c8089",
+  "text": "Usage AHFCoreLib::ArrowheadCore::service_registry_DD::serviceDiscovery::serviceDiscovery_MQTT",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:87d2a517-0eb5-49bc-85a3-85d326214517",
+  "text": "Usage AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::apisp",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:88094f39-a278-4575-a7db-56fc7847e633",
+  "text": "MetadataDefinition AHFProfileMetadata::SDMetadata",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:88405b54-11c9-41fa-81a3-75ce3e31be89",
+  "text": "PartDefinition AHFProfileLib::SysD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:886d5020-58aa-4f17-b49c-b89ec63e1ec3",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::MQTT_APISP::entryAction::sender",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:8c5eef72-a16e-4020-958c-bf52a2c84334",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::address",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:9046256f-1cab-4e01-b6c6-f67248008c78",
+  "text": "Usage AHFNorway::AHFNorway_LocalCloudDD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:94ca0617-00a2-4793-af8a-ec878ff5dfe5",
+  "text": "AttributeUsage AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::address Unger_network_ip",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:997fb05a-6330-4359-b4ed-d70310f9d740",
+  "text": "Usage AHFCoreLib::ArrowheadCore::service_registry",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:9a0d2905-0f9c-5bb4-af74-9780d6db1817",
+  "text": "ActionUsage Actions::Action::start",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:9b6b54fa-3617-4964-9a78-215c9b9e52ce",
+  "text": "SendActionUsage AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::MQTT_APISP::entryAction",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:9c2b5924-5fd4-4ca4-9194-5abb2dc36e11",
+  "text": "ConjugatedPortDefinition AHFCoreLib::Authorisation::'~Authorisation'",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:a07f16aa-e5c5-408c-b70b-4b6f77901b44",
+  "text": "ConjugatedPortDefinition AHFProfileLib::IDD::'~IDD'",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:a08e1a27-da76-4bf5-8807-566c1d03730e",
+  "text": "AttributeUsage AHFProfileLib::SD::intrfce_protocol",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:a3a29727-00d0-46f8-b021-6742705a4296",
+  "text": "PartUsage AHFProfileLib::SysLocalCloudsDesign::locclouds",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:a6fce63a-93bb-498f-9acf-5f46996504a4",
+  "text": "MetadataDefinition AHFProfileMetadata::SysDMetadata",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:a6ff8eba-ace1-4a31-a958-ae9253248e2d",
+  "text": "ReferenceUsage AHFNorway::Return_Ack::ack",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:a9a23549-31fd-4890-b1f7-89016c9b3634",
+  "text": "PortUsage AHFNorway::APIS_DD::APIS_HTTP",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:a9b7f6ec-9e90-4206-be5e-0475b63ab4eb",
+  "text": "ReferenceUsage AHFNorway::APIS_DD::APIS_MQTT::subscr",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:ad9204b8-f64f-400b-9aa8-00e7f53aaadf",
+  "text": "Usage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::serviceDiscovery",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:af40c9e9-a270-40b5-affd-fb6074e34dc8",
+  "text": "ConnectionUsage AHFNorway::AHFNorway_LocalCloudDD::connect[AHFNorway::AHFNorway_LocalCloudDD::APISProducer.apisc → AHFNorway::AHFNorway_LocalCloudDD::MQTTServer.getTopic] AHFNorway::AHFNorway_LocalCloudDD::APISProducer.apisc AHFNorway::AHFNorway_LocalCloudDD::MQTTServer.getTopic",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:b0ca9046-d67e-4839-ba80-36a684121c55",
+  "text": "Usage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::tellu",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:b0cd7b50-c0c3-44c8-a438-0da9cd4653e6",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::systemname",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:b2d607fd-211a-47fe-9823-8b7674f0cb9d",
+  "text": "ReferenceUsage AHFNorway::APIS_DD::APIS_MQTT::pub",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:b3801666-2fde-4410-9f3e-09efab08914e",
+  "text": "ConjugatedPortDefinition AHFCoreLib::ServiceDiscovery::'~ServiceDiscovery'",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:b615f2fd-6647-4247-8668-086edfb7341d",
+  "text": "PortUsage AHFNorway::APIS_DD::APIS_MQTT",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:b8b924a9-135a-4897-8cf5-7c5d3f684c1a",
+  "text": "Usage AHFCoreLib::ArrowheadCore::authorization_DD::authorisation",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:b934bbb8-5164-4650-8e89-45882455445d",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::APISPbehavior::entryAction::sender",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:b9bc0a8b-c243-443c-bd0d-ff3463882de7",
+  "text": "StateUsage AHFNorway::AHFNorway_LocalCloudDD::MQTTServer::Serve",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:bb272d8c-b644-42c5-b9ea-4e543e5bdd78",
+  "text": "AttributeUsage AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::systemname UngerApisClient",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:bd4995e7-c65b-4b2c-b0cd-2a4298c5c594",
+  "text": "PortUsage AHFProfileLib::SysDD::services",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:be50bd7f-dda6-48e9-966d-d776e662bc84",
+  "text": "AttributeDefinition AHFNorway::Publish",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:bef98dc1-509b-47bb-9223-fc3d675e9a7a",
+  "text": "StateUsage AHFNorway::AHFNorway_LocalCloudDD::MQTTServer::Serve::Subsr",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:bf1e743d-df92-47c7-b4cd-d30b2c5896d7",
+  "text": "StateUsage AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::MQTT_APISP::Idle",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:c0e32880-49b6-4287-a50b-2e65a1b74e13",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::address",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:c52a7090-7727-4762-9e6a-8e9d962db313",
+  "text": "StateUsage AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::TellUbehavior::Wait",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:c647993c-17b4-48d6-8864-7dd41f616208",
+  "text": "Usage AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::apisp",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:c91ad115-c41e-415f-a7c1-bac955ff3a79",
+  "text": "PortDefinition AHFCoreLib::AuthorisationDD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:c959bc84-7ee5-4603-a506-bd74859cd310",
+  "text": "PartDefinition AHFProfileLib::SysLocalCloudsDesign",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:c9e44a82-cafa-4530-99b6-26c7c1c0b982",
+  "text": "ConnectionUsage AHFNorway::AHFNorway_LocalCloudDD::connect[AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer.apisp → AHFNorway::AHFNorway_LocalCloudDD::APISProducer.tellu] AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer.apisp AHFNorway::AHFNorway_LocalCloudDD::APISProducer.tellu",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:ce242893-c0a0-461f-9c41-58923635ead8",
+  "text": "Usage AHFCoreLib::ArrowheadCore::authorization",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:ce5df792-5ed4-43dd-b879-a9b3975138f8",
+  "text": "ReferenceUsage AHFNorway::CallGiveItems::itms",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:ce7328c2-6ebb-51b6-8feb-dceb1148085a",
+  "text": "Metaclass Metaobjects::SemanticMetadata",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:ce9d431c-afd5-4775-b57f-6e93ef742b03",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::giveItems::itms",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:cf39b43b-9b99-403c-a591-6c74aee673a4",
+  "text": "AttributeDefinition AHFNorway::ResultGiveItems",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:cf69962b-555b-4674-aa87-5e5194da70ec",
+  "text": "Usage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::apisc",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:d145bf1b-e812-4116-b911-08fa24fc5ba5",
+  "text": "PartUsage AHFProfileMetadata::global_clouddd",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:d367140b-3036-4f3f-8e03-bb8673b68b80",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::TellUbehavior::entryAction::payload",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:d46d6e2e-e48c-4c50-8f97-5dc9459fd27d",
+  "text": "ActionUsage AHFCoreLib::ArrowheadCore::authorization_DD::Echo_behavior",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:d5b40ef5-2b85-4b53-bdaf-ed3874b86851",
+  "text": "Usage AHFCoreLib::ArrowheadCore::service_registry_DD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:d5b57c39-8ea4-418a-a9a2-71f65df25823",
+  "text": "PortUsage AHFNorway::AHFNorway_LocalCloudDD::MQTTServer::giveTopic",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:d69aa348-c98b-4ddc-939d-bf300dcb744e",
+  "text": "StateUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::APISPbehavior",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:d768a9d2-c05b-4722-bb68-ecb620012242",
+  "text": "MetadataDefinition AHFProfileMetadata::LocalCloudsDDMetadata",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:daa228f0-4fed-4543-8521-eaf427b7510a",
+  "text": "ReferenceUsage AHFNorway::Subscribe::nametopic",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:ddf11284-0dc5-458b-9b56-3b81efb46574",
+  "text": "ConjugatedPortDefinition AHFNorway::APIS_DD::'~APIS_DD'",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:dec997fc-3e0a-4427-86a3-61a2a7e1d92f",
+  "text": "Usage AHFCoreLib::ArrowheadCore::authorization::authorisation",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:df52a5a6-c169-4a77-87f3-be707c12cd60",
+  "text": "PortDefinition AHFCoreLib::ServiceDiscoveryDD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:dfc94815-6caa-4292-9776-e8da20e961c9",
+  "text": "ConjugatedPortDefinition AHFProfileLib::SD::'~SD'",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:e2049d11-7efa-4efd-b168-2cb60d8b8596",
+  "text": "PartUsage AHFProfileLib::LocalCloudDD::systems",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:e2170fc0-71a1-4ebd-8c93-1e538db2445a",
+  "text": "Usage AHFCoreLib::ArrowheadCore::authorization_DD::authorisation::authorisation_MQTT",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:e432c51b-358b-4957-943b-75ff9728d64f",
+  "text": "Usage AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::serviceDiscovery",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:e6ea41ad-1ca4-4612-a5da-a038c043989a",
+  "text": "AttributeDefinition AHFNorway::Return_AllItems",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:e70d6c39-5753-442a-bbf4-85c0d1c6f904",
+  "text": "PortDefinition AHFProfileLib::SDDD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:e867d89b-39b0-4c81-abe3-0da59beae6ab",
+  "text": "PartUsage AHFProfileLib::system_of_systems",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:eb4a5735-ce80-4719-8e8e-12a9d6b55e1e",
+  "text": "Definition AHFNorway::APISService",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:ebf2a3d5-c739-47c4-b746-faae852927eb",
+  "text": "AttributeUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::x",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:f00e622e-aa22-44c8-903a-c544227d31d7",
+  "text": "PortUsage AHFProfileMetadata::global_sd",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:f06811fb-a8ea-4b65-964e-04fed0976c1e",
+  "text": "AttributeUsage AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::portno 0",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:f10881da-9ad1-4167-8153-4d1034507aee",
+  "text": "ReferenceUsage AHFNorway::AHFNorway_LocalCloudDD::APISProducer::giveItems::success",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:f28f37a3-4b0c-4ee1-ac61-48da7cadbdcb",
+  "text": "AttributeUsage AHFCoreLib::Authorisation::publickey",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:f343780b-90a9-4116-96f7-ad845da7d344",
+  "text": "ReferenceUsage AHFNorway::Return_AllItems::itms",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:f3866a7e-fea0-4e7a-807e-d766a26e77eb",
+  "text": "AttributeDefinition AHFNorway::Subscribe",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:f50d011a-4ab5-4d98-bab8-898fb47f2853",
+  "text": "ConnectionUsage AHFNorway::AHFNorway_LocalCloudDD::connect[AHFNorway::AHFNorway_LocalCloudDD::MQTTServer.giveTopic → AHFNorway::AHFNorway_LocalCloudDD::APISConsumer.apisp] AHFNorway::AHFNorway_LocalCloudDD::MQTTServer.giveTopic AHFNorway::AHFNorway_LocalCloudDD::APISConsumer.apisp",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:f799dc1a-e721-425d-82a2-828c0ce5daeb",
+  "text": "PortDefinition AHFProfileLib::IDD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:f7f61465-f551-4628-b189-d2a252dedb18",
+  "text": "PortDefinition AHFNorway::APIS_DD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:f88bf977-c0ae-4a3f-8f03-781ff674fb63",
+  "text": "Usage AHFCoreLib::ArrowheadCore",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:f9c17b27-c32b-4a71-83b6-5eca1b4d650c",
+  "text": "PartDefinition AHFProfileLib::SysLocalCloudsDD",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:ff357c86-cebf-4932-84c0-160cb5ea97c8",
+  "text": "Usage AHFCoreLib::ArrowheadCore::service_registry::serviceDiscovery",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Arrowhead Framework Example:ffcd3a19-5d2e-459d-b7da-34ecba13c720",
+  "text": "MetadataDefinition AHFProfileMetadata::SysDDMetadata",
+  "source": "official example · Arrowhead Framework Example"
+ },
+ {
+  "id": "Association Examples:06a528f0-6e9c-4f94-8140-367085d26689",
+  "text": "ItemUsage ProductSelection_N_ary_SysML::ProductSelection1::cart",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:0a69c64f-b859-4b36-8547-70435a06ed5a",
+  "text": "ConnectionDefinition ProductSelection_N_ary_SysML::ProductSelection1",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:0d923002-d4d2-47ab-a000-4a8801eb14ad",
+  "text": "ItemUsage ProductSelection_N_ary_SysML::ProductSelection1::account",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:3b257bf5-c958-4380-a7a5-d8c2e97ff9f2",
+  "text": "ItemDefinition ProductSelection_N_ary_SysML::ShoppingCart",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:4c9e36c8-739f-452b-a717-8c770c27f236",
+  "text": "ReferenceUsage ProductSelection_N_ary_SysML::ProductSelection1::selectedProduct::selectedProducts",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:589826cf-6c99-46d5-93a0-e36579fe8f0c",
+  "text": "ItemUsage ProductSelection_N_ary_SysML::ProductSelection1::selectedProduct",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:6c6cc316-27e2-44f1-9210-92820821257d",
+  "text": "ItemUsage ProductSelection_N_ary_SysML::ProductSelection::selectedProduct",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:9ec729fa-2f41-4da5-9f3f-2de141431944",
+  "text": "ItemUsage ProductSelection_N_ary_SysML::ProductSelection::cart",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:9fd6d0bd-13ec-44b2-bd49-9f3368bd2a2a",
+  "text": "ItemDefinition ProductSelection_N_ary_SysML::Product",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:a46053ab-95aa-44dc-b3ae-5b956f5a8346",
+  "text": "ReferenceUsage ProductSelection_N_ary_SysML::ProductSelection1::cart::inCart",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:b0b8ff31-ced1-4046-ad3a-617c60410ebf",
+  "text": "ItemUsage ProductSelection_N_ary_SysML::ProductSelection::account",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:c474b926-817e-451b-b1be-15e5926f2142",
+  "text": "Package ProductSelection_N_ary_SysML",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:dad69eb9-48fa-4717-8ba7-98e6186069bc",
+  "text": "ConnectionDefinition ProductSelection_N_ary_SysML::ProductSelection",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:e675f54b-79ef-4ee7-b5ed-b9ca257671cc",
+  "text": "ReferenceUsage ProductSelection_N_ary_SysML::ProductSelection1::account::withAccount",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Association Examples:e69bb48f-a9b6-4574-a3c9-a250ae72d6d4",
+  "text": "ItemDefinition ProductSelection_N_ary_SysML::Account",
+  "source": "official example · Association Examples"
+ },
+ {
+  "id": "Camera Example:015d99cc-01c9-4474-a483-629e4680eb04",
+  "text": "Package PictureTaking",
+  "source": "official example · Camera Example"
+ },
+ {
+  "id": "Camera Example:0786c417-3ece-400b-8170-24b52e8a796f",
+  "text": "ReferenceUsage PictureTaking::Focus::xrsl",
+  "source": "official example · Camera Example"
+ },
+ {
+  "id": "Camera Example:1de20cad-e025-42e4-bac1-ef56d6f39b03",
+  "text": "ActionDefinition PictureTaking::Shoot",
+  "source": "official example · Camera Example"
+ },
+ {
+  "id": "Camera Example:4303a5dc-0e3b-4087-a9e9-5ff7b683305f",
+  "text": "ActionUsage PictureTaking::takePicture",
+  "source": "official example · Camera Example"
+ },
+ {
+  "id": "Camera Example:4383302b-b7ff-478d-a3c6-a67d28a99f0c",
+  "text": "ReferenceUsage PictureTaking::Shoot::xsf",
+  "source": "official example · Camera Example"
+ },
+ {
+  "id": "Camera Example:859e4a4b-0fbc-4b9b-85d2-3b8c6efcc124",
+  "text": "ActionUsage PictureTaking::takePicture::focus",
+  "source": "official example · Camera Example"
+ },
+ {
+  "id": "Camera Example:9b68a7b5-97fe-4d69-8017-6ad8a2012174",
+  "text": "ActionDefinition PictureTaking::Focus",
+  "source": "official example · Camera Example"
+ },
+ {
+  "id": "Camera Example:b4c7e24a-ae74-4158-9a91-46b6956b0f02",
+  "text": "PartDefinition PictureTaking::Exposure",
+  "source": "official example · Camera Example"
+ },
+ {
+  "id": "Camera Example:f188159e-134f-4fb9-95b3-1abfbc488cb9",
+  "text": "ActionUsage PictureTaking::takePicture::shoot",
+  "source": "official example · Camera Example"
+ },
+ {
+  "id": "Cause and Effect Examples:07c86213-a4e0-431d-8bda-d8e98d798841",
+  "text": "Usage CauseAndEffectExample::MultiCauseEffect::cause1",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:07d6f506-647a-45cf-b92d-f7d01d9e3cf5",
+  "text": "ConnectionUsage CauseAndEffectExample::connect[CauseAndEffectExample::a → CauseAndEffectExample::c] CauseAndEffectExample::a CauseAndEffectExample::c",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:0a5bf291-5516-43df-b152-388a2126bde5",
+  "text": "ActionUsage CauseAndEffectExample::d",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:0cb18b7c-7e54-4c37-aeca-cbd064899feb",
+  "text": "Usage CauseAndEffectExample::effectC",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:155c4018-2f66-48dc-9929-53b3b9970e32",
+  "text": "PartDefinition CauseAndEffectExample::Causer1",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:1e2d5f7e-47a6-4032-a375-8a6596304bfd",
+  "text": "ConnectionUsage CauseAndEffectExample::connect[CauseAndEffectExample::a → CauseAndEffectExample::b] CauseAndEffectExample::a CauseAndEffectExample::b CauseAndEffectExample::c CauseAndEffectExample::d",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:2930287b-7d6b-511f-9564-e5d775010e78",
+  "text": "MetadataDefinition CauseAndEffect::CausationSemanticMetadadata",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:4004893e-a612-4ea2-81de-55a48f064df6",
+  "text": "ConnectionUsage CauseAndEffectExample::connect[CauseAndEffectExample::causer1 → CauseAndEffectExample::causer2] CauseAndEffectExample::causer1 CauseAndEffectExample::causer2 CauseAndEffectExample::effected1 CauseAndEffectExample::effected2",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:41a5006b-2956-4623-904f-05a667159dac",
+  "text": "ConnectionUsage CauseAndEffectExample::connect[CauseAndEffectExample::causer1 → CauseAndEffectExample::causer2] CauseAndEffectExample::causer1 CauseAndEffectExample::causer2 CauseAndEffectExample::effected1 CauseAndEffectExample::effected2",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:42406745-5008-4804-b573-98340953ca67",
+  "text": "ItemUsage CauseAndEffectExample::b",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:42c61ae8-7d66-594b-98cd-f318adebb683",
+  "text": "MetadataDefinition CauseAndEffect::EffectMetadata",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:4cd9d926-6d68-478e-a5c1-512a1df2dd15",
+  "text": "ConnectionDefinition CauseAndEffectExample::MultiCauseEffect",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:53c27244-027d-5933-9fb1-b85ffa7f4ddb",
+  "text": "LibraryPackage CauseAndEffect",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:543b89b9-7422-5509-952d-32972173c6fa",
+  "text": "MetadataDefinition CauseAndEffect::CauseMetadata",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:54ee9acc-d172-5388-84cd-5e8fa479ab6f",
+  "text": "AttributeUsage CauseAndEffect::CausationMetadata::probability",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:69c42288-eb08-480e-b4fa-d2cd49c37997",
+  "text": "PartUsage CauseAndEffectExample::effected1",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:6ea9c185-6c06-47d1-8c60-e77554b5c60c",
+  "text": "Usage CauseAndEffectExample::MultiCauseEffect::effect2",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:7a6bba39-2920-55fd-9a24-9d1bb3669514",
+  "text": "MetadataDefinition CauseAndEffect::CausationMetadata",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:8ad88e8d-55d2-41a9-a3b5-fdf0499f7100",
+  "text": "PartUsage CauseAndEffectExample::effected2",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:8d8fe4fd-7121-4277-a927-87e936d9acb9",
+  "text": "PartDefinition CauseAndEffectExample::Effected2",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:8da65cb5-f54b-4130-8bfb-0edaa92d88df",
+  "text": "PartDefinition CauseAndEffectExample::Effected1",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:961c0f8a-bbbb-44e0-9509-a51302ba95bd",
+  "text": "Usage CauseAndEffectExample::causeB",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:96d94619-fd08-4c31-a618-fe8641a997ae",
+  "text": "OccurrenceUsage CauseAndEffectExample::a",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:9d04090a-ad7e-465b-afce-45775f7c3fee",
+  "text": "ConnectionUsage CauseAndEffectExample::connect[CauseAndEffectExample::b → CauseAndEffectExample::d] CauseAndEffectExample::b CauseAndEffectExample::d",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:a1dc1764-e246-4ac6-ad53-20b714543b6f",
+  "text": "Usage CauseAndEffectExample::effectD",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:b00f8080-de24-49b8-baff-a4eed0030143",
+  "text": "PartUsage CauseAndEffectExample::causer1",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:b79ef0dc-d948-4468-9087-db29c6fb839e",
+  "text": "Usage CauseAndEffectExample::MultiCauseEffect::effect1",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:cc0f4205-29b3-4ba7-863d-786926021087",
+  "text": "PartUsage CauseAndEffectExample::causer2",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:d326d59f-05ed-5fe3-b362-8e1ff4f33539",
+  "text": "MetadataDefinition CauseAndEffect::MulticausationSemanticMetadata",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:d9789c33-83c0-4563-986c-0e90b6a506f4",
+  "text": "Usage CauseAndEffectExample::causeA",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:dd6e58dc-27fa-4cb6-9c20-44cd24c4aa58",
+  "text": "Package CauseAndEffectExample",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:e13152b9-225d-5dc3-a36a-7564ecd8deac",
+  "text": "AttributeUsage CauseAndEffect::CausationMetadata::isNecessary",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:e6ce0c0c-a267-4612-82cb-e18d81a2cafc",
+  "text": "PartUsage CauseAndEffectExample::c",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:e8138fb0-f369-4219-bf2c-497b51aaf984",
+  "text": "PartDefinition CauseAndEffectExample::Causer2",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:e93f497a-3eca-4d11-abd6-0743ce72c701",
+  "text": "ConnectionUsage CauseAndEffectExample::connect[CauseAndEffectExample::causeA → CauseAndEffectExample::causeB] CauseAndEffectExample::causeA CauseAndEffectExample::causeB CauseAndEffectExample::effectC CauseAndEffectExample::effectD",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Cause and Effect Examples:f90ed292-b3b4-42ba-b385-49006e0e9e51",
+  "text": "Usage CauseAndEffectExample::MultiCauseEffect::cause2",
+  "source": "official example · Cause and Effect Examples"
+ },
+ {
+  "id": "Comment Examples:941d0ecf-a69b-4969-8155-6337a9729a02",
+  "text": "Package Comments",
+  "source": "official example · Comment Examples"
+ },
+ {
+  "id": "Comment Examples:a618282c-2a91-4e3a-8f1d-eaffc6a321fb",
+  "text": "Comment Comments::cmt_cmt",
+  "source": "official example · Comment Examples"
+ },
+ {
+  "id": "Comment Examples:e3f61337-1373-43d9-a056-5ba481787182",
+  "text": "Comment Comments::cmt",
+  "source": "official example · Comment Examples"
+ },
+ {
+  "id": "Comment Examples:ffd4dcad-4bef-4625-92c2-a8a12653e71e",
+  "text": "PartDefinition Comments::C",
+  "source": "official example · Comment Examples"
+ },
+ {
+  "id": "Flashlight Example:0071065e-b28d-4923-bc81-13977e5a7652",
+  "text": "PerformActionUsage 'Flashlight Example'::context::reflectingSource::reflectLight",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:0c5ec0bd-5ebd-451c-89cd-f1dbff2f02f8",
+  "text": "PartUsage 'Flashlight Example'::context::user",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:0eb1dbec-a9f6-4602-9887-7b3b9aa6b04a",
+  "text": "Package 'Flashlight Example'",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:18672859-4cf0-475a-8564-311fd1c62672",
+  "text": "ReferenceUsage 'Flashlight Example'::illuminateRegion::onOffCmdFlow::source::onOffCmd",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:1aeaa11e-7a08-479a-8a21-57803fca9674",
+  "text": "FlowEnd 'Flashlight Example'::illuminateRegion::lightFlow::source",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:207c8767-bc3b-4dde-832e-2d414e043916",
+  "text": "ConjugatedPortDefinition 'Flashlight Example'::OnOffCmdPort::'~OnOffCmdPort'",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:26bc4759-c842-45cc-9aef-8cf6f8798039",
+  "text": "SuccessionFlowUsage 'Flashlight Example'::illuminateRegion::lightFlow",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:2f9334e9-7abd-427f-9cf7-359b266ec011",
+  "text": "PerformActionUsage 'Flashlight Example'::context::flashlight::produceDirectedLight",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:32de49f3-edad-4e6d-b4b4-822d0acf88dc",
+  "text": "SuccessionFlowUsage 'Flashlight Example'::illuminateRegion::onOffCmdFlow",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:38466900-6f32-48e1-ae54-0bf7943de584",
+  "text": "PortUsage 'Flashlight Example'::context::userToFlashlight::target",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:45817b03-e363-431c-b60b-2de39394fe68",
+  "text": "PortUsage 'Flashlight Example'::context::user::onOffCmdPort",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:50e33f57-21ea-4d0f-aa24-6bc98a132e9c",
+  "text": "ReferenceUsage 'Flashlight Example'::context::flashlight::produceDirectedLight::onOffCmd",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:50fd4f48-4fe2-4003-bdb7-be92633064c8",
+  "text": "PartUsage 'Flashlight Example'::context",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:52891034-9cef-4453-ac68-1aa3a905706d",
+  "text": "PartUsage 'Flashlight Example'::context::reflectingSource",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:52dcbceb-f3b2-4730-801e-8e738cdd07d4",
+  "text": "ActionUsage 'Flashlight Example'::illuminateRegion::produceDirectedLight",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:57e24418-da1f-49d3-8739-fb0784f8cd38",
+  "text": "ActionUsage 'Flashlight Example'::illuminateRegion::sendOnOffCmd",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:5ee66b5d-4a60-4ad9-b1fc-1472fee07a74",
+  "text": "PortDefinition 'Flashlight Example'::OnOffCmdPort",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:6232b346-a927-4630-97da-0a676587115f",
+  "text": "ReferenceUsage 'Flashlight Example'::context::user::sendOnOffCmd::onOffCmd",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:6fff7e89-0df5-44d3-9760-e9d826e07748",
+  "text": "PortUsage 'Flashlight Example'::context::flashlight::onOffCmdPort",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:73aa8435-8e9e-47f2-aeb6-d9b64302a03b",
+  "text": "ReferenceUsage 'Flashlight Example'::context::reflectingSource::reflectLight::light",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:761b3241-99d5-43c4-9bf5-e17b0b12bce0",
+  "text": "PortDefinition 'Flashlight Example'::LightPort",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:780c1d14-6573-456f-84eb-2285823cee8e",
+  "text": "ReferenceUsage 'Flashlight Example'::LightPort::light",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:79156144-0781-4daf-ac54-0fe3af2220af",
+  "text": "ReferenceUsage 'Flashlight Example'::context::flashlight::produceDirectedLight::light",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:7d033c7f-c3cf-4ccb-a070-83e0cb7a9935",
+  "text": "ReferenceUsage 'Flashlight Example'::illuminateRegion::produceDirectedLight::light",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:80437c26-9cc4-4017-92e9-9c83e4f23299",
+  "text": "AttributeDefinition 'Flashlight Example'::Light",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:848cd060-397f-442c-811a-12f7c799a208",
+  "text": "ReferenceUsage 'Flashlight Example'::illuminateRegion::lightFlow::target::light",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:89c5c832-cf1d-4b19-bfa2-7f138f1c60be",
+  "text": "PortUsage 'Flashlight Example'::context::userToFlashlight::source",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:8c65ffdf-e910-46e4-91d2-32e1647f9000",
+  "text": "PortUsage 'Flashlight Example'::context::flashlight::lightPort",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:a0b04c6d-b3aa-4eac-b784-1cb60a70b2f4",
+  "text": "PortUsage 'Flashlight Example'::context::reflectingSource::lightPort",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:aeab9be9-bc11-4093-a16e-5ad5f4512623",
+  "text": "ActionUsage 'Flashlight Example'::illuminateRegion::reflectLight",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:b34e6b85-c23d-4c1a-8e99-314ded83a4df",
+  "text": "FlowEnd 'Flashlight Example'::illuminateRegion::onOffCmdFlow::source",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:b5dd7b0e-86d3-4067-8ce8-4ffbe068eb7e",
+  "text": "ReferenceUsage 'Flashlight Example'::illuminateRegion::sendOnOffCmd::onOffCmd",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:b8730d50-74ff-4cf4-b697-396a559e565e",
+  "text": "ReferenceUsage 'Flashlight Example'::OnOffCmdPort::onOffCmd",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:bc132f1c-88bf-496c-9d1d-764c4d116a2c",
+  "text": "PerformActionUsage 'Flashlight Example'::context::userToFlashlight::onOffCmdFlow",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:c9cefff7-fe15-480f-82da-68a93cc3463c",
+  "text": "ReferenceUsage 'Flashlight Example'::illuminateRegion::onOffCmdFlow::target::onOffCmd",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:cdded438-6235-4223-8ed8-8f5992128edc",
+  "text": "PerformActionUsage 'Flashlight Example'::context::user::sendOnOffCmd",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:cf9e0bb4-cb3e-40d9-97e4-6448561660cc",
+  "text": "InterfaceUsage 'Flashlight Example'::context::userToFlashlight",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:d561304f-b490-4e73-8b32-0a8160b21986",
+  "text": "ReferenceUsage 'Flashlight Example'::illuminateRegion::produceDirectedLight::onOffCmd",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:da610116-36f9-481f-8446-db3e20371a8c",
+  "text": "FlowEnd 'Flashlight Example'::illuminateRegion::lightFlow::target",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:db9e44d7-f32e-4dd3-80f1-4c63356375dd",
+  "text": "PartUsage 'Flashlight Example'::context::flashlight",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:e3642d4b-6db6-411f-ab2b-f60cecda2035",
+  "text": "ConjugatedPortDefinition 'Flashlight Example'::LightPort::'~LightPort'",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:e5f7f940-1462-48b7-b0b5-ddbbfa8f5748",
+  "text": "AttributeDefinition 'Flashlight Example'::OnOffCmd",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:f1c41778-0e7f-4137-8831-543950155d1d",
+  "text": "ReferenceUsage 'Flashlight Example'::illuminateRegion::lightFlow::source::light",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:f406f438-1ad6-49e1-9675-22cf93c98e65",
+  "text": "ActionUsage 'Flashlight Example'::illuminateRegion",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:f7162f0b-423b-4380-a9fb-391553f46d8a",
+  "text": "ReferenceUsage 'Flashlight Example'::illuminateRegion::reflectLight::light",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Flashlight Example:f7fe16e7-bfe3-4d78-ac42-f1187bb87ddf",
+  "text": "FlowEnd 'Flashlight Example'::illuminateRegion::onOffCmdFlow::target",
+  "source": "official example · Flashlight Example"
+ },
+ {
+  "id": "Geometry Examples:20e620ca-6b0d-4e44-8b95-45dfba92c889",
+  "text": "ReferenceUsage CarWithEnvelopingShape::Car::boundingBox::width",
+  "source": "official example · Geometry Examples"
+ },
+ {
+  "id": "Geometry Examples:43a0c913-f0c9-452e-9a8b-f7d9728aafcd",
+  "text": "ReferenceUsage CarWithEnvelopingShape::Car::boundingBox::length",
+  "source": "official example · Geometry Examples"
+ },
+ {
+  "id": "Geometry Examples:444f6896-3629-48e5-9dcd-db37fac51879",
+  "text": "Package CarWithEnvelopingShape",
+  "source": "official example · Geometry Examples"
+ },
+ {
+  "id": "Geometry Examples:585c1027-11fd-5c81-beb8-db622a83c626",
+  "text": "AttributeUsage ShapeItems::RectangularCuboid::height",
+  "source": "official example · Geometry Examples"
+ },
+ {
+  "id": "Geometry Examples:5a45cf86-990c-5a86-abf4-8c1f4f3ad708",
+  "text": "ItemDefinition ShapeItems::RectangularCuboid",
+  "source": "official example · Geometry Examples"
+ },
+ {
+  "id": "Geometry Examples:6b0560be-df71-4da6-b4e0-4ed16f7e9726",
+  "text": "ReferenceUsage CarWithEnvelopingShape::Car::boundingBox::height",
+  "source": "official example · Geometry Examples"
+ },
+ {
+  "id": "Geometry Examples:6d71de37-badf-52c2-a11f-52f831a778c7",
+  "text": "AttributeUsage ShapeItems::RectangularCuboid::length",
+  "source": "official example · Geometry Examples"
+ },
+ {
+  "id": "Geometry Examples:73140040-23e7-5242-9130-6a850ecf8e8b",
+  "text": "AttributeUsage ShapeItems::RectangularCuboid::width",
+  "source": "official example · Geometry Examples"
+ },
+ {
+  "id": "Geometry Examples:d64a4aa0-75e9-4d1d-b712-bb39d22b796f",
+  "text": "PartDefinition CarWithEnvelopingShape::Car",
+  "source": "official example · Geometry Examples"
+ },
+ {
+  "id": "Geometry Examples:ee194616-53c9-4155-9d68-dcab66018c1f",
+  "text": "ItemUsage CarWithEnvelopingShape::Car::boundingBox",
+  "source": "official example · Geometry Examples"
+ },
+ {
+  "id": "Import Tests:1e2fa4c2-075f-42f8-b942-42c667aaa7bb",
+  "text": "Package AliasImport::Definitions",
+  "source": "official example · Import Tests"
+ },
+ {
+  "id": "Import Tests:385a4d9e-ea84-4677-9ebb-c3c51b001ef7",
+  "text": "PartUsage AliasImport::Usages::vehicle",
+  "source": "official example · Import Tests"
+ },
+ {
+  "id": "Import Tests:9f7ccffd-d192-47e4-95a9-50a9a5937ec5",
+  "text": "Package AliasImport::Usages",
+  "source": "official example · Import Tests"
+ },
+ {
+  "id": "Import Tests:c1bd6eda-add0-4a31-8ac8-4fd1ae85d652",
+  "text": "Package AliasImport",
+  "source": "official example · Import Tests"
+ },
+ {
+  "id": "Import Tests:e2978743-f880-4abd-94cf-a4c48ad58c0c",
+  "text": "PartDefinition AliasImport::Definitions::Vehicle",
+  "source": "official example · Import Tests"
+ },
+ {
+  "id": "Individuals Examples:07eda51c-8ff2-4131-b955-3eb2c9ff1d3e",
+  "text": "ReferenceUsage AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::volumePF::quantity",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:0ac2c782-f562-41a8-a9d1-3ac9f6cdb892",
+  "text": "ReferenceUsage AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::distancePF::quantity",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:0cdc3cd3-b06c-5c32-beda-0cf4ba164a64",
+  "text": "ActionUsage Actions::Action::done",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:0d9c5792-3f82-52c2-85e4-ae7a50796f90",
+  "text": "AttributeDefinition Quantities::ScalarQuantityValue",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:0f9bd799-886f-49f6-aae9-e297cd123e37",
+  "text": "ReferenceUsage AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::quantityDimension::quantityPowerFactors",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:19f5c989-aaa3-402e-9a6f-7cd61858045f",
+  "text": "AttributeUsage AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::volumePF",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:217c8847-4f8b-4956-87da-a609b3ea0d82",
+  "text": "ActionUsage AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:2968b210-e0bb-421c-a198-d3e030680237",
+  "text": "AttributeUsage AnalysisIndividualExample::IndividualAnalysisModel::fuelEconomyAnalysis_1::vehicle::engine::peakPower",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:29c9f5a2-7f67-5d00-9a6f-f003087ed927",
+  "text": "AttributeDefinition MeasurementReferences::DerivedUnit",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:2c3e4058-7152-44c8-abbd-f2a6b0547af0",
+  "text": "AttributeDefinition AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:31be181c-cea1-44f6-8a9b-cf8766f1ba3e",
+  "text": "ReferenceUsage AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::distancePF::exponent",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:35c8a4b2-b141-480a-95d9-eba9edc4936b",
+  "text": "AttributeUsage AnalysisIndividualExample::VehicleQuantities::hp",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:3e0e2044-852f-4981-8518-223639a68df1",
+  "text": "AttributeUsage AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::quantityDimension",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:40db1998-dcd2-48f9-8c06-324c247123bd",
+  "text": "ReferenceUsage AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::fuelEconomy",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:451dd63d-ff5e-49d0-9583-d3e1526c8072",
+  "text": "PartDefinition AnalysisIndividualExample::VehicleModel::Engine",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:45d8e580-1bf1-5573-84a7-386973edb286",
+  "text": "AttributeUsage USCustomaryUnits::mile",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:47c2f52d-7b1a-45ac-a7d4-a7cc52b3ba46",
+  "text": "ReferenceUsage AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::num",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:47cbcc83-838f-5a5b-8317-b95da66cf20c",
+  "text": "AttributeUsage Quantities::QuantityPowerFactor::quantity",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:48f25a7a-7329-4589-9d47-35ac458ff4c1",
+  "text": "AttributeUsage AnalysisIndividualExample::VehicleQuantities::mpg",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:593ef737-dc86-4361-9e72-ec28d5c78efd",
+  "text": "ActionDefinition AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:596496db-cf71-4ff4-8344-7b28beaad11a",
+  "text": "ReferenceUsage AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::power",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:5cb66d42-28c8-4af5-be80-e796ca2191ba",
+  "text": "ReferenceUsage AnalysisIndividualExample::IndividualAnalysisModel::fuelEconomyAnalysis_1::vehicle",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:5ec9cd28-b0d1-526a-ab42-ee11129e4339",
+  "text": "AttributeDefinition Quantities::QuantityPowerFactor",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:61628156-6d52-593b-b0d2-4dc07bc06a1a",
+  "text": "LibraryPackage MeasurementReferences",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:667274a4-898a-4b07-8a1a-b044dd603beb",
+  "text": "ReferenceUsage AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::vehicle",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:6829df20-2238-41f8-bff7-bdb9356e7ef9",
+  "text": "PartUsage AnalysisIndividualExample::VehicleModel::vehicle_c1::engine",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:69ab49ac-ac9f-4d26-bb34-977a08187454",
+  "text": "PartUsage AnalysisIndividualExample::IndividualAnalysisModel::fuelEconomyAnalysis_1::vehicle::engine",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:6af80fbf-2310-41ae-a518-238a37e03b4f",
+  "text": "ReferenceUsage AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::fuelConsumption::power",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:6f7d3a49-72df-4b28-9260-c7bdcddf2f42",
+  "text": "AttributeUsage AnalysisIndividualExample::VehicleQuantities::gallon",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:71cd9f24-6bd7-5f1a-9ece-34f0efd105bf",
+  "text": "AttributeUsage USCustomaryUnits::'mile per hour'",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:79e1f700-69b1-54dc-a621-3719e6d605ad",
+  "text": "AttributeUsage USCustomaryUnits::inch",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:7ddd5493-54c9-46e4-bbb8-b24c91479e13",
+  "text": "AttributeUsage AnalysisIndividualExample::IndividualAnalysisModel::fuelEconomyAnalysis_1::vehicle::engine::fuelEfficiency 0.4",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:80db4152-4332-52fd-ab62-911a6515fc29",
+  "text": "LibraryPackage Quantities",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:83e20b37-d427-4430-ade1-c7078f563a58",
+  "text": "ReferenceUsage AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeValue::mRef",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:84192484-77d0-4603-a324-71d0d7a1b978",
+  "text": "AttributeUsage AnalysisIndividualExample::VehicleModel::Engine::fuelEfficiency",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:86b73972-7677-4f24-bf62-5ad55a27de46",
+  "text": "PartUsage AnalysisIndividualExample::VehicleModel::vehicle_c1",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:8a8de03f-4eb2-4bd8-ac4f-a1ea381a0f28",
+  "text": "PartDefinition AnalysisIndividualExample::IndividualAnalysisModel::Vehicle_1",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:8c3a59cd-622c-56d1-a51f-52eff5be4209",
+  "text": "AttributeUsage MeasurementReferences::ScalarMeasurementReference::quantityDimension",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:8cbc9ac2-1f26-57c6-850b-7238d2593e6f",
+  "text": "AttributeUsage Quantities::ScalarQuantityValue::mRef",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:95bd17de-98e9-515e-b5cd-448b76232561",
+  "text": "LibraryPackage USCustomaryUnits",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:a338d508-5923-4f30-a5d1-437e28922270",
+  "text": "OccurrenceUsage AnalysisIndividualExample::IndividualAnalysisModel::fuelEconomyAnalysis_1::fuelConsumption::done",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:a5a0a864-5cf0-4be1-a14d-8c9f2359c31a",
+  "text": "AttributeUsage AnalysisIndividualExample::VehicleModel::Engine::peakPower",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:a60dee5d-9d85-51ef-9290-d23c7529fa8f",
+  "text": "AttributeUsage Quantities::QuantityDimension::quantityPowerFactors",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:a624d38c-ce00-4f99-82ba-90166c75e71b",
+  "text": "ReferenceUsage AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis::calculatedFuelEconomy",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:ac1233c7-d9ea-40e2-8020-c0ac2abb30e9",
+  "text": "PartDefinition AnalysisIndividualExample::IndividualAnalysisModel::Engine_1",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:b3f41621-d7ad-44d1-848e-a7d1a6fd7d22",
+  "text": "Package AnalysisIndividualExample::VehicleQuantities",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:b4299148-6829-469f-aff3-273acaca4dfb",
+  "text": "ReferenceUsage AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::volumePF::exponent",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:bbf4faf3-090a-4cea-bfea-85c086c2d3bd",
+  "text": "AttributeUsage AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit::distancePF",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:c30370ca-760a-4d91-87ca-72f08c0cb0db",
+  "text": "ActionUsage AnalysisIndividualExample::IndividualAnalysisModel::fuelEconomyAnalysis_1::fuelConsumption",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:c455dde9-7658-4d7f-8170-95440e09f994",
+  "text": "PartDefinition AnalysisIndividualExample::VehicleModel::Vehicle",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:c63948f7-3e48-4eff-b1a7-b6821fc69cb9",
+  "text": "ActionDefinition AnalysisIndividualExample::IndividualAnalysisModel::FuelConsumption_1",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:ca94e2fd-c838-4537-bef3-fee48fa73cd6",
+  "text": "AnalysisCaseDefinition AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelEconomyAnalysis",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:cebd29de-3a16-4d29-a49b-4dd13ec95425",
+  "text": "Package AnalysisIndividualExample::FuelEconomyAnalysisModel",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:d6b3b260-0920-42c4-9845-f762acef91e0",
+  "text": "Package AnalysisIndividualExample::VehicleModel",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:dad3620e-4ed6-40dd-932a-9416305bf948",
+  "text": "AttributeUsage AnalysisIndividualExample::VehicleModel::Vehicle::power",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:de4b754e-8959-5cbe-8403-23de9f621616",
+  "text": "AttributeUsage Quantities::TensorQuantityValue::num",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:dee23a04-d9ad-44f4-bda3-275f31fa1217",
+  "text": "Package AnalysisIndividualExample",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:dff0b41d-c04a-4096-b18a-4f98ec13c8b1",
+  "text": "AttributeUsage AnalysisIndividualExample::VehicleModel::vehicle_c1::power",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:e12cc501-605d-41d1-a881-76e2d03dc5bb",
+  "text": "AttributeDefinition AnalysisIndividualExample::VehicleQuantities::DistancePerVolumeUnit",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:e6aae0ea-6ccd-4f67-926a-3a87038dfbd8",
+  "text": "AnalysisCaseDefinition AnalysisIndividualExample::IndividualAnalysisModel::FuelEconomyAnalysis_1",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:e93c1b92-9a57-4971-9127-eb128de40213",
+  "text": "Package AnalysisIndividualExample::IndividualAnalysisModel",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:eb426261-bcd4-46b0-b116-513aaceb5771",
+  "text": "ReferenceUsage AnalysisIndividualExample::FuelEconomyAnalysisModel::FuelConsumption::fuelEconomy",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:eca66e24-7e3b-4f17-a4d9-bf35d9f5cd26",
+  "text": "ReferenceUsage AnalysisIndividualExample::IndividualAnalysisModel::fuelEconomyAnalysis_1::fuelConsumption::done::fuelEconomy",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:f8436461-1a60-4462-8905-4d483a435a8c",
+  "text": "AnalysisCaseUsage AnalysisIndividualExample::IndividualAnalysisModel::fuelEconomyAnalysis_1",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Individuals Examples:fc271a35-f602-579f-9236-9db78bfa1529",
+  "text": "AttributeUsage Quantities::QuantityPowerFactor::exponent",
+  "source": "official example · Individuals Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:035e6761-b0c2-448f-ad73-765da5d788b8",
+  "text": "PartUsage ServerSequenceModel::PubSubSequence::consumer",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:2178950a-a8db-49ba-81d1-dd6a927a4dcc",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::subscribe_message::sourceEvent",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:21c2e54f-e442-49bc-b22e-ff0a06795c87",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::publish_message::targetEvent",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:3f307b37-9556-46f0-b23c-e13c1aee2b74",
+  "text": "PartUsage ServerSequenceModel::PubSubSequence::server",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:438725e8-988b-4a28-aee4-e8a37026e46c",
+  "text": "Package ServerSequenceModel::SignalDefinitions",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:4851f93f-4a5f-4caf-9d26-d00d6d9532f2",
+  "text": "FlowUsage ServerSequenceModel::PubSubSequence::publish_message",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:48c5cefd-99f3-4e19-890e-ea1f47e6319e",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::deliver_message::sourceEvent",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:4d425f05-b014-426a-8bf2-dd01bb5e347b",
+  "text": "FlowUsage ServerSequenceModel::PubSubSequence::deliver_message",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:4dfd60f3-cb8e-4e14-8fc3-b3b7ac49c85a",
+  "text": "PartDefinition ServerSequenceModel::PubSubSequence",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:4ef7f118-1a95-4c01-ae8f-59aae83e2648",
+  "text": "ItemDefinition ServerSequenceModel::SignalDefinitions::Publish",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:60098f01-2c28-4d4e-a636-923633e5e974",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::server::subscribe_target_event",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:61769342-dbe6-4874-8ce3-a79888093169",
+  "text": "ItemDefinition ServerSequenceModel::SignalDefinitions::Subscribe",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:691264f5-6611-450f-9933-5cfd66f59a0c",
+  "text": "PartUsage ServerSequenceModel::SignalDefinitions::Subscribe::subscriber",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:6af91459-bd5e-41a1-9a28-3eacde8be8e7",
+  "text": "AttributeUsage ServerSequenceModel::SignalDefinitions::Publish::topic",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:72c387d5-f073-4f4e-966c-33b1e45e8f92",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::subscribe_message::targetEvent",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:804f96a3-9cbc-4975-b02c-a6c714898448",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::producer::publish_source_event",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:80f56f16-2c3f-4770-9a0d-b8d7460eadb1",
+  "text": "ItemDefinition ServerSequenceModel::SignalDefinitions::Deliver",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:8b181309-a8c4-4503-a923-e40c97552713",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::consumer::subscribe_source_event",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:8f259d7b-5882-4705-96ab-d7438b243d98",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::server::publish_target_event",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:96d6e132-e252-410b-ae24-8ceac2e5a0ab",
+  "text": "Package ServerSequenceModel",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:97e111cf-1703-4c97-9bda-ab6f69ba8410",
+  "text": "AttributeUsage ServerSequenceModel::SignalDefinitions::Subscribe::topic",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:a9a77e34-db69-453e-a0b8-f6f916267e29",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::server::deliver_source_event",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:aa5fcc2c-941d-42d5-aa1e-f0add3154fea",
+  "text": "ReferenceUsage ServerSequenceModel::SignalDefinitions::Deliver::publication",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:b8ff4e90-1152-4cb1-8a16-4ea583550522",
+  "text": "PartUsage ServerSequenceModel::PubSubSequence::producer",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:cad84fd4-08a3-441a-9dc8-736f2ecea7ae",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::deliver_message::targetEvent",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:d0afefd3-b9d9-4db1-84e2-8d532363b75d",
+  "text": "FlowUsage ServerSequenceModel::PubSubSequence::subscribe_message",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:d96fb337-effd-4a70-995b-6725c46794b7",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::publish_message::sourceEvent",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:e71edbbc-b805-4fb9-8c70-a5a7ab99d054",
+  "text": "EventOccurrenceUsage ServerSequenceModel::PubSubSequence::consumer::deliver_target_event",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Interaction Sequencing Examples:fdfa0e4e-2889-4035-b861-5820f9f14b5e",
+  "text": "ReferenceUsage ServerSequenceModel::SignalDefinitions::Publish::publication",
+  "source": "official example · Interaction Sequencing Examples"
+ },
+ {
+  "id": "Mass Roll-up Example:028e667e-99fd-44c0-884d-88fd73ca25d7",
+  "text": "PartUsage MassConstraintExample::Vehicle5::eng",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:04412b07-373e-4880-9028-3700b906d4c3",
+  "text": "AttributeUsage MassConstraintExample::Engine::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:04f3bcaf-db50-4f6f-ac0d-80e557f42a06",
+  "text": "AttributeUsage MassConstraintExample::Vehicle4::trans::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:07b01f19-5150-4f53-8653-3a87a2f0db0b",
+  "text": "ReferenceUsage MassConstraintExample::mc::partMasses",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:09d2d3c5-5f0c-471b-8770-6feec5d66ade",
+  "text": "AssertConstraintUsage MassConstraintExample::Vehicle3::massConstraint",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:0ad6ffc9-1a55-4bc2-b67a-3644aeb92b5d",
+  "text": "PartDefinition MassConstraintExample::Vehicle5",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:0dc69ab0-36c0-4d14-87e3-f21aaf88fff7",
+  "text": "ReferenceUsage MassConstraintExample::MassLimit::mass",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:0f235f07-ffe6-47fb-8782-de9ee172770d",
+  "text": "ReferenceUsage MassConstraintExample::MassConstraint3::totalMass",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:109a259c-eda2-4251-a827-bc7451acb140",
+  "text": "AttributeUsage MassConstraintExample::Vehicle2::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:11ba3e6b-2947-480e-a105-94e74eef3d86",
+  "text": "PartUsage MassConstraintExample::Vehicle4::eng",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:11f4830d-84e8-4642-8915-d99fcbc797ca",
+  "text": "ReferenceUsage MassConstraintExample::Vehicle5::ml::mass",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:26831bc8-0f17-4392-a588-6c40cc689daa",
+  "text": "ReferenceUsage MassConstraintExample::mc::totalMass",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:2aaf85ce-4695-4d4f-93bd-3c4bb7892f17",
+  "text": "ConstraintDefinition MassConstraintExample::MassConstraint4",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:3590da51-f8ed-4caa-b5fd-3c89bbf80291",
+  "text": "AttributeUsage MassConstraintExample::Vehicle4::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:3895edfb-df91-495b-af7d-21fdd8eafa99",
+  "text": "PartDefinition MassConstraintExample::Vehicle2",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:391a5b69-c276-418b-b5ca-19a44cd3d7fe",
+  "text": "ReferenceUsage MassConstraintExample::MassConstraint4::partMasses",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:3b1b2d2a-0bc3-408a-bdd3-0c0e7e8cf8d4",
+  "text": "AttributeUsage MassConstraintExample::Vehicle5::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:4a02c659-dfa3-4118-bf56-f9f22e1965cf",
+  "text": "ReferenceUsage MassConstraintExample::Vehicle5::ml::maxMass",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:50b3d5de-ed12-4d9d-9d31-4ac6080f26f0",
+  "text": "PartUsage MassConstraintExample::Vehicle5::trans",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:624b3047-2239-473a-bb41-4b2f93f1b8ac",
+  "text": "AttributeUsage MassConstraintExample::Transmission::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:6297c432-ed0a-4c21-bd4e-8a3a64700808",
+  "text": "AttributeUsage MassConstraintExample::Vehicle5::eng::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:65ef4a5c-396d-4ee4-8d64-46c0d4ee5c83",
+  "text": "PartUsage MassConstraintExample::Vehicle3::trans",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:662f1c72-4d7e-4015-82f7-b72b55d727df",
+  "text": "ReferenceUsage MassConstraintExample::MassConstraint3::partMasses",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:67cee6e0-93a2-4cf7-8d4e-85849c6c091a",
+  "text": "PartUsage MassConstraintExample::Vehicle4::trans",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:6d37c6cf-4983-4eab-8479-324fef1b3381",
+  "text": "ConstraintDefinition MassConstraintExample::MassLimit",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:6d745ea3-e265-5ddd-aa6c-b3fe29dc4272",
+  "text": "Function NumericalFunctions::sum",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:7a265996-923a-4225-bff1-3cd4c89c2c14",
+  "text": "PartDefinition MassConstraintExample::Engine",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:7d771b65-d455-4eb5-8923-ae3bd5118995",
+  "text": "AttributeUsage MassConstraintExample::Vehicle3::eng::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:7ff2e11d-4a8c-46cb-9dca-13163f072fe6",
+  "text": "ReferenceUsage MassConstraintExample::MassLimit::maxMass",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:87b06571-bccd-48cc-946e-f571c6d3a7be",
+  "text": "AttributeUsage MassConstraintExample::Vehicle3::trans::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:897cacbb-bb23-44db-b8a3-448bddb3a393",
+  "text": "AttributeUsage MassConstraintExample::Vehicle4::eng::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:8efa9eb8-357a-45b3-8e16-acce9371e665",
+  "text": "PartUsage MassConstraintExample::Vehicle1::trans",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:971a1e22-7d73-480f-84b7-a3629a00bc93",
+  "text": "PartDefinition MassConstraintExample::Transmission",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:9eb4b2bc-6487-4836-875e-5a4a05866d66",
+  "text": "AttributeUsage MassConstraintExample::Vehicle1::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:afc4d30c-41df-435a-b187-388a54d54a15",
+  "text": "ReferenceUsage MassConstraintExample::Vehicle3::massConstraint::partMasses",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:b74b0ec7-d191-4823-bffd-10549433676d",
+  "text": "ReferenceUsage MassConstraintExample::Vehicle3::massConstraint::totalMass",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:b8558576-b809-47fc-8edd-9411913af25b",
+  "text": "AssertConstraintUsage MassConstraintExample::Vehicle5::ml",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:b97929c3-2801-41f3-b03c-a6ecf9acf6a5",
+  "text": "AttributeUsage MassConstraintExample::Vehicle1::eng::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:b982c421-cd58-476c-96e8-7468018b2397",
+  "text": "ConstraintDefinition MassConstraintExample::MassConstraint3",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:b9c13b5c-4780-43f0-96c2-5fd009bbe31f",
+  "text": "PartDefinition MassConstraintExample::Vehicle4",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:bb9d3ce0-95b2-44de-a43d-b10ab334585b",
+  "text": "Package MassConstraintExample",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:bf6f6334-ba0d-436e-a702-2dfa7b62b27b",
+  "text": "AttributeUsage MassConstraintExample::Vehicle3::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:c03252eb-16bf-43f0-aeca-4d4b3ce1a072",
+  "text": "PartUsage MassConstraintExample::Vehicle2::eng",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:c3e68078-e035-4ce7-9520-f18c88129e94",
+  "text": "ConstraintUsage MassConstraintExample::mc",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:cdf129df-3833-52cb-ae4b-3b49743b6632",
+  "text": "LibraryPackage NumericalFunctions",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:d54275f1-904a-471a-99ca-558143af9dc1",
+  "text": "PartUsage MassConstraintExample::Vehicle3::eng",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:daddd60d-938b-4b84-a79d-075325214725",
+  "text": "PartDefinition MassConstraintExample::Vehicle1",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:df3e03bf-ab81-4792-a7dc-4bb996450062",
+  "text": "PartDefinition MassConstraintExample::Vehicle3",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:e269d9a7-572b-4de3-975f-0fc5e253bab1",
+  "text": "AttributeUsage MassConstraintExample::Vehicle5::trans::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:e3fab572-f2d2-4ecc-8171-007dbce9ec07",
+  "text": "AttributeUsage MassConstraintExample::Vehicle1::trans::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:e4225e3f-821e-4fed-b82e-26da3beb972d",
+  "text": "AttributeUsage MassConstraintExample::Vehicle2::trans::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:f36e13e4-555e-4352-83c7-2ac8f83e0710",
+  "text": "ReferenceUsage MassConstraintExample::MassConstraint4::totalMass",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:f44240b4-5118-43db-bd2b-01fd1c0b353c",
+  "text": "AttributeUsage MassConstraintExample::Vehicle2::eng::m",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:f60d6f9a-ffad-4b07-af63-3fe7ab7b9aaf",
+  "text": "PartUsage MassConstraintExample::Vehicle1::eng",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Mass Roll-up Example:f70e4007-d341-422f-85b9-c6e664d794c6",
+  "text": "PartUsage MassConstraintExample::Vehicle2::trans",
+  "source": "official example · Mass Roll-up Example"
+ },
+ {
+  "id": "Metadata Examples:0bf9c915-7be2-4f9c-afb3-7dfa3601f45e",
+  "text": "InterfaceUsage IssueMetadataExample::engineToTransmissionInterface",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:1c5fb6da-08f1-44fc-b9d7-b200028140db",
+  "text": "InterfaceDefinition IssueMetadataExample::EngineToTransmissionInterface",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:23c596a4-c3d7-48f7-9fec-ec9a59e4a685",
+  "text": "PortUsage IssueMetadataExample::EngineToTransmissionInterface::p2",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:365e03fa-c650-4785-907f-95c7611218e6",
+  "text": "PortUsage IssueMetadataExample::EngineToTransmissionInterface::p1",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:36727c17-8fec-4b09-95af-f1409eedd595",
+  "text": "ReferenceUsage IssueMetadataExample::InterfaceCompatibilityIssue::text",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:395b04a8-3b5f-4afa-8dfe-05fb5fbde773",
+  "text": "ConjugatedPortDefinition IssueMetadataExample::ClutchPort::'~ClutchPort'",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:4d729177-9605-52a3-97e2-c11b60149c1d",
+  "text": "MetadataDefinition ModelingMetadata::Issue",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:510eab7e-ac26-4110-b18f-1bb83532f13f",
+  "text": "PortDefinition IssueMetadataExample::DrivePwrPort",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:964fb657-24aa-4b04-ae0e-044f00e17fc2",
+  "text": "PortDefinition IssueMetadataExample::ClutchPort",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:a7e580f8-8830-4a77-ac3a-399c61a3c1f6",
+  "text": "PartUsage IssueMetadataExample::engine",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:ad4cc2b2-edd0-48fd-916c-31a5a0ad95cf",
+  "text": "PortUsage IssueMetadataExample::engineToTransmissionInterface::p2",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:c1bdbaf2-a6da-4266-a362-f9194a2d979c",
+  "text": "PortUsage IssueMetadataExample::engineToTransmissionInterface::p1",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:c3e683d2-79ba-44f8-89db-50f35a9f9656",
+  "text": "PortUsage IssueMetadataExample::engine::drivePwrPort",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:c8dc4220-a5ba-4962-9a07-db2adb60a7c5",
+  "text": "PartUsage IssueMetadataExample::transmission",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:d363e06b-6290-41a1-8695-38632efbae1e",
+  "text": "Package IssueMetadataExample",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:dafbeca9-eba0-4b23-8de5-056c9d1b0fa7",
+  "text": "PortUsage IssueMetadataExample::transmission::clutchPort",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:e5244d09-b4e8-5518-bf2b-f582b193dbf4",
+  "text": "AttributeUsage ModelingMetadata::Issue::text",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:f6607b96-ba7b-4bad-8464-a794d43267eb",
+  "text": "ConjugatedPortDefinition IssueMetadataExample::DrivePwrPort::'~DrivePwrPort'",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Metadata Examples:ffb6db1e-9cbc-4b67-bfc2-e6fd6d43bedf",
+  "text": "MetadataUsage IssueMetadataExample::InterfaceCompatibilityIssue",
+  "source": "official example · Metadata Examples"
+ },
+ {
+  "id": "Packet Example:00e9d69d-1509-491a-bead-9dc550359273",
+  "text": "PartDefinition Packets::'Thermal Data Packet'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:1007a521-c790-4a98-b9d9-9ccff05ad533",
+  "text": "AttributeUsage Packets::'packet header'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:137c22df-58a2-43e3-940b-86fdee254f2f",
+  "text": "AttributeUsage Packets::'packet data field'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:27504687-d168-405e-bb56-a49d123a35d2",
+  "text": "AttributeUsage Packets::'Thermal Data Packet'::'packet data field'::'user data field'::timestamp",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:38cbed1f-592d-4ca6-a4ab-16f7100a4e7e",
+  "text": "Package Packets",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:5013fa3e-b8ab-465a-8cbb-17b405f0d954",
+  "text": "AttributeUsage Packets::'Data Packet'::'packet data field'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:5bbab1de-3b88-465a-9d30-262daff96fcd",
+  "text": "PartUsage 'Packet Usage'::packet2",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:5bbaf23e-fa66-42ca-8db0-ab25d842830f",
+  "text": "AttributeUsage Packets::'packet data field'::'user data field'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:5dc47465-9a75-41d2-a28b-3be9fb6170c8",
+  "text": "AttributeUsage Packets::'Thermal Data Packet'::'packet data field'::'packet secondary header'::'packet timestamp'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:5f4efdce-e3e1-44f7-aaa4-b76d18a91a27",
+  "text": "PartUsage 'Packet Usage'::packet1",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:63730d14-508a-49f2-9e45-51482df6a3ae",
+  "text": "AttributeUsage Packets::'Thermal Data Packet'::'packet data field'::'packet secondary header'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:69fb7d37-6817-433c-8b6a-602216a038bb",
+  "text": "AttributeUsage Packets::'Data Packet'::'packet primary header'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:7507d07f-e03b-4637-9a99-dde0221f179d",
+  "text": "AttributeUsage 'Packet Usage'::packet3::'special data field'::'user data field'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:753a5e70-8611-43d3-9a4b-5343bf00335d",
+  "text": "AttributeUsage 'Packet Usage'::packet3::'special data field'::'user data field'::'special data'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:7697b00d-d6d8-544c-a5cf-2120ec120da6",
+  "text": "AttributeDefinition Time::DateTime",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:792b881b-a766-473e-8632-3dd7c8a448f8",
+  "text": "AttributeUsage Packets::'Data Packet'::'packet primary header'::'packet data length'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:87b7acb0-d101-4b6a-9385-6bec2e110063",
+  "text": "AttributeUsage Packets::'Thermal Data Packet'::'packet data field'::'user data field'::temperature",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:8c248247-bf37-485d-a20c-f5aa507156a5",
+  "text": "AttributeUsage Packets::'Thermal Data Packet'::'packet data field'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:a24dc955-0f3a-4218-a7dc-18ac0454a3a0",
+  "text": "AttributeUsage Packets::'Data Packet'::'packet primary header'::'packet identification'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:a2dc7c1f-e250-4c2b-9b00-a6f8d493b37e",
+  "text": "PartUsage 'Packet Usage'::packet3",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:afd681fc-83d9-455f-8d05-8b9b32bb1326",
+  "text": "AttributeUsage Packets::'Data Packet'::'packet primary header'::'packet version number'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:c155969b-7c40-44b0-bf91-d9147d9dbf3c",
+  "text": "AttributeUsage Packets::'Thermal Data Packet'::'packet data field'::'user data field'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:d4387db7-7a5f-472d-a772-4ecda0cc480f",
+  "text": "PartDefinition Packets::'Data Packet'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:d8bb15af-43ff-4c60-be97-4d9be98765b3",
+  "text": "AttributeUsage Packets::'packet data field'::'packet secondary header'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:e0536be1-efba-4974-82b2-d07e7fbb2a0b",
+  "text": "AttributeUsage Packets::'Thermal Data Packet'::'packet data field'::'packet secondary header'::'telemetry packet type'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:f6ae47d0-8566-41aa-9a68-c792fda5db7d",
+  "text": "AttributeUsage 'Packet Usage'::packet3::'special data field'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Packet Example:fc32e462-cf3b-4bc1-8008-3d4a86aa3f9d",
+  "text": "Package 'Packet Usage'",
+  "source": "official example · Packet Example"
+ },
+ {
+  "id": "Requirements Examples:15795a8c-5223-426c-9f1d-f19fd31a35a4",
+  "text": "Package HSUVRequirements",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:2189d784-ebef-47d8-8d30-ca2ed23cb299",
+  "text": "RequirementUsage HSUVRequirements::Performance::Power",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:5217850c-5c02-4b82-b00e-c74247650897",
+  "text": "RequirementUsage HSUVRequirements::Load::Cargo",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:5bcbe772-01c1-5b43-ada5-3ca6f4a35dd0",
+  "text": "RequirementDefinition Requirements::PerformanceRequirementCheck",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:60b586e2-25b0-4783-b4f6-fca40f767e72",
+  "text": "ConstraintUsage HSUVRequirements::HybridSUVSpec::Performance",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:6c910b28-f20d-4a83-86e0-57d8b82d8eb8",
+  "text": "RequirementUsage HSUVRequirements::Load::Passengers",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:777cb221-30e3-4d8c-91a4-dc19b1e1d585",
+  "text": "RequirementUsage HSUVRequirements::Performance::Braking",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:7c660c6d-d80a-48fe-8002-9fefc4e7b344",
+  "text": "RequirementUsage HSUVRequirements::Performance::Range",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:85b5adf6-591e-4ba7-9c35-c224c91fcbb8",
+  "text": "RequirementUsage HSUVRequirements::Load",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:a0244887-268a-44b1-a07b-d85543fac151",
+  "text": "RequirementUsage HSUVRequirements::Performance::Acceleration",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:a32714d4-f8b3-4beb-aefb-d06fb88e5f78",
+  "text": "RequirementUsage HSUVRequirements::Performance::FuelEconomy",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:a4fa62f1-11ed-4c78-b790-95d3492d2504",
+  "text": "RequirementUsage HSUVRequirements::HybridSUVSpec",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:b0126c4d-bb14-43f5-a66d-fcd785629e57",
+  "text": "RequirementUsage HSUVRequirements::Ergonomics",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:ba2880c9-e1f3-5f7f-a58d-83941099294f",
+  "text": "RequirementDefinition Requirements::FunctionalRequirementCheck",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:bf6e6fe5-eed0-45e2-8573-fc000fd5219b",
+  "text": "RequirementUsage HSUVRequirements::EcoFriendliness::Emissions",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:c89ddd90-1ea2-4351-9b42-2535b1ae6fbd",
+  "text": "ConstraintUsage HSUVRequirements::HybridSUVSpec::Load",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:cb11a7fe-dfae-495e-800a-1aef9b400f79",
+  "text": "ConstraintUsage HSUVRequirements::HybridSUVSpec::EcoFriendliness",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:de977813-4582-498b-b066-c9505647e021",
+  "text": "RequirementUsage HSUVRequirements::Performance",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:e36ed269-236d-47ac-bbb6-dc9063d5dccd",
+  "text": "ConstraintUsage HSUVRequirements::HybridSUVSpec::Ergonomics",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:e71c1da5-a939-484f-ac44-85502ce63aa4",
+  "text": "RequirementUsage HSUVRequirements::Load::FuelCapacity",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:f33446e4-1e9c-543f-9ad2-56398e23884c",
+  "text": "LibraryPackage Requirements",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Requirements Examples:ffc928bb-16ae-43d7-b0c6-afe21004bcda",
+  "text": "RequirementUsage HSUVRequirements::EcoFriendliness",
+  "source": "official example · Requirements Examples"
+ },
+ {
+  "id": "Room Model:01fef208-1e0a-41dd-8fe0-6ef210e41e2b",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Furniture::source::furniture",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:049f216c-e309-492b-bbc0-709c4fd88cfc",
+  "text": "ReferenceUsage RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::furniture",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:093e7ba9-e840-4ecf-98d9-c336cb5eb0e6",
+  "text": "Package RoomModel::RoomDefinitionModelLibrary::Flow_Definitions",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:100bceeb-ffd4-4e68-bea1-f65cecee5e1f",
+  "text": "PortUsage RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway::hallExit_to_Storageroom",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:1576ae5d-aae1-4944-ae61-3fdbc29a9227",
+  "text": "PartUsage RoomModel::Room_Configuration::roomContext::h",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:2382c460-eac3-4b6b-87b5-05356fe6e056",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Air::source::air",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:257b930e-e283-4c91-bc33-01d171e873d7",
+  "text": "PartUsage RoomModel::Room_Configuration::roomContext::c",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:25b6e330-4fc1-49bc-9386-d0a655a8c38a",
+  "text": "PortDefinition RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:26f215ec-58d2-4767-a7f8-dd6bc9eb2a9e",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToStorageroom_Furniture::target",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:2922686b-2a40-4a74-a165-b51d5f1c10da",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToStorageroom_Air::source",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:2f4fafc9-759e-48d2-bc76-0a8ee10d5fab",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Student::target::student",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:2f898cde-ae83-4fa1-aecd-8b35a140b47d",
+  "text": "PartDefinition RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Furniture",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:304fc3a7-f38b-483a-b44d-a870bfc40d41",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToStorageroom_Furniture::source",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:3196042d-9db8-4e7b-949b-eef06c16a119",
+  "text": "PartDefinition RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Storageroom",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:36fe7579-f019-4300-a760-78c61a99c3e1",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToClassroom_Teacher::source",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:3775081c-03a5-40da-a802-4f48ac50d592",
+  "text": "Package RoomModel::RoomDefinitionModelLibrary",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:3ed107bc-59b4-4098-968d-b6f694dbc305",
+  "text": "PartDefinition RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Air",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:40e4afb9-a0d9-452f-8e1d-07b2d633ed2c",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Furniture::target::furniture",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:42191816-1373-4329-aeb7-68cb0002067a",
+  "text": "FlowUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Air",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:49f82fac-aa3d-45dd-9757-b6567641c89d",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Teacher::target::teacher",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:4c695b78-6661-4176-8ca1-480e06e604de",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToClassroom_Student::target",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:5131164d-37a0-41b7-81f5-8e33266e2512",
+  "text": "PartUsage RoomModel::Room_Configuration::roomContext",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:541a9a0f-21d9-42f1-b1a2-3e93fc9f4ca0",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToStorageroom_Air::source::air",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:5938a186-645d-4ea9-b7dc-18e0f960dffe",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToStorageroom_Air::target",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:6126d977-c55a-4a31-8be6-2362e33e8c89",
+  "text": "PortDefinition RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:62bd7c6c-9903-49e1-914a-fd1a835d904a",
+  "text": "PartDefinition RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Student",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:6a18e12f-6264-4276-9cfa-3cd79dd36a0d",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToStorageroom_Air::target::air",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:6b24cd62-caad-4acb-9e05-755b51abac49",
+  "text": "Package RoomModel::RoomDefinitionModelLibrary::Part_Definitions",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:6ba324f5-17ba-4a39-b31f-6bcf73b4926a",
+  "text": "ReferenceUsage RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::air",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:708d227b-a249-434b-bf0c-2775b9657a2a",
+  "text": "ReferenceUsage RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom::air",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:732d96cc-f0ff-483a-bf74-8705b79b3165",
+  "text": "PortUsage RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Storageroom::storageEntry",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:735fed4a-1b56-4e2a-bcc7-eeea64ea0c04",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToStorageroom_Furniture::target::furniture",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:7908116d-51d5-483b-af5c-5535fdcc1737",
+  "text": "PartUsage RoomModel::Room_Configuration::roomContext::s",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:8af7206b-ec9f-4c03-9e27-4989ae18f3f0",
+  "text": "ReferenceUsage RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::student",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:90d072e6-9294-4707-b71e-c99cb361b36c",
+  "text": "FlowUsage RoomModel::Room_Configuration::roomContext::HallToStorageroom_Air",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:9413476d-a460-4696-afcb-200d1b361788",
+  "text": "Package RoomModel::RoomDefinitionModelLibrary::Port_Definitions",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:9590cbd9-8bef-4311-9209-9d881d408027",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToStorageroom_Furniture::source::furniture",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:a6b5e08a-3758-4db0-a677-318280eb734d",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Teacher::source::teacher",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:a85db51e-d7d9-481d-9b35-3ceb387f75f1",
+  "text": "FlowUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Teacher",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:ab6290b7-7e16-47ae-8b77-6c22924b78ed",
+  "text": "PortUsage RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway::hallExit_to_Classroom",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:abd6cec4-115f-4a04-b5f1-2cbe71d2ae99",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Student::source::student",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:af3ad0cd-8f7a-49b9-bfd0-0c721f5e3892",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToClassroom_Student::source",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:baa2ddb8-ab8b-4a5f-b059-9c86d51fd382",
+  "text": "Package RoomModel::Room_Configuration",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:bb9411c9-076e-4d9f-80cd-169788ed3955",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToClassroom_Teacher::target",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:bea8f109-d50e-4eb0-836e-4969a1bd65cc",
+  "text": "ReferenceUsage RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::teacher",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:cb97da7d-edc9-4dd2-8eff-82057e70e022",
+  "text": "ReferenceUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Air::target::air",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:cfb90383-7d9f-496b-aca5-af263017cd19",
+  "text": "FlowUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Furniture",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:d6f6c717-d997-4eb2-8ff2-996a860e88cf",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToClassroom_Furniture::source",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:dba46d0c-a229-4003-b983-cc84965c8d6a",
+  "text": "PartDefinition RoomModel::RoomDefinitionModelLibrary::Flow_Definitions::Teacher",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:dcee0086-7c5c-46e1-8c2c-ccc2812506a2",
+  "text": "ConjugatedPortDefinition RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Classroom::'~EntryWay_to_Classroom'",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:dd099552-8c9e-49b9-bcd1-f8c812edd326",
+  "text": "PartDefinition RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Classroom",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:dde45df1-fb0c-4771-9d09-d33147ef52a0",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToClassroom_Furniture::target",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:e08ae8ef-82a9-4372-89cb-313087eb418c",
+  "text": "PortUsage RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Classroom::classEntry",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:e1047f5f-263b-42c4-b4c6-0a945392158c",
+  "text": "ReferenceUsage RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom::furniture",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:e3ff4b1e-4c48-48a1-a8db-733efc8be504",
+  "text": "FlowUsage RoomModel::Room_Configuration::roomContext::HallToClassroom_Student",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:e46e22fc-d673-4320-acac-4eb2d48f9278",
+  "text": "FlowUsage RoomModel::Room_Configuration::roomContext::HallToStorageroom_Furniture",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:e8436bc9-f9e9-4c40-9ebd-6b3eb1c43e95",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToClassroom_Air::target",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:ed75e951-73bc-48fe-8594-17b14ee0fae4",
+  "text": "FlowEnd RoomModel::Room_Configuration::roomContext::HallToClassroom_Air::source",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:f3012f2c-327f-413f-9ed1-b1d43ff05274",
+  "text": "PartDefinition RoomModel::RoomDefinitionModelLibrary::Part_Definitions::Hallway",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:f6bc3ca9-cec7-4110-8469-66f931bea167",
+  "text": "ConjugatedPortDefinition RoomModel::RoomDefinitionModelLibrary::Port_Definitions::EntryWay_to_Storageroom::'~EntryWay_to_Storageroom'",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Room Model:fbb29078-3ded-4c54-98b4-deb159175b0f",
+  "text": "Package RoomModel",
+  "source": "official example · Room Model"
+ },
+ {
+  "id": "Simple Tests:04bb26fa-0bdf-4ff2-a393-d0afda4e9222",
+  "text": "MergeNode ActionTest::a1::m",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:0cdc3cd3-b06c-5c32-beda-0cf4ba164a64",
+  "text": "ActionUsage Actions::Action::done",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:12622150-afd1-41d0-9fa4-53efe9dfdbb8",
+  "text": "ActionUsage ActionTest::b",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:13d7dff7-b0cf-48cd-962f-37e82b88a8af",
+  "text": "ReferenceUsage ActionTest::a::b::y",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:166b76f1-48fb-4606-a9be-6ef8ffa7f480",
+  "text": "PartUsage ActionTest::a2::aa::target",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:208edc8c-3086-4b8e-8915-79995b94cc55",
+  "text": "ReferenceUsage ActionTest::a2::s",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:2e82e296-0550-5153-85ab-b4f1d0fbdf15",
+  "text": "AttributeDefinition Time::Iso8601DateTime",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:366bd773-7f2c-4801-bad2-4902d10472cf",
+  "text": "SendActionUsage ActionTest::a2::snd2",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:404e2984-32e0-4696-a26b-085b64059006",
+  "text": "ReferenceUsage ActionTest::a2::snd::payload",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:53e532a9-91c3-47fd-b240-095435a2b026",
+  "text": "ActionDefinition ActionTest::A",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:644b2790-eeeb-46f7-b7fa-9db22657647d",
+  "text": "ActionUsage ActionTest::a",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:7005486c-3258-426a-bb3e-5002016e0d72",
+  "text": "ActionDefinition ActionTest::c",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:712809ae-d7b1-5109-ba8c-dd121e343210",
+  "text": "Feature Transfers::SendPerformance::receiver",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:7d71d7e2-963b-444d-9e75-c3083c19c8f2",
+  "text": "ActionUsage ActionTest::a1",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:800025e1-e9ef-40b2-97b0-4dc81efc0e39",
+  "text": "ActionUsage ActionTest::b::a",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:8befdd85-75da-4047-b007-2718a345965f",
+  "text": "AttributeUsage ActionTest::b::f",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:8d57441e-fb7d-4eb9-8203-c76757898570",
+  "text": "ActionUsage ActionTest::a2::aa",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:93f3510e-6076-4e73-a951-c011b6ca65d2",
+  "text": "ReferenceUsage ActionTest::a2::snd2::sender",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:9a0d2905-0f9c-5bb4-af74-9780d6db1817",
+  "text": "ActionUsage Actions::Action::start",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:a167d6a7-83dc-4f96-8297-b350b74366f9",
+  "text": "ActionUsage ActionTest::c::c1",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:a6108570-a48a-438e-8d00-04efca00bc8e",
+  "text": "AttributeDefinition ActionTest::S",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:a8558e47-1012-5952-a726-cc6f69e02b9e",
+  "text": "ReferenceUsage Actions::SendAction::payload",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:ac5b2ba5-a981-43b4-96f6-6af9f290e978",
+  "text": "Package ActionTest",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:c1d6be22-568f-5adf-9394-b44a46b02243",
+  "text": "OccurrenceUsage Actions::Action::subactions::this",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:c43d13d1-bb0b-48da-9165-62ad12fdf427",
+  "text": "ReferenceUsage ActionTest::a2::snd2::payload",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:cd9b70b9-8211-4044-a261-7989b878ef11",
+  "text": "ReferenceUsage ActionTest::A::x",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:dd21601a-ec8a-49f0-a2d9-7f6d676e73a1",
+  "text": "ActionUsage ActionTest::a2",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:dddc4e7c-5734-468b-9ae6-64d764b98c2d",
+  "text": "SendActionUsage ActionTest::a2::snd",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:e9585944-b5bb-427e-b876-0a67fd44277f",
+  "text": "ReferenceUsage ActionTest::a2::snd2::receiver",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "Simple Tests:fd414db9-70c8-419d-bc6c-91769bb939e3",
+  "text": "ActionUsage ActionTest::a::b",
+  "source": "official example · Simple Tests"
+ },
+ {
+  "id": "State Space Representation Examples:01794a7b-85c6-41ef-a9c9-c49993db385f",
+  "text": "AttributeUsage CartSample::Cart::mass",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:04a878cd-7088-4e86-9eed-5d3bae21aace",
+  "text": "AttributeUsage CartSample::Cart::CartInput::force",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:115ab6ea-68c3-5a0f-a54f-432b62557d69",
+  "text": "AttributeUsage StateSpaceRepresentation::StateSpaceDynamics::stateSpace",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:12850d9d-348e-4049-8eed-6cc1c4ea4437",
+  "text": "Package CartSample",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:1f66b5e7-c4d1-4923-8e9a-e6c1eb9cb5c2",
+  "text": "PartDefinition CartSample::Cart",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:21c23fde-3b01-4f63-b1d4-e9bb3195458f",
+  "text": "ActionUsage CartSample::context::pusher::pusherBehavior",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:2232387b-477b-4040-9870-b26b8ee4c7a8",
+  "text": "ReferenceUsage CartSample::context::pusher::pusherBehavior::output",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:2beb5a6c-d4c6-5f8a-97de-2f801ac83755",
+  "text": "CalculationUsage StateSpaceRepresentation::ContinuousStateSpaceDynamics::getDerivative",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:324bd893-ddcb-5740-8082-1d2194685753",
+  "text": "AttributeDefinition StateSpaceRepresentation::Input",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:3ce0e226-d02f-495b-bcb8-9d7022006bd9",
+  "text": "ReferenceUsage CartSample::Cart::CartStateDerivative::stateSpace",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:42ed8795-e330-43b8-8046-a4a21366fda5",
+  "text": "PartUsage CartSample::context::pusher",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:52807ec6-e2ce-4725-a3c5-d633b9af8781",
+  "text": "PartUsage CartSample::context",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:533c44a2-c92f-4a32-961b-fefe47f92c32",
+  "text": "AttributeUsage CartSample::Pusher::PusherOutput::force",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:54a4db0b-14b6-41f1-a671-ef3ef064c62a",
+  "text": "AttributeUsage CartSample::Cart::CartStateDerivative::accel",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:5adeb2da-f318-5b5b-b079-29ec35ad6087",
+  "text": "ActionDefinition StateSpaceRepresentation::ContinuousStateSpaceDynamics",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:5f2dfc81-971d-45ad-80a3-c49cba5abb6b",
+  "text": "AttributeUsage CartSample::context::pusher::pusherForce",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:64828625-4634-5cbf-8305-2697ebc7d046",
+  "text": "AttributeDefinition StateSpaceRepresentation::StateDerivative",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:6940cfb5-e10a-4461-9822-24ba37034c8c",
+  "text": "PartUsage CartSample::context::cart",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:6c1aa1b9-cba9-4acc-83bc-93424e981b38",
+  "text": "ReferenceUsage CartSample::context::cart::cartBehavior::input",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:6c25d39a-0ae1-43d0-8872-fff178e3729e",
+  "text": "AttributeDefinition CartSample::Cart::CartOutput",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:6d5bbd41-a46e-48a5-88c6-31aaf8df0aee",
+  "text": "AttributeDefinition CartSample::Cart::CartState",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:750676e5-348b-5a1a-86fb-6b7ce6ece1fd",
+  "text": "AttributeDefinition StateSpaceRepresentation::StateSpace",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:79474907-8d88-4aa3-a0ed-f91e427cccda",
+  "text": "PartDefinition CartSample::Pusher",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:7abb34c5-af62-4e9b-9fb7-9f74f038ad5f",
+  "text": "CalculationUsage CartSample::context::pusher::pusherBehavior::getOutput",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:7d00d0a0-f11b-4580-ba02-c1d95173bf78",
+  "text": "ReferenceUsage CartSample::context::cart::cartBehavior::stateSpace",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:805faf8f-1719-4736-9e2e-c565bf591a6b",
+  "text": "AttributeDefinition CartSample::Pusher::PusherOutput",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:8901c112-25da-43dd-b39a-8b21f082340a",
+  "text": "ReferenceUsage CartSample::context::cart::cartBehavior::getDerivative::input",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:8b071448-2702-4623-b264-411baca2537c",
+  "text": "ReferenceUsage CartSample::context::pusher::pusherBehavior::input",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:9465c73b-d893-4af4-b260-7fe8b4ec1dd9",
+  "text": "CalculationUsage CartSample::context::cart::cartBehavior::getDerivative",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:98dcb808-a323-4283-a45a-741c6ff782cd",
+  "text": "ReferenceUsage CartSample::context::cart::cartBehavior::getDerivative::stateSpace",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:9a7154a1-039b-4c41-9aaa-cd467df62dfe",
+  "text": "AttributeUsage CartSample::Cart::CartState::velocity",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:9bd38175-7bba-44cf-8cd1-36e160639e2d",
+  "text": "AttributeDefinition CartSample::Cart::CartStateDerivative",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:ac735a49-6156-4f55-ab26-cc7f5cddecfe",
+  "text": "ActionUsage CartSample::context::cart::cartBehavior",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:b8b45211-ca1d-51eb-9ad4-2c50aba6b781",
+  "text": "CalculationUsage StateSpaceRepresentation::StateSpaceDynamics::getOutput",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:b99d0a8b-c76c-4194-9c1d-da375e9d824b",
+  "text": "AttributeDefinition CartSample::Cart::CartInput",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:c6e2b173-998c-4994-aeeb-b780f5d127e0",
+  "text": "AttributeUsage CartSample::Cart::CartOutput::velocity",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:cf43a356-0d2d-5c01-a9a5-511bfaa9dd60",
+  "text": "ReferenceUsage StateSpaceRepresentation::StateDerivative::stateSpace",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:e07aae38-acc3-49e8-b3dd-fe5f4142f893",
+  "text": "CalculationUsage CartSample::context::cart::cartBehavior::getOutput",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:e2eede26-4268-449f-a232-4bd1905d9210",
+  "text": "ReferenceUsage CartSample::context::cart::cartBehavior::getOutput::stateSpace",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:e549185d-5fc3-53f8-9b00-6c61cf8ef22d",
+  "text": "LibraryPackage StateSpaceRepresentation",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:eaeef89a-9fb6-582b-bd1e-6fc007aea1f3",
+  "text": "ReferenceUsage StateSpaceRepresentation::GetOutput::stateSpace",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:f1f59f35-add2-57dd-a638-ee58257d4cac",
+  "text": "AttributeDefinition StateSpaceRepresentation::Output",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "State Space Representation Examples:fa48af18-662d-40ee-850a-12efb697efce",
+  "text": "ReferenceUsage CartSample::context::cart::cartBehavior::output",
+  "source": "official example · State Space Representation Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:1bef1d4a-1266-50a3-82e6-e10c647931d5",
+  "text": "Feature Clocks::Clock::currentTime",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:2693e853-917e-5157-86f0-cbfd954b6fb0",
+  "text": "LibraryPackage Time",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:3aacc0ce-6197-4fc5-9cde-bdb686a57ceb",
+  "text": "AttributeUsage TimeVaryingAttribute::Transport2::startTime",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:3cc23aa6-910a-4167-a224-4a0296d3c9a5",
+  "text": "OccurrenceUsage TimeVaryingAttribute::Transport2::transportPeriod::done",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:4b441673-81b2-4774-9486-7a14928d617e",
+  "text": "ReferenceUsage TimeVaryingAttribute::Transport2::transportPeriod::start::elapseTime",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:4c3ef50f-77ed-4778-a709-4bd6242c42d1",
+  "text": "ItemUsage TimeVaryingAttribute::Transport2::pwrCmd",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:52598af8-75b3-4b94-bc0d-7500f68a0f93",
+  "text": "ReferenceUsage TimeVaryingAttribute::Transport2::transportPeriod::done::elapseTime",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:5f443e03-97e6-4fe6-92b3-37f3de6db7bf",
+  "text": "Package TimeVaryingAttribute",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:6e90c3de-4c70-4f0c-a0ae-fd62824ed790",
+  "text": "OccurrenceUsage TimeVaryingAttribute::Transport2::transportPeriod::start",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:7114407c-3951-453c-accd-cbc922094f6c",
+  "text": "AttributeUsage TimeVaryingAttribute::Transport2::elapseTime",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:808f622b-0252-4f13-9d37-509586c4fe8a",
+  "text": "OccurrenceUsage TimeVaryingAttribute::Transport2::portionOfLife::done",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:87d59bd7-d657-45fc-89e8-c3d0fcbf1564",
+  "text": "OccurrenceUsage TimeVaryingAttribute::Transport2::transportPeriod",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:b48aa64a-bf50-4d7a-8732-c553b634c377",
+  "text": "PartDefinition TimeVaryingAttribute::Transport2",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:b5db39b7-729a-4a9d-a885-ac33362773d4",
+  "text": "AttributeUsage TimeVaryingAttribute::PwrCmd::pwrLevel",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:b9d61ccc-2ad0-5e29-ab8d-e99fe064e098",
+  "text": "CalculationDefinition Time::TimeOf",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:d356c47b-eb58-4412-aab3-fed2b750400b",
+  "text": "ReferenceUsage TimeVaryingAttribute::Transport2::portionOfLife::done::elapseTime",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:dab2cd56-54a4-46fd-9160-b9b2f9d6a0b7",
+  "text": "ItemDefinition TimeVaryingAttribute::PwrCmd",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:ebebedff-14e4-4286-932f-eed8ae691a20",
+  "text": "ReferenceUsage TimeVaryingAttribute::Transport2::portionOfLife::start::elapseTime",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:ef13f5cb-14b4-44ae-acc3-4e943569e170",
+  "text": "OccurrenceUsage TimeVaryingAttribute::Transport2::portionOfLife",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Timeslice and Snapshot Examples:fe4e26d2-39e3-40dd-93d0-3b16e0b40a66",
+  "text": "OccurrenceUsage TimeVaryingAttribute::Transport2::portionOfLife::start",
+  "source": "official example · Timeslice and Snapshot Examples"
+ },
+ {
+  "id": "Variability Examples:0239064e-1a46-43b1-8178-3542df22eccd",
+  "text": "PortUsage VehicleVariabilityModel::'150% Model'::PartsTree::EngineChoices::'6cylEngine'::autoPort::autoPort2",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:03093ea3-27fe-4b4f-a2d4-0ef3a370c455",
+  "text": "Package VehicleVariabilityModel::DesignModel",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:04a41656-bba0-41ea-87ef-23f9f3c25c69",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::'4cylEngine'::cylinder",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:05eba329-7708-4d41-8469-72ac5074fca3",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::vehicle::engine",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:0bf1e53c-3ccc-46b2-aa64-e0a4139a14ea",
+  "text": "ActionUsage VehicleVariabilityModel::DesignModel::ActionTree::generateTorque6Cyl",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:0e298b91-c7b7-400b-bb9e-61fbc471dd24",
+  "text": "AttributeDefinition VehicleVariabilityModel::'150% Model'::PartsTree::DiameterChoices",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:10f537b4-89dc-47eb-917f-3b3d1d8547b5",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::'4cylEngine'",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:1da87ddf-b595-497c-ab8f-b33f044e0c1f",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::vehicle::sunroof",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:200e8308-af61-46d6-8dbc-fbcc51aa603e",
+  "text": "ActionDefinition VehicleVariabilityModel::DesignModel::ActionDefinitions::GenerateTorque",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:230fbeb5-4e9e-4d3f-89d6-e7960841741b",
+  "text": "ActionUsage VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueManual",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:27c2993c-bb5b-414e-9330-87913e2d486c",
+  "text": "ActionUsage VehicleVariabilityModel::'100% Model'::vehicle4Cyl::providePowerFamily::amplifyTorque",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:2bf11ef7-5571-4525-b64b-413a07698f8d",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::vehicle",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:2dc3dcf6-467a-40d2-a5ad-0d833ea7291e",
+  "text": "ActionUsage VehicleVariabilityModel::DesignModel::ActionTree::generateTorque4Cyl",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:2ebcde06-d0a8-42c5-a294-7f29d75d3049",
+  "text": "PartUsage VehicleVariabilityModel::'100% Model'::vehicle4Cyl::engine",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:2f91775c-c23e-4051-946c-27d9ae919fcb",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::transmission",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:39112edd-4c8e-47b3-bec2-2645247f9604",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::engine::cylinder",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:3a179ca0-6b40-4662-aca1-33d04952caee",
+  "text": "ActionDefinition VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:3da0665f-eddd-42e8-bb80-f2638ccd980b",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::manualTransmission",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:3fd6cd17-236c-4db8-9880-50797d619902",
+  "text": "ReferenceUsage VehicleVariabilityModel::'150% Model'::ActionTree::providePowerFamily::generateTorque::generateTorque4Cyl",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:40b190df-afd0-4356-ae4b-4a7c46c9ad35",
+  "text": "PerformActionUsage VehicleVariabilityModel::'150% Model'::PartsTree::vehicleFamily::providePowerFamily",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:48436dc0-fc44-4276-8487-d62538b3432f",
+  "text": "Package VehicleVariabilityModel::DesignModel::ActionTree",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:48c94688-8ba9-406f-99ec-60a8d15a0998",
+  "text": "ReferenceUsage VehicleVariabilityModel::'150% Model'::PartsTree::vehicleFamily::transmission::manualTransmission",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:4a07b768-c78d-4aff-a977-6b76fe476df3",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::'6cylEngine'::cylinder",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:532fb3cb-c447-4946-bd2e-97b561e062bd",
+  "text": "AttributeUsage VehicleVariabilityModel::'150% Model'::PartsTree::EngineChoices::'6cylEngine'::cylinder::diameter",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:54a5acf7-2482-4fc2-9082-d0e27d639dfe",
+  "text": "PartUsage VehicleVariabilityModel::'100% Model'::vehicle4Cyl::sunroof",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:59d5ef20-5805-4862-a172-6e173910f45c",
+  "text": "AttributeDefinition VehicleVariabilityModel::DesignModel::PartDefinitions::Diameter",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:5d676023-02b8-46b0-8c25-372ee2e7958d",
+  "text": "PerformActionUsage VehicleVariabilityModel::'100% Model'::vehicle4Cyl::providePowerFamily",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:6641129c-2eac-479b-be60-8bc699a7facc",
+  "text": "AttributeUsage VehicleVariabilityModel::'150% Model'::PartsTree::DiameterChoices::diameterLarge",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:6b8b6639-222e-4ae3-bcfa-6790b07eff10",
+  "text": "Package VehicleVariabilityModel::DesignModel::PartsTree",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:6cdb0efc-3735-456b-89ad-f627537ec2ee",
+  "text": "PortUsage VehicleVariabilityModel::'150% Model'::PartsTree::EngineChoices::'6cylEngine'::autoPort::autoPort1",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:70a41d66-1481-4fc7-b6a3-2b4d2acd610d",
+  "text": "PartDefinition VehicleVariabilityModel::'150% Model'::PartsTree::EngineChoices",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:7addafb7-f4fc-4e77-ab20-09d5b4db6dbf",
+  "text": "PartUsage VehicleVariabilityModel::'150% Model'::PartsTree::vehicleFamily::sunroof::withoutSunroof",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:7b143a5f-67ee-4709-be7c-9a5e8329e2a3",
+  "text": "PartUsage VehicleVariabilityModel::'100% Model'::vehicle4Cyl",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:7c85bf8d-0ceb-46ab-93f0-38a392817c91",
+  "text": "Package VehicleVariabilityModel::'100% Model'",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:7cb960c4-08f3-49dc-a7ea-0e31cf79b2c9",
+  "text": "AttributeUsage VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder::diameter",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:89d662a9-35bf-49b6-a9c9-627166670faa",
+  "text": "ReferenceUsage VehicleVariabilityModel::'150% Model'::PartsTree::vehicleFamily::transmission::automaticTransmission",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:8a53fd83-0204-4f13-b0c3-631d9152f6cf",
+  "text": "Package VehicleVariabilityModel::'150% Model'",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:8bf5f331-37cc-4cb4-bb48-4565ea1632a0",
+  "text": "ActionUsage VehicleVariabilityModel::'100% Model'::vehicle4Cyl::providePowerFamily::generateTorque",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:8d4a0a9c-0626-4142-95cc-6fb6856eb781",
+  "text": "ActionDefinition VehicleVariabilityModel::DesignModel::ActionDefinitions::AmplifyTorque",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:8e9a00c6-9647-4258-bd38-69ecf4162da4",
+  "text": "Package VehicleVariabilityModel::'150% Model'::PartsTree",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:937d3533-f473-4b15-afc5-8ff8e8da6795",
+  "text": "PortUsage VehicleVariabilityModel::'150% Model'::PartsTree::EngineChoices::'6cylEngine'::autoPort",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:94b655a7-03f6-4dd5-8e84-4fc3b5984f24",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::automaticTransmission",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:94f65354-5b83-4157-8325-ef75fd977d9f",
+  "text": "ConjugatedPortDefinition VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort::'~AutoPort'",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:97f9ed12-f243-42b2-8458-41912a167535",
+  "text": "PartUsage VehicleVariabilityModel::'150% Model'::PartsTree::EngineChoices::'6cylEngine'::cylinder",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:9ae5af1d-88bf-4c58-99b3-84187fc0a9ac",
+  "text": "PartDefinition VehicleVariabilityModel::DesignModel::PartDefinitions::Engine",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:9b09e362-7ad1-4d26-ac6d-172b18ee63bd",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::engine",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:9d709ce6-f6bb-45a4-bba5-ad2cceb6c53e",
+  "text": "ReferenceUsage VehicleVariabilityModel::'150% Model'::ActionTree::providePowerFamily::amplifyTorque::amplifyTorqueManual",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:a07d7c72-325e-47dd-bf36-08339e9b2c47",
+  "text": "AttributeUsage VehicleVariabilityModel::'150% Model'::PartsTree::DiameterChoices::diameterSmall",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:a534775a-bc30-4673-87e9-faf45eaaabd1",
+  "text": "PartUsage VehicleVariabilityModel::'150% Model'::PartsTree::vehicleFamily::transmission",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:a70705b1-a598-4755-bd05-875389c864df",
+  "text": "ActionUsage VehicleVariabilityModel::DesignModel::ActionTree::amplifyTorqueAutomatic",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:af178747-b8f2-48d7-af62-dd9fdae23a02",
+  "text": "PartUsage VehicleVariabilityModel::'150% Model'::PartsTree::vehicleFamily",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:b1927875-7073-4b38-b7fe-1d87ae70de22",
+  "text": "PartDefinition VehicleVariabilityModel::DesignModel::PartDefinitions::Transmission",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:b929925c-383e-4546-9263-fadfebbf4f70",
+  "text": "Package VehicleVariabilityModel::DesignModel::ActionDefinitions",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:bb2eb7ba-4415-45ed-9d3f-022634092338",
+  "text": "ActionUsage VehicleVariabilityModel::'150% Model'::ActionTree::providePowerFamily::amplifyTorque",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:bedfa040-f1b0-4809-b313-3151fa07d6e2",
+  "text": "PartUsage VehicleVariabilityModel::'150% Model'::PartsTree::vehicleFamily::engine",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:c208087b-e8aa-483e-a281-814185e75267",
+  "text": "PortUsage VehicleVariabilityModel::DesignModel::PartsTree::engine::autoPort",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:c7a7c93a-ad9e-417c-8e6d-0bf3c78fbfdb",
+  "text": "ActionUsage VehicleVariabilityModel::'150% Model'::ActionTree::providePowerFamily",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:c8146858-c36e-4241-852f-6e5fdff255a8",
+  "text": "ReferenceUsage VehicleVariabilityModel::'150% Model'::PartsTree::EngineChoices::'4cylEngine'",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:cad7a7a7-3a7e-4667-9d5a-80dbb67a0306",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::'6cylEngine'",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:cee486c7-d432-4973-9592-6001efa12f93",
+  "text": "PortDefinition VehicleVariabilityModel::DesignModel::PartDefinitions::AutoPort",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:d21b0d8a-c135-476a-a969-ee1a1feed0c9",
+  "text": "ReferenceUsage VehicleVariabilityModel::'150% Model'::ActionTree::providePowerFamily::generateTorque::generateTorque6Cyl",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:d2f710e1-8044-4fad-868c-2c4a98a4511f",
+  "text": "ActionUsage VehicleVariabilityModel::'150% Model'::ActionTree::providePowerFamily::generateTorque",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:d3f58375-4f6a-45f0-8544-b9f171b9e6d5",
+  "text": "ReferenceUsage VehicleVariabilityModel::'150% Model'::ActionTree::providePowerFamily::amplifyTorque::amplifyTorqueAutomatic",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:db21f9cf-6d25-49b4-8598-42313178534f",
+  "text": "PartUsage VehicleVariabilityModel::'100% Model'::vehicle4Cyl::transmission",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:dc4fd6d5-f139-4b68-9b28-50e98a25ae61",
+  "text": "PartUsage VehicleVariabilityModel::'150% Model'::PartsTree::vehicleFamily::sunroof",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:e136fea6-ec5d-47b4-9239-aee0f58b2493",
+  "text": "PartDefinition VehicleVariabilityModel::DesignModel::PartDefinitions::Cylinder",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:e61cb65a-5c79-421f-8a59-93cbbb5534f0",
+  "text": "PartUsage VehicleVariabilityModel::DesignModel::PartsTree::vehicle::transmission",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:ea0389de-6d97-4088-af72-4972ab73b7ef",
+  "text": "PartUsage VehicleVariabilityModel::'150% Model'::PartsTree::vehicleFamily::sunroof::withSunroof",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:eb3dbb12-01a9-4130-bf67-611922feb05c",
+  "text": "Package VehicleVariabilityModel",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:f6ae79e4-a34a-427b-a5d1-b8b368feb127",
+  "text": "PartDefinition VehicleVariabilityModel::DesignModel::PartDefinitions::Sunroof",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:f8ee6d68-9718-4e60-a96c-ca6f82a42ce9",
+  "text": "Package VehicleVariabilityModel::DesignModel::PartDefinitions",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:fc57b702-58ee-4abc-ac8b-65da903b899c",
+  "text": "PartDefinition VehicleVariabilityModel::DesignModel::PartDefinitions::Vehicle",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:fde65401-b4aa-48aa-86db-625558931019",
+  "text": "Package VehicleVariabilityModel::'150% Model'::ActionTree",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "Variability Examples:fe536e2c-0f7d-4edc-b829-2369af8b94ee",
+  "text": "ReferenceUsage VehicleVariabilityModel::'150% Model'::PartsTree::EngineChoices::'6cylEngine'",
+  "source": "official example · Variability Examples"
+ },
+ {
+  "id": "notes:maritime-vocabulary.md:0",
+  "text": "# Maritime ISR vocabulary",
+  "source": "notes · maritime-vocabulary.md"
+ },
+ {
+  "id": "notes:maritime-vocabulary.md:1",
+  "text": "These notes name the roles in the scenario. They are not a model and they are not a task answer.",
+  "source": "notes · maritime-vocabulary.md"
+ },
+ {
+  "id": "notes:maritime-vocabulary.md:2",
+  "text": "An unmanned surface vessel may carry an electro-optical camera, an infrared camera, an AIS receiver, a processor, and a radio.\nA fixed-wing UAV may carry a surface-search radar, an electro-optical camera, a processor, and a radio.\nA command ship fuses tracks. A shore station archives what the command ship relays.\nTracks, imagery, and a radio link are different kinds of ports.\nIf a task omits a latency, a bandwidth, or a power number, ask for it. Do not fill one in.",
+  "source": "notes · maritime-vocabulary.md"
+ },
+ {
+  "id": "notes:sysml-syntax.md:0",
+  "text": "# SysML v2 textual patterns used by this benchmark",
+  "source": "notes · sysml-syntax.md"
+ },
+ {
+  "id": "notes:sysml-syntax.md:1",
+  "text": "A model is one package. Import the standard library only when a numeric type is used:\n\nprivate import ScalarValues::*;",
+  "source": "notes · sysml-syntax.md"
+ },
+ {
+  "id": "notes:sysml-syntax.md:2",
+  "text": "Port and part definitions:\n\nport def LinkPort;\n    part def Camera {\n        port imagery : ImageryPort;\n    }",
+  "source": "notes · sysml-syntax.md"
+ },
+ {
+  "id": "notes:sysml-syntax.md:3",
+  "text": "A part usage can nest other usages and attributes:\n\npart usv {\n        part eoCamera : Camera;\n        attribute powerLimitW : Real = 60.0;\n    }",
+  "source": "notes · sysml-syntax.md"
+ },
+ {
+  "id": "notes:sysml-syntax.md:4",
+  "text": "A connection names both ends:\n\nconnect usv.eoCamera.imagery to usv.processor.imageryIn;",
+  "source": "notes · sysml-syntax.md"
+ },
+ {
+  "id": "notes:sysml-syntax.md:5",
+  "text": "A requirement is a definition with a doc comment:\n\nrequirement def RawRetention {\n        doc /* raw imagery is retained locally */\n    }",
+  "source": "notes · sysml-syntax.md"
+ },
+ {
+  "id": "notes:sysml-syntax.md:6",
+  "text": "Do not invent numeric values. If the task states a number, copy that number.\nDo not change a stated limit to make a budget succeed.",
+  "source": "notes · sysml-syntax.md"
+ }
+]

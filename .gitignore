@@ -52,3 +52,6 @@ checkpoints.db
 .DS_Store
 .idea/
 .vscode/
+
+# derived vector caches (rebuilt from the cards)
+/analysis/vector-index/*.faiss

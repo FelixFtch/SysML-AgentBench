@@ -1,0 +1,1289 @@
+{
+  "id": "20261006T053203",
+  "library": "MaritimeISR official parse",
+  "cards": 63,
+  "default_threshold": 0.3,
+  "rows": [
+    {
+      "task_id": "QRY-01",
+      "relevant": [
+        "PartUsage MaritimeISR::commandShip",
+        "PartUsage MaritimeISR::shore",
+        "PartUsage MaritimeISR::uav",
+        "PartUsage MaritimeISR::usv"
+      ],
+      "keyword": {
+        "picked": 9,
+        "relevant": 4,
+        "hit": 0,
+        "recall": 0.0,
+        "precision": 0.0
+      },
+      "vector": {
+        "0.0": {
+          "picked": 11,
+          "relevant": 4,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": 0.0,
+          "seed_scores": [
+            0.4598,
+            0.4596,
+            0.4588,
+            0.4352
+          ]
+        },
+        "0.2": {
+          "picked": 11,
+          "relevant": 4,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": 0.0,
+          "seed_scores": [
+            0.4598,
+            0.4596,
+            0.4588,
+            0.4352
+          ]
+        },
+        "0.25": {
+          "picked": 11,
+          "relevant": 4,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": 0.0,
+          "seed_scores": [
+            0.4598,
+            0.4596,
+            0.4588,
+            0.4352
+          ]
+        },
+        "0.3": {
+          "picked": 11,
+          "relevant": 4,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": 0.0,
+          "seed_scores": [
+            0.4598,
+            0.4596,
+            0.4588,
+            0.4352
+          ]
+        },
+        "0.35": {
+          "picked": 11,
+          "relevant": 4,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": 0.0,
+          "seed_scores": [
+            0.4598,
+            0.4596,
+            0.4588,
+            0.4352
+          ]
+        },
+        "0.4": {
+          "picked": 11,
+          "relevant": 4,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": 0.0,
+          "seed_scores": [
+            0.4598,
+            0.4596,
+            0.4588,
+            0.4352
+          ]
+        },
+        "0.5": {
+          "picked": 0,
+          "relevant": 4,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": null,
+          "seed_scores": []
+        }
+      },
+      "hybrid": {
+        "0.0": {
+          "picked": 5,
+          "relevant": 4,
+          "hit": 2,
+          "recall": 0.5,
+          "precision": 0.4,
+          "seed_scores": [
+            0.5352,
+            0.5322,
+            0.512,
+            0.5063
+          ]
+        },
+        "0.2": {
+          "picked": 5,
+          "relevant": 4,
+          "hit": 2,
+          "recall": 0.5,
+          "precision": 0.4,
+          "seed_scores": [
+            0.5352,
+            0.5322,
+            0.512,
+            0.5063
+          ]
+        },
+        "0.25": {
+          "picked": 5,
+          "relevant": 4,
+          "hit": 2,
+          "recall": 0.5,
+          "precision": 0.4,
+          "seed_scores": [
+            0.5352,
+            0.5322,
+            0.512,
+            0.5063
+          ]
+        },
+        "0.3": {
+          "picked": 5,
+          "relevant": 4,
+          "hit": 2,
+          "recall": 0.5,
+          "precision": 0.4,
+          "seed_scores": [
+            0.5352,
+            0.5322,
+            0.512,
+            0.5063
+          ]
+        },
+        "0.35": {
+          "picked": 5,
+          "relevant": 4,
+          "hit": 2,
+          "recall": 0.5,
+          "precision": 0.4,
+          "seed_scores": [
+            0.5352,
+            0.5322,
+            0.512,
+            0.5063
+          ]
+        },
+        "0.4": {
+          "picked": 5,
+          "relevant": 4,
+          "hit": 2,
+          "recall": 0.5,
+          "precision": 0.4,
+          "seed_scores": [
+            0.5352,
+            0.5322,
+            0.512,
+            0.5063
+          ]
+        },
+        "0.5": {
+          "picked": 0,
+          "relevant": 4,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": null,
+          "seed_scores": []
+        }
+      },
+      "hybrid_top": [
+        {
+          "id": "3f5b8188-4034-45c6-831b-d67894e9ac07",
+          "score": 0.5352,
+          "cosine": 0.4352,
+          "text": "PartUsage MaritimeISR::CommandShip::fusion"
+        },
+        {
+          "id": "787dfb26-2126-4abc-8f10-465c7598c82b",
+          "score": 0.5322,
+          "cosine": 0.4322,
+          "text": "PartUsage MaritimeISR::uav"
+        },
+        {
+          "id": "d98d6109-cca7-4a21-b794-c69734d362ea",
+          "score": 0.512,
+          "cosine": 0.412,
+          "text": "AttributeUsage MaritimeISR::CommandShip::fusionLatencyS 2.0"
+        },
+        {
+          "id": "46cd26ff-a213-44d8-95c4-6bd75e3ce2e4",
+          "score": 0.5063,
+          "cosine": 0.4063,
+          "text": "PartUsage MaritimeISR::usv"
+        },
+        {
+          "id": "9c0c2d84-2bb2-4fdd-b732-ba57dae944fc",
+          "score": 0.5055,
+          "cosine": 0.4055,
+          "text": "ConnectionUsage MaritimeISR::connect[MaritimeISR::uav.eoCamera.imagery → MaritimeISR::uav.processor.imageryIn] MaritimeISR::uav.eoCamera.imagery MaritimeISR::uav.processor.imageryIn"
+        },
+        {
+          "id": "1ba801f9-c528-4fba-9193-cd6ce7630166",
+          "score": 0.4971,
+          "cosine": 0.3971,
+          "text": "ConnectionUsage MaritimeISR::connect[MaritimeISR::uav.radio.toShore → MaritimeISR::commandShip.fromUav] MaritimeISR::uav.radio.toShore MaritimeISR::commandShip.fromUav"
+        },
+        {
+          "id": "60829fce-0b8f-42a3-8b6c-ca8ad196648f",
+          "score": 0.4963,
+          "cosine": 0.3963,
+          "text": "PartUsage MaritimeISR::commandShip"
+        },
+        {
+          "id": "f61d26ea-cada-4041-bad8-d5de57edd605",
+          "score": 0.4821,
+          "cosine": 0.3821,
+          "text": "PartDefinition MaritimeISR::CommandShip"
+        }
+      ]
+    },
+    {
+      "task_id": "QRY-02",
+      "relevant": [
+        "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0"
+      ],
+      "keyword": {
+        "picked": 6,
+        "relevant": 1,
+        "hit": 1,
+        "recall": 1.0,
+        "precision": 0.167
+      },
+      "vector": {
+        "0.0": {
+          "picked": 6,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.167,
+          "seed_scores": [
+            0.4601,
+            0.4398,
+            0.3496,
+            0.2765
+          ]
+        },
+        "0.2": {
+          "picked": 6,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.167,
+          "seed_scores": [
+            0.4601,
+            0.4398,
+            0.3496,
+            0.2765
+          ]
+        },
+        "0.25": {
+          "picked": 6,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.167,
+          "seed_scores": [
+            0.4601,
+            0.4398,
+            0.3496,
+            0.2765
+          ]
+        },
+        "0.3": {
+          "picked": 5,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.2,
+          "seed_scores": [
+            0.4601,
+            0.4398,
+            0.3496
+          ]
+        },
+        "0.35": {
+          "picked": 4,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.25,
+          "seed_scores": [
+            0.4601,
+            0.4398
+          ]
+        },
+        "0.4": {
+          "picked": 4,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.25,
+          "seed_scores": [
+            0.4601,
+            0.4398
+          ]
+        },
+        "0.5": {
+          "picked": 0,
+          "relevant": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": null,
+          "seed_scores": []
+        }
+      },
+      "hybrid": {
+        "0.0": {
+          "picked": 6,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.167,
+          "seed_scores": [
+            0.6398,
+            0.5601,
+            0.3765,
+            0.3496
+          ]
+        },
+        "0.2": {
+          "picked": 6,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.167,
+          "seed_scores": [
+            0.6398,
+            0.5601,
+            0.3765,
+            0.3496
+          ]
+        },
+        "0.25": {
+          "picked": 6,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.167,
+          "seed_scores": [
+            0.6398,
+            0.5601,
+            0.3765,
+            0.3496
+          ]
+        },
+        "0.3": {
+          "picked": 5,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.2,
+          "seed_scores": [
+            0.6398,
+            0.5601,
+            0.3496
+          ]
+        },
+        "0.35": {
+          "picked": 4,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.25,
+          "seed_scores": [
+            0.6398,
+            0.5601
+          ]
+        },
+        "0.4": {
+          "picked": 4,
+          "relevant": 1,
+          "hit": 1,
+          "recall": 1.0,
+          "precision": 0.25,
+          "seed_scores": [
+            0.6398,
+            0.5601
+          ]
+        },
+        "0.5": {
+          "picked": 0,
+          "relevant": 1,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": null,
+          "seed_scores": []
+        }
+      },
+      "hybrid_top": [
+        {
+          "id": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+          "score": 0.6398,
+          "cosine": 0.4398,
+          "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0"
+        },
+        {
+          "id": "ce0a1d4f-0bb3-44e0-9d2f-5351bfd930a3",
+          "score": 0.5601,
+          "cosine": 0.4601,
+          "text": "AttributeUsage MaritimeISR::FixedWingUav::powerLimitW 120.0"
+        },
+        {
+          "id": "40e00f23-7033-4336-8c5b-6b289a219ecb",
+          "score": 0.3765,
+          "cosine": 0.2765,
+          "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::storageGB 128.0"
+        },
+        {
+          "id": "aece9177-578c-4ada-9a3a-055f7be59502",
+          "score": 0.3496,
+          "cosine": 0.3496,
+          "text": "RequirementDefinition MaritimeISR::PowerLimitUnchanged"
+        },
+        {
+          "id": "929a8e3a-153e-45dc-8702-1c52db4057f4",
+          "score": 0.3489,
+          "cosine": 0.2489,
+          "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::uplinkMbps 8.0"
+        },
+        {
+          "id": "ed729baf-84e5-4107-9a14-83dd0066b558",
+          "score": 0.3247,
+          "cosine": 0.2247,
+          "text": "PartUsage MaritimeISR::UnmannedSurfaceVessel::radio"
+        },
+        {
+          "id": "68376d4e-c0ed-453a-b2c4-4af3105bb5cb",
+          "score": 0.323,
+          "cosine": 0.223,
+          "text": "PartUsage MaritimeISR::UnmannedSurfaceVessel::processor"
+        },
+        {
+          "id": "db662964-3e7e-4232-aa67-5d7ecc96bb19",
+          "score": 0.309,
+          "cosine": 0.209,
+          "text": "PartUsage MaritimeISR::UnmannedSurfaceVessel::irCamera"
+        }
+      ]
+    },
+    {
+      "task_id": "QRY-03",
+      "relevant": [
+        "ConnectionUsage MaritimeISR::connect[MaritimeISR::commandShip.toShore → MaritimeISR::shore.fromCommand] MaritimeISR::commandShip.toShore MaritimeISR::shore.fromCommand",
+        "ConnectionUsage MaritimeISR::connect[MaritimeISR::uav.radio.toShore → MaritimeISR::commandShip.fromUav] MaritimeISR::uav.radio.toShore MaritimeISR::commandShip.fromUav",
+        "ConnectionUsage MaritimeISR::connect[MaritimeISR::usv.radio.toShore → MaritimeISR::commandShip.fromUsv] MaritimeISR::usv.radio.toShore MaritimeISR::commandShip.fromUsv"
+      ],
+      "keyword": {
+        "picked": 5,
+        "relevant": 3,
+        "hit": 3,
+        "recall": 1.0,
+        "precision": 0.6
+      },
+      "vector": {
+        "0.0": {
+          "picked": 4,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.75,
+          "seed_scores": [
+            0.4546,
+            0.4189,
+            0.4107,
+            0.3838
+          ]
+        },
+        "0.2": {
+          "picked": 4,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.75,
+          "seed_scores": [
+            0.4546,
+            0.4189,
+            0.4107,
+            0.3838
+          ]
+        },
+        "0.25": {
+          "picked": 4,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.75,
+          "seed_scores": [
+            0.4546,
+            0.4189,
+            0.4107,
+            0.3838
+          ]
+        },
+        "0.3": {
+          "picked": 4,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.75,
+          "seed_scores": [
+            0.4546,
+            0.4189,
+            0.4107,
+            0.3838
+          ]
+        },
+        "0.35": {
+          "picked": 4,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.75,
+          "seed_scores": [
+            0.4546,
+            0.4189,
+            0.4107,
+            0.3838
+          ]
+        },
+        "0.4": {
+          "picked": 3,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 1.0,
+          "seed_scores": [
+            0.4546,
+            0.4189,
+            0.4107
+          ]
+        },
+        "0.5": {
+          "picked": 0,
+          "relevant": 3,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": null,
+          "seed_scores": []
+        }
+      },
+      "hybrid": {
+        "0.0": {
+          "picked": 4,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.75,
+          "seed_scores": [
+            0.6546,
+            0.5189,
+            0.5107,
+            0.4838
+          ]
+        },
+        "0.2": {
+          "picked": 4,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.75,
+          "seed_scores": [
+            0.6546,
+            0.5189,
+            0.5107,
+            0.4838
+          ]
+        },
+        "0.25": {
+          "picked": 4,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.75,
+          "seed_scores": [
+            0.6546,
+            0.5189,
+            0.5107,
+            0.4838
+          ]
+        },
+        "0.3": {
+          "picked": 4,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.75,
+          "seed_scores": [
+            0.6546,
+            0.5189,
+            0.5107,
+            0.4838
+          ]
+        },
+        "0.35": {
+          "picked": 4,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.75,
+          "seed_scores": [
+            0.6546,
+            0.5189,
+            0.5107,
+            0.4838
+          ]
+        },
+        "0.4": {
+          "picked": 3,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 1.0,
+          "seed_scores": [
+            0.6546,
+            0.5189,
+            0.5107
+          ]
+        },
+        "0.5": {
+          "picked": 0,
+          "relevant": 3,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": null,
+          "seed_scores": []
+        }
+      },
+      "hybrid_top": [
+        {
+          "id": "e79c357f-16ac-436f-b281-8639fb4ceec9",
+          "score": 0.6546,
+          "cosine": 0.4546,
+          "text": "ConnectionUsage MaritimeISR::connect[MaritimeISR::commandShip.toShore → MaritimeISR::shore.fromCommand] MaritimeISR::commandShip.toShore MaritimeISR::shore.fromCommand"
+        },
+        {
+          "id": "506c5296-9516-4c6a-a0d4-f18e8a93b9b7",
+          "score": 0.5189,
+          "cosine": 0.4189,
+          "text": "ConnectionUsage MaritimeISR::connect[MaritimeISR::usv.radio.toShore → MaritimeISR::commandShip.fromUsv] MaritimeISR::usv.radio.toShore MaritimeISR::commandShip.fromUsv"
+        },
+        {
+          "id": "1ba801f9-c528-4fba-9193-cd6ce7630166",
+          "score": 0.5107,
+          "cosine": 0.4107,
+          "text": "ConnectionUsage MaritimeISR::connect[MaritimeISR::uav.radio.toShore → MaritimeISR::commandShip.fromUav] MaritimeISR::uav.radio.toShore MaritimeISR::commandShip.fromUav"
+        },
+        {
+          "id": "5b151521-e218-47d3-8794-5f47c966ecd1",
+          "score": 0.4838,
+          "cosine": 0.3838,
+          "text": "ConnectionUsage MaritimeISR::connect[MaritimeISR::usv.processor.uplink → MaritimeISR::usv.radio.fromProcessor] MaritimeISR::usv.processor.uplink MaritimeISR::usv.radio.fromProcessor"
+        },
+        {
+          "id": "cdce6621-1e70-470d-9250-cc8657f94127",
+          "score": 0.4724,
+          "cosine": 0.3724,
+          "text": "ConnectionUsage MaritimeISR::connect[MaritimeISR::uav.processor.uplink → MaritimeISR::uav.radio.fromProcessor] MaritimeISR::uav.processor.uplink MaritimeISR::uav.radio.fromProcessor"
+        },
+        {
+          "id": "36ffaa3c-944d-4c4c-a4be-2aa6f0d62d32",
+          "score": 0.451,
+          "cosine": 0.351,
+          "text": "ConnectionUsage MaritimeISR::connect[MaritimeISR::usv.ais.tracks → MaritimeISR::usv.processor.trackIn] MaritimeISR::usv.ais.tracks MaritimeISR::usv.processor.trackIn"
+        },
+        {
+          "id": "c5a62b98-b6f6-48fc-995f-5bf0f352c121",
+          "score": 0.43,
+          "cosine": 0.33,
+          "text": "ConnectionUsage MaritimeISR::connect[MaritimeISR::uav.searchRadar.tracks → MaritimeISR::uav.processor.trackIn] MaritimeISR::uav.searchRadar.tracks MaritimeISR::uav.processor.trackIn"
+        },
+        {
+          "id": "b8bb4555-17d2-4ec7-b659-2a6a75bca253",
+          "score": 0.4192,
+          "cosine": 0.3192,
+          "text": "PortUsage MaritimeISR::CommandShip::fromUsv"
+        }
+      ]
+    },
+    {
+      "task_id": "QRY-04",
+      "relevant": [
+        "PartUsage MaritimeISR::FixedWingUav::eoCamera",
+        "PartUsage MaritimeISR::FixedWingUav::processor",
+        "PartUsage MaritimeISR::FixedWingUav::radio",
+        "PartUsage MaritimeISR::FixedWingUav::searchRadar"
+      ],
+      "keyword": {
+        "picked": 12,
+        "relevant": 4,
+        "hit": 4,
+        "recall": 1.0,
+        "precision": 0.333
+      },
+      "vector": {
+        "0.0": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.4362,
+            0.4291,
+            0.3893,
+            0.371
+          ]
+        },
+        "0.2": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.4362,
+            0.4291,
+            0.3893,
+            0.371
+          ]
+        },
+        "0.25": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.4362,
+            0.4291,
+            0.3893,
+            0.371
+          ]
+        },
+        "0.3": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.4362,
+            0.4291,
+            0.3893,
+            0.371
+          ]
+        },
+        "0.35": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.4362,
+            0.4291,
+            0.3893,
+            0.371
+          ]
+        },
+        "0.4": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.4362,
+            0.4291
+          ]
+        },
+        "0.5": {
+          "picked": 0,
+          "relevant": 4,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": null,
+          "seed_scores": []
+        }
+      },
+      "hybrid": {
+        "0.0": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.5362,
+            0.5291,
+            0.4893,
+            0.471
+          ]
+        },
+        "0.2": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.5362,
+            0.5291,
+            0.4893,
+            0.471
+          ]
+        },
+        "0.25": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.5362,
+            0.5291,
+            0.4893,
+            0.471
+          ]
+        },
+        "0.3": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.5362,
+            0.5291,
+            0.4893,
+            0.471
+          ]
+        },
+        "0.35": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.5362,
+            0.5291,
+            0.4893,
+            0.471
+          ]
+        },
+        "0.4": {
+          "picked": 7,
+          "relevant": 4,
+          "hit": 4,
+          "recall": 1.0,
+          "precision": 0.571,
+          "seed_scores": [
+            0.5362,
+            0.5291
+          ]
+        },
+        "0.5": {
+          "picked": 0,
+          "relevant": 4,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": null,
+          "seed_scores": []
+        }
+      },
+      "hybrid_top": [
+        {
+          "id": "14cbc4aa-1bc9-4d41-8e1e-e3a449982c9e",
+          "score": 0.5362,
+          "cosine": 0.4362,
+          "text": "PartDefinition MaritimeISR::FixedWingUav"
+        },
+        {
+          "id": "d7d22bf8-9945-40c0-8322-e9f3ec617d77",
+          "score": 0.5291,
+          "cosine": 0.4291,
+          "text": "PartUsage MaritimeISR::FixedWingUav::processor"
+        },
+        {
+          "id": "91a28e09-3348-4c36-94c1-d3e399f91906",
+          "score": 0.4893,
+          "cosine": 0.3893,
+          "text": "PartUsage MaritimeISR::FixedWingUav::eoCamera"
+        },
+        {
+          "id": "ad10989c-8eb4-4ff5-8c2f-0fe35e684c05",
+          "score": 0.471,
+          "cosine": 0.371,
+          "text": "PartUsage MaritimeISR::FixedWingUav::radio"
+        },
+        {
+          "id": "4704aa68-cc72-49f5-aad9-2d34465583d2",
+          "score": 0.4445,
+          "cosine": 0.3445,
+          "text": "PartUsage MaritimeISR::FixedWingUav::searchRadar"
+        },
+        {
+          "id": "23808d04-dc03-4ab7-846d-d70824077a4c",
+          "score": 0.3681,
+          "cosine": 0.3681,
+          "text": "PartDefinition MaritimeISR::Processor"
+        },
+        {
+          "id": "46cd26ff-a213-44d8-95c4-6bd75e3ce2e4",
+          "score": 0.3428,
+          "cosine": 0.3428,
+          "text": "PartUsage MaritimeISR::usv"
+        },
+        {
+          "id": "b8c575a7-b9f6-4c44-8f11-afaf8e11acb4",
+          "score": 0.3108,
+          "cosine": 0.3108,
+          "text": "PartDefinition MaritimeISR::Radar"
+        }
+      ]
+    },
+    {
+      "task_id": "QRY-05",
+      "relevant": [
+        "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0",
+        "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::storageGB 128.0",
+        "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::uplinkMbps 8.0"
+      ],
+      "keyword": {
+        "picked": 9,
+        "relevant": 3,
+        "hit": 3,
+        "recall": 1.0,
+        "precision": 0.333
+      },
+      "vector": {
+        "0.0": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.4696,
+            0.448,
+            0.4395,
+            0.4378
+          ]
+        },
+        "0.2": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.4696,
+            0.448,
+            0.4395,
+            0.4378
+          ]
+        },
+        "0.25": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.4696,
+            0.448,
+            0.4395,
+            0.4378
+          ]
+        },
+        "0.3": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.4696,
+            0.448,
+            0.4395,
+            0.4378
+          ]
+        },
+        "0.35": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.4696,
+            0.448,
+            0.4395,
+            0.4378
+          ]
+        },
+        "0.4": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.4696,
+            0.448,
+            0.4395,
+            0.4378
+          ]
+        },
+        "0.5": {
+          "picked": 0,
+          "relevant": 3,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": null,
+          "seed_scores": []
+        }
+      },
+      "hybrid": {
+        "0.0": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.6696,
+            0.648,
+            0.6395,
+            0.5378
+          ]
+        },
+        "0.2": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.6696,
+            0.648,
+            0.6395,
+            0.5378
+          ]
+        },
+        "0.25": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.6696,
+            0.648,
+            0.6395,
+            0.5378
+          ]
+        },
+        "0.3": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.6696,
+            0.648,
+            0.6395,
+            0.5378
+          ]
+        },
+        "0.35": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.6696,
+            0.648,
+            0.6395,
+            0.5378
+          ]
+        },
+        "0.4": {
+          "picked": 6,
+          "relevant": 3,
+          "hit": 3,
+          "recall": 1.0,
+          "precision": 0.5,
+          "seed_scores": [
+            0.6696,
+            0.648,
+            0.6395,
+            0.5378
+          ]
+        },
+        "0.5": {
+          "picked": 0,
+          "relevant": 3,
+          "hit": 0,
+          "recall": 0.0,
+          "precision": null,
+          "seed_scores": []
+        }
+      },
+      "hybrid_top": [
+        {
+          "id": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+          "score": 0.6696,
+          "cosine": 0.4696,
+          "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0"
+        },
+        {
+          "id": "929a8e3a-153e-45dc-8702-1c52db4057f4",
+          "score": 0.648,
+          "cosine": 0.448,
+          "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::uplinkMbps 8.0"
+        },
+        {
+          "id": "40e00f23-7033-4336-8c5b-6b289a219ecb",
+          "score": 0.6395,
+          "cosine": 0.4395,
+          "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::storageGB 128.0"
+        },
+        {
+          "id": "ce0a1d4f-0bb3-44e0-9d2f-5351bfd930a3",
+          "score": 0.5378,
+          "cosine": 0.4378,
+          "text": "AttributeUsage MaritimeISR::FixedWingUav::powerLimitW 120.0"
+        },
+        {
+          "id": "ed729baf-84e5-4107-9a14-83dd0066b558",
+          "score": 0.4811,
+          "cosine": 0.3811,
+          "text": "PartUsage MaritimeISR::UnmannedSurfaceVessel::radio"
+        },
+        {
+          "id": "68376d4e-c0ed-453a-b2c4-4af3105bb5cb",
+          "score": 0.4745,
+          "cosine": 0.3745,
+          "text": "PartUsage MaritimeISR::UnmannedSurfaceVessel::processor"
+        },
+        {
+          "id": "db662964-3e7e-4232-aa67-5d7ecc96bb19",
+          "score": 0.4571,
+          "cosine": 0.3571,
+          "text": "PartUsage MaritimeISR::UnmannedSurfaceVessel::irCamera"
+        },
+        {
+          "id": "e45964fc-9f09-4c8d-8b5c-d4d997e14d84",
+          "score": 0.4422,
+          "cosine": 0.3422,
+          "text": "PartDefinition MaritimeISR::UnmannedSurfaceVessel"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "keyword": {
+      "mean_recall": 0.8,
+      "mean_precision": 0.287,
+      "hits": 11,
+      "relevant": 15
+    },
+    "vector@0.0": {
+      "mean_recall": 0.8,
+      "mean_precision": 0.398,
+      "hits": 11,
+      "relevant": 15
+    },
+    "vector@0.2": {
+      "mean_recall": 0.8,
+      "mean_precision": 0.398,
+      "hits": 11,
+      "relevant": 15
+    },
+    "vector@0.25": {
+      "mean_recall": 0.8,
+      "mean_precision": 0.398,
+      "hits": 11,
+      "relevant": 15
+    },
+    "vector@0.3": {
+      "mean_recall": 0.8,
+      "mean_precision": 0.404,
+      "hits": 11,
+      "relevant": 15
+    },
+    "vector@0.35": {
+      "mean_recall": 0.8,
+      "mean_precision": 0.414,
+      "hits": 11,
+      "relevant": 15
+    },
+    "vector@0.4": {
+      "mean_recall": 0.8,
+      "mean_precision": 0.464,
+      "hits": 11,
+      "relevant": 15
+    },
+    "vector@0.5": {
+      "mean_recall": 0.0,
+      "mean_precision": null,
+      "hits": 0,
+      "relevant": 15
+    },
+    "hybrid@0.0": {
+      "mean_recall": 0.9,
+      "mean_precision": 0.478,
+      "hits": 13,
+      "relevant": 15
+    },
+    "hybrid@0.2": {
+      "mean_recall": 0.9,
+      "mean_precision": 0.478,
+      "hits": 13,
+      "relevant": 15
+    },
+    "hybrid@0.25": {
+      "mean_recall": 0.9,
+      "mean_precision": 0.478,
+      "hits": 13,
+      "relevant": 15
+    },
+    "hybrid@0.3": {
+      "mean_recall": 0.9,
+      "mean_precision": 0.484,
+      "hits": 13,
+      "relevant": 15
+    },
+    "hybrid@0.35": {
+      "mean_recall": 0.9,
+      "mean_precision": 0.494,
+      "hits": 13,
+      "relevant": 15
+    },
+    "hybrid@0.4": {
+      "mean_recall": 0.9,
+      "mean_precision": 0.544,
+      "hits": 13,
+      "relevant": 15
+    },
+    "hybrid@0.5": {
+      "mean_recall": 0.0,
+      "mean_precision": null,
+      "hits": 0,
+      "relevant": 15
+    }
+  }
+}

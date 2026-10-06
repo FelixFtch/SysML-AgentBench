@@ -10,6 +10,7 @@ import hashlib
 import json
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -83,8 +84,18 @@ def build_graph(parse_dir: Path, prefix: str):
                 neighbors[other].add(element["@id"])
                 kinds[(element["@id"], other)] = kinds[(other, element["@id"])] = "connect"
     cards = {}
+    by_id = {element["@id"]: element for element in elements}
     for element in elements:
         name = element.get("qualifiedName")
+        if element.get("@type") == "ConnectionUsage" and not name:
+            # `connect a to b;` has no name of its own. Without a card the connection is invisible to
+            # retrieval (the graph-retrieval QRY-03 run answered 0 connections for that reason), so it
+            # gets a synthetic name under its owner: Owner::connect[a → b].
+            owner = by_id.get((element.get("owner") or {}).get("@id") or "", {})
+            owner_name = owner.get("qualifiedName") or ""
+            ends = [view.reference_name(ref["@id"]) or "" for ref in element.get("relatedFeature") or []]
+            if (owner_name.startswith(prefix) or owner_name == prefix.rstrip(":")) and len(ends) >= 2:
+                name = f"{owner_name}::connect[{ends[0]} → {ends[1]}]"
         if not name or not name.startswith(prefix):
             continue
         bits = [element.get("@type", ""), name]
@@ -100,7 +111,8 @@ def build_graph(parse_dir: Path, prefix: str):
     return cards, neighbors, kinds
 
 
-def retrieve(question: str, cards: dict, neighbors: dict, limit: int = 8) -> list[str]:
+def retrieve_keyword(question: str, cards: dict, neighbors: dict, limit: int = 8) -> list[str]:
+    """The 2026-10-03 ranking (shared words, top 4 seeds, one hop). Kept for the archived comparison."""
     words = {word.lower() for word in re.findall(r"[A-Za-z0-9]+", question) if len(word) > 2}
     ranked = sorted(cards, key=lambda ident: sum(word in cards[ident].lower() for word in words), reverse=True)
     chosen = []
@@ -117,6 +129,18 @@ def retrieve(question: str, cards: dict, neighbors: dict, limit: int = 8) -> lis
     return [cards[ident] for ident in chosen[:limit]]
 
 
+def retrieve(question: str, cards: dict, neighbors: dict, limit: int = 8) -> tuple[list[str], dict]:
+    """Paper 2's retrieval on our parse: MiniLM + FAISS seeds with the exact-name bonus, then one hop.
+    Returns the card texts and the settings used. Falls back to the keyword ranking if the stack is missing."""
+    try:
+        from bench.vector_index import retrieve as vector_retrieve
+    except Exception as exc:  # embedding stack not installed
+        return retrieve_keyword(question, cards, neighbors, limit), {"method": "keyword", "fallback_reason": str(exc)[:200]}
+    found = vector_retrieve(question, cards, neighbors, name="memory", k_seeds=4, limit=limit)
+    settings = {key: found[key] for key in ("method", "embedding_model", "threshold", "k_seeds", "name_bonus", "index_key", "library_size")}
+    return [cards[item["id"]] for item in found["picked"]], settings
+
+
 def main() -> None:
     load_env()
     cards, neighbors = _graph()
@@ -124,17 +148,20 @@ def main() -> None:
     for task_id in ("QRY-01", "QRY-02", "QRY-03", "QRY-04", "QRY-05"):
         task = HELD / task_id
         question = (task / "input" / "requirements.md").read_text(encoding="utf-8")
-        context = "\n".join(retrieve(question, cards, neighbors))
+        texts, settings = retrieve(question, cards, neighbors)
+        context = "\n".join(texts)
         completed = chat([
             {"role": "system", "content": "Answer from the retrieved model elements only. One JSON object, no prose."},
             {"role": "user", "content": question + "\n\nRetrieved elements:\n" + context},
         ], max_tokens=300, temperature=0)
         scored = score_answer(task, completed["text"])
-        rows.append({"task_id": task_id, "model": completed["model"], "status": scored["status"],
+        rows.append({"task_id": task_id, "model": completed["model"], "status": scored["status"], "retrieval": settings,
                      "retrieved": context, "answer": completed["text"], "usage": completed["usage"]})
-        print(task_id, scored["status"], completed["model"], flush=True)
-    out = ROOT / "analysis" / "graph-query-max.json"
+        print(task_id, scored["status"], completed["model"], settings["method"], flush=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+    out = ROOT / "analysis" / f"graph-query-{stamp}.json"
     out.write_text(json.dumps(rows, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(out)
 
 
 if __name__ == "__main__":

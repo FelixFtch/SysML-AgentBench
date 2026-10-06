@@ -1,0 +1,8 @@
+{
+  "name": "memory",
+  "key": "4474741ff0541425",
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "cards": 152,
+  "dimension": 384,
+  "metric": "cosine (inner product over unit vectors)"
+}

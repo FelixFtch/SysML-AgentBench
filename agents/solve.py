@@ -14,6 +14,7 @@ import json
 import os
 import re
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable
@@ -109,8 +110,11 @@ def _retrieve(prompt: str, limit: int = 6) -> list[dict]:
 
 
 def _folder(task_id: str, config: str) -> Path:
+    # Two batches may run at once (flash and max); a short random suffix keeps their folders apart.
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     folder = ROOT / "mvp" / "agent-runs" / f"{stamp}-{config}-{task_id}"
+    if folder.exists():
+        folder = ROOT / "mvp" / "agent-runs" / f"{stamp}-{uuid.uuid4().hex[:4]}-{config}-{task_id}"
     folder.mkdir(parents=True)
     return folder
 

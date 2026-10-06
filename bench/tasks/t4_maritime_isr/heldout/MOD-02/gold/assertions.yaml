@@ -1,6 +1,6 @@
 task_id: MOD-02
 package: VesselAlign
-status: single-author
+status: reviewed
 must_exist:
 - qualified_name: VesselAlign::vessel::ais
 - qualified_name: VesselAlign::vessel::camera

@@ -91,22 +91,6 @@
   },
   {
    "set": "flash",
-   "task_id": "ALN-01",
-   "configuration": "P3",
-   "repeat": 1,
-   "package": "AlignCamera",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T071744-ba7e62d9/model/AlignCamera.sysml",
-    "mvp/runs/20261006T071744-ba7e62d9/model/UsvPayloadSpec.sysml",
-    "mvp/runs/20261006T071744-ba7e62d9/model/OptronicsKit.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "flash",
    "task_id": "ALN-02",
    "configuration": "P0",
    "repeat": 1,
@@ -149,22 +133,6 @@
     "mvp/runs/20261006T071848-78c3da0f/model/AlignLink.sysml",
     "mvp/runs/20261006T071848-78c3da0f/model/ShipLinkIcd.sysml",
     "mvp/runs/20261006T071848-78c3da0f/model/VendorRadioPack.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "flash",
-   "task_id": "ALN-02",
-   "configuration": "P3",
-   "repeat": 1,
-   "package": "AlignLink",
-   "scorer_order": "PASS",
-   "verdict": "FAIL",
-   "files": [
-    "mvp/runs/20261006T072006-a5a326f1/model/AlignLink.sysml",
-    "mvp/runs/20261006T072006-a5a326f1/model/ShipLinkIcd.sysml",
-    "mvp/runs/20261006T072006-a5a326f1/model/VendorRadioPack.sysml"
    ],
    "package_first": "PASS",
    "package_first_errors": []
@@ -219,22 +187,6 @@
   },
   {
    "set": "flash",
-   "task_id": "ALN-03",
-   "configuration": "P3",
-   "repeat": 1,
-   "package": "AlignRadar",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T072136-02773371/model/AlignRadar.sysml",
-    "mvp/runs/20261006T072136-02773371/model/UavSensorSpec.sysml",
-    "mvp/runs/20261006T072136-02773371/model/RadarVendor.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "flash",
    "task_id": "ALN-01",
    "configuration": "P0",
    "repeat": 2,
@@ -277,22 +229,6 @@
     "mvp/runs/20261006T073451-bca16ff1/model/AlignCamera.sysml",
     "mvp/runs/20261006T073451-bca16ff1/model/UsvPayloadSpec.sysml",
     "mvp/runs/20261006T073451-bca16ff1/model/OptronicsKit.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "flash",
-   "task_id": "ALN-01",
-   "configuration": "P3",
-   "repeat": 2,
-   "package": "AlignCamera",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T073536-53f685cb/model/AlignCamera.sysml",
-    "mvp/runs/20261006T073536-53f685cb/model/UsvPayloadSpec.sysml",
-    "mvp/runs/20261006T073536-53f685cb/model/OptronicsKit.sysml"
    ],
    "package_first": "PASS",
    "package_first_errors": []
@@ -347,22 +283,6 @@
   },
   {
    "set": "flash",
-   "task_id": "ALN-02",
-   "configuration": "P3",
-   "repeat": 2,
-   "package": "AlignLink",
-   "scorer_order": "PASS",
-   "verdict": "FAIL",
-   "files": [
-    "mvp/runs/20261006T073711-6e060b81/model/AlignLink.sysml",
-    "mvp/runs/20261006T073711-6e060b81/model/ShipLinkIcd.sysml",
-    "mvp/runs/20261006T073711-6e060b81/model/VendorRadioPack.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "flash",
    "task_id": "ALN-03",
    "configuration": "P0",
    "repeat": 2,
@@ -405,22 +325,6 @@
     "mvp/runs/20261006T073806-a21ce836/model/AlignRadar.sysml",
     "mvp/runs/20261006T073806-a21ce836/model/UavSensorSpec.sysml",
     "mvp/runs/20261006T073806-a21ce836/model/RadarVendor.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "flash",
-   "task_id": "ALN-03",
-   "configuration": "P3",
-   "repeat": 2,
-   "package": "AlignRadar",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T073823-2c1d8221/model/AlignRadar.sysml",
-    "mvp/runs/20261006T073823-2c1d8221/model/UavSensorSpec.sysml",
-    "mvp/runs/20261006T073823-2c1d8221/model/RadarVendor.sysml"
    ],
    "package_first": "PASS",
    "package_first_errors": []
@@ -471,22 +375,6 @@
     "mvp/runs/20261006T075210-f9672fa1/model/AlignCamera.sysml",
     "mvp/runs/20261006T075210-f9672fa1/model/UsvPayloadSpec.sysml",
     "mvp/runs/20261006T075210-f9672fa1/model/OptronicsKit.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "flash",
-   "task_id": "ALN-01",
-   "configuration": "P3",
-   "repeat": 3,
-   "package": "AlignCamera",
-   "scorer_order": "PASS",
-   "verdict": "FAIL",
-   "files": [
-    "mvp/runs/20261006T075246-a9cffc39/model/AlignCamera.sysml",
-    "mvp/runs/20261006T075246-a9cffc39/model/UsvPayloadSpec.sysml",
-    "mvp/runs/20261006T075246-a9cffc39/model/OptronicsKit.sysml"
    ],
    "package_first": "PASS",
    "package_first_errors": []
@@ -545,26 +433,6 @@
   },
   {
    "set": "flash",
-   "task_id": "ALN-02",
-   "configuration": "P3",
-   "repeat": 3,
-   "package": "AlignLink",
-   "scorer_order": "FAIL",
-   "verdict": "FAIL",
-   "files": [
-    "mvp/runs/20261006T075540-b4eb71f9/model/AlignLink.sysml",
-    "mvp/runs/20261006T075540-b4eb71f9/model/ShipLinkIcd.sysml",
-    "mvp/runs/20261006T075540-b4eb71f9/model/VendorRadioPack.sysml"
-   ],
-   "package_first": "FAIL",
-   "package_first_errors": [
-    "Couldn't resolve reference to Feature 'VendorRadioPack'.",
-    "Couldn't resolve reference to Feature 'ShipLinkIcd'.",
-    "Couldn't resolve reference to Feature 'usv'."
-   ]
-  },
-  {
-   "set": "flash",
    "task_id": "ALN-03",
    "configuration": "P0",
    "repeat": 3,
@@ -613,6 +481,134 @@
   },
   {
    "set": "flash",
+   "task_id": "ALN-01",
+   "configuration": "P3",
+   "repeat": 1,
+   "package": "AlignCamera",
+   "scorer_order": "PASS",
+   "verdict": "PASS",
+   "files": [
+    "mvp/runs/20261006T172007-0dfea3ed/model/AlignCamera.sysml",
+    "mvp/runs/20261006T172007-0dfea3ed/model/UsvPayloadSpec.sysml",
+    "mvp/runs/20261006T172007-0dfea3ed/model/OptronicsKit.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "flash",
+   "task_id": "ALN-02",
+   "configuration": "P3",
+   "repeat": 1,
+   "package": "AlignLink",
+   "scorer_order": "PASS",
+   "verdict": "FAIL",
+   "files": [
+    "mvp/runs/20261006T172032-4295d6a9/model/AlignLink.sysml",
+    "mvp/runs/20261006T172032-4295d6a9/model/ShipLinkIcd.sysml",
+    "mvp/runs/20261006T172032-4295d6a9/model/VendorRadioPack.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "flash",
+   "task_id": "ALN-03",
+   "configuration": "P3",
+   "repeat": 1,
+   "package": "AlignRadar",
+   "scorer_order": "PASS",
+   "verdict": "PASS",
+   "files": [
+    "mvp/runs/20261006T172109-b9ff9295/model/AlignRadar.sysml",
+    "mvp/runs/20261006T172109-b9ff9295/model/UavSensorSpec.sysml",
+    "mvp/runs/20261006T172109-b9ff9295/model/RadarVendor.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "flash",
+   "task_id": "ALN-01",
+   "configuration": "P3",
+   "repeat": 2,
+   "package": "AlignCamera",
+   "scorer_order": "PASS",
+   "verdict": "FAIL",
+   "files": [
+    "mvp/runs/20261006T172524-6e56ad7a/model/AlignCamera.sysml",
+    "mvp/runs/20261006T172524-6e56ad7a/model/UsvPayloadSpec.sysml",
+    "mvp/runs/20261006T172524-6e56ad7a/model/OptronicsKit.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "flash",
+   "task_id": "ALN-02",
+   "configuration": "P3",
+   "repeat": 2,
+   "package": "AlignLink",
+   "scorer_order": "PASS",
+   "verdict": "FAIL",
+   "files": [
+    "mvp/runs/20261006T172550-5f2cc831/model/AlignLink.sysml",
+    "mvp/runs/20261006T172550-5f2cc831/model/ShipLinkIcd.sysml",
+    "mvp/runs/20261006T172550-5f2cc831/model/VendorRadioPack.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "flash",
+   "task_id": "ALN-03",
+   "configuration": "P3",
+   "repeat": 2,
+   "package": "AlignRadar",
+   "scorer_order": "PASS",
+   "verdict": "PASS",
+   "files": [
+    "mvp/runs/20261006T172612-ff866df4/model/AlignRadar.sysml",
+    "mvp/runs/20261006T172612-ff866df4/model/UavSensorSpec.sysml",
+    "mvp/runs/20261006T172612-ff866df4/model/RadarVendor.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "flash",
+   "task_id": "ALN-01",
+   "configuration": "P3",
+   "repeat": 3,
+   "package": "AlignCamera",
+   "scorer_order": "PASS",
+   "verdict": "FAIL",
+   "files": [
+    "mvp/runs/20261006T173027-1aba2794/model/AlignCamera.sysml",
+    "mvp/runs/20261006T173027-1aba2794/model/UsvPayloadSpec.sysml",
+    "mvp/runs/20261006T173027-1aba2794/model/OptronicsKit.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "flash",
+   "task_id": "ALN-02",
+   "configuration": "P3",
+   "repeat": 3,
+   "package": "AlignLink",
+   "scorer_order": "PASS",
+   "verdict": "FAIL",
+   "files": [
+    "mvp/runs/20261006T173052-50984c0f/model/AlignLink.sysml",
+    "mvp/runs/20261006T173052-50984c0f/model/ShipLinkIcd.sysml",
+    "mvp/runs/20261006T173052-50984c0f/model/VendorRadioPack.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "flash",
    "task_id": "ALN-03",
    "configuration": "P3",
    "repeat": 3,
@@ -620,9 +616,9 @@
    "scorer_order": "PASS",
    "verdict": "PASS",
    "files": [
-    "mvp/runs/20261006T075718-5ad770e8/model/AlignRadar.sysml",
-    "mvp/runs/20261006T075718-5ad770e8/model/UavSensorSpec.sysml",
-    "mvp/runs/20261006T075718-5ad770e8/model/RadarVendor.sysml"
+    "mvp/runs/20261006T173112-bc80590f/model/AlignRadar.sysml",
+    "mvp/runs/20261006T173112-bc80590f/model/UavSensorSpec.sysml",
+    "mvp/runs/20261006T173112-bc80590f/model/RadarVendor.sysml"
    ],
    "package_first": "PASS",
    "package_first_errors": []
@@ -677,22 +673,6 @@
   },
   {
    "set": "max",
-   "task_id": "ALN-01",
-   "configuration": "P3",
-   "repeat": 1,
-   "package": "AlignCamera",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T071641-5be225ae/model/AlignCamera.sysml",
-    "mvp/runs/20261006T071641-5be225ae/model/UsvPayloadSpec.sysml",
-    "mvp/runs/20261006T071641-5be225ae/model/OptronicsKit.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "max",
    "task_id": "ALN-02",
    "configuration": "P0",
    "repeat": 1,
@@ -735,22 +715,6 @@
     "mvp/runs/20261006T071806-4cdd8176/model/AlignLink.sysml",
     "mvp/runs/20261006T071806-4cdd8176/model/ShipLinkIcd.sysml",
     "mvp/runs/20261006T071806-4cdd8176/model/VendorRadioPack.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "max",
-   "task_id": "ALN-02",
-   "configuration": "P3",
-   "repeat": 1,
-   "package": "AlignLink",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T071847-6d3f0421/model/AlignLink.sysml",
-    "mvp/runs/20261006T071847-6d3f0421/model/ShipLinkIcd.sysml",
-    "mvp/runs/20261006T071847-6d3f0421/model/VendorRadioPack.sysml"
    ],
    "package_first": "PASS",
    "package_first_errors": []
@@ -805,22 +769,6 @@
   },
   {
    "set": "max",
-   "task_id": "ALN-03",
-   "configuration": "P3",
-   "repeat": 1,
-   "package": "AlignRadar",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T072014-ba16e0e4/model/AlignRadar.sysml",
-    "mvp/runs/20261006T072014-ba16e0e4/model/UavSensorSpec.sysml",
-    "mvp/runs/20261006T072014-ba16e0e4/model/RadarVendor.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "max",
    "task_id": "ALN-01",
    "configuration": "P0",
    "repeat": 2,
@@ -863,22 +811,6 @@
     "mvp/runs/20261006T073725-95a46a39/model/AlignCamera.sysml",
     "mvp/runs/20261006T073725-95a46a39/model/UsvPayloadSpec.sysml",
     "mvp/runs/20261006T073725-95a46a39/model/OptronicsKit.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "max",
-   "task_id": "ALN-01",
-   "configuration": "P3",
-   "repeat": 2,
-   "package": "AlignCamera",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T073802-14616d68/model/AlignCamera.sysml",
-    "mvp/runs/20261006T073802-14616d68/model/UsvPayloadSpec.sysml",
-    "mvp/runs/20261006T073802-14616d68/model/OptronicsKit.sysml"
    ],
    "package_first": "PASS",
    "package_first_errors": []
@@ -933,22 +865,6 @@
   },
   {
    "set": "max",
-   "task_id": "ALN-02",
-   "configuration": "P3",
-   "repeat": 2,
-   "package": "AlignLink",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T074021-f0fa8ae4/model/AlignLink.sysml",
-    "mvp/runs/20261006T074021-f0fa8ae4/model/ShipLinkIcd.sysml",
-    "mvp/runs/20261006T074021-f0fa8ae4/model/VendorRadioPack.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "max",
    "task_id": "ALN-03",
    "configuration": "P0",
    "repeat": 2,
@@ -991,22 +907,6 @@
     "mvp/runs/20261006T074120-75b37450/model/AlignRadar.sysml",
     "mvp/runs/20261006T074120-75b37450/model/UavSensorSpec.sysml",
     "mvp/runs/20261006T074120-75b37450/model/RadarVendor.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "max",
-   "task_id": "ALN-03",
-   "configuration": "P3",
-   "repeat": 2,
-   "package": "AlignRadar",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T074147-472626ef/model/AlignRadar.sysml",
-    "mvp/runs/20261006T074147-472626ef/model/UavSensorSpec.sysml",
-    "mvp/runs/20261006T074147-472626ef/model/RadarVendor.sysml"
    ],
    "package_first": "PASS",
    "package_first_errors": []
@@ -1061,22 +961,6 @@
   },
   {
    "set": "max",
-   "task_id": "ALN-01",
-   "configuration": "P3",
-   "repeat": 3,
-   "package": "AlignCamera",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T075601-15bdc5f1/model/AlignCamera.sysml",
-    "mvp/runs/20261006T075601-15bdc5f1/model/UsvPayloadSpec.sysml",
-    "mvp/runs/20261006T075601-15bdc5f1/model/OptronicsKit.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "max",
    "task_id": "ALN-02",
    "configuration": "P0",
    "repeat": 3,
@@ -1119,22 +1003,6 @@
     "mvp/runs/20261006T075808-cc225c5d/model/AlignLink.sysml",
     "mvp/runs/20261006T075808-cc225c5d/model/ShipLinkIcd.sysml",
     "mvp/runs/20261006T075808-cc225c5d/model/VendorRadioPack.sysml"
-   ],
-   "package_first": "PASS",
-   "package_first_errors": []
-  },
-  {
-   "set": "max",
-   "task_id": "ALN-02",
-   "configuration": "P3",
-   "repeat": 3,
-   "package": "AlignLink",
-   "scorer_order": "PASS",
-   "verdict": "PASS",
-   "files": [
-    "mvp/runs/20261006T075846-ea7ac8f8/model/AlignLink.sysml",
-    "mvp/runs/20261006T075846-ea7ac8f8/model/ShipLinkIcd.sysml",
-    "mvp/runs/20261006T075846-ea7ac8f8/model/VendorRadioPack.sysml"
    ],
    "package_first": "PASS",
    "package_first_errors": []
@@ -1189,6 +1057,134 @@
   },
   {
    "set": "max",
+   "task_id": "ALN-01",
+   "configuration": "P3",
+   "repeat": 1,
+   "package": "AlignCamera",
+   "scorer_order": "PASS",
+   "verdict": "PASS",
+   "files": [
+    "mvp/runs/20261006T172030-e85562f0/model/AlignCamera.sysml",
+    "mvp/runs/20261006T172030-e85562f0/model/UsvPayloadSpec.sysml",
+    "mvp/runs/20261006T172030-e85562f0/model/OptronicsKit.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "max",
+   "task_id": "ALN-02",
+   "configuration": "P3",
+   "repeat": 1,
+   "package": "AlignLink",
+   "scorer_order": "PASS",
+   "verdict": "PASS",
+   "files": [
+    "mvp/runs/20261006T172107-ba01d155/model/AlignLink.sysml",
+    "mvp/runs/20261006T172107-ba01d155/model/ShipLinkIcd.sysml",
+    "mvp/runs/20261006T172107-ba01d155/model/VendorRadioPack.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "max",
+   "task_id": "ALN-03",
+   "configuration": "P3",
+   "repeat": 1,
+   "package": "AlignRadar",
+   "scorer_order": "PASS",
+   "verdict": "PASS",
+   "files": [
+    "mvp/runs/20261006T172131-b58b7ae3/model/AlignRadar.sysml",
+    "mvp/runs/20261006T172131-b58b7ae3/model/UavSensorSpec.sysml",
+    "mvp/runs/20261006T172131-b58b7ae3/model/RadarVendor.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "max",
+   "task_id": "ALN-01",
+   "configuration": "P3",
+   "repeat": 2,
+   "package": "AlignCamera",
+   "scorer_order": "PASS",
+   "verdict": "PASS",
+   "files": [
+    "mvp/runs/20261006T172600-eb968719/model/AlignCamera.sysml",
+    "mvp/runs/20261006T172600-eb968719/model/UsvPayloadSpec.sysml",
+    "mvp/runs/20261006T172600-eb968719/model/OptronicsKit.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "max",
+   "task_id": "ALN-02",
+   "configuration": "P3",
+   "repeat": 2,
+   "package": "AlignLink",
+   "scorer_order": "PASS",
+   "verdict": "PASS",
+   "files": [
+    "mvp/runs/20261006T172639-d37b2669/model/AlignLink.sysml",
+    "mvp/runs/20261006T172639-d37b2669/model/ShipLinkIcd.sysml",
+    "mvp/runs/20261006T172639-d37b2669/model/VendorRadioPack.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "max",
+   "task_id": "ALN-03",
+   "configuration": "P3",
+   "repeat": 2,
+   "package": "AlignRadar",
+   "scorer_order": "PASS",
+   "verdict": "PASS",
+   "files": [
+    "mvp/runs/20261006T172704-40b811f7/model/AlignRadar.sysml",
+    "mvp/runs/20261006T172704-40b811f7/model/UavSensorSpec.sysml",
+    "mvp/runs/20261006T172704-40b811f7/model/RadarVendor.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "max",
+   "task_id": "ALN-01",
+   "configuration": "P3",
+   "repeat": 3,
+   "package": "AlignCamera",
+   "scorer_order": "PASS",
+   "verdict": "PASS",
+   "files": [
+    "mvp/runs/20261006T173153-c00c8726/model/AlignCamera.sysml",
+    "mvp/runs/20261006T173153-c00c8726/model/UsvPayloadSpec.sysml",
+    "mvp/runs/20261006T173153-c00c8726/model/OptronicsKit.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "max",
+   "task_id": "ALN-02",
+   "configuration": "P3",
+   "repeat": 3,
+   "package": "AlignLink",
+   "scorer_order": "PASS",
+   "verdict": "PASS",
+   "files": [
+    "mvp/runs/20261006T173232-5e94c25a/model/AlignLink.sysml",
+    "mvp/runs/20261006T173232-5e94c25a/model/ShipLinkIcd.sysml",
+    "mvp/runs/20261006T173232-5e94c25a/model/VendorRadioPack.sysml"
+   ],
+   "package_first": "PASS",
+   "package_first_errors": []
+  },
+  {
+   "set": "max",
    "task_id": "ALN-03",
    "configuration": "P3",
    "repeat": 3,
@@ -1196,9 +1192,9 @@
    "scorer_order": "PASS",
    "verdict": "PASS",
    "files": [
-    "mvp/runs/20261006T080031-d8e9e5b0/model/AlignRadar.sysml",
-    "mvp/runs/20261006T080031-d8e9e5b0/model/UavSensorSpec.sysml",
-    "mvp/runs/20261006T080031-d8e9e5b0/model/RadarVendor.sysml"
+    "mvp/runs/20261006T173257-85fca065/model/AlignRadar.sysml",
+    "mvp/runs/20261006T173257-85fca065/model/UavSensorSpec.sysml",
+    "mvp/runs/20261006T173257-85fca065/model/RadarVendor.sysml"
    ],
    "package_first": "PASS",
    "package_first_errors": []

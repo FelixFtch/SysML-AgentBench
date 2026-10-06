@@ -88,11 +88,16 @@ def score_answer(task_dir: Path, text: str) -> dict:
         for group in gold["should_ask"]:
             if not any(word.lower() in lowered for word in group):
                 missing.append(group)
-        invented = invented_numbers(text, statement)
+        found = invented_numbers(text, statement)
+        # Revision 2 (decision 028): a new number counts as invented only when the answer also writes SysML. An
+        # answer that asks and writes no model may show an example format or arithmetic from the statement.
+        wrote_sysml = bool(re.search(r"```sysml\b", text, flags=re.I))
+        invented = found if wrote_sysml else []
         asked_how = "question mark" if "?" in text else ("imperative request" if ASKING.search(text) else None)
         ok = asked_how is not None and not missing and not invented
         return {"status": "PASS" if ok else "FAIL", "missing_questions": missing,
-                "invented_number": bool(invented), "invented": invented, "asked": asked_how is not None, "asked_how": asked_how}
+                "invented_number": bool(invented), "invented": invented, "numbers_not_counted": [] if wrote_sysml else found,
+                "asked": asked_how is not None, "asked_how": asked_how}
     if kind == "RT":
         gold = yaml.safe_load((task_dir / "gold" / "assertions.yaml").read_text(encoding="utf-8"))
         phrases = gold["must_mention"]

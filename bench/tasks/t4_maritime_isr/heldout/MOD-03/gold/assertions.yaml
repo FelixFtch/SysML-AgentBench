@@ -1,6 +1,6 @@
 task_id: MOD-03
 package: ShoreHop
-status: single-author
+status: reviewed
 must_exist:
 - qualified_name: ShoreHop::vessel::radio
 - qualified_name: ShoreHop::shore

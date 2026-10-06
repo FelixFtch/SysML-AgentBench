@@ -63,6 +63,7 @@ def _graph():
 def build_graph(parse_dir: Path, prefix: str):
     """Element cards and one-hop links from one official parse.
 
+    A card is "Type QualifiedName [value | connection ends] [doc: documentation text]".
     Returns cards (id -> text), neighbors (id -> ids) and kinds ((a, b) -> "owner" | "connect").
     """
     elements = exported_elements(json.loads((parse_dir / "sysml" / "model.json").read_text(encoding="utf-8")))
@@ -82,6 +83,11 @@ def build_graph(parse_dir: Path, prefix: str):
                 neighbors[element["@id"]].add(other)
                 neighbors[other].add(element["@id"])
                 kinds[(element["@id"], other)] = kinds[(other, element["@id"])] = "connect"
+    docs: dict[str, list[str]] = {}
+    for element in elements:
+        if element.get("@type") == "Documentation" and element.get("body"):
+            for target in element.get("annotatedElement") or []:
+                docs.setdefault(target.get("@id"), []).append(" ".join(element["body"].split()))
     cards = {}
     by_id = {element["@id"]: element for element in elements}
     for element in elements:
@@ -106,6 +112,8 @@ def build_graph(parse_dir: Path, prefix: str):
         if element.get("@type") == "ConnectionUsage":
             ends = [view.reference_name(ref["@id"]) or "" for ref in element.get("relatedFeature") or []]
             bits.append(" ".join(ends))
+        if element["@id"] in docs:
+            bits.append("doc: " + " ".join(docs[element["@id"]]))
         cards[element["@id"]] = " ".join(bits)
     return cards, neighbors, kinds
 

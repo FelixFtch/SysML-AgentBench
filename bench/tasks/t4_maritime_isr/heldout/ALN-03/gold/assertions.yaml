@@ -1,6 +1,6 @@
 task_id: ALN-03
 package: AlignRadar
-status: single-author
+status: reviewed
 sources:
 - UavSensorSpec.sysml
 - RadarVendor.sysml

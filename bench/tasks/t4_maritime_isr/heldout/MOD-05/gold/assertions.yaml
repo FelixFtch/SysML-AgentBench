@@ -1,6 +1,6 @@
 task_id: MOD-05
 package: PowerBudget
-status: single-author
+status: reviewed
 must_exist:
 - qualified_name: PowerBudget::usv::irCamera
 - qualified_name: PowerBudget::usv::irCamera::drawW

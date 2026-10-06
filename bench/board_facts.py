@@ -9,8 +9,8 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from bench.batches import (ANALYSIS, ARCHIVE, COHORTS, CONFIGS, DISCARDED, RERUN_REASON, ROOT, TYPES, batch_dir, discarded_rows,
-                           rerun_dir, rerun_tasks, rows, side_results, superseded_rows, usage_of_row)
+from bench.batches import (ANALYSIS, ARCHIVE, COHORTS, CONFIGS, DISCARDED, RERUNS, ROOT, TYPES, batch_dir, discarded_rows,
+                           rerun_dir, rerun_scope, rows, side_results, superseded_rows, usage_of_row)
 
 EXPECTED = {"direct": 324, "agent": 81}
 
@@ -118,7 +118,7 @@ def _summary(cohort: str, cells: list[dict]) -> dict:
     return {
         "label": spec["label"], "short": spec["short"], "kind": spec["kind"], "model": spec["model"],
         "batch": folder.name if folder else None, "rerun_batch": rerun.name if rerun else None,
-        "rerun_tasks": rerun_tasks(rerun) if rerun else [], "n": len(cells), "expected": EXPECTED[spec["kind"]],
+        "rerun_scope": rerun_scope(cohort), "n": len(cells), "expected": EXPECTED[spec["kind"]],
         "pass": sum(row["status"] == "PASS" for row in cells), "fail": sum(row["status"] != "PASS" for row in cells),
         "by_type": by_type, "usage": usage, "usd": round(_usd(spec["model"], usage), 4), "usd_intl": round(_usd(spec["model"], usage, intl=True), 4),
         "reliability": {"groups": len(groups), "flips": len(flip_keys), "flip_tasks": sorted({task for task, _config in flip_keys})},
@@ -191,11 +191,11 @@ def _costs(cohorts: dict, side: dict) -> dict:
             items.append({"id": key, "group_id": "discarded", "group": "Discarded runs (spent, not counted)",
                           "label": f"{spec['label']} ({len(found)} runs)", "model": spec["model"],
                           **_sum_usage([usage_of_row(row) for row in found])})
-    for cohort in ("opencode", "claude"):
+    for cohort in RERUNS:
         found = superseded_rows(cohort)
         if found:
             items.append({"id": f"{cohort}-superseded", "group_id": "discarded", "group": "Discarded runs (spent, not counted)",
-                          "label": f"{COHORTS[cohort]['short']}, ALN runs replaced by the rerun ({len(found)} runs)",
+                          "label": f"{COHORTS[cohort]['short']}, {RERUNS[cohort]['label']} ({len(found)})",
                           "model": COHORTS[cohort]["model"], **_sum_usage([usage_of_row(row) for row in found])})
     runs = []
     for path in sorted(ANALYSIS.glob("discover-2026*.json")):
@@ -306,17 +306,17 @@ def facts() -> dict:
         discarded.append({"key": key, "label": spec["label"], "reason": spec["reason"], "dir": f"analysis/{spec['dir']}",
                           "n": len(found), "pass": sum(row["status"] == "PASS" for row in found)})
     superseded = []
-    for cohort in ("opencode", "claude"):
+    for cohort in RERUNS:
         found = superseded_rows(cohort)
         if found:
             superseded.append({"key": f"{cohort}-superseded", "cohort": cohort,
-                               "label": f"{COHORTS[cohort]['short']}, ALN runs of the first sandboxed batch",
-                               "reason": RERUN_REASON, "dir": f"analysis/{batch_dir(cohort).name}",
+                               "label": f"{COHORTS[cohort]['short']}, {RERUNS[cohort]['label']}",
+                               "reason": RERUNS[cohort]["reason"], "dir": f"analysis/{batch_dir(cohort).name}",
                                "rerun_dir": f"analysis/{rerun_dir(cohort).name}",
                                "n": len(found), "pass": sum(row["status"] == "PASS" for row in found)})
     flash = cohorts["flash"]["summary"]
     out = {
-        "freeze": {"tag": "freeze-2026-10-06", "file": "bench/FREEZE.md", "tasks": sum(flash["by_type"][kind]["n"] for kind in TYPES) // 12 if flash["n"] else 27},
+        "freeze": {"tag": "freeze-2026-10-06-r2", "file": "bench/FREEZE.md", "tasks": sum(flash["by_type"][kind]["n"] for kind in TYPES) // 12 if flash["n"] else 27},
         "cohorts": {cohort: {**entry["summary"], **({"configs": entry["configs"]} if "configs" in entry else {})} for cohort, entry in cohorts.items()},
         "flash": {"n": flash["n"], "pass": flash["pass"], "fail": flash["fail"]},
         "by_type": flash["by_type"],

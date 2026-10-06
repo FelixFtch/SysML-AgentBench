@@ -1,10 +1,12 @@
 """The scored batches that the results page, STATUS.md and the report read. One place to change when a batch is added.
 
-Four candidates on the 27 frozen tasks (bench/FREEZE.md, tag freeze-2026-10-06):
+Four candidates on the 27 frozen tasks (bench/FREEZE.md):
 - direct qwen3.8-flash and direct qwen3.8-max, approaches P0-P3, 3 repeats: 324 cells each;
-- OpenCode and Claude Code on qwen3.8-flash, 3 repeats: 81 runs each, both in the sandbox of decision 026; their ALN
-  rows come from a rerun (RERUNS) that replaces the ALN rows of the first sandboxed batch, which are kept on disk and
-  listed by superseded_rows() with RERUN_REASON.
+- OpenCode and Claude Code on qwen3.8-flash, 3 repeats: 81 runs each, both in the sandbox of decision 026.
+Some rows come from a rerun (RERUNS): the agents' ALN rows (decision 026) and the direct P3 cells (decision 028). The
+rows a rerun replaces stay on disk and are listed by superseded_rows() with the rerun's reason. A batch folder that
+holds results-r2.jsonl (saved answers re-scored under revision 2 by bench/rescore.py) is read from that file; its
+results.jsonl stays as it was run.
 Two agent batches of the same morning are discarded and listed in DISCARDED with the reason; the 2026-10-03 matrix
 (24 tasks, old rules) is listed in ARCHIVE. Neither is mixed into the numbers above.
 """
@@ -24,9 +26,9 @@ CONFIGS = ["P0", "P1", "P2", "P3"]
 
 COHORTS = {
     "flash": {"label": "Direct · qwen3.8-flash", "short": "flash", "kind": "direct", "model": "qwen3.8-flash",
-              "glob": "heldout-qwen3.8-flash-20261006T*"},
+              "glob": "heldout-qwen3.8-flash-20261006T070150"},
     "max": {"label": "Direct · qwen3.8-max", "short": "max", "kind": "direct", "model": "qwen3.8-max",
-            "glob": "heldout-qwen3.8-max-20261006T*"},
+            "glob": "heldout-qwen3.8-max-20261006T070151"},
     "opencode": {"label": "OpenCode · qwen3.8-flash", "short": "OpenCode", "kind": "agent", "model": "qwen3.8-flash",
                  "glob": "opencode-jail-qwen3.8-flash-*"},
     "claude": {"label": "Claude Code · qwen3.8-flash", "short": "Claude Code", "kind": "agent", "model": "qwen3.8-flash",
@@ -44,11 +46,19 @@ DISCARDED = {
                                 "not the same setup as OpenCode."},
 }
 
-RERUNS = {"opencode": "opencode-jail-aln-qwen3.8-flash-*", "claude": "claude-jail-aln-qwen3.8-flash-*"}
-RERUN_REASON = ("ALN runs of the first sandboxed batch. ./validate passed the files in the order the agent gave them, and "
-                "the Pilot's verdict depends on that order: with the agent's own file first, 8 alignment packages (OpenCode 3, "
-                "Claude Code 5) that fail in the scorer's order (sources first) passed the agent's check and were submitted. Every ALN run "
-                "of both agents was rerun with ./validate in the scorer's order (decision 026); the rerun replaces these rows.")
+_ALN_RERUN = {"label": "ALN runs of the first sandboxed batch",
+              "reason": "./validate passed the files in the order the agent gave them, and the Pilot's verdict depends on that "
+                        "order: with the agent's own file first, 8 alignment packages (OpenCode 3, Claude Code 5) that fail in the "
+                        "scorer's order (sources first) passed the agent's check and were submitted. Every ALN run of both agents "
+                        "was rerun with ./validate in the scorer's order (decision 026); the rerun replaces these rows."}
+_P3_RERUN = {"label": "P3 cells retrieved with cards that lacked documentation text", "configs": ["P3"],
+             "reason": "The paper 2 replication (decision 027) showed that the authors' node text carries each element's "
+                       "documentation and our retrieval cards did not. The cards now do, and every P3 cell of both direct "
+                       "batches was rerun under freeze revision 2 (decision 028); the rerun replaces these rows."}
+RERUNS = {"opencode": {"glob": "opencode-jail-aln-qwen3.8-flash-*", **_ALN_RERUN},
+          "claude": {"glob": "claude-jail-aln-qwen3.8-flash-*", **_ALN_RERUN},
+          "flash": {"glob": "heldout-p3doc-qwen3.8-flash-*", **_P3_RERUN},
+          "max": {"glob": "heldout-p3doc-qwen3.8-max-*", **_P3_RERUN}}
 
 ARCHIVE = {"label": "2026-10-03 matrix (24 tasks, old repair loop, old AMB/RT rules)", "pass": 224, "n": 288,
            "dirs": ["heldout-20261003T000045", "heldout-20261003T001321"],
@@ -63,22 +73,42 @@ def batch_dir(cohort: str) -> Path | None:
 
 
 def rerun_dir(cohort: str) -> Path | None:
-    """The newest rerun folder of a cohort; its summary.json lists the tasks it replaces."""
+    """The newest rerun folder of a cohort."""
     if cohort not in RERUNS:
         return None
-    found = sorted(path for path in ANALYSIS.glob(RERUNS[cohort]) if (path / "results.jsonl").is_file())
+    found = sorted(path for path in ANALYSIS.glob(RERUNS[cohort]["glob"]) if (path / "results.jsonl").is_file())
     return found[-1] if found else None
 
 
-def rerun_tasks(folder: Path) -> list[str]:
+def rerun_scope(cohort: str) -> dict:
+    """What a cohort's rerun replaces: {"configs": [...]} for the direct P3 rerun, {"tasks": [...]} for the agents'
+    ALN rerun (the task list is in the rerun's summary.json); {} when there is no rerun."""
+    folder = rerun_dir(cohort)
+    if not folder:
+        return {}
+    if RERUNS[cohort].get("configs"):
+        return {"configs": list(RERUNS[cohort]["configs"])}
     tasks = json.loads((folder / "summary.json").read_text(encoding="utf-8")).get("tasks")
-    return sorted(tasks) if isinstance(tasks, list) else []
+    return {"tasks": sorted(tasks) if isinstance(tasks, list) else []}
+
+
+def _replaced(row: dict, scope: dict) -> bool:
+    return row.get("configuration") in scope.get("configs", ()) or row["task_id"] in scope.get("tasks", ())
+
+
+def results_file(folder: Path) -> Path:
+    rescored = folder / "results-r2.jsonl"
+    return rescored if rescored.is_file() else folder / "results.jsonl"
 
 
 def _lines(path: Path) -> list[dict]:
     if not path.is_file():
         return []
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
+def _start(folder: Path) -> str:
+    return json.loads((folder / "summary.json").read_text(encoding="utf-8")).get("started") or folder.name[-15:]
 
 
 @lru_cache(maxsize=None)
@@ -104,20 +134,16 @@ def rows(cohort: str) -> list[dict]:
     if not folder:
         return []
     out = []
-    folders = None
-    if spec["kind"] == "direct":
-        start = json.loads((folder / "summary.json").read_text(encoding="utf-8")).get("started") or folder.name[-15:]
-        folders = _direct_folders(spec["model"], start)
-    lines = [(row, folder.name) for row in _lines(folder / "results.jsonl")]
+    lines = [(row, folder) for row in _lines(results_file(folder))]
     rerun = rerun_dir(cohort)
     if rerun:
-        replaced = set(rerun_tasks(rerun))
-        lines = [(row, name) for row, name in lines if row["task_id"] not in replaced]
-        lines += [(row, rerun.name) for row in _lines(rerun / "results.jsonl")]
-    for row, name in lines:
-        row = {**row, "cohort_id": cohort, "cohort": spec["label"], "model": spec["model"], "batch": name}
-        if folders is not None:
-            names = folders.get((row["configuration"], row["task_id"])) or []
+        scope = rerun_scope(cohort)
+        lines = [(row, batch) for row, batch in lines if not _replaced(row, scope)]
+        lines += [(row, rerun) for row in _lines(results_file(rerun))]
+    for row, batch in lines:
+        row = {**row, "cohort_id": cohort, "cohort": spec["label"], "model": spec["model"], "batch": batch.name}
+        if spec["kind"] == "direct":
+            names = _direct_folders(spec["model"], _start(batch)).get((row["configuration"], row["task_id"])) or []
             repeat = int(row.get("repeat") or 0)
             if 1 <= repeat <= len(names):
                 row["_folder"] = str(AGENT_RUNS / names[repeat - 1])
@@ -131,11 +157,11 @@ def discarded_rows(key: str) -> list[dict]:
 
 def superseded_rows(cohort: str) -> list[dict]:
     """Rows of a cohort's first batch that its rerun replaces."""
-    folder, rerun = batch_dir(cohort), rerun_dir(cohort)
-    if not folder or not rerun:
+    folder = batch_dir(cohort)
+    scope = rerun_scope(cohort)
+    if not folder or not scope:
         return []
-    replaced = set(rerun_tasks(rerun))
-    return [row for row in _lines(folder / "results.jsonl") if row["task_id"] in replaced]
+    return [row for row in _lines(results_file(folder)) if _replaced(row, scope)]
 
 
 def usage_of_row(row: dict) -> dict:

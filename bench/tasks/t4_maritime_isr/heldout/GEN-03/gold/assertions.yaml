@@ -1,6 +1,6 @@
 task_id: GEN-03
 package: FusionNode
-status: single-author
+status: reviewed
 must_exist:
 - qualified_name: FusionNode::LinkPort
 - qualified_name: FusionNode::Processor

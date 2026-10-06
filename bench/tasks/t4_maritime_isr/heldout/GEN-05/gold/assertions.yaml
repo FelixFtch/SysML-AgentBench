@@ -1,6 +1,6 @@
 task_id: GEN-05
 package: FourNode
-status: single-author
+status: reviewed
 must_exist:
 - qualified_name: FourNode::usv
 - qualified_name: FourNode::uav

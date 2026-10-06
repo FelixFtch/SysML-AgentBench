@@ -1,6 +1,6 @@
 task_id: GEN-01
 package: UsvLink
-status: single-author
+status: reviewed
 must_exist:
 - qualified_name: UsvLink::ImageryPort
 - qualified_name: UsvLink::LinkPort

@@ -1,0 +1,61 @@
+{
+ "revision": "r2",
+ "decision": "docs/decisions/028-freeze-revision-2.md",
+ "rescored_at": "2026-10-06T17:17:22.453557+00:00",
+ "changed": [
+  {
+   "cohort": "flash",
+   "batch": "heldout-qwen3.8-flash-20261006T070150",
+   "task_id": "AMB-02",
+   "configuration": "P0",
+   "repeat": 2,
+   "before": "FAIL",
+   "after": "PASS"
+  },
+  {
+   "cohort": "flash",
+   "batch": "heldout-qwen3.8-flash-20261006T070150",
+   "task_id": "AMB-02",
+   "configuration": "P0",
+   "repeat": 3,
+   "before": "FAIL",
+   "after": "PASS"
+  },
+  {
+   "cohort": "max",
+   "batch": "heldout-qwen3.8-max-20261006T070151",
+   "task_id": "AMB-02",
+   "configuration": "P2",
+   "repeat": 3,
+   "before": "FAIL",
+   "after": "PASS"
+  },
+  {
+   "cohort": "opencode",
+   "batch": "opencode-jail-qwen3.8-flash-20261006T133737",
+   "task_id": "AMB-02",
+   "configuration": "P-CODE",
+   "repeat": 2,
+   "before": "FAIL",
+   "after": "PASS"
+  },
+  {
+   "cohort": "claude",
+   "batch": "claude-jail-qwen3.8-flash-20261006T133739",
+   "task_id": "AMB-03",
+   "configuration": "P-CODE-2",
+   "repeat": 1,
+   "before": "FAIL",
+   "after": "PASS"
+  },
+  {
+   "cohort": "claude",
+   "batch": "claude-jail-qwen3.8-flash-20261006T133739",
+   "task_id": "AMB-03",
+   "configuration": "P-CODE-2",
+   "repeat": 3,
+   "before": "FAIL",
+   "after": "PASS"
+  }
+ ]
+}

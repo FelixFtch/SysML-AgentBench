@@ -1,6 +1,6 @@
 task_id: GEN-04
 package: ShoreArchive
-status: single-author
+status: reviewed
 must_exist:
 - qualified_name: ShoreArchive::shore
 - qualified_name: ShoreArchive::shore::fromCommand

@@ -1,6 +1,6 @@
 task_id: ALN-01
 package: AlignCamera
-status: single-author
+status: reviewed
 sources:
 - UsvPayloadSpec.sysml
 - OptronicsKit.sysml

@@ -4,5 +4,5 @@ scenario_family: t4_maritime_isr
 split: heldout
 package: ShoreArchive
 synthetic: true
-status: single-author
-second_reviewer: pending
+status: reviewed
+second_reviewer: the assistant, 2026-10-06 (REVIEW.md)

@@ -1,6 +1,6 @@
 # FREEZE
 
-Sealed 2026-10-06 07:01 UTC at commit `369ba013779c` after the second review (`bench/tasks/t4_maritime_isr/heldout/REVIEW.md`).
+Sealed 2026-10-06 07:01 UTC at commit `d4a7230958e2` after the second review (`bench/tasks/t4_maritime_isr/heldout/REVIEW.md`).
 Anything listed here is not edited while a matrix runs; a change means a new freeze and a new batch. `python3 bench/freeze.py --check` verifies the hashes.
 
 ## Task bank: 27 sealed tasks (hash over case.yaml, input/, gold/)
@@ -43,7 +43,7 @@ Anything listed here is not edited while a matrix runs; a change means a new fre
 | `bench/score_answer.py` | `c4d4b46d50a4aeed` |
 | `bench/score_alignment.py` | `5df06a175b208348` |
 | `bench/experiment.py` | `f417df508cbc702e` |
-| `agents/solve.py` | `02366fe0ede6ffea` |
+| `agents/solve.py` | `12629456f89c8394` |
 | `agents/llm.py` | `ec3c55a31d5e0ae9` |
 | `bench/vector_index.py` | `d360376d10adbac1` |
 | `bench/graph_query.py` | `7a8e0754b66cc895` |

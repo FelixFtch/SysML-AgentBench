@@ -4,6 +4,8 @@ from __future__ import annotations
 import json
 import os
 import re
+import time
+import urllib.error
 import urllib.request
 from contextvars import ContextVar
 
@@ -36,8 +38,21 @@ def chat(messages: list[dict], *, max_tokens: int = 4000, temperature: float = 0
     if key:
         headers["Authorization"] = "Bearer " + key
     request = urllib.request.Request(url, data=body, headers=headers, method="POST")
-    with urllib.request.urlopen(request, timeout=180) as response:
-        completion = json.loads(response.read(4_000_000))
+    completion = None
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(request, timeout=180) as response:
+                completion = json.loads(response.read(4_000_000))
+            break
+        except urllib.error.HTTPError as exc:
+            # Rate limits and gateway errors are retried with a pause; anything else is raised as before.
+            if exc.code not in {429, 500, 502, 503, 504} or attempt == 3:
+                raise
+            time.sleep(5 * (attempt + 1))
+        except (urllib.error.URLError, TimeoutError, ConnectionError):
+            if attempt == 3:
+                raise
+            time.sleep(5 * (attempt + 1))
     message = completion["choices"][0]["message"]
     log = USAGE_LOG.get()
     if log is not None:

@@ -1,0 +1,7 @@
+{
+  "cohort": "claude",
+  "model": "qwen3.8-flash",
+  "max_turns": 40,
+  "repeats": 1,
+  "started": "20261006T065839"
+}

@@ -19,7 +19,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DB = ROOT / ".venv-langflow" / "lib" / "python3.12" / "site-packages" / "langflow" / "langflow.db"
 KB_ROOT = Path.home() / ".langflow" / "knowledge_bases"
 PROJECT = "RTRC SysML-AgentBench"
-VARIABLES = ("OPENAI_COMPATIBLE_BASE_URL", "OPENAI_COMPATIBLE_API_KEY", "__enabled_models__")
+VARIABLES = ("OPENAI_COMPATIBLE_BASE_URL", "OPENAI_COMPATIBLE_API_KEY", "OLLAMA_BASE_URL", "__enabled_models__")
 KNOWLEDGE_BASE = "rtrc_memory"
 MCP_SERVER = "rtrc-assistant"
 

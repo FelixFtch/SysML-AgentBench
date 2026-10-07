@@ -16,9 +16,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BASE = f"http://127.0.0.1:{os.environ.get('LANGFLOW_PORT', '7860')}"
 PROJECT = "RTRC SysML-AgentBench"
-ORDER = ["rtrc-assistant", "rtrc-assistant-langchain", "rtrc-agent-flow", "rtrc-agent-flow-local", "rtrc-f0-memory", "rtrc-f1-exam-direct",
-         "rtrc-f2-exam-agent", "rtrc-f3-results", "rtrc-f5-mod-change", "rtrc-cameo-check"]
-RETIRED = ["RTRC design assistant (local Qwen3.8-27B)"]  # the Langflow-Agent flow of decision 031, replaced by the OpenCode assistant (032)
+ORDER = ["rtrc-assistant", "rtrc-pipeline-tool", "rtrc-assistant-unfolded", "rtrc-assistant-unfolded-local", "rtrc-assistant-langchain",
+         "rtrc-agent-flow", "rtrc-agent-flow-local", "rtrc-f0-memory", "rtrc-f1-exam-direct", "rtrc-f2-exam-agent", "rtrc-f3-results",
+         "rtrc-f5-mod-change", "rtrc-cameo-check"]
+RETIRED = ["RTRC design assistant (local Qwen3.8-27B)",  # the Langflow-Agent flow of decision 031, replaced by the OpenCode assistant (032)
+           "RTRC design pipeline (as a tool)"]  # first name of the pipeline flow (033); Run Flow names the tool after the flow
 
 
 def _secrets() -> dict:

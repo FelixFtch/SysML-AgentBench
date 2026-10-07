@@ -1,5 +1,6 @@
-"""Set up the Langflow-Agent comparison flow "RTRC design assistant (Langflow Agent, qwen3.8-max)": the Qwen provider
-credentials, the chat model and the RTRC assistant MCP server registration (all per user in Langflow).
+"""Set up the Langflow-Agent flows (the comparison flow and the two unfolded assistants): the Qwen provider
+credentials, the local Ollama address, the chat models and the RTRC assistant MCP server registration (all per user
+in Langflow).
 
     .venv-langflow/bin/python langflow/flows/setup_assistant.py
 
@@ -15,14 +16,18 @@ import urllib.error
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from agents.llm_local import OLLAMA_TAG  # noqa: E402
 from import_flows import _request, _secrets  # noqa: E402
 from setup_knowledge import _env, _set_variable  # noqa: E402
 
 SERVER = "rtrc-assistant"
 URL = "http://127.0.0.1:8782/mcp"
+OLLAMA_URL = "http://127.0.0.1:11434"
 PROVIDER = "OpenAI Compatible"
 MODELS = [{"provider": PROVIDER, "model_id": "qwen3.8-max", "enabled": True, "model_type": "llm"},
-          {"provider": PROVIDER, "model_id": "qwen3.7-text-embedding", "enabled": True, "model_type": "embeddings"}]
+          {"provider": PROVIDER, "model_id": "qwen3.7-text-embedding", "enabled": True, "model_type": "embeddings"},
+          {"provider": "Ollama", "model_id": OLLAMA_TAG, "enabled": True, "model_type": "llm"}]
 
 
 def main() -> None:
@@ -33,6 +38,7 @@ def main() -> None:
         base = env["MVP_LLM_URL"].rsplit("/chat/completions", 1)[0]
         print("Qwen base URL:", _set_variable(token, "OPENAI_COMPATIBLE_BASE_URL", base, "Generic"))
         print("Qwen API key:", _set_variable(token, "OPENAI_COMPATIBLE_API_KEY", env["MVP_LLM_API_KEY"], "Credential"))
+        print("Ollama address:", _set_variable(token, "OLLAMA_BASE_URL", OLLAMA_URL, "Generic"))
         names = [item.get("name") for item in _request("GET", "/api/v2/mcp/servers", token) or []]
         if SERVER in names:
             _request("PATCH", f"/api/v2/mcp/servers/{SERVER}", token, {"url": URL})

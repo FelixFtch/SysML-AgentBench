@@ -34,6 +34,8 @@ Langflow keeps credentials and knowledge bases per user, so if people log in wit
 |---|---|---|---|
 | RTRC design assistant | the conversational assistant above: OpenCode on the local 27B, the RTRC tools, memory | live, local only | asks, confirms, decides in the chat |
 | RTRC design assistant (Langflow Agent, qwen3.8-max) | the same tools and rules on Langflow's own Agent component, `run_design` with the model writing directly (decision 031); kept to compare the two harnesses | live, qwen3.8-max (cloud) | the same |
+| RTRC design assistant · unfolded (qwen3.8-max) / (local 27B) | the assistant with its parts on the canvas: Langflow's Agent, one card per RTRC tool, the knowledge base, and the design pipeline as a flow the Agent runs as a tool; **write to memory pauses for approval** (decision 033) | live; the pipeline runs on the local 27B with OpenCode | asks, confirms, decides in the chat; approves on a card |
+| RTRC design pipeline | the design pipeline as a tool of the unfolded assistants: ① memory → ② requirements → ③ designs by OpenCode in the sandbox → ④ official Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; no person's step (the chat decides). Edit it and the unfolded assistants run the edited version | live, local only; results page stopped | |
 | RTRC agent flow: requirement to approved SysML v2 design | ① search memory → ② requirements → new design, or adapt the similar project found in memory → ④ official Pilot ⇄ repair → ⑤ align with memory → ⑥ checks and read-back → trade-offs if a check fails → ⑦ diagram, Cameo export, review → ⑧ decision → write to memory, record grades and times | live on Qwen (direct, or Claude Code / OpenCode on Qwen in the sandbox), or replay of a saved run | ⑧ Approve A, Approve B, Reject or Send back |
 | RTRC agent flow · local Qwen3.8-27B via OpenCode | the same flow, preset to OpenCode in the sandbox on the local 27B; every model call stays on this machine | live, local only (Ollama); results page stopped | the same decision |
 | RTRC F0: memory | MaritimeISR plus every approved design, as cards from the official parse; fills the Langflow knowledge base **rtrc memory** (Knowledge page: search the cards, filter by metadata) | Qwen embeddings for new cards only; runs in the server (editor or API), not with `lfx run` | |
@@ -103,7 +105,8 @@ Learned with Langflow 1.12.5:
 | `langflow/components/rtrc/` | the RTRC nodes: the OpenCode assistant, and the fixed flows' Start, Step (①–⑦), Record (⑨, writes memory on approve), Memory, Exam cell / step, MOD change / step, Results, Cameo export / record, Gate record |
 | `tools/assistant_mcp.py` | the assistant's tools (MCP, streamable HTTP, 127.0.0.1:8782) |
 | `tools/assistant/`, `scripts/assistant.sh` | the assistant's rules and OpenCode workspace; the terminal entry |
-| `langflow/flows/build_assistant.py`, `rtrc-assistant-langchain.json`, `setup_assistant.py` | the Langflow-Agent comparison flow and its per-user set-up (credential, MCP registration) |
+| `langflow/flows/build_assistant.py`, `rtrc-assistant-langchain.json`, `setup_assistant.py` | the Langflow-Agent comparison flow; the per-user set-up of every Langflow-Agent flow (credentials, Ollama address, models, MCP registration) |
+| `langflow/flows/rtrc-assistant-unfolded*.json`, `rtrc-pipeline-tool.json` | the unfolded assistants and the pipeline flow they run as a tool (built by `build_flows.py`; needs the MCP server running for the tool descriptions) |
 | `langflow/flows/build_flows.py`, `*.json` | the flows as code, and the generated flow files |
 | `langflow/flows/import_flows.py` | creates or updates the project |
 | `langflow/flows/setup_knowledge.py` | the Qwen embedding provider and the knowledge base `rtrc_memory` (safe to repeat) |
@@ -114,4 +117,4 @@ Learned with Langflow 1.12.5:
 | `scripts/qwen38.sh`, `tools/ollama/qwen3.8-27b-q3-64k.Modelfile` | Ollama and the local tag |
 | `scripts/langflow.sh`, `scripts/langflow_secrets.py`, `requirements-langflow.txt` | start, secrets, pinned versions |
 
-The plan and its reasoning: [`plans/langflow-shell-plan.md`](../plans/langflow-shell-plan.md); the decisions: [`docs/decisions/030-langflow-shell.md`](../docs/decisions/030-langflow-shell.md), [`031`](../docs/decisions/031-design-assistant.md) (the assistant's tools and rules) and [`032`](../docs/decisions/032-opencode-harness-local-model.md) (OpenCode as its harness, the local model).
+The plan and its reasoning: [`plans/langflow-shell-plan.md`](../plans/langflow-shell-plan.md); the decisions: [`docs/decisions/030-langflow-shell.md`](../docs/decisions/030-langflow-shell.md), [`031`](../docs/decisions/031-design-assistant.md) (the assistant's tools and rules), [`032`](../docs/decisions/032-opencode-harness-local-model.md) (OpenCode as its harness, the local model) and [`033`](../docs/decisions/033-unfolded-assistant.md) (the assistant unfolded on the canvas).

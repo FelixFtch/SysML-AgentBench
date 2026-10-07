@@ -1,7 +1,7 @@
 {
-  "name": "RTRC F5: MOD change chain",
+  "name": "MOD change chain",
   "description": "One change to an existing model, judged, read back and gated.",
-  "endpoint_name": "rtrc-f5-mod-change",
+  "endpoint_name": "other-mod-change-chain",
   "is_component": false,
   "tags": [
     "rtrc",
@@ -151,7 +151,7 @@
         "type": "genericNode",
         "position": {
           "x": 40,
-          "y": 404
+          "y": 440
         }
       },
       {
@@ -423,7 +423,7 @@
         "type": "genericNode",
         "position": {
           "x": 3330,
-          "y": 404
+          "y": 440
         }
       },
       {
@@ -567,7 +567,7 @@
         "type": "genericNode",
         "position": {
           "x": 2860,
-          "y": 404
+          "y": 440
         }
       },
       {
@@ -711,7 +711,7 @@
         "type": "genericNode",
         "position": {
           "x": 2390,
-          "y": 404
+          "y": 440
         }
       },
       {
@@ -855,7 +855,7 @@
         "type": "genericNode",
         "position": {
           "x": 1920,
-          "y": 404
+          "y": 440
         }
       },
       {
@@ -999,7 +999,7 @@
         "type": "genericNode",
         "position": {
           "x": 1450,
-          "y": 404
+          "y": 440
         }
       },
       {
@@ -1143,7 +1143,7 @@
         "type": "genericNode",
         "position": {
           "x": 980,
-          "y": 404
+          "y": 440
         }
       },
       {
@@ -1287,7 +1287,7 @@
         "type": "genericNode",
         "position": {
           "x": 510,
-          "y": 404
+          "y": 440
         }
       },
       {
@@ -1559,7 +1559,7 @@
         "type": "genericNode",
         "position": {
           "x": 510,
-          "y": 1504
+          "y": 1540
         }
       },
       {
@@ -1751,7 +1751,7 @@
         "type": "genericNode",
         "position": {
           "x": 40,
-          "y": 1504
+          "y": 1540
         }
       },
       {
@@ -2149,7 +2149,7 @@
         "type": "genericNode",
         "position": {
           "x": 2860,
-          "y": 874
+          "y": 910
         }
       },
       {
@@ -2421,7 +2421,7 @@
         "type": "genericNode",
         "position": {
           "x": 510,
-          "y": 1974
+          "y": 2010
         }
       },
       {
@@ -2613,7 +2613,7 @@
         "type": "genericNode",
         "position": {
           "x": 40,
-          "y": 1974
+          "y": 2010
         }
       },
       {
@@ -2811,7 +2811,7 @@
         "type": "genericNode",
         "position": {
           "x": 3330,
-          "y": 874
+          "y": 910
         }
       },
       {
@@ -2822,20 +2822,20 @@
           "y": -20
         },
         "width": 460,
-        "height": 344,
+        "height": 380,
         "style": {
           "width": 460,
-          "height": 344
+          "height": 380
         },
         "measured": {
           "width": 460,
-          "height": 344
+          "height": 380
         },
         "data": {
           "id": "note-mod",
           "type": "note",
           "node": {
-            "description": "# F5 · Changing an existing model (page 2.4)\n\nThe model edits a task's baseline model; the official Pilot judges the syntax; the sealed key gives the task verdict and the budget gives the design verdict; the model reads the edited model back and code checks every number. If the answer moved a stated limit, a person must decide before the change is accepted (AGENTS.md: propose it and stop).",
+            "description": "# MOD change chain · changing an existing model (page 2.4)\n\nThe model edits a task's baseline model; the official Pilot judges the syntax; the sealed key gives the task verdict and the budget gives the design verdict; the model reads the edited model back and code checks every number. If the answer moved a stated limit, a person must decide before the change is accepted (AGENTS.md: propose it and stop).",
             "display_name": "",
             "documentation": "",
             "template": {

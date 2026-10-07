@@ -1,12 +1,12 @@
 {
-  "name": "RTRC memory search",
-  "description": "Search the memory for parts, attributes, limits and connections related to the engineer's words: the memory library, MiniLM + FAISS seeds (cosine ≥ 0.30 plus the exact-name bonus), one hop of neighbours; returns the matching cards with values and sources.",
-  "endpoint_name": "rtrc-tool-search",
+  "name": "Validate SysML with the official Pilot",
+  "description": "Parse SysML v2 text the engineer pasted with the official SysML v2 Pilot: the text is saved as a file and parsed; returns PASS or FAIL with the diagnostics (line and message).",
+  "endpoint_name": "tool-validate-sysml",
   "is_component": false,
   "tags": [
     "rtrc",
     "tool",
-    "search"
+    "validate"
   ],
   "data": {
     "nodes": [
@@ -238,12 +238,12 @@
                 "_input_type": "BoolInput"
               }
             },
-            "description": "What the engineer is asking about.",
+            "description": "What the engineer pasted.",
             "icon": "MessagesSquare",
             "base_classes": [
               "Message"
             ],
-            "display_name": "Search words (the tool's argument)",
+            "display_name": "SysML v2 text (the tool's argument)",
             "documentation": "https://docs.langflow.org/chat-input-and-output",
             "minimized": true,
             "custom_fields": {},
@@ -277,13 +277,13 @@
             "tool_mode": false
           },
           "type": "ChatInput",
-          "id": "ChatInput-query"
+          "id": "ChatInput-sysml"
         },
-        "id": "ChatInput-query",
+        "id": "ChatInput-sysml",
         "type": "genericNode",
         "position": {
           "x": 40,
-          "y": 692
+          "y": 332
         }
       },
       {
@@ -517,7 +517,7 @@
             "base_classes": [
               "Message"
             ],
-            "display_name": "Cards (the tool's result)",
+            "display_name": "Verdict (the tool's result)",
             "documentation": "https://docs.langflow.org/chat-input-and-output",
             "minimized": true,
             "custom_fields": {},
@@ -549,367 +549,13 @@
             "tool_mode": false
           },
           "type": "ChatOutput",
-          "id": "ChatOutput-cards"
+          "id": "ChatOutput-verdict"
         },
-        "id": "ChatOutput-cards",
-        "type": "genericNode",
-        "position": {
-          "x": 1920,
-          "y": 692
-        }
-      },
-      {
-        "data": {
-          "node": {
-            "template": {
-              "_type": "Component",
-              "code": {
-                "type": "code",
-                "required": true,
-                "placeholder": "",
-                "list": false,
-                "show": true,
-                "multiline": true,
-                "value": "\"\"\"RTRC Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,\nMiniLM + FAISS seeds, one hop), write to memory (gate, write, record), validate pasted SysML (save, official Pilot),\nand the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the RTRC shell service,\nwhich runs the same code as the results page; the chain order on the canvas is kept by the \"From the previous card\"\ninput. The engineer's text (query, \"<run id> A\", or SysML) comes from the sub-flow's Chat Input.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n# card name -> (endpoint, what the payload carries)\nSTEPS = {\n    \"Memory library (paper 2): MaritimeISR + approved designs as cards\": (\"/tool/memory/library\", \"none\"),\n    \"MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus\": (\"/tool/memory/seeds\", \"query\"),\n    \"One hop of neighbours (paper 2) → cards for the assistant\": (\"/tool/memory/hop\", \"query\"),\n    \"Gate: Pilot PASS and all four checks PASS? (read only)\": (\"/tool/gate\", \"request\"),\n    \"Write the design into memory (through the page's gate)\": (\"/tool/write\", \"request\"),\n    \"Record the approval on the run (page 2.3)\": (\"/tool/record-approval\", \"request\"),\n    \"Save the pasted SysML as a file\": (\"/tool/validate/save\", \"sysml\"),\n    \"Official SysML v2 Pilot on that file\": (\"/tool/validate/pilot\", \"saved\"),\n    \"Prompt part · rules (paper 3)\": (\"/tool/prompt-part\", \"run:rules\"),\n    \"Prompt part · attribute template (paper 3)\": (\"/tool/prompt-part\", \"run:contract\"),\n    \"Prompt part · retrieved examples or similar project (paper 2)\": (\"/tool/prompt-part\", \"run:examples\"),\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcTool(Component):\n    display_name = \"RTRC Tool step\"\n    description = \"One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the RTRC shell service.\"\n    icon = \"wrench\"\n    name = \"RtrcTool\"\n\n    inputs = [\n        MessageInput(name=\"text\", display_name=\"Engineer's text\", required=False,\n                     info=\"From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.\"),\n        MessageInput(name=\"upstream\", display_name=\"From the previous card\", required=False,\n                     info=\"Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.\"),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False),\n        DropdownInput(name=\"step\", display_name=\"Card\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            path, kind = STEPS[self.step]\n            text, upstream = _text(self.text), _text(self.upstream) or _text(self.upstream_alt)\n            if kind == \"none\":\n                payload = {}\n            elif kind in (\"query\", \"request\", \"sysml\"):\n                payload = {kind: text, \"upstream\": upstream}  # the write and record cards echo the cards before them\n            elif kind == \"saved\":\n                payload = {\"saved\": upstream}\n            else:  # run:<part>\n                match = RUN.search(upstream)\n                if not match:\n                    raise ValueError(\"No run id in the incoming message; connect this card after a pipeline step\")\n                payload = {\"run\": match.group(1), \"part\": kind.split(\":\", 1)[1]}\n            self._cached = _call(path, payload)\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
-                "fileTypes": [],
-                "file_path": "",
-                "password": false,
-                "name": "code",
-                "advanced": true,
-                "api_editable": false,
-                "dynamic": true,
-                "info": "",
-                "load_from_db": false,
-                "title_case": false
-              },
-              "step": {
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "options": [
-                  "Memory library (paper 2): MaritimeISR + approved designs as cards",
-                  "MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus",
-                  "One hop of neighbours (paper 2) → cards for the assistant",
-                  "Gate: Pilot PASS and all four checks PASS? (read only)",
-                  "Write the design into memory (through the page's gate)",
-                  "Record the approval on the run (page 2.3)",
-                  "Save the pasted SysML as a file",
-                  "Official SysML v2 Pilot on that file",
-                  "Prompt part · rules (paper 3)",
-                  "Prompt part · attribute template (paper 3)",
-                  "Prompt part · retrieved examples or similar project (paper 2)"
-                ],
-                "options_metadata": [],
-                "combobox": false,
-                "dialog_inputs": {},
-                "toggle": false,
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "step",
-                "value": "One hop of neighbours (paper 2) → cards for the assistant",
-                "display_name": "Card",
-                "advanced": false,
-                "api_editable": false,
-                "dynamic": false,
-                "info": "",
-                "title_case": false,
-                "track_in_telemetry": true,
-                "external_options": {},
-                "type": "str",
-                "_input_type": "DropdownInput"
-              },
-              "text": {
-                "trace_as_input": true,
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "load_from_db": false,
-                "list": false,
-                "list_add_label": "Add More",
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "text",
-                "value": {
-                  "text_key": "text",
-                  "data": {
-                    "text": "",
-                    "files": [],
-                    "sender": null,
-                    "sender_name": null,
-                    "session_id": "",
-                    "context_id": "",
-                    "run_id": null,
-                    "timestamp": "2026-10-06 00:00:00 UTC",
-                    "flow_id": null,
-                    "error": false,
-                    "edit": false,
-                    "properties": {
-                      "edited": false,
-                      "source": {
-                        "id": null,
-                        "display_name": null,
-                        "source": null
-                      },
-                      "allow_markdown": false,
-                      "state": "complete",
-                      "targets": []
-                    },
-                    "category": "message",
-                    "content_blocks": [],
-                    "duration": null,
-                    "session_metadata": null
-                  },
-                  "default_value": "",
-                  "files": [],
-                  "session_id": "",
-                  "context_id": "",
-                  "timestamp": "2026-10-06 00:00:00 UTC",
-                  "error": false,
-                  "edit": false,
-                  "properties": {
-                    "edited": false,
-                    "source": {
-                      "id": null,
-                      "display_name": null,
-                      "source": null
-                    },
-                    "allow_markdown": false,
-                    "state": "complete",
-                    "targets": []
-                  },
-                  "category": "message",
-                  "content_blocks": [],
-                  "text": ""
-                },
-                "display_name": "Engineer's text",
-                "advanced": false,
-                "api_editable": false,
-                "input_types": [
-                  "Message"
-                ],
-                "dynamic": false,
-                "info": "From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.",
-                "title_case": false,
-                "track_in_telemetry": false,
-                "type": "str",
-                "_input_type": "MessageInput"
-              },
-              "upstream": {
-                "trace_as_input": true,
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "load_from_db": false,
-                "list": false,
-                "list_add_label": "Add More",
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "upstream",
-                "value": {
-                  "text_key": "text",
-                  "data": {
-                    "text": "",
-                    "files": [],
-                    "sender": null,
-                    "sender_name": null,
-                    "session_id": "",
-                    "context_id": "",
-                    "run_id": null,
-                    "timestamp": "2026-10-06 00:00:00 UTC",
-                    "flow_id": null,
-                    "error": false,
-                    "edit": false,
-                    "properties": {
-                      "edited": false,
-                      "source": {
-                        "id": null,
-                        "display_name": null,
-                        "source": null
-                      },
-                      "allow_markdown": false,
-                      "state": "complete",
-                      "targets": []
-                    },
-                    "category": "message",
-                    "content_blocks": [],
-                    "duration": null,
-                    "session_metadata": null
-                  },
-                  "default_value": "",
-                  "files": [],
-                  "session_id": "",
-                  "context_id": "",
-                  "timestamp": "2026-10-06 00:00:00 UTC",
-                  "error": false,
-                  "edit": false,
-                  "properties": {
-                    "edited": false,
-                    "source": {
-                      "id": null,
-                      "display_name": null,
-                      "source": null
-                    },
-                    "allow_markdown": false,
-                    "state": "complete",
-                    "targets": []
-                  },
-                  "category": "message",
-                  "content_blocks": [],
-                  "text": ""
-                },
-                "display_name": "From the previous card",
-                "advanced": false,
-                "api_editable": false,
-                "input_types": [
-                  "Message"
-                ],
-                "dynamic": false,
-                "info": "Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.",
-                "title_case": false,
-                "track_in_telemetry": false,
-                "type": "str",
-                "_input_type": "MessageInput"
-              },
-              "upstream_alt": {
-                "trace_as_input": true,
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "load_from_db": false,
-                "list": false,
-                "list_add_label": "Add More",
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "upstream_alt",
-                "value": {
-                  "text_key": "text",
-                  "data": {
-                    "text": "",
-                    "files": [],
-                    "sender": null,
-                    "sender_name": null,
-                    "session_id": "",
-                    "context_id": "",
-                    "run_id": null,
-                    "timestamp": "2026-10-06 00:00:00 UTC",
-                    "flow_id": null,
-                    "error": false,
-                    "edit": false,
-                    "properties": {
-                      "edited": false,
-                      "source": {
-                        "id": null,
-                        "display_name": null,
-                        "source": null
-                      },
-                      "allow_markdown": false,
-                      "state": "complete",
-                      "targets": []
-                    },
-                    "category": "message",
-                    "content_blocks": [],
-                    "duration": null,
-                    "session_metadata": null
-                  },
-                  "default_value": "",
-                  "files": [],
-                  "session_id": "",
-                  "context_id": "",
-                  "timestamp": "2026-10-06 00:00:00 UTC",
-                  "error": false,
-                  "edit": false,
-                  "properties": {
-                    "edited": false,
-                    "source": {
-                      "id": null,
-                      "display_name": null,
-                      "source": null
-                    },
-                    "allow_markdown": false,
-                    "state": "complete",
-                    "targets": []
-                  },
-                  "category": "message",
-                  "content_blocks": [],
-                  "text": ""
-                },
-                "display_name": "Or from the other branch",
-                "advanced": false,
-                "api_editable": false,
-                "input_types": [
-                  "Message"
-                ],
-                "dynamic": false,
-                "info": "",
-                "title_case": false,
-                "track_in_telemetry": false,
-                "type": "str",
-                "_input_type": "MessageInput"
-              }
-            },
-            "description": "bench/discover.py retrieve_existing: each seed's linked elements, then the cards the assistant receives, with values and sources.",
-            "icon": "wrench",
-            "base_classes": [
-              "JSON",
-              "Message"
-            ],
-            "display_name": "One hop of neighbours · Paper 2",
-            "documentation": "",
-            "minimized": false,
-            "custom_fields": {},
-            "output_types": [],
-            "pinned": false,
-            "conditional_paths": [],
-            "frozen": false,
-            "outputs": [
-              {
-                "types": [
-                  "Message"
-                ],
-                "selected": "Message",
-                "name": "message",
-                "display_name": "Message",
-                "method": "as_message",
-                "value": "__UNDEFINED__",
-                "cache": true,
-                "allows_loop": false,
-                "group_outputs": false,
-                "tool_mode": true
-              },
-              {
-                "types": [
-                  "JSON"
-                ],
-                "selected": "JSON",
-                "name": "data",
-                "display_name": "Data",
-                "method": "as_data",
-                "value": "__UNDEFINED__",
-                "cache": true,
-                "allows_loop": false,
-                "group_outputs": false,
-                "tool_mode": true
-              }
-            ],
-            "field_order": [],
-            "beta": false,
-            "legacy": false,
-            "edited": false,
-            "metadata": {},
-            "tool_mode": false
-          },
-          "type": "RtrcTool",
-          "id": "RtrcTool-hop"
-        },
-        "id": "RtrcTool-hop",
+        "id": "ChatOutput-verdict",
         "type": "genericNode",
         "position": {
           "x": 1450,
-          "y": 692
+          "y": 332
         }
       },
       {
@@ -961,7 +607,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "step",
-                "value": "MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus",
+                "value": "Official SysML v2 Pilot on that file",
                 "display_name": "Card",
                 "advanced": false,
                 "api_editable": false,
@@ -1205,13 +851,13 @@
                 "_input_type": "MessageInput"
               }
             },
-            "description": "bench/vector_index.py (frozen): the query embedded by the pinned MiniLM, searched in a FAISS index of the cards; cosine ≥ 0.30 plus the exact-name bonus. The index is cached by content hash and rebuilt when the memory changes.",
+            "description": "mvp/engine.py run_submitted_model: the same Pilot 0.62 that grades the exam; PASS or FAIL with every diagnostic.",
             "icon": "wrench",
             "base_classes": [
               "JSON",
               "Message"
             ],
-            "display_name": "MiniLM + FAISS seeds · Paper 2",
+            "display_name": "Official SysML v2 Pilot · Paper 3",
             "documentation": "",
             "minimized": false,
             "custom_fields": {},
@@ -1257,13 +903,13 @@
             "tool_mode": false
           },
           "type": "RtrcTool",
-          "id": "RtrcTool-seeds"
+          "id": "RtrcTool-pilot"
         },
-        "id": "RtrcTool-seeds",
+        "id": "RtrcTool-pilot",
         "type": "genericNode",
         "position": {
           "x": 980,
-          "y": 692
+          "y": 332
         }
       },
       {
@@ -1315,7 +961,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "step",
-                "value": "Memory library (paper 2): MaritimeISR + approved designs as cards",
+                "value": "Save the pasted SysML as a file",
                 "display_name": "Card",
                 "advanced": false,
                 "api_editable": false,
@@ -1559,13 +1205,13 @@
                 "_input_type": "MessageInput"
               }
             },
-            "description": "The sources the search reads: MaritimeISR and every approved design (analysis/memory/approved.jsonl), as element cards from the official Pilot parse.",
+            "description": "The text becomes <package>.sysml under mvp/exam-inbox/; the package name is read from the text.",
             "icon": "wrench",
             "base_classes": [
               "JSON",
               "Message"
             ],
-            "display_name": "Memory library · Paper 2",
+            "display_name": "Save as a file",
             "documentation": "",
             "minimized": false,
             "custom_fields": {},
@@ -1611,37 +1257,37 @@
             "tool_mode": false
           },
           "type": "RtrcTool",
-          "id": "RtrcTool-library"
+          "id": "RtrcTool-save"
         },
-        "id": "RtrcTool-library",
+        "id": "RtrcTool-save",
         "type": "genericNode",
         "position": {
           "x": 510,
-          "y": 692
+          "y": 332
         }
       },
       {
-        "id": "note-search",
+        "id": "note-validate",
         "type": "noteNode",
         "position": {
           "x": 40,
           "y": -20
         },
         "width": 460,
-        "height": 632,
+        "height": 272,
         "style": {
           "width": 460,
-          "height": 632
+          "height": 272
         },
         "measured": {
           "width": 460,
-          "height": 632
+          "height": 272
         },
         "data": {
-          "id": "note-search",
+          "id": "note-validate",
           "type": "note",
           "node": {
-            "description": "# RTRC memory search\n\nThe assistant's memory search as cards, in the order the code runs: the library, the vector seeds, the one-hop expansion. Every card calls the same function the results page and the pipeline's ① Search memory use, so the cards here are the cards there.\n\n- The library is the memory itself: MaritimeISR plus every approved design, re-read on every call, so a newly approved design is searchable at once.\n- The MiniLM + FAISS index is a derived cache keyed by the cards' content; it rebuilds itself when the memory changes (bench/vector_index.py, frozen).\n- The knowledge base rtrc_memory (Qwen embeddings) is a second, separate index for Langflow's own search; the write-to-memory flow refreshes it.",
+            "description": "# Validate SysML with the official Pilot\n\nThe official Pilot on text the engineer pastes, as two cards: the file, then the parse. The Pilot is the judge here as everywhere else; the assistant only reports what it says. A tool of every Langflow-Agent flow and of the OpenCode-with-memory assistant, chat and exam versions.",
             "display_name": "",
             "documentation": "",
             "template": {
@@ -1653,12 +1299,12 @@
     ],
     "edges": [
       {
-        "source": "ChatInput-query",
-        "target": "RtrcTool-hop",
+        "source": "ChatInput-sysml",
+        "target": "RtrcTool-save",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
-            "id": "ChatInput-query",
+            "id": "ChatInput-sysml",
             "name": "message",
             "output_types": [
               "Message"
@@ -1666,83 +1312,27 @@
           },
           "targetHandle": {
             "fieldName": "text",
-            "id": "RtrcTool-hop",
+            "id": "RtrcTool-save",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-queryœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œRtrcTool-hopœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-query{œdataTypeœ:œChatInputœ,œidœ:œChatInput-queryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-hop{œfieldNameœ:œtextœ,œidœ:œRtrcTool-hopœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-sysmlœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œRtrcTool-saveœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-sysml{œdataTypeœ:œChatInputœ,œidœ:œChatInput-sysmlœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-save{œfieldNameœ:œtextœ,œidœ:œRtrcTool-saveœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "ChatInput-query",
-        "target": "RtrcTool-library",
-        "data": {
-          "sourceHandle": {
-            "dataType": "ChatInput",
-            "id": "ChatInput-query",
-            "name": "message",
-            "output_types": [
-              "Message"
-            ]
-          },
-          "targetHandle": {
-            "fieldName": "text",
-            "id": "RtrcTool-library",
-            "inputTypes": [
-              "Message"
-            ],
-            "type": "str"
-          }
-        },
-        "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-queryœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œRtrcTool-libraryœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-query{œdataTypeœ:œChatInputœ,œidœ:œChatInput-queryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-library{œfieldNameœ:œtextœ,œidœ:œRtrcTool-libraryœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
-        "animated": false,
-        "className": "",
-        "selected": false
-      },
-      {
-        "source": "ChatInput-query",
-        "target": "RtrcTool-seeds",
-        "data": {
-          "sourceHandle": {
-            "dataType": "ChatInput",
-            "id": "ChatInput-query",
-            "name": "message",
-            "output_types": [
-              "Message"
-            ]
-          },
-          "targetHandle": {
-            "fieldName": "text",
-            "id": "RtrcTool-seeds",
-            "inputTypes": [
-              "Message"
-            ],
-            "type": "str"
-          }
-        },
-        "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-queryœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œRtrcTool-seedsœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-query{œdataTypeœ:œChatInputœ,œidœ:œChatInput-queryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-seeds{œfieldNameœ:œtextœ,œidœ:œRtrcTool-seedsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
-        "animated": false,
-        "className": "",
-        "selected": false
-      },
-      {
-        "source": "RtrcTool-hop",
-        "target": "ChatOutput-cards",
+        "source": "RtrcTool-pilot",
+        "target": "ChatOutput-verdict",
         "data": {
           "sourceHandle": {
             "dataType": "RtrcTool",
-            "id": "RtrcTool-hop",
+            "id": "RtrcTool-pilot",
             "name": "message",
             "output_types": [
               "Message"
@@ -1750,7 +1340,7 @@
           },
           "targetHandle": {
             "fieldName": "input_value",
-            "id": "ChatOutput-cards",
+            "id": "ChatOutput-verdict",
             "inputTypes": [
               "Data",
               "JSON",
@@ -1761,20 +1351,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcToolœ, œidœ: œRtrcTool-hopœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-cardsœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcTool-hop{œdataTypeœ:œRtrcToolœ,œidœ:œRtrcTool-hopœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-cards{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-cardsœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "sourceHandle": "{œdataTypeœ: œRtrcToolœ, œidœ: œRtrcTool-pilotœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-verdictœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcTool-pilot{œdataTypeœ:œRtrcToolœ,œidœ:œRtrcTool-pilotœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-verdict{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-verdictœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcTool-library",
-        "target": "RtrcTool-seeds",
+        "source": "RtrcTool-save",
+        "target": "RtrcTool-pilot",
         "data": {
           "sourceHandle": {
             "dataType": "RtrcTool",
-            "id": "RtrcTool-library",
+            "id": "RtrcTool-save",
             "name": "message",
             "output_types": [
               "Message"
@@ -1782,44 +1372,16 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcTool-seeds",
+            "id": "RtrcTool-pilot",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcToolœ, œidœ: œRtrcTool-libraryœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcTool-seedsœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcTool-library{œdataTypeœ:œRtrcToolœ,œidœ:œRtrcTool-libraryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-seeds{œfieldNameœ:œupstreamœ,œidœ:œRtrcTool-seedsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
-        "animated": false,
-        "className": "",
-        "selected": false
-      },
-      {
-        "source": "RtrcTool-seeds",
-        "target": "RtrcTool-hop",
-        "data": {
-          "sourceHandle": {
-            "dataType": "RtrcTool",
-            "id": "RtrcTool-seeds",
-            "name": "message",
-            "output_types": [
-              "Message"
-            ]
-          },
-          "targetHandle": {
-            "fieldName": "upstream",
-            "id": "RtrcTool-hop",
-            "inputTypes": [
-              "Message"
-            ],
-            "type": "str"
-          }
-        },
-        "sourceHandle": "{œdataTypeœ: œRtrcToolœ, œidœ: œRtrcTool-seedsœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcTool-hopœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcTool-seeds{œdataTypeœ:œRtrcToolœ,œidœ:œRtrcTool-seedsœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-hop{œfieldNameœ:œupstreamœ,œidœ:œRtrcTool-hopœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œRtrcToolœ, œidœ: œRtrcTool-saveœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcTool-pilotœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-RtrcTool-save{œdataTypeœ:œRtrcToolœ,œidœ:œRtrcTool-saveœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-pilot{œfieldNameœ:œupstreamœ,œidœ:œRtrcTool-pilotœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false

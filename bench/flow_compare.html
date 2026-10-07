@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RTRC · Course chain and the unfolded agent</title>
+<link rel="stylesheet" href="/board.css">
+<style>
+  #s4 td:nth-child(3) { box-shadow: inset 3px 0 0 #e0a35f; }
+  #s4 td:nth-child(5) { box-shadow: inset 3px 0 0 #2f9c7d; }
+  #s4 th:nth-child(3), #s4 td:nth-child(3) { background: #fffaf3; }
+  #s4 th:nth-child(5), #s4 td:nth-child(5) { background: #f4fbf6; }
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="mast-inner">
+    <div>
+      <p class="kicker">RTRC 2706 · Langflow flows · synthetic maritime scenario</p>
+      <h1>Course chain and the unfolded agent</h1>
+      <p class="lead">Lecture 5 draws one fixed retrieval chain and calls it an agent. The unfolded RTRC assistant is an agent that chooses tools, and four of those tools are fixed chains of the same kind. Click a node. A line that names a run id was measured in this repository. A line that says “Lecture” was read from the slides and the shipped flow file; that flow was not executed here.</p>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><span>Course chain</span><b>7</b><small>nodes, every question · Langflow 1.10.1</small></div>
+      <div class="kpi"><span>Unfolded agent</span><b>0–8</b><small>tools per message · Langflow 1.12.5</small></div>
+      <div class="kpi"><span>Fixed sub-flows</span><b>4</b><small>memory, validate, write, design</small></div>
+      <div class="kpi"><span>Who may say pass</span><b>Code</b><small>Pilot + four checks · the lecture uses the model</small></div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="toc" id="toc" aria-label="Contents">
+    <h5>Compare</h5>
+    <a href="#s0"><b>0</b>How to read this</a>
+    <a href="#s1"><b>1</b>Course chain</a>
+    <a href="#s2"><b>2</b>Unfolded agent</a>
+    <a href="#s3"><b>3</b>Four fixed chains</a>
+    <a href="#s4"><b>4</b>What each choice did</a>
+    <h5>Back</h5>
+    <a href="/#s11"><b>1.1</b>Exam flow</a>
+    <a href="/#s21"><b>2.1</b>Agent flow</a>
+  </nav>
+
+  <main class="main">
+    <section class="card" id="s0">
+      <div class="sec-head"><span class="sec-num">0</span><div><h3>Same product, two graphs</h3><p class="sec-lead">Both pictures are Langflow canvases. They do not run the same way, and they were not measured the same way.</p></div></div>
+      <div class="answers">
+        <article><span class="q">Course · Lecture 5</span><b>One path, every time</b><p>Chat input, query rewrite, knowledge retrieval, a parser, a decision prompt, one model, chat output. The model writes the classification. Nothing is stored.</p></article>
+        <article><span class="q">RTRC · unfolded assistant</span><b>The model picks cards</b><p>A message can call no tool, or several. Memory search, validation, writing, and the design pipeline are separate flows. Those four run their cards in order when called.</p></article>
+        <article><span class="q">Evidence on this page</span><b>Two kinds of record</b><p>Green-border notes in the table are runs and tool calls from 2026-10-07. Amber notes are the lecture’s own expected result. The lecture flow was not run on this machine.</p></article>
+      </div>
+    </section>
+
+    <section class="card op" id="s1">
+      <div class="sec-head"><span class="sec-num">1</span><div><h3>Course flow: a retrieval chain</h3><p class="sec-lead">Materials-testing demo, Langflow 1.10.1, flow file “Materials Testing Document Q&amp;A Agent Build”. Every question walks the middle row. The model is gpt-5.4-mini at temperature 0. The knowledge base is Demo_KB.</p></div><div class="sec-tools"><span class="op-pill">Click a node</span></div></div>
+      <div class="op-guide"><span class="op-badge">Read</span><div><b>You can</b>Click a node. The buttons at the top right light retrieval, the decision text, or the obsolete specification.</div><div><b>What happens</b>The panel under the diagram says what the node reads, what it produces, and the lecture’s stated result.</div><div><b>Time</b>Instant. This picture does not call a model.</div></div>
+      <div id="flow-course"></div>
+    </section>
+
+    <section class="card op" id="s2">
+      <div class="sec-head"><span class="sec-num">2</span><div><h3>RTRC unfolded assistant: an agent, then tools</h3><p class="sec-lead">Langflow 1.12.5. The top row runs for every message. The bottom row runs only when the agent calls that card. Write to memory pauses on an approval card before its chain starts. The day-to-day assistant is still three cards (chat, OpenCode, chat) and calls the same tools without drawing them.</p></div><div class="sec-tools"><span class="op-pill">Click a node</span></div></div>
+      <div class="op-guide"><span class="op-badge">Read</span><div><b>You can</b>Click a node. Light “May skip” or “Approval”.</div><div><b>What happens</b>The panel quotes the 2026-10-07 comparison or the tool-flow check. A card the comparison never called says so.</div><div><b>Time</b>Instant. The runs named here already finished.</div></div>
+      <div id="flow-ours"></div>
+    </section>
+
+    <header class="part-head" id="s3">
+      <span class="part-num">3</span>
+      <div><h2>The four fixed chains</h2><p>These are the same shape as the lecture: when the agent calls one, its cards run left to right. They are separate flows on the project list, not drawn inside the agent canvas.</p></div>
+    </header>
+
+    <section class="card" id="s3a">
+      <div class="sec-head"><span class="sec-num">3.1</span><div><h3>Memory search</h3><p class="sec-lead">No model call. The query is the engineer’s words. MiniLM + FAISS, cosine at least 0.30, seeds, then one hop.</p></div></div>
+      <div id="flow-search"></div>
+    </section>
+    <section class="card" id="s3b">
+      <div class="sec-head"><span class="sec-num">3.2</span><div><h3>Validate SysML</h3><p class="sec-lead">Pasted text is saved as a file. The official SysML v2 Pilot is the only judge of syntax.</p></div></div>
+      <div id="flow-validate"></div>
+    </section>
+    <section class="card" id="s3c">
+      <div class="sec-head"><span class="sec-num">3.3</span><div><h3>Write to memory</h3><p class="sec-lead">The unfolded assistant pauses for approval first. The service then refuses a design that missed the Pilot or any of the four checks.</p></div></div>
+      <div id="flow-write"></div>
+    </section>
+    <section class="card" id="s3d">
+      <div class="sec-head"><span class="sec-num">3.4</span><div><h3>Design pipeline</h3><p class="sec-lead">Called after the engineer confirms a brief. OpenCode, in a sandbox on the local 27B, writes both designs with the Pilot as a tool. An empty brief is refused.</p></div></div>
+      <div id="flow-pipe"></div>
+    </section>
+
+    <section class="card" id="s4">
+      <div class="sec-head"><span class="sec-num">4</span><div><h3>What each choice did</h3><p class="sec-lead">Left of each row is the lecture’s design and the result it states. Right is the RTRC design and a run or tool call from this repository.</p></div></div>
+      <div class="tbl-scroll">
+        <table>
+          <thead><tr><th>Choice</th><th>Course chain</th><th>Lecture’s stated result</th><th>RTRC</th><th>Measured here</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Who walks the nodes</td>
+              <td>Every question walks all seven nodes.</td>
+              <td>One demo question is the default in the flow file.</td>
+              <td>The agent may call nothing.</td>
+              <td>“Add a sensor” did not start a design. The Langflow agent called six tools, then asked for four numbers. The OpenCode outer asked for the draw and the data rate with no tool. Neither invented a watt value.</td>
+            </tr>
+            <tr>
+              <td>Retrieval query</td>
+              <td>A rewrite step. The shipped prompt contains the answer: 60.0 ksi, 64.2 ksi, the test date, the calibration window.</td>
+              <td>Slide 8: a raw question often returns only the test report. The safe text is then HOLD.</td>
+              <td>The engineer’s words. MiniLM + FAISS, seeds, one hop. Checks do not read the query.</td>
+              <td>“Uplink and upload rates”: 2 neighbours, 6 cards, sources named, 20 s. No model in that chain.</td>
+            </tr>
+            <tr>
+              <td>Who may say pass</td>
+              <td>The model, and only if the retrieved text has the requirement, the measurement, and calibration.</td>
+              <td>For yield strength the lecture expects PASS. Margin ((64.2 − 60.0) / 60.0) × 100 = 7.0%, so the 5% review line does not apply.</td>
+              <td>Code. Official Pilot, then POWER, LINK, STORE, TRACE from parsed numbers. Actual ≤ limit. No 5% band.</td>
+              <td>Run 20261007T064005: both designs PASS at parse 1. POWER 49 ≤ 60 W, LINK 12 ≤ 20 Mbps, STORE 64.8 ≤ 256 GB, TRACE 9/9, alignment 6/6.</td>
+            </tr>
+            <tr>
+              <td>Arithmetic in chat</td>
+              <td>The decision prompt orders the model to compute the margin before it classifies.</td>
+              <td>The 7.0% figure above is the lecture’s own arithmetic for that one sample.</td>
+              <td>Budget checks are code. A chat question is still the model, and the answer is asked to show the sum.</td>
+              <td>Replace the 28 W camera with a 30 W lidar: 7 + 14 + 30 = 51 ≤ 60. Both outers, 3/3 on fresh sessions. Earlier that evening the OpenCode outer once said 51 W was still 19 W over.</td>
+            </tr>
+            <tr>
+              <td>A failing or empty design</td>
+              <td>The model is told to write HOLD when evidence is missing. The text does not block a file, because the chain writes no file.</td>
+              <td>Chemistry of T-401-03, and Inconel 718, are lecture tests for “not in the documents”.</td>
+              <td>UNKNOWN or FAIL on a gated check cannot be written. An empty package can still parse.</td>
+              <td>Run 20261007T074333, design B: empty package, Pilot PASS, TRACE 0/9 FAIL, POWER UNKNOWN. The gate kept it out of memory. Design A on that run passed all four checks.</td>
+            </tr>
+            <tr>
+              <td>Person</td>
+              <td>A sentence in the answer: “Human review required” or “not required”.</td>
+              <td>The yield demo expects “Human review not required”. Certifying a lot for production is supposed to be refused in the text.</td>
+              <td>An approval card pauses the job. The service then checks the Pilot and the four checks. It does not check that the chat message said “approve”.</td>
+              <td>Writing design A of 20261003T150116, already in memory: the job paused. After Approve, the gate refused. approved.jsonl stayed at two lines. 15 s.</td>
+            </tr>
+            <tr>
+              <td>Wrong brief</td>
+              <td>The rewrite is aimed at one sample. A different sample still asks for T-401-03’s numbers.</td>
+              <td>Not run here.</td>
+              <td>The pipeline refuses an empty brief. The agent is told to compare the returned “Brief:” line with the one the engineer confirmed.</td>
+              <td>Run 20261007T071503 ignored a misnamed argument, ran the page default (41 W, 25 W, 12 W, 128 GB, 8 Mbps): POWER 78/60 FAIL, LINK 18/8 FAIL. After the fix, run 20261007T074333 received the confirmed brief word for word.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="hint" style="margin-top:10px">Sources: Lecture 5 slides and the flow JSON in the 2026-10-07 meeting zip (not executed here). RTRC runs: analysis/assistant-harness-comparison-20261007.md, docs/decisions/034-unfolded-tools.md, analysis/discover-20261007T064005.json, analysis/discover-20261007T074333.json.</p>
+    </section>
+  </main>
+</div>
+<script src="/flow_compare.js"></script>
+</body>
+</html>

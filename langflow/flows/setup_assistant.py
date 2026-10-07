@@ -26,6 +26,7 @@ URL = "http://127.0.0.1:8782/mcp"
 OLLAMA_URL = "http://127.0.0.1:11434"
 PROVIDER = "OpenAI Compatible"
 MODELS = [{"provider": PROVIDER, "model_id": "qwen3.8-max", "enabled": True, "model_type": "llm"},
+          {"provider": PROVIDER, "model_id": "qwen3.8-flash", "enabled": True, "model_type": "llm"},  # the exam flows (decision 035)
           {"provider": PROVIDER, "model_id": "qwen3.7-text-embedding", "enabled": True, "model_type": "embeddings"},
           {"provider": "Ollama", "model_id": OLLAMA_TAG, "enabled": True, "model_type": "llm"}]
 

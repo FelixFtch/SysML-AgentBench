@@ -35,6 +35,21 @@ COHORTS = {
                "glob": "claude-jail-qwen3.8-flash-*"},
 }
 
+# The Langflow exam columns (decision 035): the same 27 tasks sat by the agent flows of Langflow projects 2, 3 and 4 on
+# qwen3.8-flash, run by bench/langflow_exam.py, scored by the frozen scorer. They are shown next to the four frozen
+# candidates on results page 1.3 and are not part of the frozen score, STATUS.md or the report. A cohort without a
+# batch folder yet shows "not run yet".
+LANGFLOW_COHORTS = {
+    "agent-pilot": {"label": "Langflow Agent, Pilot only · qwen3.8-flash", "short": "Langflow Agent, Pilot only", "kind": "agent", "model": "qwen3.8-flash",
+                    "glob": "langflow-exam-agent-pilot-qwen3.8-flash-*", "flow": "Langflow Agent, Pilot only exam", "project": "2 · Coding agents without memory"},
+    "opencode-memory": {"label": "OpenCode with memory · qwen3.8-flash", "short": "OpenCode with memory", "kind": "agent", "model": "qwen3.8-flash",
+                        "glob": "langflow-exam-opencode-memory-qwen3.8-flash-*", "flow": "OpenCode with memory exam", "project": "3 · OpenCode with memory"},
+    "agent-memory": {"label": "Langflow Agent with memory · qwen3.8-flash", "short": "Langflow Agent with memory", "kind": "agent", "model": "qwen3.8-flash",
+                     "glob": "langflow-exam-agent-memory-qwen3.8-flash-*", "flow": "Langflow Agent with memory exam", "project": "4 · Langflow Agent with memory"},
+}
+ALL_COHORTS = {**COHORTS, **LANGFLOW_COHORTS}
+AGENT_COHORTS = {cohort for cohort, spec in ALL_COHORTS.items() if spec["kind"] == "agent"}
+
 DISCARDED = {
     "opencode-open": {"label": "OpenCode, workspace inside the repository", "model": "qwen3.8-flash",
                       "dir": "opencode-qwen3.8-flash-20261006T070152",
@@ -70,7 +85,7 @@ ARCHIVE = {"label": "2026-10-03 matrix (24 tasks, old repair loop, old AMB/RT ru
 
 def batch_dir(cohort: str) -> Path | None:
     """The newest result folder of a cohort (by name, which starts with the run stamp)."""
-    found = sorted(path for path in ANALYSIS.glob(COHORTS[cohort]["glob"]) if (path / "results.jsonl").is_file())
+    found = sorted(path for path in ANALYSIS.glob(ALL_COHORTS[cohort]["glob"]) if (path / "results.jsonl").is_file())
     return found[-1] if found else None
 
 
@@ -131,7 +146,7 @@ def _direct_folders(model: str, start: str) -> dict[tuple[str, str], list[str]]:
 
 def rows(cohort: str) -> list[dict]:
     """Score rows of one cohort with cohort id and label; direct rows also get their run folder (`_folder`)."""
-    spec = COHORTS[cohort]
+    spec = ALL_COHORTS[cohort]
     folder = batch_dir(cohort)
     if not folder:
         return []

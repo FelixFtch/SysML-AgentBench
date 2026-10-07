@@ -40,7 +40,9 @@ class RtrcExamCell(Component):
         StrInput(name="cell", display_name="Cell to replay", value="flash:1:GEN-03:P1",
                  info="candidate:repeat:task:approach, e.g. flash:1:GEN-03:P1, max:2:ALN-02:P3, opencode:1:MOD-05:P-CODE, retry-claude:1:ALN-02"),
         StrInput(name="task_id", display_name="Task for a live run", value="GEN-03"),
-        DropdownInput(name="configuration", display_name="Approach (direct)", options=["P0", "P1", "P2", "P3"], value="P1"),
+        # Not named "configuration": Langflow parses any parameter whose name contains "config" as JSON and drops it when
+        # that fails (lfx.interface.initialize.loading.convert_kwargs), so a live run always fell back to the default.
+        DropdownInput(name="approach", display_name="Approach (direct)", options=["P0", "P1", "P2", "P3"], value="P1"),
         DropdownInput(name="agent", display_name="Agent (sandboxed)", options=["opencode", "claude-code"], value="opencode"),
         DropdownInput(name="model", display_name="Qwen model", options=["qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)"], value="qwen3.8-flash",
                       info="qwen3.8-27b (Ollama) is the 3-bit model on this machine. Live direct runs only; sandboxed agents stay on the cloud model."),
@@ -55,7 +57,7 @@ class RtrcExamCell(Component):
             if self.mode == MODES[0]:
                 body = _call("/exam/cell", {"id": str(self.cell).strip()})
             elif self.mode == MODES[1]:
-                body = _call("/exam/run", {"task_id": str(self.task_id).strip(), "configuration": self.configuration, "model": self.model})
+                body = _call("/exam/run", {"task_id": str(self.task_id).strip(), "configuration": self.approach, "model": self.model})
             else:
                 body = _call("/exam/agent-run", {"task_id": str(self.task_id).strip(), "agent": self.agent, "model": self.model})
             self._cached = body

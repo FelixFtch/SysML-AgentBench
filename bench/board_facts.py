@@ -103,7 +103,8 @@ def _run_tokens(record: dict) -> tuple[dict, bool]:
 
 
 def _summary(cohort: str, cells: list[dict]) -> dict:
-    spec = COHORTS[cohort]
+    from bench.batches import ALL_COHORTS
+    spec = ALL_COHORTS[cohort]
     by_type = {kind: {"n": 0, "pass": 0} for kind in TYPES}
     for row in cells:
         slot = by_type.setdefault(row["type"], {"n": 0, "pass": 0})
@@ -369,5 +370,22 @@ def facts() -> dict:
         "rule": "A task passes when the official parse passes (GEN, MOD, ALN), every required name, connection or mapping is present, "
                 "no number was invented, every value the task said to keep is unchanged, and every engineering check comes out as the key "
                 "expects. Whether the design meets its budget is a separate design verdict (decision 019).",
+        "langflow_cohorts": _langflow_cohorts(),
     }
+    return out
+
+
+def _langflow_cohorts() -> dict:
+    """The Langflow exam columns (decision 035), kept apart from the frozen candidates: pass counts, tokens, USD and time per
+    cohort; n is 0 for a cohort that has not been run yet."""
+    from bench.batches import LANGFLOW_COHORTS
+    out = {}
+    for cohort, spec in LANGFLOW_COHORTS.items():
+        cells = rows(cohort)
+        summary = _summary(cohort, cells)
+        seconds = [row.get("elapsed_s") for row in cells if isinstance(row.get("elapsed_s"), (int, float))]
+        reported = sum(1 for row in cells if (row.get("usage") or {}).get("input"))
+        out[cohort] = {**summary, "flow": spec["flow"], "project": spec["project"],
+                       "seconds_total": round(sum(seconds), 1), "seconds_median": (sorted(seconds)[len(seconds) // 2] if seconds else None),
+                       "usage_reported": reported, "tool_calls": sum(len(row.get("tool_calls") or []) for row in cells)}
     return out

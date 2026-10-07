@@ -1,12 +1,11 @@
 {
-  "name": "RTRC design assistant",
-  "description": "Ask, discuss, confirm requirements, run the verified design pipeline, decide. OpenCode on the local Qwen3.8-27B over the RTRC MCP tools.",
-  "endpoint_name": "rtrc-assistant",
+  "name": "Direct model chat · P3 retrieval then outline",
+  "description": "Direct model · P3 retrieval then outline on a task text: the answer, the official Pilot's verdict on a model answer, nothing scored.",
+  "endpoint_name": "direct-chat-p3",
   "is_component": false,
   "tags": [
     "rtrc",
-    "assistant",
-    "local"
+    "chat"
   ],
   "data": {
     "nodes": [
@@ -238,12 +237,12 @@
                 "_input_type": "BoolInput"
               }
             },
-            "description": "Ask, describe a need, confirm a brief, or decide.",
+            "description": "A task statement in the exam's wording ('Package name: X' for a model task); paste the given model(s) as fenced sysml blocks for MOD, ALN, QRY and RT tasks.",
             "icon": "MessagesSquare",
             "base_classes": [
               "Message"
             ],
-            "display_name": "Engineer",
+            "display_name": "Task text",
             "documentation": "https://docs.langflow.org/chat-input-and-output",
             "minimized": true,
             "custom_fields": {},
@@ -275,13 +274,13 @@
             "tool_mode": false
           },
           "type": "ChatInput",
-          "id": "ChatInput-ask"
+          "id": "ChatInput-task"
         },
-        "id": "ChatInput-ask",
+        "id": "ChatInput-task",
         "type": "genericNode",
         "position": {
           "x": 40,
-          "y": 980
+          "y": 548
         }
       },
       {
@@ -515,7 +514,7 @@
             "base_classes": [
               "Message"
             ],
-            "display_name": "Answer",
+            "display_name": "Answer (not scored)",
             "documentation": "https://docs.langflow.org/chat-input-and-output",
             "minimized": true,
             "custom_fields": {},
@@ -553,7 +552,7 @@
         "type": "genericNode",
         "position": {
           "x": 980,
-          "y": 980
+          "y": 548
         }
       },
       {
@@ -561,6 +560,38 @@
           "node": {
             "template": {
               "_type": "Component",
+              "candidate": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Direct model · P0 one-shot",
+                  "Direct model · P1 repair from errors",
+                  "Direct model · P2 outline first",
+                  "Direct model · P3 retrieval then outline",
+                  "OpenCode in the sandbox",
+                  "Claude Code in the sandbox"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "candidate",
+                "value": "Direct model · P3 retrieval then outline",
+                "display_name": "Candidate",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
               "code": {
                 "type": "code",
                 "required": true,
@@ -568,7 +599,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC OpenCode assistant: one turn of the conversational design assistant per chat message.\n\nThe assistant is OpenCode (the exam's pinned binary) on the local Qwen3.8-27B served by Ollama, with the RTRC MCP\ntools (tools/assistant_mcp.py on 127.0.0.1:8782) as its only tools; its file and shell tools are off. The workspace\nis prepared by tools/assistant/workspace.py outside the repository. Each Langflow chat session maps to one OpenCode\nsession, so the conversation continues across messages. Decision 032.\n\"\"\"\nimport json\nimport os\nimport subprocess\nimport sys\nimport urllib.request\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageInput, Output\nfrom lfx.schema.message import Message\n\n# Langflow runs component code from a copy, so the repository is found from the environment (RTRC_ROOT, set by\n# scripts/langflow.sh) or from the virtual environment, which lives at <repository>/.venv-langflow.\nROOT = Path(os.environ.get(\"RTRC_ROOT\") or Path(sys.prefix).resolve().parent)\nOPENCODE = ROOT / \"tools\" / \"opencode\" / \"opencode\"\nMCP_URL = os.environ.get(\"RTRC_ASSISTANT_MCP_URL\", \"http://127.0.0.1:8782/mcp\")\n\n\nclass RtrcOpenCodeAssistant(Component):\n    display_name = \"RTRC OpenCode assistant\"\n    description = (\"One turn of the RTRC design assistant: OpenCode on the local Qwen3.8-27B with the RTRC tools \"\n                   \"(memory, the verified design pipeline, the official Pilot, the memory gate, decisions, Cameo export).\")\n    icon = \"bot\"\n    name = \"RtrcOpenCodeAssistant\"\n\n    inputs = [\n        MessageInput(name=\"message\", display_name=\"Engineer's message\",\n                     info=\"Ask what exists, describe a need, confirm the brief it proposes, or decide on a run.\"),\n    ]\n    outputs = [Output(display_name=\"Answer\", name=\"answer\", method=\"turn\")]\n\n    def turn(self) -> Message:\n        text = (self.message.text if isinstance(self.message, Message) else str(self.message or \"\")).strip()\n        if not text:\n            raise ValueError(\"Write a message for the assistant\")\n        if not OPENCODE.is_file():\n            raise ValueError(f\"Missing the pinned OpenCode binary {OPENCODE}; set RTRC_ROOT to the repository\")\n        try:\n            urllib.request.urlopen(urllib.request.Request(MCP_URL, method=\"GET\"), timeout=3).read(1)\n        except Exception as exc:  # noqa: BLE001 - any failure means the tools are not there\n            if \"HTTP Error\" not in str(exc):\n                raise ValueError(f\"The RTRC assistant MCP server is not running at {MCP_URL}; start it with scripts/langflow.sh or scripts/assistant.sh\") from exc\n        prepared = subprocess.run([\"python3\", str(ROOT / \"tools\" / \"assistant\" / \"workspace.py\")], capture_output=True, text=True, timeout=120, check=False)\n        if prepared.returncode != 0:\n            raise ValueError(f\"Could not prepare the assistant workspace: {prepared.stderr.strip()[-400:]}\")\n        workspace = Path(prepared.stdout.strip())\n\n        session = getattr(self.message, \"session_id\", None) or getattr(getattr(self, \"graph\", None), \"session_id\", None) or \"default\"\n        sessions_file = workspace / \"sessions.json\"\n        sessions = json.loads(sessions_file.read_text(encoding=\"utf-8\")) if sessions_file.is_file() else {}\n        argv = [str(OPENCODE), \"run\", \"--format\", \"json\", \"--auto\", \"--dir\", str(workspace)]\n        argv += [\"--session\", sessions[session]] if session in sessions else [\"--title\", f\"Langflow {session}\"]\n        argv.append(text)\n        completed = subprocess.run(argv, cwd=workspace, capture_output=True, text=True, timeout=1800, check=False)\n        events = [json.loads(line) for line in completed.stdout.splitlines() if line.startswith(\"{\")]\n        if events and events[0].get(\"sessionID\"):\n            sessions[session] = events[0][\"sessionID\"]\n            sessions_file.write_text(json.dumps(sessions, indent=2), encoding=\"utf-8\")\n\n        texts = [(e[\"part\"].get(\"messageID\"), e[\"part\"].get(\"text\", \"\")) for e in events if e.get(\"type\") == \"text\" and e.get(\"part\")]\n        tools = [e[\"part\"] for e in events if e.get(\"type\") == \"tool_use\" and e.get(\"part\")]\n        answer = \"\"\n        if texts:\n            last = texts[-1][0]\n            answer = \"\\n\\n\".join(t for m, t in texts if m == last).strip()\n        if completed.returncode != 0 or not answer:\n            raise ValueError(f\"OpenCode returned no answer (exit {completed.returncode}): {completed.stderr.strip()[-600:]}\")\n        calls = [f\"{p.get('tool')} {json.dumps((p.get('state') or {}).get('input'), ensure_ascii=False)[:80]}\" for p in tools]\n        self.status = f\"OpenCode session {sessions.get(session)} · {len(tools)} tool call(s)\\n\" + \"\\n\".join(calls)\n        return Message(text=answer)\n",
+                "value": "\"\"\"RTRC Exam chat: the chat version of an exam candidate (decision 035). A task text comes in from Chat Input, the\ncandidate answers it the way it answers an exam cell, and the answer comes out. There is no answer key, so nothing\nis scored; the official Pilot still parses a model answer.\n\nCandidates: the direct model with one approach (P0 one-shot; P1 repair from the Pilot's complete error list; P2\noutline first; P3 retrieval, then outline), or a coding agent in the sandbox (OpenCode, Claude Code) with AGENTS.md\nand ./validate. The shell service runs the same code as the exam cell (bench/shell_service.py /exam/chat).\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nCANDIDATES = {\n    \"Direct model · P0 one-shot\": \"direct-P0\",\n    \"Direct model · P1 repair from errors\": \"direct-P1\",\n    \"Direct model · P2 outline first\": \"direct-P2\",\n    \"Direct model · P3 retrieval then outline\": \"direct-P3\",\n    \"OpenCode in the sandbox\": \"opencode\",\n    \"Claude Code in the sandbox\": \"claude-code\",\n}\nTYPES = [\"GEN · generate a new model\", \"MOD · modify the given model\", \"ALN · align the two given packages\",\n         \"QRY · answer a question about the given model in JSON\", \"AMB · ask when a number is missing\", \"RT · restate the given model in sentences\"]\nMODELS = [\"qwen3.8-flash\", \"qwen3.8-max\", \"qwen3.8-27b (Ollama)\"]\nPACKAGE_LINE = re.compile(r\"Package name:\\s*([A-Za-z_][A-Za-z0-9_]*)\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcExamChat(Component):\n    display_name = \"RTRC Exam chat\"\n    description = \"A task text in, an exam candidate's answer out: the direct model with one approach, or a sandboxed coding agent. No answer key, nothing scored.\"\n    icon = \"message-square-text\"\n    name = \"RtrcExamChat\"\n\n    inputs = [\n        MessageInput(name=\"message\", display_name=\"Task text\", info=\"The task statement, as the exam would give it; for MOD, ALN, QRY and RT tasks paste the given model(s) as fenced sysml blocks after it.\"),\n        DropdownInput(name=\"candidate\", display_name=\"Candidate\", options=list(CANDIDATES), value=list(CANDIDATES)[0]),\n        DropdownInput(name=\"model\", display_name=\"Qwen model\", options=MODELS, value=MODELS[0],\n                      info=\"qwen3.8-flash is the model of the frozen exam; qwen3.8-27b (Ollama) is the 3-bit model on this machine (direct or OpenCode).\"),\n        DropdownInput(name=\"task_type\", display_name=\"Task type\", options=TYPES, value=TYPES[0],\n                      info=\"Decides the rules the direct model gets and whether the official Pilot parses the answer. Sandboxed agents read the task text alone.\"),\n        StrInput(name=\"package\", display_name=\"Package name (GEN, MOD, ALN)\", value=\"\", advanced=True,\n                 info=\"Empty: read from a 'Package name:' line in the task text, else Inbox.\"),\n    ]\n    outputs = [\n        Output(display_name=\"Answer\", name=\"answer\", method=\"as_message\"),\n        Output(display_name=\"Details\", name=\"details\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            text = (self.message.text if isinstance(self.message, Message) else str(self.message or \"\")).strip()\n            if not text:\n                raise ValueError(\"Write the task text\")\n            package = str(self.package or \"\").strip()\n            if not package:\n                match = PACKAGE_LINE.search(text)\n                package = match.group(1) if match else \"\"\n            self._cached = _call(\"/exam/chat\", {\"text\": text, \"candidate\": CANDIDATES[self.candidate], \"model\": self.model,\n                                                \"task_type\": str(self.task_type).split(\" \", 1)[0], \"package\": package})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"data\"].get(\"answer\") or \"\")\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -644,26 +675,110 @@
                   "content_blocks": [],
                   "text": ""
                 },
-                "display_name": "Engineer's message",
+                "display_name": "Task text",
                 "advanced": false,
                 "api_editable": false,
                 "input_types": [
                   "Message"
                 ],
                 "dynamic": false,
-                "info": "Ask what exists, describe a need, confirm the brief it proposes, or decide on a run.",
+                "info": "The task statement, as the exam would give it; for MOD, ALN, QRY and RT tasks paste the given model(s) as fenced sysml blocks after it.",
                 "title_case": false,
                 "track_in_telemetry": false,
                 "type": "str",
                 "_input_type": "MessageInput"
+              },
+              "model": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "qwen3.8-flash",
+                  "qwen3.8-max",
+                  "qwen3.8-27b (Ollama)"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model",
+                "value": "qwen3.8-flash",
+                "display_name": "Qwen model",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "qwen3.8-flash is the model of the frozen exam; qwen3.8-27b (Ollama) is the 3-bit model on this machine (direct or OpenCode).",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "package": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "package",
+                "value": "",
+                "display_name": "Package name (GEN, MOD, ALN)",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Empty: read from a 'Package name:' line in the task text, else Inbox.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "task_type": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "GEN · generate a new model",
+                  "MOD · modify the given model",
+                  "ALN · align the two given packages",
+                  "QRY · answer a question about the given model in JSON",
+                  "AMB · ask when a number is missing",
+                  "RT · restate the given model in sentences"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "task_type",
+                "value": "GEN · generate a new model",
+                "display_name": "Task type",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Decides the rules the direct model gets and whether the official Pilot parses the answer. Sandboxed agents read the task text alone.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
               }
             },
-            "description": "OpenCode is the harness: the model decides which RTRC tool to call and when; the tools decide nothing by themselves. Each chat session continues one OpenCode session.",
-            "icon": "bot",
+            "description": "The same fixed path as the exam cell, on your text: retrieval, outline, answer, repair. Set the task type; the official Pilot parses model answers.",
+            "icon": "message-square-text",
             "base_classes": [
+              "JSON",
               "Message"
             ],
-            "display_name": "RTRC design assistant · OpenCode on the local Qwen3.8-27B",
+            "display_name": "Direct model · P3 retrieval then outline · qwen3.8-flash",
             "documentation": "",
             "minimized": false,
             "custom_fields": {},
@@ -679,7 +794,21 @@
                 "selected": "Message",
                 "name": "answer",
                 "display_name": "Answer",
-                "method": "turn",
+                "method": "as_message",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": "JSON",
+                "name": "details",
+                "display_name": "Details",
+                "method": "as_data",
                 "value": "__UNDEFINED__",
                 "cache": true,
                 "allows_loop": false,
@@ -694,38 +823,38 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcOpenCodeAssistant",
-          "id": "RtrcOpenCode-assistant"
+          "type": "RtrcExamChat",
+          "id": "RtrcExamChat-candidate"
         },
-        "id": "RtrcOpenCode-assistant",
+        "id": "RtrcExamChat-candidate",
         "type": "genericNode",
         "position": {
           "x": 510,
-          "y": 980
+          "y": 548
         }
       },
       {
-        "id": "note-assistant",
+        "id": "note-chat",
         "type": "noteNode",
         "position": {
           "x": 40,
           "y": -20
         },
         "width": 460,
-        "height": 920,
+        "height": 488,
         "style": {
           "width": 460,
-          "height": 920
+          "height": 488
         },
         "measured": {
           "width": 460,
-          "height": 920
+          "height": 488
         },
         "data": {
-          "id": "note-assistant",
+          "id": "note-chat",
           "type": "note",
           "node": {
-            "description": "# RTRC design assistant\n\nTalk to it like a colleague: ask what exists in the memory, describe a need in your own words, answer its questions about missing numbers, confirm the brief it proposes, and decide on the result.\n\n- The harness is OpenCode (the exam's pinned binary) on the 3-bit Qwen3.8-27B served by Ollama on this machine; its tools are the RTRC MCP server (`tools/assistant_mcp.py`, 127.0.0.1:8782): memory search, the verified design pipeline, the official Pilot, the memory gate, decisions, Cameo export. Its own file and shell tools are off. Nothing leaves this computer.\n- `run_design` is the same verified pipeline as the agent flow and the results page (2 to 10 minutes); inside it a second, sandboxed OpenCode writes the designs with `./validate` in hand, so the results page (8770) must be stopped first. Its record appears on page 2.3.\n- It never invents numbers, never moves a stated limit, and writes to memory only after you approve a design that passed all four checks.\n- The same assistant in the terminal: `scripts/assistant.sh`. The fixed flows below stay as the benchmark; this one is for use.",
+            "description": "# Direct model chat · P3 retrieval then outline\n\nThe chat version of **Direct model exam · P3 retrieval then outline**: the same candidate, the same path, on a task you type instead of a sealed task id. There is no answer key here, so nothing is scored; the official Pilot still parses a model answer and the repair loop still runs where the approach has one.\n\n- Use it to try a task's wording before adding it to the bank, or to watch one approach on one input.\n- Each run is saved under analysis/langflow-console/ as a chat run; it never enters the frozen matrix.",
             "display_name": "",
             "documentation": "",
             "template": {
@@ -737,12 +866,12 @@
     ],
     "edges": [
       {
-        "source": "ChatInput-ask",
-        "target": "RtrcOpenCode-assistant",
+        "source": "ChatInput-task",
+        "target": "RtrcExamChat-candidate",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
-            "id": "ChatInput-ask",
+            "id": "ChatInput-task",
             "name": "message",
             "output_types": [
               "Message"
@@ -750,27 +879,27 @@
           },
           "targetHandle": {
             "fieldName": "message",
-            "id": "RtrcOpenCode-assistant",
+            "id": "RtrcExamChat-candidate",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-askœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œmessageœ, œidœ: œRtrcOpenCode-assistantœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-ask{œdataTypeœ:œChatInputœ,œidœ:œChatInput-askœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcOpenCode-assistant{œfieldNameœ:œmessageœ,œidœ:œRtrcOpenCode-assistantœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-taskœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œmessageœ, œidœ: œRtrcExamChat-candidateœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-task{œdataTypeœ:œChatInputœ,œidœ:œChatInput-taskœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcExamChat-candidate{œfieldNameœ:œmessageœ,œidœ:œRtrcExamChat-candidateœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcOpenCode-assistant",
+        "source": "RtrcExamChat-candidate",
         "target": "ChatOutput-answer",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcOpenCodeAssistant",
-            "id": "RtrcOpenCode-assistant",
+            "dataType": "RtrcExamChat",
+            "id": "RtrcExamChat-candidate",
             "name": "answer",
             "output_types": [
               "Message"
@@ -789,9 +918,9 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcOpenCodeAssistantœ, œidœ: œRtrcOpenCode-assistantœ, œnameœ: œanswerœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œRtrcExamChatœ, œidœ: œRtrcExamChat-candidateœ, œnameœ: œanswerœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-answerœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcOpenCode-assistant{œdataTypeœ:œRtrcOpenCodeAssistantœ,œidœ:œRtrcOpenCode-assistantœ,œnameœ:œanswerœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-answer{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-answerœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-RtrcExamChat-candidate{œdataTypeœ:œRtrcExamChatœ,œidœ:œRtrcExamChat-candidateœ,œnameœ:œanswerœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-answer{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-answerœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false

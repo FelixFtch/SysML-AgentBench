@@ -1,7 +1,7 @@
 {
-  "name": "RTRC Cameo check (when licensed)",
+  "name": "Cameo check",
   "description": "Export a run's designs for Cameo and record the person's check.",
-  "endpoint_name": "rtrc-cameo-check",
+  "endpoint_name": "other-cameo-check",
   "is_component": false,
   "tags": [
     "rtrc",

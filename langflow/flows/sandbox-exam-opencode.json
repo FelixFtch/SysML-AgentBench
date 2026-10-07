@@ -1,7 +1,7 @@
 {
-  "name": "RTRC F2: exam cell, sandboxed coding agent",
-  "description": "Replay or run one exam cell step by step.",
-  "endpoint_name": "rtrc-f2-exam-agent",
+  "name": "OpenCode in the sandbox exam",
+  "description": "One exam cell of OpenCode in the sandbox: a sealed task in, the verdict out; or replay a graded cell.",
+  "endpoint_name": "sandbox-exam-opencode",
   "is_component": false,
   "tags": [
     "rtrc",
@@ -42,6 +42,36 @@
                 "type": "str",
                 "_input_type": "DropdownInput"
               },
+              "approach": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "P0",
+                  "P1",
+                  "P2",
+                  "P3"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "approach",
+                "value": "P1",
+                "display_name": "Approach (direct)",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
               "cell": {
                 "tool_mode": false,
                 "trace_as_metadata": true,
@@ -71,7 +101,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Exam cell: F1 / F2, one exam cell, replayed from the archive or run live on Qwen; the answer key is used\nonly by the scorer and never returned.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nMODES = [\"Replay a graded cell\", \"Live: direct Qwen (P0–P3)\", \"Live: sandboxed agent on Qwen\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcExamCell(Component):\n    display_name = \"RTRC Exam cell\"\n    description = \"One exam cell: replay any graded cell, or run a sealed task live on Qwen (direct or a sandboxed coding agent). Not added to any score.\"\n    icon = \"clipboard-check\"\n    name = \"RtrcExamCell\"\n\n    inputs = [\n        DropdownInput(name=\"mode\", display_name=\"Mode\", options=MODES, value=MODES[0]),\n        StrInput(name=\"cell\", display_name=\"Cell to replay\", value=\"flash:1:GEN-03:P1\",\n                 info=\"candidate:repeat:task:approach, e.g. flash:1:GEN-03:P1, max:2:ALN-02:P3, opencode:1:MOD-05:P-CODE, retry-claude:1:ALN-02\"),\n        StrInput(name=\"task_id\", display_name=\"Task for a live run\", value=\"GEN-03\"),\n        DropdownInput(name=\"configuration\", display_name=\"Approach (direct)\", options=[\"P0\", \"P1\", \"P2\", \"P3\"], value=\"P1\"),\n        DropdownInput(name=\"agent\", display_name=\"Agent (sandboxed)\", options=[\"opencode\", \"claude-code\"], value=\"opencode\"),\n        DropdownInput(name=\"model\", display_name=\"Qwen model\", options=[\"qwen3.8-flash\", \"qwen3.8-max\", \"qwen3.8-27b (Ollama)\"], value=\"qwen3.8-flash\",\n                      info=\"qwen3.8-27b (Ollama) is the 3-bit model on this machine. Live direct runs only; sandboxed agents stay on the cloud model.\"),\n    ]\n    outputs = [\n        Output(display_name=\"Cell\", name=\"cell_data\", method=\"as_data\"),\n        Output(display_name=\"Summary\", name=\"summary\", method=\"as_message\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            if self.mode == MODES[0]:\n                body = _call(\"/exam/cell\", {\"id\": str(self.cell).strip()})\n            elif self.mode == MODES[1]:\n                body = _call(\"/exam/run\", {\"task_id\": str(self.task_id).strip(), \"configuration\": self.configuration, \"model\": self.model})\n            else:\n                body = _call(\"/exam/agent-run\", {\"task_id\": str(self.task_id).strip(), \"agent\": self.agent, \"model\": self.model})\n            self._cached = body\n            self.status = body[\"summary\"]\n        return self._cached\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n",
+                "value": "\"\"\"RTRC Exam cell: F1 / F2, one exam cell, replayed from the archive or run live on Qwen; the answer key is used\nonly by the scorer and never returned.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nMODES = [\"Replay a graded cell\", \"Live: direct Qwen (P0–P3)\", \"Live: sandboxed agent on Qwen\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcExamCell(Component):\n    display_name = \"RTRC Exam cell\"\n    description = \"One exam cell: replay any graded cell, or run a sealed task live on Qwen (direct or a sandboxed coding agent). Not added to any score.\"\n    icon = \"clipboard-check\"\n    name = \"RtrcExamCell\"\n\n    inputs = [\n        DropdownInput(name=\"mode\", display_name=\"Mode\", options=MODES, value=MODES[0]),\n        StrInput(name=\"cell\", display_name=\"Cell to replay\", value=\"flash:1:GEN-03:P1\",\n                 info=\"candidate:repeat:task:approach, e.g. flash:1:GEN-03:P1, max:2:ALN-02:P3, opencode:1:MOD-05:P-CODE, retry-claude:1:ALN-02\"),\n        StrInput(name=\"task_id\", display_name=\"Task for a live run\", value=\"GEN-03\"),\n        # Not named \"configuration\": Langflow parses any parameter whose name contains \"config\" as JSON and drops it when\n        # that fails (lfx.interface.initialize.loading.convert_kwargs), so a live run always fell back to the default.\n        DropdownInput(name=\"approach\", display_name=\"Approach (direct)\", options=[\"P0\", \"P1\", \"P2\", \"P3\"], value=\"P1\"),\n        DropdownInput(name=\"agent\", display_name=\"Agent (sandboxed)\", options=[\"opencode\", \"claude-code\"], value=\"opencode\"),\n        DropdownInput(name=\"model\", display_name=\"Qwen model\", options=[\"qwen3.8-flash\", \"qwen3.8-max\", \"qwen3.8-27b (Ollama)\"], value=\"qwen3.8-flash\",\n                      info=\"qwen3.8-27b (Ollama) is the 3-bit model on this machine. Live direct runs only; sandboxed agents stay on the cloud model.\"),\n    ]\n    outputs = [\n        Output(display_name=\"Cell\", name=\"cell_data\", method=\"as_data\"),\n        Output(display_name=\"Summary\", name=\"summary\", method=\"as_message\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            if self.mode == MODES[0]:\n                body = _call(\"/exam/cell\", {\"id\": str(self.cell).strip()})\n            elif self.mode == MODES[1]:\n                body = _call(\"/exam/run\", {\"task_id\": str(self.task_id).strip(), \"configuration\": self.approach, \"model\": self.model})\n            else:\n                body = _call(\"/exam/agent-run\", {\"task_id\": str(self.task_id).strip(), \"agent\": self.agent, \"model\": self.model})\n            self._cached = body\n            self.status = body[\"summary\"]\n        return self._cached\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -82,36 +112,6 @@
                 "info": "",
                 "load_from_db": false,
                 "title_case": false
-              },
-              "configuration": {
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "options": [
-                  "P0",
-                  "P1",
-                  "P2",
-                  "P3"
-                ],
-                "options_metadata": [],
-                "combobox": false,
-                "dialog_inputs": {},
-                "toggle": false,
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "configuration",
-                "value": "P1",
-                "display_name": "Approach (direct)",
-                "advanced": false,
-                "api_editable": false,
-                "dynamic": false,
-                "info": "",
-                "title_case": false,
-                "track_in_telemetry": true,
-                "external_options": {},
-                "type": "str",
-                "_input_type": "DropdownInput"
               },
               "mode": {
                 "tool_mode": false,
@@ -130,7 +130,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "mode",
-                "value": "Replay a graded cell",
+                "value": "Live: sandboxed agent on Qwen",
                 "display_name": "Mode",
                 "advanced": false,
                 "api_editable": false,
@@ -159,7 +159,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "model",
-                "value": "qwen3.8-max",
+                "value": "qwen3.8-flash",
                 "display_name": "Qwen model",
                 "advanced": false,
                 "api_editable": false,
@@ -194,13 +194,13 @@
                 "_input_type": "StrInput"
               }
             },
-            "description": "Replay any graded cell, or run a sealed task live (not added to any score). The answer key is used only by the scorer.",
+            "description": "OpenCode in the bubblewrap sandbox with the task, AGENTS.md and ./validate; it repairs inside its own session; the grader parses the final answer once. Type a sealed task id and run, or switch the mode to replay a graded cell. Time and tokens are recorded. The answer key is used only by the scorer.",
             "icon": "clipboard-check",
             "base_classes": [
               "JSON",
               "Message"
             ],
-            "display_name": "Exam cell: sandboxed agent on Qwen",
+            "display_name": "Exam cell · OpenCode in the sandbox · qwen3.8-flash",
             "documentation": "",
             "minimized": false,
             "custom_fields": {},
@@ -252,7 +252,7 @@
         "type": "genericNode",
         "position": {
           "x": 40,
-          "y": 368
+          "y": 836
         }
       },
       {
@@ -486,7 +486,7 @@
             "base_classes": [
               "Message"
             ],
-            "display_name": "Chat Output",
+            "display_name": "Verdict and record",
             "documentation": "https://docs.langflow.org/chat-input-and-output",
             "minimized": true,
             "custom_fields": {},
@@ -524,7 +524,7 @@
         "type": "genericNode",
         "position": {
           "x": 3330,
-          "y": 368
+          "y": 836
         }
       },
       {
@@ -673,7 +673,7 @@
         "type": "genericNode",
         "position": {
           "x": 2860,
-          "y": 368
+          "y": 836
         }
       },
       {
@@ -822,7 +822,7 @@
         "type": "genericNode",
         "position": {
           "x": 2390,
-          "y": 368
+          "y": 836
         }
       },
       {
@@ -971,7 +971,7 @@
         "type": "genericNode",
         "position": {
           "x": 1920,
-          "y": 368
+          "y": 836
         }
       },
       {
@@ -1120,7 +1120,7 @@
         "type": "genericNode",
         "position": {
           "x": 1450,
-          "y": 368
+          "y": 836
         }
       },
       {
@@ -1269,7 +1269,7 @@
         "type": "genericNode",
         "position": {
           "x": 980,
-          "y": 368
+          "y": 836
         }
       },
       {
@@ -1418,7 +1418,7 @@
         "type": "genericNode",
         "position": {
           "x": 510,
-          "y": 368
+          "y": 836
         }
       },
       {
@@ -1429,20 +1429,20 @@
           "y": -20
         },
         "width": 460,
-        "height": 308,
+        "height": 776,
         "style": {
           "width": 460,
-          "height": 308
+          "height": 776
         },
         "measured": {
           "width": 460,
-          "height": 308
+          "height": 776
         },
         "data": {
           "id": "note-exam",
           "type": "note",
           "node": {
-            "description": "# F2 · How a coding agent's answer was graded\n\nClaude Code or OpenCode on Qwen, in the bubblewrap sandbox: it sees the task, AGENTS.md and `./validate`, never the answer key. The steps show its tool calls, the official Pilot result and the verdict. Cells: `opencode:<repeat>:<task>:P-CODE`, `claude:<repeat>:<task>:P-CODE-2`, `retry-opencode:<repeat>:<task>`.",
+            "description": "# OpenCode in the sandbox exam\n\nOpenCode in the bubblewrap sandbox with the task, AGENTS.md and ./validate; it repairs inside its own session; the grader parses the final answer once.\n\n- One task: type its id (GEN-01 … RT-05) in the cell node and run; the steps light up with the record and the verdict against the sealed key (missing items only, never the key). Such a run is saved under analysis/langflow-console/ and is not added to the frozen score.\n- The whole exam: `python3 bench/langflow_exam.py --flow \"OpenCode in the sandbox exam\"` runs the 27 tasks three times through this flow and saves a rerun batch next to the frozen one; the frozen matrix of results page 1.3 does not change.\n- Replay: set the mode to *Replay a graded cell* and a cell id such as `flash:1:GEN-03:P1` or `opencode:1:MOD-05:P-CODE`.\n- Stop the results page (8770) before a live run: sandboxed agents and the page's answer keys do not run together.",
             "display_name": "",
             "documentation": "",
             "template": {

@@ -762,6 +762,7 @@ function renderGlossary() {
     ["P0 … P3", "four approaches with the same model: one-shot · repair loop (up to 20) · outline first + repair · retrieval + outline + repair"],
     ["1 2 3", "repeat number; every task × approach ran three times"],
     ["OC · CL", "OpenCode and Claude Code on qwen3.8-flash, in the sandbox, three runs per task"],
+    ["Langflow columns", "the agent flows of Langflow projects 2, 3 and 4 on qwen3.8-flash (Pilot only; OpenCode with memory; Langflow Agent with memory), three runs per task, run by bench/langflow_exam.py, scored by the frozen scorer, not part of the frozen score; grey until run"],
     ["↻n", "a cell whose official parse needed n repairs"],
     ["11/12", "row end: passes out of 12 for the direct model shown (4 approaches × 3 repeats); column foot: that column's pass rate"],
   ];
@@ -770,6 +771,11 @@ function renderGlossary() {
     <div class="gl-codes">${codes.map(([k, v]) => `<span><b>${esc(k)}</b>${esc(v)}</span>`).join("")}</div>`;
 }
 
+/* The Langflow exam columns (decision 035): the agent flows of Langflow projects 2, 3 and 4 on qwen3.8-flash, run by
+   bench/langflow_exam.py and scored by the frozen scorer; a column with no batch yet shows "not run yet". */
+const LANGFLOW_COLS = [["agent-pilot", "Langflow Agent, Pilot only"], ["opencode-memory", "OpenCode with memory"], ["agent-memory", "Langflow Agent with memory"]];
+const AGENT_IDS = new Set(["opencode", "claude", ...LANGFLOW_COLS.map(([id]) => id)]);
+
 function renderMatrix() {
   renderGlossary();
   const model = S.mxModel;
@@ -777,22 +783,30 @@ function renderMatrix() {
   const agents = {};
   for (const c of S.cells) {
     if (c.cohort_id === model) direct[`${c.task_id}|${c.configuration}|${c.repeat}`] = c;
-    if (c.cohort_id === "opencode" || c.cohort_id === "claude") agents[`${c.cohort_id}|${c.task_id}|${c.repeat}`] = c;
+    if (AGENT_IDS.has(c.cohort_id)) agents[`${c.cohort_id}|${c.task_id}|${c.repeat}`] = c;
   }
   const cols = [];
   for (const cfg of ["P0", "P1", "P2", "P3"]) for (const r of [1, 2, 3]) cols.push({ cfg, r, direct: true, get: (t) => direct[`${t}|${cfg}|${r}`] });
-  for (const [cid, tag] of [["opencode", "OC"], ["claude", "CL"]]) for (const r of [1, 2, 3]) cols.push({ cfg: tag, r, get: (t) => agents[`${cid}|${t}|${r}`] });
+  for (const [cid, tag] of [["opencode", "OC"], ["claude", "CL"], ...LANGFLOW_COLS]) for (const r of [1, 2, 3]) cols.push({ cfg: tag, r, get: (t) => agents[`${cid}|${t}|${r}`] });
   const lastOfGroup = (i) => cols[i].r === 3 && i < cols.length - 1;
   const tasks = [...S.tasks].sort((a, b) => TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) || a.id.localeCompare(b.id));
   $("#mx-legend").innerHTML = [["#c9ecd7", "pass"], ["#f5c3bf", "fail"], ["#edf1f4", "not run yet"]].map(([c, t]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
   const label = S.facts.cohorts[model].label;
-  const head1 = `<tr><th></th>${["P0", "P1", "P2", "P3"].map((p) => `<th colspan="3">${CONFIG_NAME[p]}</th><th class="gap"></th>`).join("")}<th colspan="3" title="OpenCode on qwen3.8-flash">OpenCode</th><th class="gap"></th><th colspan="3" title="Claude Code on qwen3.8-flash">Claude Code</th><th></th></tr>`;
+  const LC = S.facts.langflow_cohorts || {};
+  const langflowHead = LANGFLOW_COLS.map(([id, name]) => {
+    const c = LC[id] || {};
+    const tip = c.n ? `${name} on qwen3.8-flash through Langflow: ${c.pass}/${c.n} pass · ${num(c.usage?.input)} in / ${num(c.usage?.output)} out tokens · ${money(c.usd)} · ${c.seconds_total} s in all`
+      : `${name} on qwen3.8-flash through Langflow: not run yet (python3 bench/langflow_exam.py --flow "${c.flow || ""}")`;
+    return `<th class="gap"></th><th colspan="3" class="lf" title="${esc(tip)}">${esc(name)}${c.n ? "" : `<small>not run yet</small>`}</th>`;
+  }).join("");
+  const head1 = `<tr><th></th>${["P0", "P1", "P2", "P3"].map((p) => `<th colspan="3">${CONFIG_NAME[p]}</th><th class="gap"></th>`).join("")}<th colspan="3" title="OpenCode on qwen3.8-flash">OpenCode</th><th class="gap"></th><th colspan="3" title="Claude Code on qwen3.8-flash">Claude Code</th>${langflowHead}<th></th></tr>`;
   const head2 = `<tr><th class="mx-model">${esc(label)}</th>${cols.map((col, i) => `<th>${col.r}</th>${lastOfGroup(i) ? `<th class="gap"></th>` : ""}`).join("")}<th>Pass</th></tr>`;
+  const span = cols.length + cols.filter((_, i) => lastOfGroup(i)).length + 2;
   let body = "";
   for (const type of TYPE_ORDER) {
     const group = tasks.filter((t) => t.type === type);
     const bt = BT(S.facts.cohorts[model].by_type, type);
-    body += `<tr class="grp"><th colspan="24"><b>${type}</b> = ${esc(TYPE_NAME[type])} <span class="grp-io">answer: ${esc(TYPE_GUIDE[type].gives.toLowerCase())}</span> · ${esc(S.facts.cohorts[model].short)} ${bt.pass}/${bt.n} (${pct(bt.pass, bt.n)})</th></tr>`;
+    body += `<tr class="grp"><th colspan="${span}"><b>${type}</b> = ${esc(TYPE_NAME[type])} <span class="grp-io">answer: ${esc(TYPE_GUIDE[type].gives.toLowerCase())}</span> · ${esc(S.facts.cohorts[model].short)} ${bt.pass}/${bt.n} (${pct(bt.pass, bt.n)})</th></tr>`;
     for (const t of group) {
       let passed = 0;
       let total = 0;
@@ -802,7 +816,8 @@ function renderMatrix() {
         const gap = lastOfGroup(i) ? `<td class="gap"></td>` : "";
         if (!c) return `<td><button class="cell J-none" disabled>·</button></td>${gap}`;
         const rr = Number(c.repair_rounds || 0);
-        const tip = `${t.id} · ${c.cohort}${col.direct ? ` · ${c.configuration}` : ""} · repeat ${col.r} · task verdict ${c.status}${c.engineering_status && c.engineering_status !== "UNKNOWN" && c.engineering_status !== "NOT_APPLICABLE" ? ` · design verdict ${c.engineering_status}` : ""}${rr ? ` · ${rr} repair(s)${c.stop_reason && c.stop_reason !== "pass" ? `, stopped: ${c.stop_reason}` : ""}` : ""}`;
+        const timing = c.elapsed_s != null ? ` · ${c.elapsed_s} s${c.tool_calls != null ? `, ${c.tool_calls} tool call(s)` : ""}${c.tokens ? `, ${num(c.tokens)} tokens` : ""}` : "";
+        const tip = `${t.id} · ${c.cohort}${col.direct ? ` · ${c.configuration}` : ""} · repeat ${col.r} · task verdict ${c.status}${c.engineering_status && c.engineering_status !== "UNKNOWN" && c.engineering_status !== "NOT_APPLICABLE" ? ` · design verdict ${c.engineering_status}` : ""}${rr ? ` · ${rr} repair(s)${c.stop_reason && c.stop_reason !== "pass" ? `, stopped: ${c.stop_reason}` : ""}` : ""}${timing}`;
         return `<td><button type="button" class="cell ${cellClass(c)}" data-cell="${esc(c.id)}" title="${esc(tip)}">${rr ? `↻${rr}` : ""}</button></td>${gap}`;
       }).join("");
       body += `<tr><th class="rowh">${t.id}</th>${tds}<td class="rowsum">${passed}/${total}</td></tr>`;
@@ -865,7 +880,7 @@ function benchStages(d, live) {
   const list = [{ id: "issue", title: "Issue task", state: st.issue || "", sub: "task statement only, no answer key" }];
   if (d.configuration === "P3") list.push({ id: "corpus", title: "Retrieve notes", state: st.corpus || "", sub: `${(d.retrieved || []).length} cards (MiniLM + FAISS)`, paper: "p2" });
   if (d.configuration === "P2" || d.configuration === "P3") list.push({ id: "outline", title: "Outline", state: st.outline || "", sub: d.outline ? `${d.outline.length} characters` : "" });
-  const agent = d.cohort_id === "opencode" || d.cohort_id === "claude";
+  const agent = AGENT_IDS.has(d.cohort_id);
   list.push({ id: "write", title: "Write the answer", state: st.write || "", sub: agent ? `${d.tokens ? `${num(d.tokens)} tokens` : "usage not recorded"} · ${d.validator_runs || 0} run(s) of ./validate` : d.tokens ? `${num(d.tokens)} tokens · ${(d.calls || []).length} calls` : d.cohort, paper: "p3" });
   if (d.type === "GEN" || d.type === "MOD" || d.type === "ALN" || at.length) {
     list.push({ id: "syntax", title: "Official syntax", state: st.syntax || "", sub: at.length ? `${at.length} parse(s) · last ${at[at.length - 1].status}` : stepDetail(d, "Official syntax"), paper: "ours" });
@@ -906,7 +921,7 @@ function cellDetailHTML(d, id) {
     case "outline":
       return io("Model", "Outline", "Task statement (P3: plus 3 notes)", "Outline JSON, no SysML") + `<pre class="code light">${esc(d.outline || "(no outline)")}</pre>`;
     case "write":
-      return io("Model · agent under test", "Write the answer", d.cohort_id === "opencode" || d.cohort_id === "claude" ? "Task input, AGENTS.md and ./validate in a sandbox without the answer keys" : `Task statement + rules${d.outline ? " + outline" : ""}`, d.type === "GEN" || d.type === "MOD" ? "A SysML package" : d.type === "ALN" ? "An alignment package + a JSON report" : "Text or JSON")
+      return io("Model · agent under test", "Write the answer", d.cohort_id === "opencode" || d.cohort_id === "claude" ? "Task input, AGENTS.md and ./validate in a sandbox without the answer keys" : AGENT_IDS.has(d.cohort_id) ? "The task statement through a Langflow flow: the exam prompt and the official Pilot as a tool (the memory columns also search the memory)" : `Task statement + rules${d.outline ? " + outline" : ""}`, d.type === "GEN" || d.type === "MOD" ? "A SysML package" : d.type === "ALN" ? "An alignment package + a JSON report" : "Text or JSON")
         + `<p class="hint">${esc(d.cohort)} · ${esc(d.configuration || "")}${d.tokens ? ` · ${num(d.tokens)} tokens` : ""}${(d.calls || []).length ? ` · calls ${esc((d.calls || []).join(", "))}` : ""}${d.validator_runs ? ` · ${d.validator_runs} run(s) of ./validate` : ""}. The final answer is at the bottom right${at.length > 1 ? "; every attempt is under \"Official syntax\"" : ""}.</p>`;
     case "syntax":
       return io("Official tool", "Official syntax", "SysML in the answer", "PASS / FAIL + error text") + attemptsHTML(at, "this version and its complete error list are added to the same conversation: fix it, keep the task's numbers")
@@ -931,7 +946,7 @@ function cellDetailHTML(d, id) {
   }
 }
 
-const MODEL_OF = { flash: "qwen3.8-flash", max: "qwen3.8-max", opencode: "qwen3.8-flash", claude: "qwen3.8-flash" };
+const MODEL_OF = { flash: "qwen3.8-flash", max: "qwen3.8-max", opencode: "qwen3.8-flash", claude: "qwen3.8-flash", "agent-pilot": "qwen3.8-flash", "opencode-memory": "qwen3.8-flash", "agent-memory": "qwen3.8-flash" };
 
 function usdOf(model, t, intl = false) {
   let price = ((S.facts && S.facts.costs && S.facts.costs.prices.models) || {})[model];

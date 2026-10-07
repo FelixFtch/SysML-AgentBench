@@ -1,12 +1,12 @@
 {
-  "name": "RTRC validate SysML",
-  "description": "Parse SysML v2 text the engineer pasted with the official SysML v2 Pilot: the text is saved as a file and parsed; returns PASS or FAIL with the diagnostics (line and message).",
-  "endpoint_name": "rtrc-tool-validate",
+  "name": "OpenCode with memory chat",
+  "description": "Ask, discuss, confirm requirements, run the verified design pipeline, decide. OpenCode on the local Qwen3.8-27B over the RTRC MCP tools.",
+  "endpoint_name": "opencode-memory-chat",
   "is_component": false,
   "tags": [
     "rtrc",
-    "tool",
-    "validate"
+    "assistant",
+    "local"
   ],
   "data": {
     "nodes": [
@@ -238,12 +238,12 @@
                 "_input_type": "BoolInput"
               }
             },
-            "description": "What the engineer pasted.",
+            "description": "Ask, describe a need, confirm a brief, or decide.",
             "icon": "MessagesSquare",
             "base_classes": [
               "Message"
             ],
-            "display_name": "SysML v2 text (the tool's argument)",
+            "display_name": "Engineer",
             "documentation": "https://docs.langflow.org/chat-input-and-output",
             "minimized": true,
             "custom_fields": {},
@@ -267,9 +267,7 @@
                 "tool_mode": true
               }
             ],
-            "field_order": [
-              "input_value"
-            ],
+            "field_order": [],
             "beta": false,
             "legacy": false,
             "edited": false,
@@ -277,13 +275,13 @@
             "tool_mode": false
           },
           "type": "ChatInput",
-          "id": "ChatInput-sysml"
+          "id": "ChatInput-ask"
         },
-        "id": "ChatInput-sysml",
+        "id": "ChatInput-ask",
         "type": "genericNode",
         "position": {
           "x": 40,
-          "y": 296
+          "y": 944
         }
       },
       {
@@ -517,7 +515,7 @@
             "base_classes": [
               "Message"
             ],
-            "display_name": "Verdict (the tool's result)",
+            "display_name": "Answer",
             "documentation": "https://docs.langflow.org/chat-input-and-output",
             "minimized": true,
             "custom_fields": {},
@@ -549,367 +547,13 @@
             "tool_mode": false
           },
           "type": "ChatOutput",
-          "id": "ChatOutput-verdict"
+          "id": "ChatOutput-answer"
         },
-        "id": "ChatOutput-verdict",
-        "type": "genericNode",
-        "position": {
-          "x": 1450,
-          "y": 296
-        }
-      },
-      {
-        "data": {
-          "node": {
-            "template": {
-              "_type": "Component",
-              "code": {
-                "type": "code",
-                "required": true,
-                "placeholder": "",
-                "list": false,
-                "show": true,
-                "multiline": true,
-                "value": "\"\"\"RTRC Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,\nMiniLM + FAISS seeds, one hop), write to memory (gate, write, record), validate pasted SysML (save, official Pilot),\nand the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the RTRC shell service,\nwhich runs the same code as the results page; the chain order on the canvas is kept by the \"From the previous card\"\ninput. The engineer's text (query, \"<run id> A\", or SysML) comes from the sub-flow's Chat Input.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n# card name -> (endpoint, what the payload carries)\nSTEPS = {\n    \"Memory library (paper 2): MaritimeISR + approved designs as cards\": (\"/tool/memory/library\", \"none\"),\n    \"MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus\": (\"/tool/memory/seeds\", \"query\"),\n    \"One hop of neighbours (paper 2) → cards for the assistant\": (\"/tool/memory/hop\", \"query\"),\n    \"Gate: Pilot PASS and all four checks PASS? (read only)\": (\"/tool/gate\", \"request\"),\n    \"Write the design into memory (through the page's gate)\": (\"/tool/write\", \"request\"),\n    \"Record the approval on the run (page 2.3)\": (\"/tool/record-approval\", \"request\"),\n    \"Save the pasted SysML as a file\": (\"/tool/validate/save\", \"sysml\"),\n    \"Official SysML v2 Pilot on that file\": (\"/tool/validate/pilot\", \"saved\"),\n    \"Prompt part · rules (paper 3)\": (\"/tool/prompt-part\", \"run:rules\"),\n    \"Prompt part · attribute template (paper 3)\": (\"/tool/prompt-part\", \"run:contract\"),\n    \"Prompt part · retrieved examples or similar project (paper 2)\": (\"/tool/prompt-part\", \"run:examples\"),\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcTool(Component):\n    display_name = \"RTRC Tool step\"\n    description = \"One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the RTRC shell service.\"\n    icon = \"wrench\"\n    name = \"RtrcTool\"\n\n    inputs = [\n        MessageInput(name=\"text\", display_name=\"Engineer's text\", required=False,\n                     info=\"From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.\"),\n        MessageInput(name=\"upstream\", display_name=\"From the previous card\", required=False,\n                     info=\"Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.\"),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False),\n        DropdownInput(name=\"step\", display_name=\"Card\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            path, kind = STEPS[self.step]\n            text, upstream = _text(self.text), _text(self.upstream) or _text(self.upstream_alt)\n            if kind == \"none\":\n                payload = {}\n            elif kind in (\"query\", \"request\", \"sysml\"):\n                payload = {kind: text, \"upstream\": upstream}  # the write and record cards echo the cards before them\n            elif kind == \"saved\":\n                payload = {\"saved\": upstream}\n            else:  # run:<part>\n                match = RUN.search(upstream)\n                if not match:\n                    raise ValueError(\"No run id in the incoming message; connect this card after a pipeline step\")\n                payload = {\"run\": match.group(1), \"part\": kind.split(\":\", 1)[1]}\n            self._cached = _call(path, payload)\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
-                "fileTypes": [],
-                "file_path": "",
-                "password": false,
-                "name": "code",
-                "advanced": true,
-                "api_editable": false,
-                "dynamic": true,
-                "info": "",
-                "load_from_db": false,
-                "title_case": false
-              },
-              "step": {
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "options": [
-                  "Memory library (paper 2): MaritimeISR + approved designs as cards",
-                  "MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus",
-                  "One hop of neighbours (paper 2) → cards for the assistant",
-                  "Gate: Pilot PASS and all four checks PASS? (read only)",
-                  "Write the design into memory (through the page's gate)",
-                  "Record the approval on the run (page 2.3)",
-                  "Save the pasted SysML as a file",
-                  "Official SysML v2 Pilot on that file",
-                  "Prompt part · rules (paper 3)",
-                  "Prompt part · attribute template (paper 3)",
-                  "Prompt part · retrieved examples or similar project (paper 2)"
-                ],
-                "options_metadata": [],
-                "combobox": false,
-                "dialog_inputs": {},
-                "toggle": false,
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "step",
-                "value": "Official SysML v2 Pilot on that file",
-                "display_name": "Card",
-                "advanced": false,
-                "api_editable": false,
-                "dynamic": false,
-                "info": "",
-                "title_case": false,
-                "track_in_telemetry": true,
-                "external_options": {},
-                "type": "str",
-                "_input_type": "DropdownInput"
-              },
-              "text": {
-                "trace_as_input": true,
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "load_from_db": false,
-                "list": false,
-                "list_add_label": "Add More",
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "text",
-                "value": {
-                  "text_key": "text",
-                  "data": {
-                    "text": "",
-                    "files": [],
-                    "sender": null,
-                    "sender_name": null,
-                    "session_id": "",
-                    "context_id": "",
-                    "run_id": null,
-                    "timestamp": "2026-10-06 00:00:00 UTC",
-                    "flow_id": null,
-                    "error": false,
-                    "edit": false,
-                    "properties": {
-                      "edited": false,
-                      "source": {
-                        "id": null,
-                        "display_name": null,
-                        "source": null
-                      },
-                      "allow_markdown": false,
-                      "state": "complete",
-                      "targets": []
-                    },
-                    "category": "message",
-                    "content_blocks": [],
-                    "duration": null,
-                    "session_metadata": null
-                  },
-                  "default_value": "",
-                  "files": [],
-                  "session_id": "",
-                  "context_id": "",
-                  "timestamp": "2026-10-06 00:00:00 UTC",
-                  "error": false,
-                  "edit": false,
-                  "properties": {
-                    "edited": false,
-                    "source": {
-                      "id": null,
-                      "display_name": null,
-                      "source": null
-                    },
-                    "allow_markdown": false,
-                    "state": "complete",
-                    "targets": []
-                  },
-                  "category": "message",
-                  "content_blocks": [],
-                  "text": ""
-                },
-                "display_name": "Engineer's text",
-                "advanced": false,
-                "api_editable": false,
-                "input_types": [
-                  "Message"
-                ],
-                "dynamic": false,
-                "info": "From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.",
-                "title_case": false,
-                "track_in_telemetry": false,
-                "type": "str",
-                "_input_type": "MessageInput"
-              },
-              "upstream": {
-                "trace_as_input": true,
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "load_from_db": false,
-                "list": false,
-                "list_add_label": "Add More",
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "upstream",
-                "value": {
-                  "text_key": "text",
-                  "data": {
-                    "text": "",
-                    "files": [],
-                    "sender": null,
-                    "sender_name": null,
-                    "session_id": "",
-                    "context_id": "",
-                    "run_id": null,
-                    "timestamp": "2026-10-06 00:00:00 UTC",
-                    "flow_id": null,
-                    "error": false,
-                    "edit": false,
-                    "properties": {
-                      "edited": false,
-                      "source": {
-                        "id": null,
-                        "display_name": null,
-                        "source": null
-                      },
-                      "allow_markdown": false,
-                      "state": "complete",
-                      "targets": []
-                    },
-                    "category": "message",
-                    "content_blocks": [],
-                    "duration": null,
-                    "session_metadata": null
-                  },
-                  "default_value": "",
-                  "files": [],
-                  "session_id": "",
-                  "context_id": "",
-                  "timestamp": "2026-10-06 00:00:00 UTC",
-                  "error": false,
-                  "edit": false,
-                  "properties": {
-                    "edited": false,
-                    "source": {
-                      "id": null,
-                      "display_name": null,
-                      "source": null
-                    },
-                    "allow_markdown": false,
-                    "state": "complete",
-                    "targets": []
-                  },
-                  "category": "message",
-                  "content_blocks": [],
-                  "text": ""
-                },
-                "display_name": "From the previous card",
-                "advanced": false,
-                "api_editable": false,
-                "input_types": [
-                  "Message"
-                ],
-                "dynamic": false,
-                "info": "Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.",
-                "title_case": false,
-                "track_in_telemetry": false,
-                "type": "str",
-                "_input_type": "MessageInput"
-              },
-              "upstream_alt": {
-                "trace_as_input": true,
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "load_from_db": false,
-                "list": false,
-                "list_add_label": "Add More",
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "upstream_alt",
-                "value": {
-                  "text_key": "text",
-                  "data": {
-                    "text": "",
-                    "files": [],
-                    "sender": null,
-                    "sender_name": null,
-                    "session_id": "",
-                    "context_id": "",
-                    "run_id": null,
-                    "timestamp": "2026-10-06 00:00:00 UTC",
-                    "flow_id": null,
-                    "error": false,
-                    "edit": false,
-                    "properties": {
-                      "edited": false,
-                      "source": {
-                        "id": null,
-                        "display_name": null,
-                        "source": null
-                      },
-                      "allow_markdown": false,
-                      "state": "complete",
-                      "targets": []
-                    },
-                    "category": "message",
-                    "content_blocks": [],
-                    "duration": null,
-                    "session_metadata": null
-                  },
-                  "default_value": "",
-                  "files": [],
-                  "session_id": "",
-                  "context_id": "",
-                  "timestamp": "2026-10-06 00:00:00 UTC",
-                  "error": false,
-                  "edit": false,
-                  "properties": {
-                    "edited": false,
-                    "source": {
-                      "id": null,
-                      "display_name": null,
-                      "source": null
-                    },
-                    "allow_markdown": false,
-                    "state": "complete",
-                    "targets": []
-                  },
-                  "category": "message",
-                  "content_blocks": [],
-                  "text": ""
-                },
-                "display_name": "Or from the other branch",
-                "advanced": false,
-                "api_editable": false,
-                "input_types": [
-                  "Message"
-                ],
-                "dynamic": false,
-                "info": "",
-                "title_case": false,
-                "track_in_telemetry": false,
-                "type": "str",
-                "_input_type": "MessageInput"
-              }
-            },
-            "description": "mvp/engine.py run_submitted_model: the same Pilot 0.62 that grades the exam; PASS or FAIL with every diagnostic.",
-            "icon": "wrench",
-            "base_classes": [
-              "JSON",
-              "Message"
-            ],
-            "display_name": "Official SysML v2 Pilot · Paper 3",
-            "documentation": "",
-            "minimized": false,
-            "custom_fields": {},
-            "output_types": [],
-            "pinned": false,
-            "conditional_paths": [],
-            "frozen": false,
-            "outputs": [
-              {
-                "types": [
-                  "Message"
-                ],
-                "selected": "Message",
-                "name": "message",
-                "display_name": "Message",
-                "method": "as_message",
-                "value": "__UNDEFINED__",
-                "cache": true,
-                "allows_loop": false,
-                "group_outputs": false,
-                "tool_mode": true
-              },
-              {
-                "types": [
-                  "JSON"
-                ],
-                "selected": "JSON",
-                "name": "data",
-                "display_name": "Data",
-                "method": "as_data",
-                "value": "__UNDEFINED__",
-                "cache": true,
-                "allows_loop": false,
-                "group_outputs": false,
-                "tool_mode": true
-              }
-            ],
-            "field_order": [],
-            "beta": false,
-            "legacy": false,
-            "edited": false,
-            "metadata": {},
-            "tool_mode": false
-          },
-          "type": "RtrcTool",
-          "id": "RtrcTool-pilot"
-        },
-        "id": "RtrcTool-pilot",
+        "id": "ChatOutput-answer",
         "type": "genericNode",
         "position": {
           "x": 980,
-          "y": 296
+          "y": 944
         }
       },
       {
@@ -924,7 +568,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,\nMiniLM + FAISS seeds, one hop), write to memory (gate, write, record), validate pasted SysML (save, official Pilot),\nand the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the RTRC shell service,\nwhich runs the same code as the results page; the chain order on the canvas is kept by the \"From the previous card\"\ninput. The engineer's text (query, \"<run id> A\", or SysML) comes from the sub-flow's Chat Input.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n# card name -> (endpoint, what the payload carries)\nSTEPS = {\n    \"Memory library (paper 2): MaritimeISR + approved designs as cards\": (\"/tool/memory/library\", \"none\"),\n    \"MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus\": (\"/tool/memory/seeds\", \"query\"),\n    \"One hop of neighbours (paper 2) → cards for the assistant\": (\"/tool/memory/hop\", \"query\"),\n    \"Gate: Pilot PASS and all four checks PASS? (read only)\": (\"/tool/gate\", \"request\"),\n    \"Write the design into memory (through the page's gate)\": (\"/tool/write\", \"request\"),\n    \"Record the approval on the run (page 2.3)\": (\"/tool/record-approval\", \"request\"),\n    \"Save the pasted SysML as a file\": (\"/tool/validate/save\", \"sysml\"),\n    \"Official SysML v2 Pilot on that file\": (\"/tool/validate/pilot\", \"saved\"),\n    \"Prompt part · rules (paper 3)\": (\"/tool/prompt-part\", \"run:rules\"),\n    \"Prompt part · attribute template (paper 3)\": (\"/tool/prompt-part\", \"run:contract\"),\n    \"Prompt part · retrieved examples or similar project (paper 2)\": (\"/tool/prompt-part\", \"run:examples\"),\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcTool(Component):\n    display_name = \"RTRC Tool step\"\n    description = \"One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the RTRC shell service.\"\n    icon = \"wrench\"\n    name = \"RtrcTool\"\n\n    inputs = [\n        MessageInput(name=\"text\", display_name=\"Engineer's text\", required=False,\n                     info=\"From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.\"),\n        MessageInput(name=\"upstream\", display_name=\"From the previous card\", required=False,\n                     info=\"Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.\"),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False),\n        DropdownInput(name=\"step\", display_name=\"Card\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            path, kind = STEPS[self.step]\n            text, upstream = _text(self.text), _text(self.upstream) or _text(self.upstream_alt)\n            if kind == \"none\":\n                payload = {}\n            elif kind in (\"query\", \"request\", \"sysml\"):\n                payload = {kind: text, \"upstream\": upstream}  # the write and record cards echo the cards before them\n            elif kind == \"saved\":\n                payload = {\"saved\": upstream}\n            else:  # run:<part>\n                match = RUN.search(upstream)\n                if not match:\n                    raise ValueError(\"No run id in the incoming message; connect this card after a pipeline step\")\n                payload = {\"run\": match.group(1), \"part\": kind.split(\":\", 1)[1]}\n            self._cached = _call(path, payload)\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"RTRC OpenCode assistant: one turn of the conversational design assistant per chat message, or one exam answer.\n\nThe assistant is OpenCode (the exam's pinned binary) with the RTRC MCP tools (tools/assistant_mcp.py on\n127.0.0.1:8782) as its only tools; its file and shell tools are off. The workspace is prepared by\ntools/assistant/workspace.py outside the repository. Decision 032.\n\nChat mode: the local Qwen3.8-27B served by Ollama (or a cloud Qwen), all nine tools, and each Langflow chat session\nmaps to one OpenCode session, so the conversation continues across messages.\nExam mode (decision 035): the exam workspace, qwen3.8-flash, the exam prompt, memory search and the official Pilot as\nthe only tools, and a fresh OpenCode session for every message, so one task cannot see another.\n\"\"\"\nimport json\nimport os\nimport re\nimport subprocess\nimport sys\nimport time\nimport urllib.request\nfrom pathlib import Path\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.message import Message\n\n# Langflow runs component code from a copy, so the repository is found from the environment (RTRC_ROOT, set by\n# scripts/langflow.sh) or from the virtual environment, which lives at <repository>/.venv-langflow.\nROOT = Path(os.environ.get(\"RTRC_ROOT\") or Path(sys.prefix).resolve().parent)\nOPENCODE = ROOT / \"tools\" / \"opencode\" / \"opencode\"\nMCP_URL = os.environ.get(\"RTRC_ASSISTANT_MCP_URL\", \"http://127.0.0.1:8782/mcp\")\nMODES = [\"Chat: one OpenCode session per Langflow session, all nine tools\",\n         \"Exam: a fresh session per message, answer only, memory search and the official Pilot as the only tools\"]\nMODELS = [\"qwen3.8-27b (Ollama)\", \"qwen3.8-max\", \"qwen3.8-flash\"]\n\n\ndef _env() -> dict:\n    \"\"\"The process environment plus .env (the cloud Qwen endpoint and key for OpenCode's provider; never printed).\"\"\"\n    env = os.environ.copy()\n    dotenv = ROOT / \".env\"\n    if dotenv.is_file():\n        for line in dotenv.read_text(encoding=\"utf-8\").splitlines():\n            if line and not line.startswith(\"#\") and \"=\" in line:\n                key, value = line.split(\"=\", 1)\n                env.setdefault(key.strip(), value.strip().strip('\"').strip(\"'\"))\n    return env\n\n\nclass RtrcOpenCodeAssistant(Component):\n    display_name = \"RTRC OpenCode assistant\"\n    description = (\"One turn of the RTRC design assistant: OpenCode with the RTRC tools (memory, the verified design \"\n                   \"pipeline, the official Pilot, the memory gate, decisions, Cameo export); or, in exam mode, one exam answer.\")\n    icon = \"bot\"\n    name = \"RtrcOpenCodeAssistant\"\n\n    inputs = [\n        MessageInput(name=\"message\", display_name=\"Engineer's message\",\n                     info=\"Ask what exists, describe a need, confirm the brief it proposes, or decide on a run. In exam mode: one task statement.\"),\n        DropdownInput(name=\"mode\", display_name=\"Mode\", options=MODES, value=MODES[0], advanced=True),\n        DropdownInput(name=\"model\", display_name=\"Model\", options=MODELS, value=MODELS[0], advanced=True,\n                      info=\"qwen3.8-27b (Ollama) is the 3-bit model on this machine; the exam flows use qwen3.8-flash, the model of the frozen exam.\"),\n    ]\n    outputs = [Output(display_name=\"Answer\", name=\"answer\", method=\"turn\")]\n\n    def turn(self) -> Message:\n        text = (self.message.text if isinstance(self.message, Message) else str(self.message or \"\")).strip()\n        if not text:\n            raise ValueError(\"Write a message for the assistant\")\n        if not OPENCODE.is_file():\n            raise ValueError(f\"Missing the pinned OpenCode binary {OPENCODE}; set RTRC_ROOT to the repository\")\n        try:\n            urllib.request.urlopen(urllib.request.Request(MCP_URL, method=\"GET\"), timeout=3).read(1)\n        except Exception as exc:  # noqa: BLE001 - any failure means the tools are not there\n            if \"HTTP Error\" not in str(exc):\n                raise ValueError(f\"The RTRC assistant MCP server is not running at {MCP_URL}; start it with scripts/langflow.sh or scripts/assistant.sh\") from exc\n        exam = str(self.mode or MODES[0]).startswith(\"Exam\")\n        model = str(self.model or MODELS[0])\n        env = _env()\n        prepared = subprocess.run([\"python3\", str(ROOT / \"tools\" / \"assistant\" / \"workspace.py\"), \"--mode\", \"exam\" if exam else \"chat\", \"--model\", model],\n                                  capture_output=True, text=True, timeout=120, check=False, env=env)\n        if prepared.returncode != 0:\n            raise ValueError(f\"Could not prepare the assistant workspace: {prepared.stderr.strip()[-400:]}\")\n        workspace = Path(prepared.stdout.strip().splitlines()[-1])\n\n        session = getattr(self.message, \"session_id\", None) or getattr(getattr(self, \"graph\", None), \"session_id\", None) or \"default\"\n        sessions_file = workspace / \"sessions.json\"\n        sessions = json.loads(sessions_file.read_text(encoding=\"utf-8\")) if sessions_file.is_file() and not exam else {}\n        argv = [str(OPENCODE), \"run\", \"--format\", \"json\", \"--auto\", \"--dir\", str(workspace)]\n        if exam:\n            argv += [\"--title\", f\"Exam {session}\"]  # never --session: each task starts clean\n        else:\n            argv += [\"--session\", sessions[session]] if session in sessions else [\"--title\", f\"Langflow {session}\"]\n        argv.append(text)\n        started = time.monotonic()\n        completed = subprocess.run(argv, cwd=workspace, capture_output=True, text=True, timeout=1800, check=False, env=env)\n        events = [json.loads(line) for line in completed.stdout.splitlines() if line.startswith(\"{\")]\n        if events and events[0].get(\"sessionID\") and not exam:\n            sessions[session] = events[0][\"sessionID\"]\n            sessions_file.write_text(json.dumps(sessions, indent=2), encoding=\"utf-8\")\n\n        texts = [(e[\"part\"].get(\"messageID\"), e[\"part\"].get(\"text\", \"\")) for e in events if e.get(\"type\") == \"text\" and e.get(\"part\")]\n        tools = [e[\"part\"] for e in events if e.get(\"type\") == \"tool_use\" and e.get(\"part\")]\n        usage = _usage(events)\n        seconds = round(time.monotonic() - started, 1)\n        answer = \"\"\n        if texts:\n            last = texts[-1][0]\n            answer = \"\\n\\n\".join(t for m, t in texts if m == last).strip()\n        if completed.returncode != 0 or not answer:\n            raise ValueError(f\"OpenCode returned no answer (exit {completed.returncode}): {completed.stderr.strip()[-600:]}\")\n        calls = [f\"{p.get('tool')} {json.dumps((p.get('state') or {}).get('input'), ensure_ascii=False)[:80]}\" for p in tools]\n        opened = events[0].get(\"sessionID\") if events else None\n        # Time and tokens of this turn, for the exam runner (bench/langflow_exam.py) and the results page: a sidecar\n        # file per Langflow session next to the workspace, and the message's own usage field.\n        record = {\"session\": session, \"opencode_session\": opened, \"model\": model, \"mode\": \"exam\" if exam else \"chat\", \"seconds\": seconds,\n                  \"tool_calls\": [p.get(\"tool\") for p in tools], **usage}\n        usage_dir = workspace / \"usage\"\n        usage_dir.mkdir(exist_ok=True)\n        (usage_dir / f\"{re.sub(r'[^A-Za-z0-9_.-]', '_', session)}.json\").write_text(json.dumps(record, indent=2), encoding=\"utf-8\")\n        self.status = (f\"OpenCode {'exam' if exam else 'chat'} · {model} · session {opened if exam else sessions.get(session)} · {len(tools)} tool call(s) · \"\n                       f\"{seconds} s · {usage['input']} in / {usage['output']} out tokens\\n\" + \"\\n\".join(calls))\n        return Message(text=answer, properties={\"usage\": {\"input_tokens\": usage[\"input\"], \"output_tokens\": usage[\"output\"],\n                                                          \"total_tokens\": usage[\"input\"] + usage[\"output\"]}, \"build_duration\": seconds})\n\n\ndef _usage(events: list[dict]) -> dict:\n    \"\"\"Tokens of one OpenCode run, from the step events that carry a tokens block (as bench/run_opencode.usage_from_log reads them).\"\"\"\n    total = {\"input\": 0, \"cached\": 0, \"cache_write\": 0, \"output\": 0, \"calls\": 0}\n    for event in events:\n        tokens = (event.get(\"part\") or {}).get(\"tokens\") or {}\n        if not tokens:\n            continue\n        cache = tokens.get(\"cache\") or {}\n        total[\"input\"] += (tokens.get(\"input\") or 0) + (cache.get(\"read\") or 0) + (cache.get(\"write\") or 0)\n        total[\"cached\"] += cache.get(\"read\") or 0\n        total[\"cache_write\"] += cache.get(\"write\") or 0\n        total[\"output\"] += (tokens.get(\"output\") or 0) + (tokens.get(\"reasoning\") or 0)\n        total[\"calls\"] += 1\n    return total\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -936,21 +580,89 @@
                 "load_from_db": false,
                 "title_case": false
               },
-              "step": {
+              "message": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "message",
+                "value": {
+                  "text_key": "text",
+                  "data": {
+                    "text": "",
+                    "files": [],
+                    "sender": null,
+                    "sender_name": null,
+                    "session_id": "",
+                    "context_id": "",
+                    "run_id": null,
+                    "timestamp": "2026-10-06 00:00:00 UTC",
+                    "flow_id": null,
+                    "error": false,
+                    "edit": false,
+                    "properties": {
+                      "edited": false,
+                      "source": {
+                        "id": null,
+                        "display_name": null,
+                        "source": null
+                      },
+                      "allow_markdown": false,
+                      "state": "complete",
+                      "targets": []
+                    },
+                    "category": "message",
+                    "content_blocks": [],
+                    "duration": null,
+                    "session_metadata": null
+                  },
+                  "default_value": "",
+                  "files": [],
+                  "session_id": "",
+                  "context_id": "",
+                  "timestamp": "2026-10-06 00:00:00 UTC",
+                  "error": false,
+                  "edit": false,
+                  "properties": {
+                    "edited": false,
+                    "source": {
+                      "id": null,
+                      "display_name": null,
+                      "source": null
+                    },
+                    "allow_markdown": false,
+                    "state": "complete",
+                    "targets": []
+                  },
+                  "category": "message",
+                  "content_blocks": [],
+                  "text": ""
+                },
+                "display_name": "Engineer's message",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Ask what exists, describe a need, confirm the brief it proposes, or decide on a run. In exam mode: one task statement.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              },
+              "mode": {
                 "tool_mode": false,
                 "trace_as_metadata": true,
                 "options": [
-                  "Memory library (paper 2): MaritimeISR + approved designs as cards",
-                  "MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus",
-                  "One hop of neighbours (paper 2) → cards for the assistant",
-                  "Gate: Pilot PASS and all four checks PASS? (read only)",
-                  "Write the design into memory (through the page's gate)",
-                  "Record the approval on the run (page 2.3)",
-                  "Save the pasted SysML as a file",
-                  "Official SysML v2 Pilot on that file",
-                  "Prompt part · rules (paper 3)",
-                  "Prompt part · attribute template (paper 3)",
-                  "Prompt part · retrieved examples or similar project (paper 2)"
+                  "Chat: one OpenCode session per Langflow session, all nine tools",
+                  "Exam: a fresh session per message, answer only, memory search and the official Pilot as the only tools"
                 ],
                 "options_metadata": [],
                 "combobox": false,
@@ -960,10 +672,10 @@
                 "required": false,
                 "placeholder": "",
                 "show": true,
-                "name": "step",
-                "value": "Save the pasted SysML as a file",
-                "display_name": "Card",
-                "advanced": false,
+                "name": "mode",
+                "value": "Chat: one OpenCode session per Langflow session, all nine tools",
+                "display_name": "Mode",
+                "advanced": true,
                 "api_editable": false,
                 "dynamic": false,
                 "info": "",
@@ -973,245 +685,42 @@
                 "type": "str",
                 "_input_type": "DropdownInput"
               },
-              "text": {
-                "trace_as_input": true,
+              "model": {
                 "tool_mode": false,
                 "trace_as_metadata": true,
-                "load_from_db": false,
-                "list": false,
-                "list_add_label": "Add More",
+                "options": [
+                  "qwen3.8-27b (Ollama)",
+                  "qwen3.8-max",
+                  "qwen3.8-flash"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
                 "override_skip": false,
                 "required": false,
                 "placeholder": "",
                 "show": true,
-                "name": "text",
-                "value": {
-                  "text_key": "text",
-                  "data": {
-                    "text": "",
-                    "files": [],
-                    "sender": null,
-                    "sender_name": null,
-                    "session_id": "",
-                    "context_id": "",
-                    "run_id": null,
-                    "timestamp": "2026-10-06 00:00:00 UTC",
-                    "flow_id": null,
-                    "error": false,
-                    "edit": false,
-                    "properties": {
-                      "edited": false,
-                      "source": {
-                        "id": null,
-                        "display_name": null,
-                        "source": null
-                      },
-                      "allow_markdown": false,
-                      "state": "complete",
-                      "targets": []
-                    },
-                    "category": "message",
-                    "content_blocks": [],
-                    "duration": null,
-                    "session_metadata": null
-                  },
-                  "default_value": "",
-                  "files": [],
-                  "session_id": "",
-                  "context_id": "",
-                  "timestamp": "2026-10-06 00:00:00 UTC",
-                  "error": false,
-                  "edit": false,
-                  "properties": {
-                    "edited": false,
-                    "source": {
-                      "id": null,
-                      "display_name": null,
-                      "source": null
-                    },
-                    "allow_markdown": false,
-                    "state": "complete",
-                    "targets": []
-                  },
-                  "category": "message",
-                  "content_blocks": [],
-                  "text": ""
-                },
-                "display_name": "Engineer's text",
-                "advanced": false,
+                "name": "model",
+                "value": "qwen3.8-27b (Ollama)",
+                "display_name": "Model",
+                "advanced": true,
                 "api_editable": false,
-                "input_types": [
-                  "Message"
-                ],
                 "dynamic": false,
-                "info": "From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.",
+                "info": "qwen3.8-27b (Ollama) is the 3-bit model on this machine; the exam flows use qwen3.8-flash, the model of the frozen exam.",
                 "title_case": false,
-                "track_in_telemetry": false,
+                "track_in_telemetry": true,
+                "external_options": {},
                 "type": "str",
-                "_input_type": "MessageInput"
-              },
-              "upstream": {
-                "trace_as_input": true,
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "load_from_db": false,
-                "list": false,
-                "list_add_label": "Add More",
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "upstream",
-                "value": {
-                  "text_key": "text",
-                  "data": {
-                    "text": "",
-                    "files": [],
-                    "sender": null,
-                    "sender_name": null,
-                    "session_id": "",
-                    "context_id": "",
-                    "run_id": null,
-                    "timestamp": "2026-10-06 00:00:00 UTC",
-                    "flow_id": null,
-                    "error": false,
-                    "edit": false,
-                    "properties": {
-                      "edited": false,
-                      "source": {
-                        "id": null,
-                        "display_name": null,
-                        "source": null
-                      },
-                      "allow_markdown": false,
-                      "state": "complete",
-                      "targets": []
-                    },
-                    "category": "message",
-                    "content_blocks": [],
-                    "duration": null,
-                    "session_metadata": null
-                  },
-                  "default_value": "",
-                  "files": [],
-                  "session_id": "",
-                  "context_id": "",
-                  "timestamp": "2026-10-06 00:00:00 UTC",
-                  "error": false,
-                  "edit": false,
-                  "properties": {
-                    "edited": false,
-                    "source": {
-                      "id": null,
-                      "display_name": null,
-                      "source": null
-                    },
-                    "allow_markdown": false,
-                    "state": "complete",
-                    "targets": []
-                  },
-                  "category": "message",
-                  "content_blocks": [],
-                  "text": ""
-                },
-                "display_name": "From the previous card",
-                "advanced": false,
-                "api_editable": false,
-                "input_types": [
-                  "Message"
-                ],
-                "dynamic": false,
-                "info": "Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.",
-                "title_case": false,
-                "track_in_telemetry": false,
-                "type": "str",
-                "_input_type": "MessageInput"
-              },
-              "upstream_alt": {
-                "trace_as_input": true,
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "load_from_db": false,
-                "list": false,
-                "list_add_label": "Add More",
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "upstream_alt",
-                "value": {
-                  "text_key": "text",
-                  "data": {
-                    "text": "",
-                    "files": [],
-                    "sender": null,
-                    "sender_name": null,
-                    "session_id": "",
-                    "context_id": "",
-                    "run_id": null,
-                    "timestamp": "2026-10-06 00:00:00 UTC",
-                    "flow_id": null,
-                    "error": false,
-                    "edit": false,
-                    "properties": {
-                      "edited": false,
-                      "source": {
-                        "id": null,
-                        "display_name": null,
-                        "source": null
-                      },
-                      "allow_markdown": false,
-                      "state": "complete",
-                      "targets": []
-                    },
-                    "category": "message",
-                    "content_blocks": [],
-                    "duration": null,
-                    "session_metadata": null
-                  },
-                  "default_value": "",
-                  "files": [],
-                  "session_id": "",
-                  "context_id": "",
-                  "timestamp": "2026-10-06 00:00:00 UTC",
-                  "error": false,
-                  "edit": false,
-                  "properties": {
-                    "edited": false,
-                    "source": {
-                      "id": null,
-                      "display_name": null,
-                      "source": null
-                    },
-                    "allow_markdown": false,
-                    "state": "complete",
-                    "targets": []
-                  },
-                  "category": "message",
-                  "content_blocks": [],
-                  "text": ""
-                },
-                "display_name": "Or from the other branch",
-                "advanced": false,
-                "api_editable": false,
-                "input_types": [
-                  "Message"
-                ],
-                "dynamic": false,
-                "info": "",
-                "title_case": false,
-                "track_in_telemetry": false,
-                "type": "str",
-                "_input_type": "MessageInput"
+                "_input_type": "DropdownInput"
               }
             },
-            "description": "The text becomes <package>.sysml under mvp/exam-inbox/; the package name is read from the text.",
-            "icon": "wrench",
+            "description": "OpenCode is the harness: the model decides which RTRC tool to call and when; the tools decide nothing by themselves. Each chat session continues one OpenCode session.",
+            "icon": "bot",
             "base_classes": [
-              "JSON",
               "Message"
             ],
-            "display_name": "Save as a file",
+            "display_name": "OpenCode with memory · chat · local Qwen3.8-27B",
             "documentation": "",
             "minimized": false,
             "custom_fields": {},
@@ -1225,23 +734,9 @@
                   "Message"
                 ],
                 "selected": "Message",
-                "name": "message",
-                "display_name": "Message",
-                "method": "as_message",
-                "value": "__UNDEFINED__",
-                "cache": true,
-                "allows_loop": false,
-                "group_outputs": false,
-                "tool_mode": true
-              },
-              {
-                "types": [
-                  "JSON"
-                ],
-                "selected": "JSON",
-                "name": "data",
-                "display_name": "Data",
-                "method": "as_data",
+                "name": "answer",
+                "display_name": "Answer",
+                "method": "turn",
                 "value": "__UNDEFINED__",
                 "cache": true,
                 "allows_loop": false,
@@ -1256,38 +751,38 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcTool",
-          "id": "RtrcTool-save"
+          "type": "RtrcOpenCodeAssistant",
+          "id": "RtrcOpenCode-assistant"
         },
-        "id": "RtrcTool-save",
+        "id": "RtrcOpenCode-assistant",
         "type": "genericNode",
         "position": {
           "x": 510,
-          "y": 296
+          "y": 944
         }
       },
       {
-        "id": "note-validate",
+        "id": "note-assistant",
         "type": "noteNode",
         "position": {
           "x": 40,
           "y": -20
         },
         "width": 460,
-        "height": 236,
+        "height": 884,
         "style": {
           "width": 460,
-          "height": 236
+          "height": 884
         },
         "measured": {
           "width": 460,
-          "height": 236
+          "height": 884
         },
         "data": {
-          "id": "note-validate",
+          "id": "note-assistant",
           "type": "note",
           "node": {
-            "description": "# RTRC validate SysML\n\nThe official Pilot on text the engineer pastes, as two cards: the file, then the parse. The Pilot is the judge here as everywhere else; the assistant only reports what it says.",
+            "description": "# OpenCode with memory chat\n\nTalk to it like a colleague: ask what exists in the memory, describe a need in your own words, answer its questions about missing numbers, confirm the brief it proposes, and decide on the result.\n\n- The harness is OpenCode (the exam's pinned binary) on the 3-bit Qwen3.8-27B served by Ollama on this machine; its tools are the RTRC MCP server (`tools/assistant_mcp.py`, 127.0.0.1:8782): memory search, the verified design pipeline, the official Pilot, the memory gate, decisions, Cameo export. Its own file and shell tools are off. Nothing leaves this computer.\n- `run_design` is the same verified pipeline as the design agent flow and the results page (2 to 10 minutes); inside it a second, sandboxed OpenCode writes the designs with `./validate` in hand, so the results page (8770) must be stopped first. Its record appears on page 2.3.\n- It never invents numbers, never moves a stated limit, and writes to memory only after you approve a design that passed all four checks.\n- The same assistant in the terminal: `scripts/assistant.sh`. Its exam version sits next to it in this project.",
             "display_name": "",
             "documentation": "",
             "template": {
@@ -1299,48 +794,48 @@
     ],
     "edges": [
       {
-        "source": "ChatInput-sysml",
-        "target": "RtrcTool-save",
+        "source": "ChatInput-ask",
+        "target": "RtrcOpenCode-assistant",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
-            "id": "ChatInput-sysml",
+            "id": "ChatInput-ask",
             "name": "message",
             "output_types": [
               "Message"
             ]
           },
           "targetHandle": {
-            "fieldName": "text",
-            "id": "RtrcTool-save",
+            "fieldName": "message",
+            "id": "RtrcOpenCode-assistant",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-sysmlœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œRtrcTool-saveœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-sysml{œdataTypeœ:œChatInputœ,œidœ:œChatInput-sysmlœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-save{œfieldNameœ:œtextœ,œidœ:œRtrcTool-saveœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-askœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œmessageœ, œidœ: œRtrcOpenCode-assistantœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-ask{œdataTypeœ:œChatInputœ,œidœ:œChatInput-askœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcOpenCode-assistant{œfieldNameœ:œmessageœ,œidœ:œRtrcOpenCode-assistantœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcTool-pilot",
-        "target": "ChatOutput-verdict",
+        "source": "RtrcOpenCode-assistant",
+        "target": "ChatOutput-answer",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcTool",
-            "id": "RtrcTool-pilot",
-            "name": "message",
+            "dataType": "RtrcOpenCodeAssistant",
+            "id": "RtrcOpenCode-assistant",
+            "name": "answer",
             "output_types": [
               "Message"
             ]
           },
           "targetHandle": {
             "fieldName": "input_value",
-            "id": "ChatOutput-verdict",
+            "id": "ChatOutput-answer",
             "inputTypes": [
               "Data",
               "JSON",
@@ -1351,37 +846,9 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcToolœ, œidœ: œRtrcTool-pilotœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-verdictœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcTool-pilot{œdataTypeœ:œRtrcToolœ,œidœ:œRtrcTool-pilotœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-verdict{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-verdictœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
-        "animated": false,
-        "className": "",
-        "selected": false
-      },
-      {
-        "source": "RtrcTool-save",
-        "target": "RtrcTool-pilot",
-        "data": {
-          "sourceHandle": {
-            "dataType": "RtrcTool",
-            "id": "RtrcTool-save",
-            "name": "message",
-            "output_types": [
-              "Message"
-            ]
-          },
-          "targetHandle": {
-            "fieldName": "upstream",
-            "id": "RtrcTool-pilot",
-            "inputTypes": [
-              "Message"
-            ],
-            "type": "str"
-          }
-        },
-        "sourceHandle": "{œdataTypeœ: œRtrcToolœ, œidœ: œRtrcTool-saveœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcTool-pilotœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcTool-save{œdataTypeœ:œRtrcToolœ,œidœ:œRtrcTool-saveœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-pilot{œfieldNameœ:œupstreamœ,œidœ:œRtrcTool-pilotœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œRtrcOpenCodeAssistantœ, œidœ: œRtrcOpenCode-assistantœ, œnameœ: œanswerœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-answerœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcOpenCode-assistant{œdataTypeœ:œRtrcOpenCodeAssistantœ,œidœ:œRtrcOpenCode-assistantœ,œnameœ:œanswerœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-answer{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-answerœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false

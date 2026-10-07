@@ -17,11 +17,13 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 HELD = ROOT / "bench" / "tasks" / "t4_maritime_isr" / "heldout"
 PAGE = Path(__file__).with_name("exam_board.html")
+COMPARE = Path(__file__).with_name("flow_compare.html")
 NUM = re.compile(r"(\w+)\s*:\s*Real\s*=\s*([0-9]+(?:\.[0-9]+)?)")
 STATIC = {
     "/board.css": ("board.css", "text/css; charset=utf-8"),
     "/board.js": ("board.js", "text/javascript; charset=utf-8"),
     "/scenes.js": ("scenes.js", "text/javascript; charset=utf-8"),
+    "/flow_compare.js": ("flow_compare.js", "text/javascript; charset=utf-8"),
 }
 AGENT_RUNS = ROOT / "mvp" / "agent-runs"
 
@@ -71,6 +73,9 @@ def _response_text(row: dict) -> str:
     workspace = row.get("workspace")
     if workspace and (Path(workspace) / "answer.md").is_file():
         return _read(Path(workspace) / "answer.md", 40000)
+    answer_file = row.get("answer_file")  # a Langflow exam row (decision 035) keeps the answer in its batch folder
+    if answer_file and (ROOT / answer_file).is_file():
+        return _read(ROOT / answer_file, 40000)
     return ""
 
 
@@ -104,15 +109,26 @@ def _flow(row: dict, answer: str) -> list[dict]:
     status = row.get("status")
     syntax = row.get("sysml_status")
     repairs = int(row.get("repair_rounds") or 0)
-    agent = row.get("cohort_id") in {"opencode", "claude"}
+    from bench.batches import AGENT_COHORTS
+    agent = row.get("cohort_id") in AGENT_COHORTS
+    langflow = row.get("cohort_id") in {"agent-pilot", "opencode-memory", "agent-memory"}
     config = row.get("configuration")
     calls = row.get("calls") or []
-    steps = [_step("Issue task", "pass", "Task statement sent. The answer key is not in the prompt" + (" and not in the agent's sandbox." if agent else "."))]
+    steps = [_step("Issue task", "pass", "Task statement sent. The answer key is not in the prompt" + (" and not in the agent's reach." if agent else "."))]
     if not agent and config == "P3":
         steps.append(_step("Retrieve notes", "pass", "MiniLM + FAISS over the official-examples library and the notes; up to 3 seeds plus one hop."))
     if not agent and config in {"P2", "P3"}:
         steps.append(_step("Outline", "pass", "A JSON outline of parts, ports and connections, written before the answer."))
-    if agent:
+    if langflow:
+        usage = row.get("usage") or {}
+        tools = row.get("tool_calls") or []
+        seconds = row.get("elapsed_s")
+        steps.append(_step("Write answer", "pass" if row.get("answer_text") or row.get("answer_file") else "fail",
+                           f"One {row.get('cohort', '')} session through Langflow: {len(tools)} tool call(s)"
+                           + (f" ({', '.join(dict.fromkeys(tools))})" if tools else "")
+                           + (f", {usage.get('input', 0)} in / {usage.get('output', 0)} out tokens" if usage.get("input") else ", tokens not reported")
+                           + (f", {seconds} s." if seconds is not None else ".")))
+    elif agent:
         usage = row.get("usage") or {}
         turns = usage.get("turns") or usage.get("calls")
         runs = _validator_runs(row.get("workspace"))
@@ -134,7 +150,9 @@ def _flow(row: dict, answer: str) -> list[dict]:
             steps.append(_step("Official syntax", "fail", "The official Pilot rejected the final version. The checklist is not applied."))
         else:
             steps.append(_step("Official syntax", "fail", "No official syntax result: no SysML package was submitted."))
-        if agent:
+        if langflow:
+            steps.append(_step("Repair from errors", "skip", "The agent repairs inside its own session with the Pilot tool; the grader parses only the final answer."))
+        elif agent:
             steps.append(_step("Repair from errors", "skip", "The agent repairs inside its own session with ./validate; the grader parses only the final answer."))
         elif config == "P0":
             steps.append(_step("Repair from errors", "skip", "P0 writes once and is not repaired."))
@@ -171,9 +189,10 @@ def _flow(row: dict, answer: str) -> list[dict]:
 
 
 def _cells() -> list[dict]:
-    from bench.batches import COHORTS, rows
+    """The four frozen candidates, then the Langflow exam columns (decision 035; empty until bench/langflow_exam.py has run)."""
+    from bench.batches import ALL_COHORTS, rows
     cells = []
-    for cohort in COHORTS:
+    for cohort in ALL_COHORTS:
         for row in rows(cohort):
             row["id"] = f"{cohort}:{row.get('repeat')}:{row['task_id']}:{row.get('configuration')}"
             cells.append(row)
@@ -249,6 +268,9 @@ def _public(row: dict) -> dict:
         "status": row.get("status"), "engineering_status": row.get("engineering_status"), "sysml_status": row.get("sysml_status"),
         "repair_rounds": row.get("repair_rounds"), "first_pass_attempt": row.get("first_pass_attempt"),
         "stop_reason": row.get("stop_reason"), "resubmitted_unchanged": row.get("resubmitted_unchanged"),
+        # time and tokens of a Langflow exam cell (decision 035); the frozen rows carry none of these keys
+        **({"elapsed_s": row.get("elapsed_s"), "tool_calls": len(row.get("tool_calls") or []),
+            "tokens": ((row.get("usage") or {}).get("input") or 0) + ((row.get("usage") or {}).get("output") or 0)} if "elapsed_s" in row else {}),
     }
 
 
@@ -653,6 +675,9 @@ class Handler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         if parsed.path in {"/", "/index.html"}:
             self._send(200, PAGE.read_bytes(), "text/html; charset=utf-8")
+            return
+        if parsed.path in {"/compare", "/compare/"}:
+            self._send(200, COMPARE.read_bytes(), "text/html; charset=utf-8")
             return
         if parsed.path == "/style.css":
             self._send(200, STYLE.read_bytes(), "text/css; charset=utf-8")

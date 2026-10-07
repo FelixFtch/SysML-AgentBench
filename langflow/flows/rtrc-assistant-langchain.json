@@ -1,6 +1,6 @@
 {
-  "name": "RTRC design assistant (Langflow Agent, qwen3.8-max)",
-  "description": "Comparison: the assistant of decision 031 on Langflow's own Agent component (qwen3.8-max), run_design with agent direct; the OpenCode assistant is the one for use.",
+  "name": "Langflow Agent with memory chat · qwen3.8-max · one MCP card (decision 031)",
+  "description": "Comparison: the assistant of decision 031 on Langflow's own Agent component (qwen3.8-max) with the RTRC tools on one MCP card, run_design with agent direct; the OpenCode assistant is the one for use.",
   "endpoint_name": "rtrc-assistant-langchain",
   "is_component": false,
   "tags": [
@@ -36,7 +36,7 @@
             "template": {
               "backgroundColor": "blue"
             },
-            "description": "# RTRC design assistant (Langflow Agent, qwen3.8-max) · comparison\n\nThe assistant of decision 031, kept next to **RTRC design assistant** (OpenCode on the local Qwen3.8-27B, decision 032) so the two harnesses can be compared on the same tools and rules.\n\n- Outside: Langflow's own Agent component on qwen3.8-max (cloud). Inside: `run_design` with agent `direct`, the model writing each design in one answer with the Pilot's error list sent back, as in 031. The OpenCode assistant has OpenCode write the designs with `./validate` in hand.\n- Same tools (MCP server 127.0.0.1:8782), same rules: it never invents numbers, never moves a stated limit, and writes to memory only after you approve a design that passed all four checks. Its record appears on page 2.3.\n- Set-up: `langflow/flows/setup_assistant.py` (the Qwen credential and the MCP registration in Langflow), then `move_to_user.py` for the account people log in with."
+            "description": "# Langflow Agent with memory chat · one MCP card · comparison\n\nThe assistant of decision 031, kept next to **OpenCode with memory chat** (OpenCode on the local Qwen3.8-27B, decision 032) so the two harnesses can be compared on the same tools and rules. The unfolded versions in this project show the same tools one card each.\n\n- Outside: Langflow's own Agent component on qwen3.8-max (cloud). Inside: `run_design` with agent `direct`, the model writing each design in one answer with the Pilot's error list sent back, as in 031. The OpenCode assistant has OpenCode write the designs with `./validate` in hand.\n- Same tools (MCP server 127.0.0.1:8782), same rules: it never invents numbers, never moves a stated limit, and writes to memory only after you approve a design that passed all four checks. Its record appears on page 2.3.\n- Set-up: `langflow/flows/setup_assistant.py` (the Qwen credential and the MCP registration in Langflow), then `move_to_user.py` for the account people log in with."
           }
         }
       },

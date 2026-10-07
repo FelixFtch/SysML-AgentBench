@@ -1,7 +1,7 @@
 {
-  "name": "RTRC F3: results",
+  "name": "Exam results tables",
   "description": "The frozen exam results as tables.",
-  "endpoint_name": "rtrc-f3-results",
+  "endpoint_name": "other-exam-results",
   "is_component": false,
   "tags": [
     "rtrc",
@@ -41,7 +41,7 @@
               "Message",
               "Table"
             ],
-            "display_name": "F3 Results (frozen, revision 2)",
+            "display_name": "Results (frozen, revision 2)",
             "documentation": "",
             "minimized": false,
             "custom_fields": {},
@@ -403,7 +403,7 @@
           "id": "note-results",
           "type": "note",
           "node": {
-            "description": "# F3 · The headline numbers\n\nThe frozen results of the 27-task exam: direct qwen3.8-flash and qwen3.8-max (P0–P3, three repeats), OpenCode and Claude Code on qwen3.8-flash in the sandbox, and the extra retry run. The matrix, the cost chart and the model diagrams stay on the results page (`python3 bench/exam_board.py`).",
+            "description": "# Exam results tables · the headline numbers\n\nThe frozen results of the 27-task exam: direct qwen3.8-flash and qwen3.8-max (P0–P3, three repeats), OpenCode and Claude Code on qwen3.8-flash in the sandbox, and the extra retry run. The matrix (with the Langflow exam columns of decision 035), the cost chart and the model diagrams stay on the results page (`python3 bench/exam_board.py`).",
             "display_name": "",
             "documentation": "",
             "template": {

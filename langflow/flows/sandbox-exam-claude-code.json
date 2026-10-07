@@ -1,0 +1,1669 @@
+{
+  "name": "Claude Code in the sandbox exam",
+  "description": "One exam cell of Claude Code in the sandbox: a sealed task in, the verdict out; or replay a graded cell.",
+  "endpoint_name": "sandbox-exam-claude-code",
+  "is_component": false,
+  "tags": [
+    "rtrc",
+    "exam"
+  ],
+  "data": {
+    "nodes": [
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "agent": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "opencode",
+                  "claude-code"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "agent",
+                "value": "claude-code",
+                "display_name": "Agent (sandboxed)",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "approach": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "P0",
+                  "P1",
+                  "P2",
+                  "P3"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "approach",
+                "value": "P1",
+                "display_name": "Approach (direct)",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "cell": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "cell",
+                "value": "claude:1:MOD-05:P-CODE-2",
+                "display_name": "Cell to replay",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "candidate:repeat:task:approach, e.g. flash:1:GEN-03:P1, max:2:ALN-02:P3, opencode:1:MOD-05:P-CODE, retry-claude:1:ALN-02",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"RTRC Exam cell: F1 / F2, one exam cell, replayed from the archive or run live on Qwen; the answer key is used\nonly by the scorer and never returned.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nMODES = [\"Replay a graded cell\", \"Live: direct Qwen (P0–P3)\", \"Live: sandboxed agent on Qwen\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcExamCell(Component):\n    display_name = \"RTRC Exam cell\"\n    description = \"One exam cell: replay any graded cell, or run a sealed task live on Qwen (direct or a sandboxed coding agent). Not added to any score.\"\n    icon = \"clipboard-check\"\n    name = \"RtrcExamCell\"\n\n    inputs = [\n        DropdownInput(name=\"mode\", display_name=\"Mode\", options=MODES, value=MODES[0]),\n        StrInput(name=\"cell\", display_name=\"Cell to replay\", value=\"flash:1:GEN-03:P1\",\n                 info=\"candidate:repeat:task:approach, e.g. flash:1:GEN-03:P1, max:2:ALN-02:P3, opencode:1:MOD-05:P-CODE, retry-claude:1:ALN-02\"),\n        StrInput(name=\"task_id\", display_name=\"Task for a live run\", value=\"GEN-03\"),\n        # Not named \"configuration\": Langflow parses any parameter whose name contains \"config\" as JSON and drops it when\n        # that fails (lfx.interface.initialize.loading.convert_kwargs), so a live run always fell back to the default.\n        DropdownInput(name=\"approach\", display_name=\"Approach (direct)\", options=[\"P0\", \"P1\", \"P2\", \"P3\"], value=\"P1\"),\n        DropdownInput(name=\"agent\", display_name=\"Agent (sandboxed)\", options=[\"opencode\", \"claude-code\"], value=\"opencode\"),\n        DropdownInput(name=\"model\", display_name=\"Qwen model\", options=[\"qwen3.8-flash\", \"qwen3.8-max\", \"qwen3.8-27b (Ollama)\"], value=\"qwen3.8-flash\",\n                      info=\"qwen3.8-27b (Ollama) is the 3-bit model on this machine. Live direct runs only; sandboxed agents stay on the cloud model.\"),\n    ]\n    outputs = [\n        Output(display_name=\"Cell\", name=\"cell_data\", method=\"as_data\"),\n        Output(display_name=\"Summary\", name=\"summary\", method=\"as_message\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            if self.mode == MODES[0]:\n                body = _call(\"/exam/cell\", {\"id\": str(self.cell).strip()})\n            elif self.mode == MODES[1]:\n                body = _call(\"/exam/run\", {\"task_id\": str(self.task_id).strip(), \"configuration\": self.approach, \"model\": self.model})\n            else:\n                body = _call(\"/exam/agent-run\", {\"task_id\": str(self.task_id).strip(), \"agent\": self.agent, \"model\": self.model})\n            self._cached = body\n            self.status = body[\"summary\"]\n        return self._cached\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "mode": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Replay a graded cell",
+                  "Live: direct Qwen (P0–P3)",
+                  "Live: sandboxed agent on Qwen"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "mode",
+                "value": "Live: sandboxed agent on Qwen",
+                "display_name": "Mode",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "model": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "qwen3.8-flash",
+                  "qwen3.8-max",
+                  "qwen3.8-27b (Ollama)"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "model",
+                "value": "qwen3.8-flash",
+                "display_name": "Qwen model",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "qwen3.8-27b (Ollama) is the 3-bit model on this machine. Live direct runs only; sandboxed agents stay on the cloud model.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "task_id": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "task_id",
+                "value": "MOD-05",
+                "display_name": "Task for a live run",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "StrInput"
+              }
+            },
+            "description": "Claude Code in the same sandbox with the same files and tools as OpenCode (cloud Qwen; the local model is not routed to it). Type a sealed task id and run, or switch the mode to replay a graded cell. Time and tokens are recorded. The answer key is used only by the scorer.",
+            "icon": "clipboard-check",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Exam cell · Claude Code in the sandbox · qwen3.8-flash",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": "JSON",
+                "name": "cell_data",
+                "display_name": "Cell",
+                "method": "as_data",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "summary",
+                "display_name": "Summary",
+                "method": "as_message",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "RtrcExamCell",
+          "id": "RtrcExamCell-cell"
+        },
+        "id": "RtrcExamCell-cell",
+        "type": "genericNode",
+        "position": {
+          "x": 40,
+          "y": 836
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "input_value": {
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": true,
+                "placeholder": "",
+                "show": true,
+                "name": "input_value",
+                "value": "",
+                "display_name": "Inputs",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Data",
+                  "JSON",
+                  "DataFrame",
+                  "Table",
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Message to be passed as output.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "other",
+                "_input_type": "HandleInput"
+              },
+              "clean_data": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "clean_data",
+                "value": true,
+                "display_name": "Basic Clean Data",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Whether to clean data before converting to string.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "from collections.abc import Generator\nfrom typing import Any\n\nimport orjson\nfrom fastapi.encoders import jsonable_encoder\n\nfrom lfx.base.io.chat import ChatComponent\nfrom lfx.helpers.data import safe_convert\nfrom lfx.inputs.inputs import BoolInput, DropdownInput, HandleInput, MessageTextInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\nfrom lfx.schema.properties import Source\nfrom lfx.template.field.base import Output\nfrom lfx.utils.constants import (\n    MESSAGE_SENDER_AI,\n    MESSAGE_SENDER_NAME_AI,\n    MESSAGE_SENDER_USER,\n)\n\n\nclass ChatOutput(ChatComponent):\n    display_name = \"Chat Output\"\n    description = \"Display a chat message in the Playground.\"\n    documentation: str = \"https://docs.langflow.org/chat-input-and-output\"\n    icon = \"MessagesSquare\"\n    name = \"ChatOutput\"\n    minimized = True\n\n    inputs = [\n        HandleInput(\n            name=\"input_value\",\n            display_name=\"Inputs\",\n            info=\"Message to be passed as output.\",\n            input_types=[\"Data\", \"JSON\", \"DataFrame\", \"Table\", \"Message\"],\n            required=True,\n        ),\n        BoolInput(\n            name=\"should_store_message\",\n            display_name=\"Store Messages\",\n            info=\"Store the message in the history.\",\n            value=True,\n            advanced=True,\n        ),\n        DropdownInput(\n            name=\"sender\",\n            display_name=\"Sender Type\",\n            options=[MESSAGE_SENDER_AI, MESSAGE_SENDER_USER],\n            value=MESSAGE_SENDER_AI,\n            advanced=True,\n            info=\"Type of sender.\",\n        ),\n        MessageTextInput(\n            name=\"sender_name\",\n            display_name=\"Sender Name\",\n            info=\"Name of the sender.\",\n            value=MESSAGE_SENDER_NAME_AI,\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"session_id\",\n            display_name=\"Session ID\",\n            info=\"The session ID of the chat. If empty, the current session ID parameter will be used.\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"context_id\",\n            display_name=\"Context ID\",\n            info=\"The context ID of the chat. Adds an extra layer to the local memory.\",\n            value=\"\",\n            advanced=True,\n        ),\n        MessageTextInput(\n            name=\"data_template\",\n            display_name=\"Data Template\",\n            value=\"{text}\",\n            advanced=True,\n            info=\"Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.\",\n        ),\n        BoolInput(\n            name=\"clean_data\",\n            display_name=\"Basic Clean Data\",\n            value=True,\n            advanced=True,\n            info=\"Whether to clean data before converting to string.\",\n        ),\n    ]\n    outputs = [\n        Output(\n            display_name=\"Output Message\",\n            name=\"message\",\n            method=\"message_response\",\n        ),\n    ]\n\n    def _build_source(self, id_: str | None, display_name: str | None, source: str | None) -> Source:\n        source_dict = {}\n        if id_:\n            source_dict[\"id\"] = id_\n        if display_name:\n            source_dict[\"display_name\"] = display_name\n        if source:\n            # Handle case where source is a ChatOpenAI object\n            if hasattr(source, \"model_name\"):\n                source_dict[\"source\"] = source.model_name\n            elif hasattr(source, \"model\"):\n                source_dict[\"source\"] = str(source.model)\n            else:\n                source_dict[\"source\"] = str(source)\n        return Source(**source_dict)\n\n    async def message_response(self) -> Message:\n        # First convert the input to string if needed\n        text = self.convert_to_string()\n\n        # Get source properties\n        source, _, display_name, source_id = self.get_properties_from_source_component()\n\n        # Create or use existing Message object\n        if isinstance(self.input_value, Message) and not self.is_connected_to_chat_input():\n            message = self.input_value\n            # Update message properties\n            message.text = text\n            # Preserve existing session_id from the incoming message if it exists\n            existing_session_id = message.session_id\n        else:\n            message = Message(text=text)\n            existing_session_id = None\n\n        # Set message properties\n        message.sender = self.sender\n        message.sender_name = self.sender_name\n        # Preserve session_id from incoming message, or use component/graph session_id\n        message.session_id = (\n            self.session_id or existing_session_id or (self.graph.session_id if hasattr(self, \"graph\") else None) or \"\"\n        )\n        message.context_id = self.context_id\n        message.flow_id = self.graph.flow_id if hasattr(self, \"graph\") else None\n        message.properties.source = self._build_source(source_id, display_name, source)\n\n        # Store message if needed\n        if message.session_id and self.should_store_message:\n            stored_message = await self.send_message(message)\n            self.message.value = stored_message\n            message = stored_message\n\n        # Set accumulated token usage from all upstream LLM vertices.\n        # This must happen AFTER send_message() because streaming captures\n        # usage from chunks and would overwrite accumulated totals.\n        if hasattr(self, \"_vertex\") and self._vertex is not None:\n            accumulated_usage = self._vertex._accumulate_upstream_token_usage()  # noqa: SLF001\n            if accumulated_usage:\n                message.properties.usage = accumulated_usage\n                if self.should_store_message and message.get_id():\n                    message = await self._update_stored_message(message)\n                    await self._send_message_event(message, id_=message.get_id())\n\n        self.status = message\n        return message\n\n    def _serialize_data(self, data: Data) -> str:\n        \"\"\"Serialize Data object to JSON string.\"\"\"\n        # Convert data.data to JSON-serializable format\n        serializable_data = jsonable_encoder(data.data)\n        # Serialize with orjson, enabling pretty printing with indentation\n        json_bytes = orjson.dumps(serializable_data, option=orjson.OPT_INDENT_2)\n        # Convert bytes to string and wrap in Markdown code blocks\n        return \"```json\\n\" + json_bytes.decode(\"utf-8\") + \"\\n```\"\n\n    def _validate_input(self) -> None:\n        \"\"\"Validate the input data and raise ValueError if invalid.\"\"\"\n        if self.input_value is None:\n            msg = \"Input data cannot be None\"\n            raise ValueError(msg)\n        if isinstance(self.input_value, list) and not all(\n            isinstance(item, Message | Data | DataFrame | str) for item in self.input_value\n        ):\n            invalid_types = [\n                type(item).__name__\n                for item in self.input_value\n                if not isinstance(item, Message | Data | DataFrame | str)\n            ]\n            msg = f\"Expected Data or DataFrame or Message or str, got {invalid_types}\"\n            raise TypeError(msg)\n        if not isinstance(\n            self.input_value,\n            Message | Data | DataFrame | str | list | Generator | type(None),\n        ):\n            type_name = type(self.input_value).__name__\n            msg = f\"Expected Data or DataFrame or Message or str, Generator or None, got {type_name}\"\n            raise TypeError(msg)\n\n    def convert_to_string(self) -> str | Generator[Any, None, None]:\n        \"\"\"Convert input data to string with proper error handling.\"\"\"\n        self._validate_input()\n        clean_data: bool = getattr(self, \"clean_data\", False)\n        if isinstance(self.input_value, list):\n            return \"\\n\".join([safe_convert(item, clean_data=clean_data) for item in self.input_value])\n        if isinstance(self.input_value, Generator):\n            return self.input_value\n        return safe_convert(self.input_value, clean_data=clean_data)\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "context_id": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "context_id",
+                "value": "",
+                "display_name": "Context ID",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The context ID of the chat. Adds an extra layer to the local memory.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "data_template": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "data_template",
+                "value": "{text}",
+                "display_name": "Data Template",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Template to convert Data to Text. If left empty, it will be dynamically set to the Data's text key.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "sender": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Machine",
+                  "User"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "sender",
+                "value": "Machine",
+                "display_name": "Sender Type",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Type of sender.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              },
+              "sender_name": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "sender_name",
+                "value": "AI",
+                "display_name": "Sender Name",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Name of the sender.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "session_id": {
+                "tool_mode": false,
+                "trace_as_input": true,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "session_id",
+                "value": "",
+                "display_name": "Session ID",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "The session ID of the chat. If empty, the current session ID parameter will be used.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageTextInput"
+              },
+              "should_store_message": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "should_store_message",
+                "value": true,
+                "display_name": "Store Messages",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "Store the message in the history.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "bool",
+                "_input_type": "BoolInput"
+              }
+            },
+            "description": "Display a chat message in the Playground.",
+            "icon": "MessagesSquare",
+            "base_classes": [
+              "Message"
+            ],
+            "display_name": "Verdict and record",
+            "documentation": "https://docs.langflow.org/chat-input-and-output",
+            "minimized": true,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "Output Message",
+                "method": "message_response",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "ChatOutput",
+          "id": "ChatOutput-exam"
+        },
+        "id": "ChatOutput-exam",
+        "type": "genericNode",
+        "position": {
+          "x": 3330,
+          "y": 836
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "cell": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "trace_as_input": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "cell",
+                "value": "",
+                "display_name": "Cell record",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Data",
+                  "JSON"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "other",
+                "_input_type": "JSONInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"RTRC Exam step: shows one step of an exam cell (page 1.1 / 1.4) from the cell record, and passes the record on.\nNo service call: the cell record comes from RTRC Exam cell.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = [\"Issue task\", \"Retrieve notes\", \"Outline\", \"Write answer\", \"Official syntax\", \"Repair from errors\",\n         \"Read values\", \"Check against key\", \"Approval gate\", \"Archive\", \"Tool calls (agents)\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcExamStep(Component):\n    display_name = \"RTRC Exam step\"\n    description = \"One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.\"\n    icon = \"list-checks\"\n    name = \"RtrcExamStep\"\n\n    inputs = [\n        DataInput(name=\"cell\", display_name=\"Cell record\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=STEPS, value=STEPS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Cell record\", name=\"cell_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        record = _record(self.cell)\n        if self.step == \"Tool calls (agents)\":\n            trace = record.get(\"tool_trace\") or []\n            text = (f\"{len(trace)} tool call(s) in the sandbox\\n\" + \"\\n\".join(f\"  {item.get('tool')}: {item.get('target')}\" for item in trace[:60])\n                    if trace else \"No tool calls: this cell was not written by a sandboxed agent, or its log has none.\")\n        else:\n            steps = [item for item in record.get(\"steps\") or [] if item.get(\"title\") == self.step]\n            if not steps:\n                text = f\"{self.step}: not part of this cell (for example Outline in P0 or P1, Retrieve notes outside P3).\"\n            else:\n                text = \"\\n\".join(f\"{self.step}: {item.get('state')}\\n{item.get('detail') or ''}\" for item in steps)\n            if self.step in {\"Official syntax\", \"Repair from errors\"}:\n                for attempt in record.get(\"attempts\") or []:\n                    first = (attempt.get(\"diagnostics\") or [{}])[0].get(\"message\", \"\") if attempt.get(\"status\") != \"PASS\" else \"\"\n                    text += f\"\\n  attempt {attempt.get('attempt')}: {attempt.get('status')}{' · ' + str(first)[:160] if first else ''}\"\n            if self.step == \"Write answer\":\n                text += \"\\n\\n\" + str(record.get(\"answer\") or \"\")[:3000]\n            if self.step == \"Check against key\":\n                verdict = record.get(\"verdict\") or {}\n                for key in (\"must_exist\", \"must_connect\", \"must_preserve\"):\n                    missing = (verdict.get(key) or {}).get(\"missing\")\n                    if missing:\n                        text += f\"\\n  {key.replace('_', ' ')}: missing {missing}\"\n                if verdict.get(\"reason\"):\n                    text += f\"\\n  {verdict['reason']}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.cell))\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "step": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Issue task",
+                  "Retrieve notes",
+                  "Outline",
+                  "Write answer",
+                  "Official syntax",
+                  "Repair from errors",
+                  "Read values",
+                  "Check against key",
+                  "Approval gate",
+                  "Archive",
+                  "Tool calls (agents)"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "step",
+                "value": "Archive",
+                "display_name": "Step",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              }
+            },
+            "description": "One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.",
+            "icon": "list-checks",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Archive",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": "JSON",
+                "name": "cell_out",
+                "display_name": "Cell record",
+                "method": "pass_on",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "This step",
+                "method": "show",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "RtrcExamStep",
+          "id": "RtrcExamStep-05"
+        },
+        "id": "RtrcExamStep-05",
+        "type": "genericNode",
+        "position": {
+          "x": 2860,
+          "y": 836
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "cell": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "trace_as_input": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "cell",
+                "value": "",
+                "display_name": "Cell record",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Data",
+                  "JSON"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "other",
+                "_input_type": "JSONInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"RTRC Exam step: shows one step of an exam cell (page 1.1 / 1.4) from the cell record, and passes the record on.\nNo service call: the cell record comes from RTRC Exam cell.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = [\"Issue task\", \"Retrieve notes\", \"Outline\", \"Write answer\", \"Official syntax\", \"Repair from errors\",\n         \"Read values\", \"Check against key\", \"Approval gate\", \"Archive\", \"Tool calls (agents)\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcExamStep(Component):\n    display_name = \"RTRC Exam step\"\n    description = \"One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.\"\n    icon = \"list-checks\"\n    name = \"RtrcExamStep\"\n\n    inputs = [\n        DataInput(name=\"cell\", display_name=\"Cell record\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=STEPS, value=STEPS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Cell record\", name=\"cell_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        record = _record(self.cell)\n        if self.step == \"Tool calls (agents)\":\n            trace = record.get(\"tool_trace\") or []\n            text = (f\"{len(trace)} tool call(s) in the sandbox\\n\" + \"\\n\".join(f\"  {item.get('tool')}: {item.get('target')}\" for item in trace[:60])\n                    if trace else \"No tool calls: this cell was not written by a sandboxed agent, or its log has none.\")\n        else:\n            steps = [item for item in record.get(\"steps\") or [] if item.get(\"title\") == self.step]\n            if not steps:\n                text = f\"{self.step}: not part of this cell (for example Outline in P0 or P1, Retrieve notes outside P3).\"\n            else:\n                text = \"\\n\".join(f\"{self.step}: {item.get('state')}\\n{item.get('detail') or ''}\" for item in steps)\n            if self.step in {\"Official syntax\", \"Repair from errors\"}:\n                for attempt in record.get(\"attempts\") or []:\n                    first = (attempt.get(\"diagnostics\") or [{}])[0].get(\"message\", \"\") if attempt.get(\"status\") != \"PASS\" else \"\"\n                    text += f\"\\n  attempt {attempt.get('attempt')}: {attempt.get('status')}{' · ' + str(first)[:160] if first else ''}\"\n            if self.step == \"Write answer\":\n                text += \"\\n\\n\" + str(record.get(\"answer\") or \"\")[:3000]\n            if self.step == \"Check against key\":\n                verdict = record.get(\"verdict\") or {}\n                for key in (\"must_exist\", \"must_connect\", \"must_preserve\"):\n                    missing = (verdict.get(key) or {}).get(\"missing\")\n                    if missing:\n                        text += f\"\\n  {key.replace('_', ' ')}: missing {missing}\"\n                if verdict.get(\"reason\"):\n                    text += f\"\\n  {verdict['reason']}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.cell))\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "step": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Issue task",
+                  "Retrieve notes",
+                  "Outline",
+                  "Write answer",
+                  "Official syntax",
+                  "Repair from errors",
+                  "Read values",
+                  "Check against key",
+                  "Approval gate",
+                  "Archive",
+                  "Tool calls (agents)"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "step",
+                "value": "Check against key",
+                "display_name": "Step",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              }
+            },
+            "description": "One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.",
+            "icon": "list-checks",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Check against key",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": "JSON",
+                "name": "cell_out",
+                "display_name": "Cell record",
+                "method": "pass_on",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "This step",
+                "method": "show",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "RtrcExamStep",
+          "id": "RtrcExamStep-04"
+        },
+        "id": "RtrcExamStep-04",
+        "type": "genericNode",
+        "position": {
+          "x": 2390,
+          "y": 836
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "cell": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "trace_as_input": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "cell",
+                "value": "",
+                "display_name": "Cell record",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Data",
+                  "JSON"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "other",
+                "_input_type": "JSONInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"RTRC Exam step: shows one step of an exam cell (page 1.1 / 1.4) from the cell record, and passes the record on.\nNo service call: the cell record comes from RTRC Exam cell.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = [\"Issue task\", \"Retrieve notes\", \"Outline\", \"Write answer\", \"Official syntax\", \"Repair from errors\",\n         \"Read values\", \"Check against key\", \"Approval gate\", \"Archive\", \"Tool calls (agents)\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcExamStep(Component):\n    display_name = \"RTRC Exam step\"\n    description = \"One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.\"\n    icon = \"list-checks\"\n    name = \"RtrcExamStep\"\n\n    inputs = [\n        DataInput(name=\"cell\", display_name=\"Cell record\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=STEPS, value=STEPS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Cell record\", name=\"cell_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        record = _record(self.cell)\n        if self.step == \"Tool calls (agents)\":\n            trace = record.get(\"tool_trace\") or []\n            text = (f\"{len(trace)} tool call(s) in the sandbox\\n\" + \"\\n\".join(f\"  {item.get('tool')}: {item.get('target')}\" for item in trace[:60])\n                    if trace else \"No tool calls: this cell was not written by a sandboxed agent, or its log has none.\")\n        else:\n            steps = [item for item in record.get(\"steps\") or [] if item.get(\"title\") == self.step]\n            if not steps:\n                text = f\"{self.step}: not part of this cell (for example Outline in P0 or P1, Retrieve notes outside P3).\"\n            else:\n                text = \"\\n\".join(f\"{self.step}: {item.get('state')}\\n{item.get('detail') or ''}\" for item in steps)\n            if self.step in {\"Official syntax\", \"Repair from errors\"}:\n                for attempt in record.get(\"attempts\") or []:\n                    first = (attempt.get(\"diagnostics\") or [{}])[0].get(\"message\", \"\") if attempt.get(\"status\") != \"PASS\" else \"\"\n                    text += f\"\\n  attempt {attempt.get('attempt')}: {attempt.get('status')}{' · ' + str(first)[:160] if first else ''}\"\n            if self.step == \"Write answer\":\n                text += \"\\n\\n\" + str(record.get(\"answer\") or \"\")[:3000]\n            if self.step == \"Check against key\":\n                verdict = record.get(\"verdict\") or {}\n                for key in (\"must_exist\", \"must_connect\", \"must_preserve\"):\n                    missing = (verdict.get(key) or {}).get(\"missing\")\n                    if missing:\n                        text += f\"\\n  {key.replace('_', ' ')}: missing {missing}\"\n                if verdict.get(\"reason\"):\n                    text += f\"\\n  {verdict['reason']}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.cell))\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "step": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Issue task",
+                  "Retrieve notes",
+                  "Outline",
+                  "Write answer",
+                  "Official syntax",
+                  "Repair from errors",
+                  "Read values",
+                  "Check against key",
+                  "Approval gate",
+                  "Archive",
+                  "Tool calls (agents)"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "step",
+                "value": "Official syntax",
+                "display_name": "Step",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              }
+            },
+            "description": "One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.",
+            "icon": "list-checks",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Official syntax",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": "JSON",
+                "name": "cell_out",
+                "display_name": "Cell record",
+                "method": "pass_on",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "This step",
+                "method": "show",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "RtrcExamStep",
+          "id": "RtrcExamStep-03"
+        },
+        "id": "RtrcExamStep-03",
+        "type": "genericNode",
+        "position": {
+          "x": 1920,
+          "y": 836
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "cell": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "trace_as_input": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "cell",
+                "value": "",
+                "display_name": "Cell record",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Data",
+                  "JSON"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "other",
+                "_input_type": "JSONInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"RTRC Exam step: shows one step of an exam cell (page 1.1 / 1.4) from the cell record, and passes the record on.\nNo service call: the cell record comes from RTRC Exam cell.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = [\"Issue task\", \"Retrieve notes\", \"Outline\", \"Write answer\", \"Official syntax\", \"Repair from errors\",\n         \"Read values\", \"Check against key\", \"Approval gate\", \"Archive\", \"Tool calls (agents)\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcExamStep(Component):\n    display_name = \"RTRC Exam step\"\n    description = \"One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.\"\n    icon = \"list-checks\"\n    name = \"RtrcExamStep\"\n\n    inputs = [\n        DataInput(name=\"cell\", display_name=\"Cell record\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=STEPS, value=STEPS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Cell record\", name=\"cell_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        record = _record(self.cell)\n        if self.step == \"Tool calls (agents)\":\n            trace = record.get(\"tool_trace\") or []\n            text = (f\"{len(trace)} tool call(s) in the sandbox\\n\" + \"\\n\".join(f\"  {item.get('tool')}: {item.get('target')}\" for item in trace[:60])\n                    if trace else \"No tool calls: this cell was not written by a sandboxed agent, or its log has none.\")\n        else:\n            steps = [item for item in record.get(\"steps\") or [] if item.get(\"title\") == self.step]\n            if not steps:\n                text = f\"{self.step}: not part of this cell (for example Outline in P0 or P1, Retrieve notes outside P3).\"\n            else:\n                text = \"\\n\".join(f\"{self.step}: {item.get('state')}\\n{item.get('detail') or ''}\" for item in steps)\n            if self.step in {\"Official syntax\", \"Repair from errors\"}:\n                for attempt in record.get(\"attempts\") or []:\n                    first = (attempt.get(\"diagnostics\") or [{}])[0].get(\"message\", \"\") if attempt.get(\"status\") != \"PASS\" else \"\"\n                    text += f\"\\n  attempt {attempt.get('attempt')}: {attempt.get('status')}{' · ' + str(first)[:160] if first else ''}\"\n            if self.step == \"Write answer\":\n                text += \"\\n\\n\" + str(record.get(\"answer\") or \"\")[:3000]\n            if self.step == \"Check against key\":\n                verdict = record.get(\"verdict\") or {}\n                for key in (\"must_exist\", \"must_connect\", \"must_preserve\"):\n                    missing = (verdict.get(key) or {}).get(\"missing\")\n                    if missing:\n                        text += f\"\\n  {key.replace('_', ' ')}: missing {missing}\"\n                if verdict.get(\"reason\"):\n                    text += f\"\\n  {verdict['reason']}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.cell))\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "step": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Issue task",
+                  "Retrieve notes",
+                  "Outline",
+                  "Write answer",
+                  "Official syntax",
+                  "Repair from errors",
+                  "Read values",
+                  "Check against key",
+                  "Approval gate",
+                  "Archive",
+                  "Tool calls (agents)"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "step",
+                "value": "Tool calls (agents)",
+                "display_name": "Step",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              }
+            },
+            "description": "One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.",
+            "icon": "list-checks",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Tool calls (agents)",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": "JSON",
+                "name": "cell_out",
+                "display_name": "Cell record",
+                "method": "pass_on",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "This step",
+                "method": "show",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "RtrcExamStep",
+          "id": "RtrcExamStep-02"
+        },
+        "id": "RtrcExamStep-02",
+        "type": "genericNode",
+        "position": {
+          "x": 1450,
+          "y": 836
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "cell": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "trace_as_input": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "cell",
+                "value": "",
+                "display_name": "Cell record",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Data",
+                  "JSON"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "other",
+                "_input_type": "JSONInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"RTRC Exam step: shows one step of an exam cell (page 1.1 / 1.4) from the cell record, and passes the record on.\nNo service call: the cell record comes from RTRC Exam cell.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = [\"Issue task\", \"Retrieve notes\", \"Outline\", \"Write answer\", \"Official syntax\", \"Repair from errors\",\n         \"Read values\", \"Check against key\", \"Approval gate\", \"Archive\", \"Tool calls (agents)\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcExamStep(Component):\n    display_name = \"RTRC Exam step\"\n    description = \"One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.\"\n    icon = \"list-checks\"\n    name = \"RtrcExamStep\"\n\n    inputs = [\n        DataInput(name=\"cell\", display_name=\"Cell record\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=STEPS, value=STEPS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Cell record\", name=\"cell_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        record = _record(self.cell)\n        if self.step == \"Tool calls (agents)\":\n            trace = record.get(\"tool_trace\") or []\n            text = (f\"{len(trace)} tool call(s) in the sandbox\\n\" + \"\\n\".join(f\"  {item.get('tool')}: {item.get('target')}\" for item in trace[:60])\n                    if trace else \"No tool calls: this cell was not written by a sandboxed agent, or its log has none.\")\n        else:\n            steps = [item for item in record.get(\"steps\") or [] if item.get(\"title\") == self.step]\n            if not steps:\n                text = f\"{self.step}: not part of this cell (for example Outline in P0 or P1, Retrieve notes outside P3).\"\n            else:\n                text = \"\\n\".join(f\"{self.step}: {item.get('state')}\\n{item.get('detail') or ''}\" for item in steps)\n            if self.step in {\"Official syntax\", \"Repair from errors\"}:\n                for attempt in record.get(\"attempts\") or []:\n                    first = (attempt.get(\"diagnostics\") or [{}])[0].get(\"message\", \"\") if attempt.get(\"status\") != \"PASS\" else \"\"\n                    text += f\"\\n  attempt {attempt.get('attempt')}: {attempt.get('status')}{' · ' + str(first)[:160] if first else ''}\"\n            if self.step == \"Write answer\":\n                text += \"\\n\\n\" + str(record.get(\"answer\") or \"\")[:3000]\n            if self.step == \"Check against key\":\n                verdict = record.get(\"verdict\") or {}\n                for key in (\"must_exist\", \"must_connect\", \"must_preserve\"):\n                    missing = (verdict.get(key) or {}).get(\"missing\")\n                    if missing:\n                        text += f\"\\n  {key.replace('_', ' ')}: missing {missing}\"\n                if verdict.get(\"reason\"):\n                    text += f\"\\n  {verdict['reason']}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.cell))\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "step": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Issue task",
+                  "Retrieve notes",
+                  "Outline",
+                  "Write answer",
+                  "Official syntax",
+                  "Repair from errors",
+                  "Read values",
+                  "Check against key",
+                  "Approval gate",
+                  "Archive",
+                  "Tool calls (agents)"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "step",
+                "value": "Write answer",
+                "display_name": "Step",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              }
+            },
+            "description": "One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.",
+            "icon": "list-checks",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Write answer · Paper 3",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": "JSON",
+                "name": "cell_out",
+                "display_name": "Cell record",
+                "method": "pass_on",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "This step",
+                "method": "show",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "RtrcExamStep",
+          "id": "RtrcExamStep-01"
+        },
+        "id": "RtrcExamStep-01",
+        "type": "genericNode",
+        "position": {
+          "x": 980,
+          "y": 836
+        }
+      },
+      {
+        "data": {
+          "node": {
+            "template": {
+              "_type": "Component",
+              "cell": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "trace_as_input": true,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "cell",
+                "value": "",
+                "display_name": "Cell record",
+                "advanced": false,
+                "api_editable": false,
+                "input_types": [
+                  "Data",
+                  "JSON"
+                ],
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "other",
+                "_input_type": "JSONInput"
+              },
+              "code": {
+                "type": "code",
+                "required": true,
+                "placeholder": "",
+                "list": false,
+                "show": true,
+                "multiline": true,
+                "value": "\"\"\"RTRC Exam step: shows one step of an exam cell (page 1.1 / 1.4) from the cell record, and passes the record on.\nNo service call: the cell record comes from RTRC Exam cell.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = [\"Issue task\", \"Retrieve notes\", \"Outline\", \"Write answer\", \"Official syntax\", \"Repair from errors\",\n         \"Read values\", \"Check against key\", \"Approval gate\", \"Archive\", \"Tool calls (agents)\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcExamStep(Component):\n    display_name = \"RTRC Exam step\"\n    description = \"One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.\"\n    icon = \"list-checks\"\n    name = \"RtrcExamStep\"\n\n    inputs = [\n        DataInput(name=\"cell\", display_name=\"Cell record\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=STEPS, value=STEPS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Cell record\", name=\"cell_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        record = _record(self.cell)\n        if self.step == \"Tool calls (agents)\":\n            trace = record.get(\"tool_trace\") or []\n            text = (f\"{len(trace)} tool call(s) in the sandbox\\n\" + \"\\n\".join(f\"  {item.get('tool')}: {item.get('target')}\" for item in trace[:60])\n                    if trace else \"No tool calls: this cell was not written by a sandboxed agent, or its log has none.\")\n        else:\n            steps = [item for item in record.get(\"steps\") or [] if item.get(\"title\") == self.step]\n            if not steps:\n                text = f\"{self.step}: not part of this cell (for example Outline in P0 or P1, Retrieve notes outside P3).\"\n            else:\n                text = \"\\n\".join(f\"{self.step}: {item.get('state')}\\n{item.get('detail') or ''}\" for item in steps)\n            if self.step in {\"Official syntax\", \"Repair from errors\"}:\n                for attempt in record.get(\"attempts\") or []:\n                    first = (attempt.get(\"diagnostics\") or [{}])[0].get(\"message\", \"\") if attempt.get(\"status\") != \"PASS\" else \"\"\n                    text += f\"\\n  attempt {attempt.get('attempt')}: {attempt.get('status')}{' · ' + str(first)[:160] if first else ''}\"\n            if self.step == \"Write answer\":\n                text += \"\\n\\n\" + str(record.get(\"answer\") or \"\")[:3000]\n            if self.step == \"Check against key\":\n                verdict = record.get(\"verdict\") or {}\n                for key in (\"must_exist\", \"must_connect\", \"must_preserve\"):\n                    missing = (verdict.get(key) or {}).get(\"missing\")\n                    if missing:\n                        text += f\"\\n  {key.replace('_', ' ')}: missing {missing}\"\n                if verdict.get(\"reason\"):\n                    text += f\"\\n  {verdict['reason']}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.cell))\n",
+                "fileTypes": [],
+                "file_path": "",
+                "password": false,
+                "name": "code",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": true,
+                "info": "",
+                "load_from_db": false,
+                "title_case": false
+              },
+              "step": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "options": [
+                  "Issue task",
+                  "Retrieve notes",
+                  "Outline",
+                  "Write answer",
+                  "Official syntax",
+                  "Repair from errors",
+                  "Read values",
+                  "Check against key",
+                  "Approval gate",
+                  "Archive",
+                  "Tool calls (agents)"
+                ],
+                "options_metadata": [],
+                "combobox": false,
+                "dialog_inputs": {},
+                "toggle": false,
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "step",
+                "value": "Issue task",
+                "display_name": "Step",
+                "advanced": false,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "external_options": {},
+                "type": "str",
+                "_input_type": "DropdownInput"
+              }
+            },
+            "description": "One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.",
+            "icon": "list-checks",
+            "base_classes": [
+              "JSON",
+              "Message"
+            ],
+            "display_name": "Issue task",
+            "documentation": "",
+            "minimized": false,
+            "custom_fields": {},
+            "output_types": [],
+            "pinned": false,
+            "conditional_paths": [],
+            "frozen": false,
+            "outputs": [
+              {
+                "types": [
+                  "JSON"
+                ],
+                "selected": "JSON",
+                "name": "cell_out",
+                "display_name": "Cell record",
+                "method": "pass_on",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              },
+              {
+                "types": [
+                  "Message"
+                ],
+                "selected": "Message",
+                "name": "message",
+                "display_name": "This step",
+                "method": "show",
+                "value": "__UNDEFINED__",
+                "cache": true,
+                "allows_loop": false,
+                "group_outputs": false,
+                "tool_mode": true
+              }
+            ],
+            "field_order": [],
+            "beta": false,
+            "legacy": false,
+            "edited": false,
+            "metadata": {},
+            "tool_mode": false
+          },
+          "type": "RtrcExamStep",
+          "id": "RtrcExamStep-00"
+        },
+        "id": "RtrcExamStep-00",
+        "type": "genericNode",
+        "position": {
+          "x": 510,
+          "y": 836
+        }
+      },
+      {
+        "id": "note-exam",
+        "type": "noteNode",
+        "position": {
+          "x": 40,
+          "y": -20
+        },
+        "width": 460,
+        "height": 776,
+        "style": {
+          "width": 460,
+          "height": 776
+        },
+        "measured": {
+          "width": 460,
+          "height": 776
+        },
+        "data": {
+          "id": "note-exam",
+          "type": "note",
+          "node": {
+            "description": "# Claude Code in the sandbox exam\n\nClaude Code in the same sandbox with the same files and tools as OpenCode (cloud Qwen; the local model is not routed to it).\n\n- One task: type its id (GEN-01 … RT-05) in the cell node and run; the steps light up with the record and the verdict against the sealed key (missing items only, never the key). Such a run is saved under analysis/langflow-console/ and is not added to the frozen score.\n- The whole exam: `python3 bench/langflow_exam.py --flow \"Claude Code in the sandbox exam\"` runs the 27 tasks three times through this flow and saves a rerun batch next to the frozen one; the frozen matrix of results page 1.3 does not change.\n- Replay: set the mode to *Replay a graded cell* and a cell id such as `flash:1:GEN-03:P1` or `opencode:1:MOD-05:P-CODE`.\n- Stop the results page (8770) before a live run: sandboxed agents and the page's answer keys do not run together.",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "RtrcExamCell-cell",
+        "target": "RtrcExamStep-00",
+        "data": {
+          "sourceHandle": {
+            "dataType": "RtrcExamCell",
+            "id": "RtrcExamCell-cell",
+            "name": "cell_data",
+            "output_types": [
+              "JSON"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "cell",
+            "id": "RtrcExamStep-00",
+            "inputTypes": [
+              "Data",
+              "JSON"
+            ],
+            "type": "other"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œRtrcExamCellœ, œidœ: œRtrcExamCell-cellœ, œnameœ: œcell_dataœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcellœ, œidœ: œRtrcExamStep-00œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcExamCell-cell{œdataTypeœ:œRtrcExamCellœ,œidœ:œRtrcExamCell-cellœ,œnameœ:œcell_dataœ,œoutput_typesœ:[œJSONœ]}-RtrcExamStep-00{œfieldNameœ:œcellœ,œidœ:œRtrcExamStep-00œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "RtrcExamStep-00",
+        "target": "RtrcExamStep-01",
+        "data": {
+          "sourceHandle": {
+            "dataType": "RtrcExamStep",
+            "id": "RtrcExamStep-00",
+            "name": "cell_out",
+            "output_types": [
+              "JSON"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "cell",
+            "id": "RtrcExamStep-01",
+            "inputTypes": [
+              "Data",
+              "JSON"
+            ],
+            "type": "other"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œRtrcExamStepœ, œidœ: œRtrcExamStep-00œ, œnameœ: œcell_outœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcellœ, œidœ: œRtrcExamStep-01œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcExamStep-00{œdataTypeœ:œRtrcExamStepœ,œidœ:œRtrcExamStep-00œ,œnameœ:œcell_outœ,œoutput_typesœ:[œJSONœ]}-RtrcExamStep-01{œfieldNameœ:œcellœ,œidœ:œRtrcExamStep-01œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "RtrcExamStep-01",
+        "target": "RtrcExamStep-02",
+        "data": {
+          "sourceHandle": {
+            "dataType": "RtrcExamStep",
+            "id": "RtrcExamStep-01",
+            "name": "cell_out",
+            "output_types": [
+              "JSON"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "cell",
+            "id": "RtrcExamStep-02",
+            "inputTypes": [
+              "Data",
+              "JSON"
+            ],
+            "type": "other"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œRtrcExamStepœ, œidœ: œRtrcExamStep-01œ, œnameœ: œcell_outœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcellœ, œidœ: œRtrcExamStep-02œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcExamStep-01{œdataTypeœ:œRtrcExamStepœ,œidœ:œRtrcExamStep-01œ,œnameœ:œcell_outœ,œoutput_typesœ:[œJSONœ]}-RtrcExamStep-02{œfieldNameœ:œcellœ,œidœ:œRtrcExamStep-02œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "RtrcExamStep-02",
+        "target": "RtrcExamStep-03",
+        "data": {
+          "sourceHandle": {
+            "dataType": "RtrcExamStep",
+            "id": "RtrcExamStep-02",
+            "name": "cell_out",
+            "output_types": [
+              "JSON"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "cell",
+            "id": "RtrcExamStep-03",
+            "inputTypes": [
+              "Data",
+              "JSON"
+            ],
+            "type": "other"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œRtrcExamStepœ, œidœ: œRtrcExamStep-02œ, œnameœ: œcell_outœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcellœ, œidœ: œRtrcExamStep-03œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcExamStep-02{œdataTypeœ:œRtrcExamStepœ,œidœ:œRtrcExamStep-02œ,œnameœ:œcell_outœ,œoutput_typesœ:[œJSONœ]}-RtrcExamStep-03{œfieldNameœ:œcellœ,œidœ:œRtrcExamStep-03œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "RtrcExamStep-03",
+        "target": "RtrcExamStep-04",
+        "data": {
+          "sourceHandle": {
+            "dataType": "RtrcExamStep",
+            "id": "RtrcExamStep-03",
+            "name": "cell_out",
+            "output_types": [
+              "JSON"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "cell",
+            "id": "RtrcExamStep-04",
+            "inputTypes": [
+              "Data",
+              "JSON"
+            ],
+            "type": "other"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œRtrcExamStepœ, œidœ: œRtrcExamStep-03œ, œnameœ: œcell_outœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcellœ, œidœ: œRtrcExamStep-04œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcExamStep-03{œdataTypeœ:œRtrcExamStepœ,œidœ:œRtrcExamStep-03œ,œnameœ:œcell_outœ,œoutput_typesœ:[œJSONœ]}-RtrcExamStep-04{œfieldNameœ:œcellœ,œidœ:œRtrcExamStep-04œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "RtrcExamStep-04",
+        "target": "RtrcExamStep-05",
+        "data": {
+          "sourceHandle": {
+            "dataType": "RtrcExamStep",
+            "id": "RtrcExamStep-04",
+            "name": "cell_out",
+            "output_types": [
+              "JSON"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "cell",
+            "id": "RtrcExamStep-05",
+            "inputTypes": [
+              "Data",
+              "JSON"
+            ],
+            "type": "other"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œRtrcExamStepœ, œidœ: œRtrcExamStep-04œ, œnameœ: œcell_outœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcellœ, œidœ: œRtrcExamStep-05œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcExamStep-04{œdataTypeœ:œRtrcExamStepœ,œidœ:œRtrcExamStep-04œ,œnameœ:œcell_outœ,œoutput_typesœ:[œJSONœ]}-RtrcExamStep-05{œfieldNameœ:œcellœ,œidœ:œRtrcExamStep-05œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      },
+      {
+        "source": "RtrcExamStep-05",
+        "target": "ChatOutput-exam",
+        "data": {
+          "sourceHandle": {
+            "dataType": "RtrcExamStep",
+            "id": "RtrcExamStep-05",
+            "name": "message",
+            "output_types": [
+              "Message"
+            ]
+          },
+          "targetHandle": {
+            "fieldName": "input_value",
+            "id": "ChatOutput-exam",
+            "inputTypes": [
+              "Data",
+              "JSON",
+              "DataFrame",
+              "Table",
+              "Message"
+            ],
+            "type": "other"
+          }
+        },
+        "sourceHandle": "{œdataTypeœ: œRtrcExamStepœ, œidœ: œRtrcExamStep-05œ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-examœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcExamStep-05{œdataTypeœ:œRtrcExamStepœ,œidœ:œRtrcExamStep-05œ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-exam{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-examœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "animated": false,
+        "className": "",
+        "selected": false
+      }
+    ],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.55
+    }
+  }
+}

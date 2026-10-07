@@ -1,12 +1,12 @@
 {
-  "name": "RTRC design assistant · unfolded (qwen3.8-max)",
+  "name": "Langflow Agent with memory chat · qwen3.8-max",
   "description": "The assistant with its parts on the canvas: Langflow's Agent (qwen3.8-max), one card per RTRC tool, the memory knowledge base, the design pipeline as a flow run as a tool; write to memory pauses for approval.",
-  "endpoint_name": "rtrc-assistant-unfolded",
+  "endpoint_name": "langflow-agent-memory-chat-max",
   "is_component": false,
   "tags": [
     "rtrc",
-    "assistant",
-    "unfolded"
+    "langflow-agent",
+    "assistant"
   ],
   "data": {
     "nodes": [
@@ -36,7 +36,7 @@
             "template": {
               "backgroundColor": "blue"
             },
-            "description": "# RTRC design assistant · unfolded (qwen3.8-max)\n\nThe same assistant as **RTRC design assistant**, with its parts on the canvas: Langflow's own Agent in the middle, one card per RTRC tool around it, the memory as a knowledge base, and four tools that are flows of their own.\n\n- Talk to it like a colleague: ask what exists, describe a need, answer its questions about missing numbers, confirm the brief it proposes, decide on the result. Model: Qwen's cloud endpoint.\n- Flows run as tools, open them to see each step: **RTRC memory search** (library → MiniLM + FAISS seeds → one hop → cards, paper 2); **RTRC design pipeline** (① memory → ② requirements → ③ designs by OpenCode in the sandbox, with the rules, template and examples it was given shown as cards → ④ Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; stop the results page 8770 first); **RTRC validate SysML** (file → official Pilot, paper 3); **RTRC write to memory** (gate → write → record → knowledge base refreshed). Edit a flow and this assistant runs the edited version.\n- **Tool · write to memory** pauses for your approval (its Actions row): the AGENTS.md gate as a card. Every answer shows the tools it called when you expand it in the Playground.\n- It never invents numbers and never moves a stated limit; verdicts come from the official Pilot and the checks. Records appear on page 2.3."
+            "description": "# Langflow Agent with memory chat · qwen3.8-max\n\nThe same assistant as **OpenCode with memory chat**, with its parts on the canvas: Langflow's own Agent in the middle, one card per RTRC tool around it, the memory as a knowledge base, and four tools that are flows of their own (project 5).\n\n- Talk to it like a colleague: ask what exists, describe a need, answer its questions about missing numbers, confirm the brief it proposes, decide on the result. Model: Qwen's cloud endpoint.\n- Flows run as tools, open them to see each step: **Memory search** (library → MiniLM + FAISS seeds → one hop → cards, paper 2); **Design pipeline** (① memory → ② requirements → ③ designs by OpenCode in the sandbox, with the rules, template and examples it was given shown as cards → ④ Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; stop the results page 8770 first); **Validate SysML with the official Pilot** (file → official Pilot, paper 3); **Write to memory** (gate → write → record → knowledge base refreshed). Edit a flow and this assistant runs the edited version.\n- **Tool · write to memory** pauses for your approval (its Actions row): the AGENTS.md gate as a card. Every answer shows the tools it called when you expand it in the Playground.\n- It never invents numbers and never moves a stated limit; verdicts come from the official Pilot and the checks. Records appear on page 2.3."
           }
         }
       },
@@ -868,7 +868,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "system_prompt",
-                "value": "You are the RTRC design assistant for early-stage systems engineering in SysML v2. The scenario is a synthetic maritime ISR exercise; the numbers are not an RTX specification. You work through the `rtrc` tools only; you have no files to edit and no shell.\n\nWhat you do: help an engineer see what already exists in the memory, turn a vague need into numbered requirements, run the verified design pipeline once the engineer confirms the brief, explain the results plainly, and record the engineer's decision.\n\nRules:\n1. Never invent a number. Every power draw, rate, capacity, duration or limit must come from the engineer or from the memory, and you say which. If a number needed for the power, upload, storage or trace checks is missing, ask for it before running a design.\n2. A stated limit (for example a 60 W power limit) is never changed to make a check pass. If a design exceeds it, say so and offer trade-offs from the memory; changing the limit is the engineer's decision, not yours.\n3. Before calling run_design, show the engineer the exact brief you will send (one paragraph with all the numbers and units) and wait for an explicit confirmation.\n4. Verdicts come from tools, not from you: the official SysML v2 Pilot decides syntax, the checks decide the budget. Report them as they are, including failures, with the run id.\n5. Writing into memory needs the engineer's explicit approval of a named design (A or B) that passed all four checks. Otherwise record Reject or Send back with the engineer's reason.\n6. Answer in the language the engineer writes in. Be concrete and brief; quote values with units; do not repeat the whole tool output.\n\nTools. list_projects and read_project read the memory's files. The knowledge-base search is Langflow's semantic search over the same cards. Four tools are flows; each takes one argument and must be called exactly like this:\n- RTRC-memory-search_tool, flow_tweak_data = {\"ChatInput-query~input_value\": <a few search words>}: the memory library → MiniLM + FAISS seeds → one hop of neighbours → the matching cards with values and sources.\n- RTRC-design-pipeline_tool, flow_tweak_data = {\"ChatInput-brief~input_value\": <the confirmed brief, word for word>} (2 to 10 minutes): memory search, numbered requirements, designs A and B written by OpenCode in a sandbox with the official Pilot as a tool, the Pilot's verdict, alignment with the memory, the power / upload / storage / trace checks, trade-offs when a check fails, diagram and Cameo export; returns the review text with the run id. An empty or misnamed argument is refused. When it returns, compare its \"Brief:\" line with the brief the engineer confirmed; if they differ, say so and do not present the verdicts as the engineer's design. It needs the results page (port 8770) stopped; if it says so, tell the engineer.\n- RTRC-validate-SysML_tool, flow_tweak_data = {\"ChatInput-sysml~input_value\": <the SysML text the engineer pasted>}: saves it as a file and runs the official Pilot; PASS or FAIL with the diagnostics.\n- RTRC-write-to-memory_tool, flow_tweak_data = {\"ChatInput-approval~input_value\": \"<run id> A\" or \"<run id> B\"}: pauses for the person's approval, then checks the gate (Pilot PASS and all four checks PASS), writes the design into the memory, records the approval and refreshes the knowledge base. Call it only after the engineer named the design.\ndesign_status shows a saved run; record_decision (Reject or Send back, with the reason) and export_cameo act on a finished run.\n\nBrief format for the pipeline: the vessel and its devices with power draws in W, the power limit in W, the local recording rate in Mbps, the retention hours, the storage in GB, the upload rate in Mbps and the uplink capacity in Mbps, all from the engineer.",
+                "value": "You are the RTRC design assistant for early-stage systems engineering in SysML v2. The scenario is a synthetic maritime ISR exercise; the numbers are not an RTX specification. You work through the `rtrc` tools only; you have no files to edit and no shell.\n\nWhat you do: help an engineer see what already exists in the memory, turn a vague need into numbered requirements, run the verified design pipeline once the engineer confirms the brief, explain the results plainly, and record the engineer's decision.\n\nRules:\n1. Never invent a number. Every power draw, rate, capacity, duration or limit must come from the engineer or from the memory, and you say which. If a number needed for the power, upload, storage or trace checks is missing, ask for it before running a design.\n2. A stated limit (for example a 60 W power limit) is never changed to make a check pass. If a design exceeds it, say so and offer trade-offs from the memory; changing the limit is the engineer's decision, not yours.\n3. Before calling run_design, show the engineer the exact brief you will send (one paragraph with all the numbers and units) and wait for an explicit confirmation.\n4. Verdicts come from tools, not from you: the official SysML v2 Pilot decides syntax, the checks decide the budget. Report them as they are, including failures, with the run id.\n5. Writing into memory needs the engineer's explicit approval of a named design (A or B) that passed all four checks. Otherwise record Reject or Send back with the engineer's reason.\n6. Answer in the language the engineer writes in. Be concrete and brief; quote values with units; do not repeat the whole tool output.\n\nTools. list_projects and read_project read the memory's files. The knowledge-base search is Langflow's semantic search over the same cards. Four tools are flows; each takes one argument and must be called exactly like this:\n- Memory-search_tool, flow_tweak_data = {\"ChatInput-query~input_value\": <a few search words>}: the memory library → MiniLM + FAISS seeds → one hop of neighbours → the matching cards with values and sources.\n- Design-pipeline_tool, flow_tweak_data = {\"ChatInput-brief~input_value\": <the confirmed brief, word for word>} (2 to 10 minutes): memory search, numbered requirements, designs A and B written by OpenCode in a sandbox with the official Pilot as a tool, the Pilot's verdict, alignment with the memory, the power / upload / storage / trace checks, trade-offs when a check fails, diagram and Cameo export; returns the review text with the run id. An empty or misnamed argument is refused. When it returns, compare its \"Brief:\" line with the brief the engineer confirmed; if they differ, say so and do not present the verdicts as the engineer's design. It needs the results page (port 8770) stopped; if it says so, tell the engineer.\n- Validate-SysML-with-the-official-Pilot_tool, flow_tweak_data = {\"ChatInput-sysml~input_value\": <the SysML text the engineer pasted>}: saves it as a file and runs the official Pilot; PASS or FAIL with the diagnostics.\n- Write-to-memory_tool, flow_tweak_data = {\"ChatInput-approval~input_value\": \"<run id> A\" or \"<run id> B\"}: pauses for the person's approval, then checks the gate (Pilot PASS and all four checks PASS), writes the design into the memory, records the approval and refreshes the knowledge base. Call it only after the engineer named the design.\ndesign_status shows a saved run; record_decision (Reject or Send back, with the reason) and export_cameo act on a finished run.\n\nBrief format for the pipeline: the vessel and its devices with power draws in W, the power limit in W, the local recording rate in Mbps, the retention hours, the storage in GB, the upload rate in Mbps and the uplink capacity in Mbps, all from the engineer.",
                 "display_name": "Agent Instructions",
                 "advanced": false,
                 "api_editable": false,
@@ -892,7 +892,7 @@
               "JSON",
               "Message"
             ],
-            "display_name": "RTRC design assistant · Langflow Agent · qwen3.8-max",
+            "display_name": "Langflow Agent with memory chat · qwen3.8-max · Langflow Agent · qwen3.8-max",
             "documentation": "https://docs.langflow.org/agents",
             "minimized": false,
             "custom_fields": {},
@@ -1300,7 +1300,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "flow_name_selected",
-                "value": "RTRC memory search",
+                "value": "Memory search",
                 "display_name": "Flow Name",
                 "advanced": false,
                 "api_editable": false,
@@ -1341,7 +1341,7 @@
                 "_input_type": "MessageTextInput"
               }
             },
-            "description": "Runs the flow \"RTRC memory search\": the memory library → MiniLM + FAISS seeds → one hop of neighbours → cards. Open it to see each step.",
+            "description": "Runs the flow \"Memory search\": the memory library → MiniLM + FAISS seeds → one hop of neighbours → cards. Open it to see each step.",
             "icon": "Workflow",
             "base_classes": [],
             "display_name": "Tool · search memory (a flow) · Paper 2",
@@ -1470,7 +1470,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "flow_name_selected",
-                "value": "RTRC design pipeline",
+                "value": "Design pipeline",
                 "display_name": "Flow Name",
                 "advanced": false,
                 "api_editable": false,
@@ -1511,7 +1511,7 @@
                 "_input_type": "MessageTextInput"
               }
             },
-            "description": "Runs the flow \"RTRC design pipeline\": ① memory → ② requirements → ③ designs by OpenCode in the sandbox (its rules, template and examples shown as cards) → ④ official Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review. Open that flow to see every step; edit it and this assistant runs the edited version.",
+            "description": "Runs the flow \"Design pipeline\": ① memory → ② requirements → ③ designs by OpenCode in the sandbox (its rules, template and examples shown as cards) → ④ official Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review. Open that flow to see every step; edit it and this assistant runs the edited version.",
             "icon": "Workflow",
             "base_classes": [],
             "display_name": "Tool · run the design pipeline (a flow) · Papers 2, 3, 1",
@@ -1640,7 +1640,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "flow_name_selected",
-                "value": "RTRC validate SysML",
+                "value": "Validate SysML with the official Pilot",
                 "display_name": "Flow Name",
                 "advanced": false,
                 "api_editable": false,
@@ -1681,7 +1681,7 @@
                 "_input_type": "MessageTextInput"
               }
             },
-            "description": "Runs the flow \"RTRC validate SysML\": the pasted text saved as a file → the official SysML v2 Pilot → PASS or FAIL with the diagnostics.",
+            "description": "Runs the flow \"Validate SysML with the official Pilot\": the pasted text saved as a file → the official SysML v2 Pilot → PASS or FAIL with the diagnostics.",
             "icon": "Workflow",
             "base_classes": [],
             "display_name": "Tool · official Pilot on pasted SysML (a flow) · Paper 3",
@@ -1810,7 +1810,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "flow_name_selected",
-                "value": "RTRC write to memory",
+                "value": "Write to memory",
                 "display_name": "Flow Name",
                 "advanced": false,
                 "api_editable": false,
@@ -1862,10 +1862,10 @@
                 "name": "tools_metadata",
                 "value": [
                   {
-                    "name": "RTRC-write-to-memory_tool",
+                    "name": "Write-to-memory_tool",
                     "description": "",
                     "tags": [
-                      "RTRC-write-to-memory_tool"
+                      "Write-to-memory_tool"
                     ],
                     "status": true,
                     "approval_actions": [
@@ -1886,7 +1886,7 @@
                 "_input_type": "ToolsInput"
               }
             },
-            "description": "Pauses for your approval, then runs the flow \"RTRC write to memory\": the gate (Pilot PASS, four checks PASS) → the write → the record → the knowledge base refreshed with the new cards.",
+            "description": "Pauses for your approval, then runs the flow \"Write to memory\": the gate (Pilot PASS, four checks PASS) → the write → the record → the knowledge base refreshed with the new cards.",
             "icon": "Workflow",
             "base_classes": [],
             "display_name": "Tool · write to memory (a flow) · approval card · Paper 2",
@@ -4130,7 +4130,7 @@
                 "_input_type": "IntInput"
               }
             },
-            "description": "Langflow's semantic search over the same cards (Qwen embeddings, filled by F0 and by the write-to-memory flow).",
+            "description": "Langflow's semantic search over the same cards (Qwen embeddings, filled by the knowledge-base fill flow and by the write-to-memory flow).",
             "icon": "database",
             "base_classes": [
               "JSON",

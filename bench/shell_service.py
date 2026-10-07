@@ -825,7 +825,9 @@ def exam_agent_run(body: dict) -> dict:
                     os.environ.pop("MVP_LLM_MODEL", None)
                 else:
                     os.environ["MVP_LLM_MODEL"] = previous
-            text, workspace, returncode, usage = solved["text"], solved["workspace"], solved["returncode"], {}
+            from bench.run_opencode import usage_from_log
+            text, workspace, returncode = solved["text"], solved["workspace"], solved["returncode"]
+            usage = usage_from_log(Path(workspace).parent / "stdout.jsonl")  # tokens of the run, as the scored batches read them
         else:
             from bench.run_claude_qwen import run_claude, usage_of
             run = run_claude(task_dir, model=model, max_turns=60, timeout=900, label="langflow-agent")
@@ -849,6 +851,158 @@ def exam_agent_run(body: dict) -> dict:
     lines = [f"{task_id} · {agent} on {model} · task verdict {result['status']} · official syntax {result['sysml_status'] or 'n/a'} · {result['seconds']} s",
              f"  {len(result['tool_trace'])} tool call(s) in the sandbox (not added to any score)"]
     lines += [f"  {step.get('title')}: {step.get('state')} · {str(step.get('detail') or '')[:160]}" for step in result.get("steps", [])]
+    return {"summary": "\n".join(lines), "data": result}
+
+
+CHAT_CANDIDATES = ("direct-P0", "direct-P1", "direct-P2", "direct-P3", "opencode", "claude-code")
+CHAT_TYPES = ("GEN", "MOD", "ALN", "QRY", "AMB", "RT")
+PACKAGE_LINE = re.compile(r"Package name:\s*([A-Za-z_][A-Za-z0-9_]*)")
+FENCED_SYSML = re.compile(r"```sysml\s*\n(.*?)```", re.S)
+PACKAGE_DECL = re.compile(r"\bpackage\s+([A-Za-z_][A-Za-z0-9_]*)")
+
+
+def _chat_folder(prefix: str) -> Path:
+    folder = ROOT / "mvp" / "exam-inbox" / f"{prefix}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%f')}"
+    folder.mkdir(parents=True)
+    return folder
+
+
+def _direct_chat(text: str, config: str, model: str, kind: str, package: str) -> dict:
+    """The chat version of one exam approach (decision 035): the same fixed path as the exam cell (P3 retrieval,
+    P2/P3 outline, the answer, the official Pilot with the repair loop for P1 to P3), on a task text instead of a
+    sealed task id. Nothing is scored: there is no answer key."""
+    from agents.llm import MODEL_OVERRIDE, USAGE_LOG, usage_summary
+    from agents.llm_local import chat
+    from agents.solve import _answer, _retrieve, format_diagnostics, rounds_for, validate_with_repair
+    if not package:
+        match = PACKAGE_LINE.search(text)
+        package = match.group(1) if match else "Inbox"
+    case = {"id": "chat", "type": kind, "package": package}
+    steps: list[dict] = [{"title": "Issue task", "state": "pass", "detail": f"Task text given to the model as a {kind} task" + (f", package {package}" if kind in {"GEN", "MOD", "ALN"} else "") + "."}]
+    calls: list[dict] = []
+    usage_token, model_token = USAGE_LOG.set(calls), MODEL_OVERRIDE.set(model)
+    started = time.monotonic()
+    result: dict = {"candidate": f"direct-{config}", "configuration": config, "model": model, "type": kind, "package": package,
+                    "retrieved": [], "outline": "", "attempts": []}
+    try:
+        prefix: list[dict] = []
+        if config in {"P2", "P3"}:
+            notes = ""
+            if config == "P3":
+                found = _retrieve(text)
+                notes = "\n\n".join(f"[{item['source']}]\n{item['text']}" for item in found)
+                result["retrieved"] = found
+                steps.append({"title": "Retrieve notes", "state": "pass", "detail": f"{len(found)} cards (MiniLM + FAISS over the official-examples library): " + ", ".join(item["source"] for item in found)})
+            outlined = chat([
+                {"role": "system", "content": "List the parts, ports, connections, and attributes the task requires. Reply with one JSON object. Do not write SysML yet."},
+                {"role": "user", "content": text if not notes else text + "\n\nReference notes:\n" + notes},
+            ], max_tokens=1500)
+            result["outline"] = outlined["text"]
+            steps.append({"title": "Outline", "state": "pass", "detail": "A JSON outline of parts, ports and connections; the model writes from it next."})
+            prefix = [{"role": "user", "content": "Outline:\n" + outlined["text"]}, {"role": "assistant", "content": "I will follow that outline."}]
+        written = _answer(case, text, prefix=prefix)
+        answer = written["text"]
+        steps.append({"title": "Write answer", "state": "pass", "detail": f"Model {written.get('model') or model} answered."})
+        syntax = None
+        if kind in {"GEN", "MOD", "ALN"}:
+            scratch = _chat_folder(f"chat-direct-{config}")
+            companions: list[Path] = []
+            if kind == "ALN":
+                # The two read-only sources an alignment package imports: the fenced sysml blocks of the task text.
+                for block in FENCED_SYSML.findall(text):
+                    declared = PACKAGE_DECL.search(block)
+                    if declared and declared.group(1) != package:
+                        path = scratch / f"{declared.group(1)}.sysml"
+                        path.write_text(block, encoding="utf-8")
+                        companions.append(path)
+            cap = rounds_for(config)
+            loop = validate_with_repair(case, text, answer, scratch, prefix=prefix, label=f"chat-{config}", max_rounds=cap, calls=[],
+                                        companions=companions)
+            answer, syntax = loop["text"], loop["sysml_status"]
+            result["attempts"] = [{"attempt": item.get("attempt"), "status": item.get("status"),
+                                   "diagnostics": [{"line": d.get("line"), "message": d.get("message")} for d in (item.get("diagnostics") or [])][:12]}
+                                  for item in loop.get("attempts") or []]
+            result.update({"repair_rounds": loop["repair_rounds"], "first_pass_attempt": loop["first_pass_attempt"], "run_dir": loop.get("run_dir")})
+            last = loop["attempts"][-1] if loop["attempts"] else {"diagnostics": []}
+            steps.append({"title": "Official syntax", "state": "pass" if syntax == "PASS" else "fail",
+                          "detail": "The official Pilot passed it. That only means the syntax is valid." if syntax == "PASS" else format_diagnostics(last["diagnostics"])})
+            if cap == 0:
+                steps.append({"title": "Repair from errors", "state": "skip", "detail": "P0 writes once and is not repaired."})
+            elif loop["repair_rounds"]:
+                steps.append({"title": "Repair from errors", "state": "pass" if syntax == "PASS" else "fail",
+                              "detail": f"{loop['repair_rounds']} repair(s) of at most {cap} in one conversation with every earlier version and error list."})
+            else:
+                steps.append({"title": "Repair from errors", "state": "skip", "detail": "The first version passed; no repair needed."})
+        else:
+            steps.append({"title": "Official syntax", "state": "skip", "detail": "Query, ambiguity and round-trip answers are JSON or text, not SysML."})
+    finally:
+        USAGE_LOG.reset(usage_token)
+        MODEL_OVERRIDE.reset(model_token)
+    steps.append({"title": "Check against key", "state": "skip", "detail": "A chat run has no answer key; nothing is scored."})
+    result.update({"answer": answer, "sysml_status": syntax, "steps": steps, "usage": usage_summary(calls),
+                   "seconds": round(time.monotonic() - started, 1)})
+    return result
+
+
+def _sandbox_chat(text: str, agent: str, model: str) -> dict:
+    """The chat version of a sandboxed coding agent (decision 035): the task text becomes input/requirements.md of a
+    fresh task folder, the agent runs in the sandbox with AGENTS.md and ./validate, and answer.md comes back. Nothing
+    is scored."""
+    if model in LOCAL_MODELS and agent == "claude-code":
+        raise StepError(LOCAL_REFUSED)
+    if _page_running():
+        raise StepError("The results page is running and serves answer keys; stop it before running a sandboxed agent")
+    task_dir = _chat_folder(f"chat-{agent}")
+    (task_dir / "input").mkdir()
+    (task_dir / "input" / "requirements.md").write_text(text.rstrip() + "\n", encoding="utf-8")
+    started = time.monotonic()
+    with AGENT_LOCK:
+        if agent == "opencode":
+            from agents.external.opencode_run import run_opencode
+            previous = os.environ.get("MVP_LLM_MODEL")
+            os.environ["MVP_LLM_MODEL"] = model
+            try:
+                solved = run_opencode(task_dir)
+            finally:
+                if previous is None:
+                    os.environ.pop("MVP_LLM_MODEL", None)
+                else:
+                    os.environ["MVP_LLM_MODEL"] = previous
+            from bench.run_opencode import usage_from_log
+            answer, workspace, returncode = solved["text"], solved["workspace"], solved["returncode"]
+            usage = usage_from_log(Path(workspace).parent / "stdout.jsonl")
+        else:
+            from bench.run_claude_qwen import run_claude, usage_of
+            run = run_claude(task_dir, model=model, max_turns=60, timeout=900, label="chat-claude")
+            answer, workspace, returncode, usage = run["text"], str(run["workspace"]), run["returncode"], usage_of(run["result"])
+    trace = _tool_trace(workspace)
+    wrote = (Path(workspace) / "answer.md").is_file()
+    steps = [{"title": "Issue task", "state": "pass", "detail": "Task text in the sandbox with AGENTS.md and ./validate; no answer key exists for a chat run."},
+             {"title": "Write answer", "state": "pass" if wrote else "fail",
+              "detail": f"{len(trace)} tool call(s), {usage.get('input', 0)} in / {usage.get('output', 0)} out tokens; "
+                        + ("answer.md written." if wrote else f"no answer.md (exit {returncode}); the session's last output is shown.")},
+             {"title": "Check against key", "state": "skip", "detail": "A chat run has no answer key; nothing is scored."}]
+    return {"candidate": agent, "model": model, "answer": answer, "workspace": workspace, "returncode": returncode, "usage": usage,
+            "tool_trace": trace, "steps": steps, "seconds": round(time.monotonic() - started, 1)}
+
+
+def exam_chat(body: dict) -> dict:
+    """The chat versions of projects 1 and 2 (decision 035): a task text in, the candidate's answer out, no key, no score."""
+    text = str(body.get("text") or "").strip()
+    candidate, model = body.get("candidate") or CHAT_CANDIDATES[0], body.get("model") or MODELS[0]
+    kind, package = str(body.get("task_type") or "GEN").upper(), str(body.get("package") or "").strip()
+    if not text:
+        raise StepError("Write the task text")
+    if candidate not in CHAT_CANDIDATES or model not in MODELS or kind not in CHAT_TYPES:
+        raise StepError(f"candidate must be one of {CHAT_CANDIDATES}, model one of {MODELS}, task type one of {CHAT_TYPES}")
+    if package and not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", package):
+        raise StepError("The package name must start with a letter and use only letters, digits and underscores")
+    result = _direct_chat(text, candidate[-2:], model, kind, package) if candidate.startswith("direct-") else _sandbox_chat(text, candidate, model)
+    CONSOLE_DIR.mkdir(parents=True, exist_ok=True)
+    saved = CONSOLE_DIR / f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}-chat-{candidate}-{model}.json"
+    saved.write_text(json.dumps({**result, "text": text}, ensure_ascii=False, indent=2), encoding="utf-8")
+    lines = [f"{candidate} · {model} · {result['seconds']} s · official syntax {result.get('sysml_status') or 'n/a'} (a chat run: no answer key, nothing scored)"]
+    lines += [f"  {step['title']}: {step['state']} · {str(step['detail'])[:160]}" for step in result["steps"]]
     return {"summary": "\n".join(lines), "data": result}
 
 
@@ -1071,7 +1225,7 @@ ROUTES = {
     "/run/review": run_review, "/run/approve": run_approve, "/run/decision": run_decision,
     "/cameo/export": cameo_export, "/cameo/result": cameo_result, "/gate/decision": gate_decision,
     "/memory": memory, "/exam/cells": exam_cells, "/exam/cell": exam_cell, "/exam/run": exam_run,
-    "/exam/agent-cell": exam_cell, "/exam/agent-run": exam_agent_run, "/facts": facts, "/mod/case": mod_case, "/mod/run": mod_run,
+    "/exam/agent-cell": exam_cell, "/exam/agent-run": exam_agent_run, "/exam/chat": exam_chat, "/facts": facts, "/mod/case": mod_case, "/mod/run": mod_run,
 }
 
 

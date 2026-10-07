@@ -1,11 +1,12 @@
 {
-  "name": "RTRC agent flow: requirement to approved SysML v2 design",
-  "description": "Part 2 of the results page as a Langflow flow: memory search, new or reuse, the official Pilot loop, alignment, checks, a person's decision, memory, grades and times.",
-  "endpoint_name": "rtrc-agent-flow",
+  "name": "Design agent flow · local Qwen3.8-27B via OpenCode",
+  "description": "The design agent flow with every model call on this machine: OpenCode in the sandbox on the 3-bit Qwen3.8-27B served by Ollama; memory search, new or reuse, the official Pilot, alignment, checks, a person's decision, memory, grades and times.",
+  "endpoint_name": "other-design-agent-flow-local",
   "is_component": false,
   "tags": [
     "rtrc",
-    "agent"
+    "agent",
+    "local"
   ],
   "data": {
     "nodes": [
@@ -280,7 +281,7 @@
         "type": "genericNode",
         "position": {
           "x": 40,
-          "y": 728
+          "y": 836
         }
       },
       {
@@ -552,7 +553,7 @@
         "type": "genericNode",
         "position": {
           "x": 2860,
-          "y": 1828
+          "y": 1936
         }
       },
       {
@@ -767,7 +768,7 @@
         "type": "genericNode",
         "position": {
           "x": 2390,
-          "y": 1828
+          "y": 1936
         }
       },
       {
@@ -1042,7 +1043,7 @@
         "type": "genericNode",
         "position": {
           "x": 1450,
-          "y": 1828
+          "y": 1936
         }
       },
       {
@@ -1440,7 +1441,7 @@
         "type": "genericNode",
         "position": {
           "x": 510,
-          "y": 1828
+          "y": 1936
         }
       },
       {
@@ -1715,7 +1716,7 @@
         "type": "genericNode",
         "position": {
           "x": 40,
-          "y": 1828
+          "y": 1936
         }
       },
       {
@@ -1990,7 +1991,7 @@
         "type": "genericNode",
         "position": {
           "x": 3330,
-          "y": 728
+          "y": 836
         }
       },
       {
@@ -2265,7 +2266,7 @@
         "type": "genericNode",
         "position": {
           "x": 2860,
-          "y": 728
+          "y": 836
         }
       },
       {
@@ -2540,7 +2541,7 @@
         "type": "genericNode",
         "position": {
           "x": 2390,
-          "y": 728
+          "y": 836
         }
       },
       {
@@ -2938,7 +2939,7 @@
         "type": "genericNode",
         "position": {
           "x": 1920,
-          "y": 728
+          "y": 836
         }
       },
       {
@@ -3213,7 +3214,7 @@
         "type": "genericNode",
         "position": {
           "x": 1450,
-          "y": 728
+          "y": 836
         }
       },
       {
@@ -3488,7 +3489,7 @@
         "type": "genericNode",
         "position": {
           "x": 980,
-          "y": 728
+          "y": 836
         }
       },
       {
@@ -3513,7 +3514,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "agent",
-                "value": "Qwen direct",
+                "value": "OpenCode on Qwen (sandbox)",
                 "display_name": "Agent (Qwen only for now)",
                 "advanced": false,
                 "api_editable": false,
@@ -3591,7 +3592,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "model",
-                "value": "qwen3.8-flash",
+                "value": "qwen3.8-27b (Ollama)",
                 "display_name": "Qwen model",
                 "advanced": false,
                 "api_editable": false,
@@ -3647,12 +3648,12 @@
                 "_input_type": "BoolInput"
               }
             },
-            "description": "Qwen direct, or Claude Code / OpenCode on Qwen in the sandbox. Or replay a saved run without model calls.",
+            "description": "OpenCode in the sandbox, on the 3-bit Qwen3.8-27B that Ollama serves on this machine (scripts/qwen38.sh --serve). The other steps use the same local model. Or replay a saved run without model calls.",
             "icon": "play",
             "base_classes": [
               "Message"
             ],
-            "display_name": "Agent: Qwen only for now",
+            "display_name": "Agent: OpenCode on the local Qwen3.8-27B",
             "documentation": "",
             "minimized": false,
             "custom_fields": {},
@@ -3690,7 +3691,7 @@
         "type": "genericNode",
         "position": {
           "x": 510,
-          "y": 728
+          "y": 836
         }
       },
       {
@@ -3965,7 +3966,7 @@
         "type": "genericNode",
         "position": {
           "x": 2390,
-          "y": 1198
+          "y": 1306
         }
       },
       {
@@ -4240,7 +4241,7 @@
         "type": "genericNode",
         "position": {
           "x": 980,
-          "y": 1828
+          "y": 1936
         }
       },
       {
@@ -4512,7 +4513,7 @@
         "type": "genericNode",
         "position": {
           "x": 2860,
-          "y": 2298
+          "y": 2406
         }
       },
       {
@@ -4727,7 +4728,7 @@
         "type": "genericNode",
         "position": {
           "x": 2390,
-          "y": 2298
+          "y": 2406
         }
       },
       {
@@ -4999,7 +5000,7 @@
         "type": "genericNode",
         "position": {
           "x": 2860,
-          "y": 2768
+          "y": 2876
         }
       },
       {
@@ -5214,7 +5215,7 @@
         "type": "genericNode",
         "position": {
           "x": 2390,
-          "y": 2768
+          "y": 2876
         }
       },
       {
@@ -5486,7 +5487,7 @@
         "type": "genericNode",
         "position": {
           "x": 2860,
-          "y": 3238
+          "y": 3346
         }
       },
       {
@@ -5701,7 +5702,7 @@
         "type": "genericNode",
         "position": {
           "x": 2390,
-          "y": 3238
+          "y": 3346
         }
       },
       {
@@ -5929,7 +5930,7 @@
         "type": "genericNode",
         "position": {
           "x": 1920,
-          "y": 1828
+          "y": 1936
         }
       },
       {
@@ -5940,20 +5941,20 @@
           "y": -20
         },
         "width": 460,
-        "height": 668,
+        "height": 776,
         "style": {
           "width": 460,
-          "height": 668
+          "height": 776
         },
         "measured": {
           "width": 460,
-          "height": 668
+          "height": 776
         },
         "data": {
           "id": "note-main",
           "type": "note",
           "node": {
-            "description": "# RTRC agent flow (Part 2)\n\nA requirement becomes an approvable SysML v2 design. Two cases: **new** (nothing similar in memory, start from scratch) or **reuse** (adapt the similar project found in memory).\n\n- Every RTRC node calls the code behind the results page through the RTRC shell service (`bench/shell_service.py`), so a run here and a run on the page give the same retrieval, prompts, Pilot results and checks.\n- **Qwen only for now** (RTRC has not answered which models may be used).\n- Click a node after a run to read what it did: the retrieved cards, every Pilot attempt and its errors, the alignment pairs, the checks.\n- Replay any saved run without model calls: set *Replay a saved run* in the Agent node to `latest` or a run id.",
+            "description": "# Design agent flow · local Qwen3.8-27B via OpenCode\n\nThe design agent flow with every model call on this computer: the 3-bit Qwen3.8-27B served by Ollama (`scripts/qwen38.sh --serve`), and OpenCode in the bubblewrap sandbox writing the designs with `./validate` (the official Pilot) in hand, up to 60 turns per design. Nothing leaves the machine.\n\n- Same nodes, same shell service, same checks as **Design agent flow with a person's decision**; only the Agent node's presets differ (OpenCode, qwen3.8-27b (Ollama)).\n- Direct writing with the 27B got stuck on `part usage vessel` for 20 identical repairs (run 20261007T014335); OpenCode gets the Pilot's errors as a tool result and edits the file (decision 032).\n- Stop the results page (8770) before a run: sandboxed agents and the page's answer keys do not run together.\n- Click a node after a run to read what it did; replay a saved run with *Replay a saved run* = `latest` or a run id.",
             "display_name": "",
             "documentation": "",
             "template": {
@@ -6013,7 +6014,7 @@
           "id": "note-cameo",
           "type": "note",
           "node": {
-            "description": "## Cameo (when RTRC provides the license)\n\n⑦ already writes each passing design to `analysis/cameo-exports/<run>/`. Open it in Cameo's SysML v2 edition and record the result with the flow **RTRC Cameo check**. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability). Cameo has no headless command, so this is a person's step.",
+            "description": "## Cameo (when RTRC provides the license)\n\n⑦ already writes each passing design to `analysis/cameo-exports/<run>/`. Open it in Cameo's SysML v2 edition and record the result with the flow **Cameo check**. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability). Cameo has no headless command, so this is a person's step.",
             "display_name": "",
             "documentation": "",
             "template": {

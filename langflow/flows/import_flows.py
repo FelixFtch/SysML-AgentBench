@@ -1,27 +1,29 @@
-"""Import langflow/flows/*.json into the Langflow project "RTRC SysML-AgentBench" (create or update; safe to repeat).
+"""Import langflow/flows/*.json into the six Langflow projects of catalog.py (create or update; safe to repeat).
 
     .venv-langflow/bin/python langflow/flows/import_flows.py
 
-Logs in as the superuser from .langflow/secrets.env (never printed) and prints each flow's editor link.
+Logs in as the superuser from .langflow/secrets.env (never printed), creates the projects, imports the shared tool
+flows first (the Run Flow cards of projects 3 and 4 point at them by name and need their ids), then the rest, in the
+order of catalog.ORDER. Flows that still carry a retired name (the single project of decisions 030 to 034) are removed,
+and that project is deleted once it is empty. If people log in with another account, run move_to_user.py afterwards.
+Prints each flow's editor link.
 """
 from __future__ import annotations
 
 import gzip
 import json
 import os
+import sys
 import urllib.parse
 import urllib.request
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from catalog import OLD_PROJECT, PROJECT_OF, PROJECTS, RETIRED  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 BASE = f"http://127.0.0.1:{os.environ.get('LANGFLOW_PORT', '7860')}"
-PROJECT = "RTRC SysML-AgentBench"
-ORDER = ["rtrc-assistant", "rtrc-tool-search", "rtrc-tool-write", "rtrc-tool-validate", "rtrc-pipeline-tool",
-         "rtrc-assistant-unfolded", "rtrc-assistant-unfolded-local", "rtrc-assistant-langchain",
-         "rtrc-agent-flow", "rtrc-agent-flow-local", "rtrc-f0-memory", "rtrc-f1-exam-direct", "rtrc-f2-exam-agent", "rtrc-f3-results",
-         "rtrc-f5-mod-change", "rtrc-cameo-check"]
-RETIRED = ["RTRC design assistant (local Qwen3.8-27B)",  # the Langflow-Agent flow of decision 031, replaced by the OpenCode assistant (032)
-           "RTRC design pipeline (as a tool)"]  # first name of the pipeline flow (033); Run Flow names the tool after the flow
+ORDER = [slug for _, _, flows in PROJECTS for slug, _ in flows]
 
 
 def _secrets() -> dict:
@@ -63,7 +65,7 @@ def _point_run_flow_cards(flow: dict, imported: dict[str, dict]) -> None:
             continue
         target = imported.get(name)
         if target is None:
-            raise SystemExit(f"{flow['name']}: its Run Flow card points at {name!r}, which must be imported first (ORDER)")
+            raise SystemExit(f"{flow['name']}: its Run Flow card points at {name!r}, which must be imported first (catalog.PROJECTS order)")
         meta = {"id": target["id"], "updated_at": target.get("updated_at")}
         template["flow_id_selected"]["value"] = target["id"]
         template["flow_name_selected"]["options"] = [name]
@@ -71,34 +73,48 @@ def _point_run_flow_cards(flow: dict, imported: dict[str, dict]) -> None:
         template["flow_name_selected"]["selected_metadata"] = meta
 
 
+def _projects(token: str) -> dict[str, dict]:
+    return {p["name"]: p for p in _request("GET", "/api/v1/projects/", token) or []}
+
+
 def main() -> None:
     secrets = _secrets()
     token = _request("POST", "/api/v1/login", form={"username": secrets["LANGFLOW_SUPERUSER"],
                                                     "password": secrets["LANGFLOW_SUPERUSER_PASSWORD"]})["access_token"]
-    project = next((p for p in _request("GET", "/api/v1/projects/", token) if p["name"] == PROJECT), None)
-    if project is None:
-        project = _request("POST", "/api/v1/projects/", token, {
-            "name": PROJECT, "description": "The RTRC SysML v2 agent flows: the Part 2 agent flow, memory, exam cells, results, MOD change, Cameo check."})
-    existing = {f["name"]: f for f in _request("GET", f"/api/v1/flows/?folder_id={project['id']}&get_all=true&header_flows=true", token) or []
-                if f.get("folder_id") == project["id"]}
+    projects = _projects(token)
+    for name, description, _ in PROJECTS:
+        if name not in projects:
+            projects[name] = _request("POST", "/api/v1/projects/", token, {"name": name, "description": description})
+            print(f"project created: {name}")
+    flows_by_name = {f["name"]: f for f in _request("GET", "/api/v1/flows/?get_all=true&header_flows=true", token) or []
+                     if f.get("folder_id") in {p["id"] for p in projects.values()}}
     imported: dict[str, dict] = {}
     for slug in ORDER:
         flow = json.loads((ROOT / "langflow" / "flows" / f"{slug}.json").read_text(encoding="utf-8"))
         _point_run_flow_cards(flow, imported)
+        project = projects[PROJECT_OF[slug]]
         payload = {"name": flow["name"], "description": flow["description"], "data": flow["data"],
                    "endpoint_name": slug, "tags": flow.get("tags") or [], "folder_id": project["id"]}
-        if flow["name"] in existing:
-            saved = _request("PATCH", f"/api/v1/flows/{existing[flow['name']]['id']}", token, payload)
-            action = "updated"
+        if flow["name"] in flows_by_name:
+            saved = _request("PATCH", f"/api/v1/flows/{flows_by_name[flow['name']]['id']}", token, payload)
+            action = "updated" if flows_by_name[flow["name"]].get("folder_id") == project["id"] else "moved"
         else:
             saved = _request("POST", "/api/v1/flows/", token, payload)
             action = "created"
         imported[flow["name"]] = saved
-        print(f"{action}: {flow['name']}\n    {BASE}/flow/{saved['id']}")
+        print(f"{action}: {PROJECT_OF[slug]} / {flow['name']}\n    {BASE}/flow/{saved['id']}")
     for name in RETIRED:
-        if name in existing:
-            _request("DELETE", f"/api/v1/flows/{existing[name]['id']}", token)
+        if name in flows_by_name:
+            _request("DELETE", f"/api/v1/flows/{flows_by_name[name]['id']}", token)
             print(f"removed: {name}")
+    old = projects.get(OLD_PROJECT)
+    if old:
+        left = [f for f in _request("GET", f"/api/v1/flows/?folder_id={old['id']}&get_all=true&header_flows=true", token) or [] if f.get("folder_id") == old["id"]]
+        if not left:
+            _request("DELETE", f"/api/v1/projects/{old['id']}", token)
+            print(f"project removed (empty): {OLD_PROJECT}")
+        else:
+            print(f"project kept, {len(left)} flow(s) still in it: {OLD_PROJECT}")
 
 
 if __name__ == "__main__":

@@ -1,12 +1,13 @@
-"""Give everything RTRC in Langflow to one user: the project and its flows, the Qwen provider credentials, the
+"""Give everything RTRC in Langflow to one user: the six projects and their flows, the Qwen provider credentials, the
 enabled-models list, the knowledge base rtrc_memory (row, ingestion runs and files) and the rtrc-assistant MCP
-registration used by the Langflow-Agent comparison flow.
+registration used by the Langflow-Agent flows.
 
     .venv-langflow/bin/python langflow/flows/move_to_user.py FelixFang
 
 Langflow keeps credentials, knowledge bases and MCP registrations per user, so a flow owned by one user cannot use
 another user's provider key or knowledge base. Run this once for the account people log in with, then restart
 Langflow (the knowledge-base files move to ~/.langflow/knowledge_bases/<username>/). Values are moved, never printed.
+Flows with a retired name (catalog.RETIRED) and the empty project of decisions 030 to 034 are removed, whoever owns them.
 """
 from __future__ import annotations
 
@@ -15,13 +16,41 @@ import sqlite3
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from catalog import OLD_PROJECT, PROJECTS, RETIRED  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 DB = ROOT / ".venv-langflow" / "lib" / "python3.12" / "site-packages" / "langflow" / "langflow.db"
 KB_ROOT = Path.home() / ".langflow" / "knowledge_bases"
-PROJECT = "RTRC SysML-AgentBench"
+PROJECT_NAMES = [name for name, _, _ in PROJECTS]
 VARIABLES = ("OPENAI_COMPATIBLE_BASE_URL", "OPENAI_COMPATIBLE_API_KEY", "OLLAMA_BASE_URL", "__enabled_models__")
 KNOWLEDGE_BASE = "rtrc_memory"
 MCP_SERVER = "rtrc-assistant"
+
+
+def _move_project(cur, project: str, target: str) -> int:
+    """Every flow in any project of that name, whoever owns it, ends in one project owned by the target. A user cannot
+    hold two flows with one name (an import run as the superuser creates a second copy of each flow), so of two flows
+    with the same name the most recently updated one is kept, the other deleted, before the move. Returns the flow count."""
+    folders = list(cur.execute("SELECT id, user_id FROM folder WHERE name = ?", (project,)))
+    if not folders:
+        return 0
+    keep = next((fid for fid, uid in folders if uid == target), folders[0][0])
+    marks = ",".join("?" * len(folders))
+    flows = list(cur.execute(f"SELECT id, name, updated_at FROM flow WHERE folder_id IN ({marks}) ORDER BY updated_at DESC", [fid for fid, _ in folders]))
+    keepers: dict[str, str] = {}
+    for flow_id, name, _ in flows:
+        if name in keepers:
+            cur.execute("DELETE FROM flow WHERE id = ?", (flow_id,))
+        else:
+            keepers[name] = flow_id
+    for flow_id in keepers.values():
+        cur.execute("UPDATE flow SET user_id = ?, folder_id = ? WHERE id = ?", (target, keep, flow_id))
+    for fid, _ in folders:
+        if fid != keep:
+            cur.execute("DELETE FROM folder WHERE id = ?", (fid,))
+    cur.execute("UPDATE folder SET user_id = ? WHERE id = ?", (target, keep))
+    return len(keepers)
 
 
 def main() -> None:
@@ -36,28 +65,23 @@ def main() -> None:
     target = users[username]
     report = []
 
-    # The project and every flow in any project of that name, whoever owns them; one project remains, owned by the target.
-    # A user cannot hold two flows with one name (an import run as the superuser creates a second copy of each flow),
-    # so of two flows with the same name the most recently updated one is kept, the other deleted, before the move.
-    folders = list(cur.execute("SELECT id, user_id FROM folder WHERE name = ?", (PROJECT,)))
-    if folders:
-        keep = next((fid for fid, uid in folders if uid == target), folders[0][0])
-        marks = ",".join("?" * len(folders))
-        flows = list(cur.execute(f"SELECT id, name, updated_at FROM flow WHERE folder_id IN ({marks}) ORDER BY updated_at DESC", [fid for fid, _ in folders]))
-        keepers: dict[str, str] = {}
-        for flow_id, name, _ in flows:
-            if name in keepers:
-                cur.execute("DELETE FROM flow WHERE id = ?", (flow_id,))
-            else:
-                keepers[name] = flow_id
-        for flow_id in keepers.values():
-            cur.execute("UPDATE flow SET user_id = ?, folder_id = ? WHERE id = ?", (target, keep, flow_id))
-        seen = set(keepers)
-        for fid, _ in folders:
-            if fid != keep:
-                cur.execute("DELETE FROM folder WHERE id = ?", (fid,))
-        cur.execute("UPDATE folder SET user_id = ? WHERE id = ?", (target, keep))
-        report.append(f"project {PROJECT}: {len(seen)} flows")
+    # Flows of the earlier single project that still carry a retired name go first, whoever owns them; a flow with a
+    # current name that is still in the old project is left for the import to move (it keeps the newest copy).
+    marks = ",".join("?" * len(RETIRED))
+    removed = cur.execute(f"DELETE FROM flow WHERE name IN ({marks})", RETIRED).rowcount
+    if removed:
+        report.append(f"retired flows removed: {removed}")
+    for project in PROJECT_NAMES:
+        count = _move_project(cur, project, target)
+        if count:
+            report.append(f"project {project}: {count} flows")
+    for fid, in list(cur.execute("SELECT id FROM folder WHERE name = ?", (OLD_PROJECT,))):
+        left = cur.execute("SELECT COUNT(*) FROM flow WHERE folder_id = ?", (fid,)).fetchone()[0]
+        if left == 0:
+            cur.execute("DELETE FROM folder WHERE id = ?", (fid,))
+            report.append(f"project {OLD_PROJECT}: removed (empty)")
+        else:
+            report.append(f"project {OLD_PROJECT}: kept, {left} flow(s) still in it")
 
     # Provider credentials and the enabled-models list: the target's own rows are replaced by the moved ones.
     for name in VARIABLES:

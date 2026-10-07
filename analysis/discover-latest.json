@@ -1,55 +1,109 @@
 {
-  "id": "20261007T005632",
-  "brief": "Small observation buoy for maritime ISR: one camera drawing 5 W and one radio drawing 3 W (8 W total) against a 10 W power limit; local video recording at 2 Mbps retained for 4 hours on 32 GB of storage; upload at 2 Mbps over a 4 Mbps uplink capacity. Write both design A and design B from scratch, adapting no existing project.",
+  "id": "20261007T022418",
+  "brief": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 12 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 12 Mbps over one 20 Mbps uplink.",
   "synthetic": true,
   "langflow": {
     "mode": "live",
-    "agent": "direct",
-    "model": "qwen3.8-max",
-    "started": "2026-10-07T00:56:32+00:00",
+    "agent": "opencode",
+    "model": "qwen3.8-27b (Ollama)",
+    "started": "2026-10-07T02:24:18+00:00",
     "timings": {
       "retrieve": {
-        "started": "2026-10-07T00:56:32+00:00",
-        "seconds": 0.3,
+        "started": "2026-10-07T02:24:18+00:00",
+        "seconds": 0.2,
         "model_calls": 0
       },
       "requirements": {
-        "started": "2026-10-07T00:56:32+00:00",
-        "seconds": 7.5,
+        "started": "2026-10-07T02:24:18+00:00",
+        "seconds": 6.6,
         "model_calls": 1
       },
-      "design": {
-        "started": "2026-10-07T00:56:40+00:00",
-        "seconds": 19.0,
-        "model_calls": 2
+      "adapt": {
+        "started": "2026-10-07T02:24:25+00:00",
+        "seconds": 173.4,
+        "model_calls": 0
       },
       "validate": {
-        "started": "2026-10-07T00:56:59+00:00",
-        "seconds": 6.9,
+        "started": "2026-10-07T02:27:18+00:00",
+        "seconds": 7.8,
         "model_calls": 0
       },
       "align": {
-        "started": "2026-10-07T00:57:06+00:00",
-        "seconds": 11.4,
+        "started": "2026-10-07T02:27:26+00:00",
+        "seconds": 9.0,
         "model_calls": 1
       },
       "checks": {
-        "started": "2026-10-07T00:57:17+00:00",
-        "seconds": 6.4,
+        "started": "2026-10-07T02:27:35+00:00",
+        "seconds": 2.8,
         "model_calls": 2
       }
     },
-    "path": "new",
-    "similar_project": null,
-    "branch": "new",
+    "path": "reuse",
+    "similar_project": {
+      "name": "MaritimeISR",
+      "path": "scenario/maritime-isr/MaritimeISR.sysml",
+      "package": "MaritimeISR",
+      "brief": ""
+    },
+    "branch": "reuse",
     "failing": [],
     "eligible": [
       "A",
       "B"
     ],
     "review": {
-      "at": "2026-10-07T00:57:24+00:00",
-      "text": "run 20261007T005632 · review for a person\nBrief: Small observation buoy for maritime ISR: one camera drawing 5 W and one radio drawing 3 W (8 W total) against a 10 W power limit; local video recording at 2 Mbps retained for 4 hours on 32 GB of storage; upload at 2 Mbps over a 4 Mbps uplink capacity. Write both design A and design B from scratch, adapting no existing project.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T005659-9bcddbac&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T005632/DesignA.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nDesign B: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T005702-5be60167&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T005632/DesignB.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nAlignment: 6/6 pairs verified; package PASS\nGate: Designs A, B pass all four checks and may be approved into memory by a person."
+      "at": "2026-10-07T02:27:38+00:00",
+      "text": "run 20261007T022418 · review for a person\nBrief: A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 12 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 12 Mbps over one 20 Mbps uplink.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T022718-e5f4f452&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T022418/DesignA.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nDesign B: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T022722-d5285dac&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T022418/DesignB.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nAlignment: 5/5 pairs verified; package PASS\nGate: Designs A, B pass all four checks and may be approved into memory by a person."
+    },
+    "decision": {
+      "action": "Send back",
+      "note": "",
+      "at": "2026-10-07T02:28:40+00:00"
+    },
+    "finished": "2026-10-07T02:28:40+00:00",
+    "grades": {
+      "branch": "reuse",
+      "path": "reuse",
+      "designs": {
+        "A": {
+          "official_pilot": "PASS",
+          "parses": 1,
+          "first_pass_attempt": 1,
+          "checks": {
+            "POWER": "PASS",
+            "LINK": "PASS",
+            "STORE": "PASS",
+            "TRACE": "PASS"
+          },
+          "read_back_complete": true
+        },
+        "B": {
+          "official_pilot": "PASS",
+          "parses": 1,
+          "first_pass_attempt": 1,
+          "checks": {
+            "POWER": "PASS",
+            "LINK": "PASS",
+            "STORE": "PASS",
+            "TRACE": "PASS"
+          },
+          "read_back_complete": true
+        }
+      },
+      "alignment": {
+        "proposed": 5,
+        "verified": 5,
+        "package": "PASS"
+      },
+      "eligible": [
+        "A",
+        "B"
+      ],
+      "approved": [],
+      "seconds": 199.8,
+      "model_calls": 4,
+      "usd": 0.0
     }
   },
   "retrieval": {
@@ -80,64 +134,78 @@
     ],
     "library_size": 152,
     "query_words": [
-      "adapting",
-      "against",
-      "buoy",
       "camera",
-      "capacity",
-      "design",
+      "carries",
+      "computer",
       "drawing",
-      "existing",
+      "edge",
+      "harbor",
       "hours",
-      "isr",
+      "imagery",
+      "infrared",
       "limit",
-      "local",
-      "maritime",
+      "locally",
       "mbps",
-      "observation",
+      "patrol",
       "power",
-      "project",
-      "radio",
-      "recording",
-      "retained",
-      "scratch",
-      "small",
+      "recorded",
+      "shore",
       "storage",
-      "total",
+      "surface",
+      "unmanned",
       "uplink",
-      "upload",
-      "video",
-      "write",
-      "2",
-      "3",
-      "4",
-      "5",
+      "uploaded",
+      "vessel",
+      "visible",
+      "7",
       "8",
-      "10",
-      "32"
+      "12",
+      "14",
+      "20",
+      "28",
+      "60",
+      "128"
     ],
     "words": [
       "camera",
-      "capacity",
-      "design",
+      "computer",
+      "edge",
       "hours",
-      "isr",
+      "imagery",
+      "infrared",
       "limit",
-      "local",
-      "maritime",
+      "locally",
       "mbps",
       "power",
-      "radio",
-      "recording",
-      "retained",
+      "recorded",
+      "shore",
       "storage",
-      "total",
+      "surface",
+      "unmanned",
       "uplink",
-      "upload",
-      "2",
-      "8"
+      "uploaded",
+      "vessel",
+      "visible",
+      "7",
+      "8",
+      "12",
+      "14",
+      "20",
+      "28",
+      "60",
+      "128"
     ],
     "nodes": [
+      {
+        "id": "222bbb5d-3348-4aa8-a752-fa78cdaad5db",
+        "text": "PortUsage MaritimeISR::Camera::imagery",
+        "type": "PortUsage",
+        "name": "MaritimeISR::Camera::imagery",
+        "short": "imagery",
+        "role": "seed",
+        "score": 0.7757,
+        "source": "MaritimeISR"
+      },
       {
         "id": "1da2b6c0-c514-4608-8006-4a594305585e",
         "text": "PartDefinition MaritimeISR::Camera",
@@ -145,59 +213,28 @@
         "name": "MaritimeISR::Camera",
         "short": "Camera",
         "role": "seed",
-        "score": 0.6446,
+        "score": 0.6105,
         "source": "MaritimeISR"
       },
       {
-        "id": "e4ca848d-b4de-4ee5-ad26-7e5af3d485c5",
-        "text": "PartDefinition MaritimeISR::Radio",
-        "type": "PartDefinition",
-        "name": "MaritimeISR::Radio",
-        "short": "Radio",
+        "id": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+        "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0",
+        "type": "AttributeUsage",
+        "name": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW",
+        "short": "powerLimitW",
+        "value": 60.0,
         "role": "seed",
-        "score": 0.6315,
+        "score": 0.6045,
         "source": "MaritimeISR"
       },
       {
-        "id": "ed729baf-84e5-4107-9a14-83dd0066b558",
-        "text": "PartUsage MaritimeISR::UnmannedSurfaceVessel::radio",
-        "type": "PartUsage",
-        "name": "MaritimeISR::UnmannedSurfaceVessel::radio",
-        "short": "radio",
+        "id": "0282b2b5-4182-484f-bf17-fba65bc7923e",
+        "text": "PortDefinition MaritimeISR::ImageryPort",
+        "type": "PortDefinition",
+        "name": "MaritimeISR::ImageryPort",
+        "short": "ImageryPort",
         "role": "seed",
-        "score": 0.627,
-        "source": "MaritimeISR"
-      },
-      {
-        "id": "3f5d57b3-7a01-4da9-8d12-367f05026ad0",
-        "text": "PortUsage MaritimeISR::Radio::toShore",
-        "type": "PortUsage",
-        "name": "MaritimeISR::Radio::toShore",
-        "short": "toShore",
-        "role": "seed",
-        "score": 0.6247,
-        "source": "MaritimeISR"
-      },
-      {
-        "id": "222bbb5d-3348-4aa8-a752-fa78cdaad5db",
-        "text": "PortUsage MaritimeISR::Camera::imagery",
-        "type": "PortUsage",
-        "name": "MaritimeISR::Camera::imagery",
-        "short": "imagery",
-        "role": "neighbor",
-        "via": "1da2b6c0-c514-4608-8006-4a594305585e",
-        "score": 0.6006,
-        "source": "MaritimeISR"
-      },
-      {
-        "id": "cc90b261-5ac1-4057-8540-e46e4eab0a9f",
-        "text": "PortUsage MaritimeISR::Radio::fromProcessor",
-        "type": "PortUsage",
-        "name": "MaritimeISR::Radio::fromProcessor",
-        "short": "fromProcessor",
-        "role": "neighbor",
-        "via": "e4ca848d-b4de-4ee5-ad26-7e5af3d485c5",
-        "score": 0.5995,
+        "score": 0.5487,
         "source": "MaritimeISR"
       },
       {
@@ -207,176 +244,176 @@
         "name": "MaritimeISR::UnmannedSurfaceVessel",
         "short": "UnmannedSurfaceVessel",
         "role": "neighbor",
-        "via": "ed729baf-84e5-4107-9a14-83dd0066b558",
-        "score": 0.4477,
+        "via": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+        "score": 0.4964,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "0f716893-49f7-4d1c-a665-6774ae8f5a68",
+        "text": "ConjugatedPortDefinition MaritimeISR::ImageryPort::'~ImageryPort'",
+        "type": "ConjugatedPortDefinition",
+        "name": "MaritimeISR::ImageryPort::'~ImageryPort'",
+        "short": "'~ImageryPort'",
+        "role": "neighbor",
+        "via": "0282b2b5-4182-484f-bf17-fba65bc7923e",
+        "score": 0.4221,
         "source": "MaritimeISR"
       }
     ],
     "edges": [
       {
-        "from": "1da2b6c0-c514-4608-8006-4a594305585e",
-        "to": "222bbb5d-3348-4aa8-a752-fa78cdaad5db",
-        "kind": "owner"
-      },
-      {
-        "from": "e4ca848d-b4de-4ee5-ad26-7e5af3d485c5",
-        "to": "cc90b261-5ac1-4057-8540-e46e4eab0a9f",
-        "kind": "owner"
-      },
-      {
-        "from": "ed729baf-84e5-4107-9a14-83dd0066b558",
+        "from": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
         "to": "e45964fc-9f09-4c8d-8b5c-d4d997e14d84",
+        "kind": "owner"
+      },
+      {
+        "from": "0282b2b5-4182-484f-bf17-fba65bc7923e",
+        "to": "0f716893-49f7-4d1c-a665-6774ae8f5a68",
         "kind": "owner"
       }
     ],
     "cards": [
-      "PartDefinition MaritimeISR::Camera",
-      "PartDefinition MaritimeISR::Radio",
-      "PartUsage MaritimeISR::UnmannedSurfaceVessel::radio",
-      "PortUsage MaritimeISR::Radio::toShore",
       "PortUsage MaritimeISR::Camera::imagery",
-      "PortUsage MaritimeISR::Radio::fromProcessor",
-      "PartDefinition MaritimeISR::UnmannedSurfaceVessel"
+      "PartDefinition MaritimeISR::Camera",
+      "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0",
+      "PortDefinition MaritimeISR::ImageryPort",
+      "PartDefinition MaritimeISR::UnmannedSurfaceVessel",
+      "ConjugatedPortDefinition MaritimeISR::ImageryPort::'~ImageryPort'"
     ],
-    "numbers": {},
-    "path": "new",
-    "note": "No related values in existing models: new-design path."
+    "numbers": {
+      "MaritimeISR::UnmannedSurfaceVessel::powerLimitW": 60.0
+    },
+    "path": "reuse",
+    "note": "Reusable values found in existing models: reuse path."
   },
   "requirements": {
     "requirements": [
       {
         "id": "R1",
-        "text": "The observation buoy total power draw shall not exceed the 10 W power limit.",
+        "text": "The visible camera shall draw 28 W.",
         "quantity": {
-          "name": "powerLimitW",
-          "value": 10,
+          "name": "drawW",
+          "value": 28,
           "unit": "W"
         },
         "unsourced_numbers": []
       },
       {
         "id": "R2",
-        "text": "The camera subsystem shall draw 5 W of power.",
+        "text": "The edge computer shall draw 14 W.",
         "quantity": {
           "name": "drawW",
-          "value": 5,
+          "value": 14,
           "unit": "W"
         },
         "unsourced_numbers": []
       },
       {
         "id": "R3",
-        "text": "The radio subsystem shall draw 3 W of power.",
+        "text": "The infrared camera shall draw 7 W.",
         "quantity": {
           "name": "drawW",
-          "value": 3,
+          "value": 7,
           "unit": "W"
         },
         "unsourced_numbers": []
       },
       {
         "id": "R4",
-        "text": "Local video recording shall operate at a data rate of 2 Mbps.",
+        "text": "The total power consumption shall not exceed 60 W.",
         "quantity": {
-          "name": "dataRateMbps",
-          "value": 2,
-          "unit": "Mbps"
+          "name": "powerLimitW",
+          "value": 60,
+          "unit": "W"
         },
         "unsourced_numbers": []
       },
       {
         "id": "R5",
-        "text": "Recorded video shall be retained for 4 hours on local storage.",
+        "text": "Imagery shall be recorded locally at a data rate of 12 Mbps.",
         "quantity": {
-          "name": "retentionHours",
-          "value": 4,
-          "unit": "hours"
-        },
-        "unsourced_numbers": []
-      },
-      {
-        "id": "R6",
-        "text": "The buoy shall provide 32 GB of onboard storage capacity.",
-        "quantity": {
-          "name": "storageGB",
-          "value": 32,
-          "unit": "GB"
-        },
-        "unsourced_numbers": []
-      },
-      {
-        "id": "R7",
-        "text": "The system shall upload data to shore at 2 Mbps.",
-        "quantity": {
-          "name": "uploadMbps",
-          "value": 2,
+          "name": "dataRateMbps",
+          "value": 12,
           "unit": "Mbps"
         },
         "unsourced_numbers": []
       },
       {
-        "id": "R8",
-        "text": "The radio uplink capacity shall support 4 Mbps.",
+        "id": "R6",
+        "text": "Imagery shall be retained for 8 hours.",
         "quantity": {
-          "name": "uplinkMbps",
-          "value": 4,
+          "name": "retentionHours",
+          "value": 8,
+          "unit": "hours"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R7",
+        "text": "The local storage capacity shall be 128 GB.",
+        "quantity": {
+          "name": "storageGB",
+          "value": 128,
+          "unit": "GB"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R8",
+        "text": "Imagery shall be uploaded to shore at a rate of 12 Mbps.",
+        "quantity": {
+          "name": "uploadMbps",
+          "value": 12,
           "unit": "Mbps"
         },
         "unsourced_numbers": []
       },
       {
         "id": "R9",
-        "text": "Design A and Design B shall each be written from scratch, adapting no existing project.",
-        "quantity": null,
+        "text": "The uplink capacity shall be 20 Mbps.",
+        "quantity": {
+          "name": "uplinkMbps",
+          "value": 20,
+          "unit": "Mbps"
+        },
         "unsourced_numbers": []
       }
     ],
-    "questions": [
-      "What is the total combined power draw (stated as 8 W) that should be verified against the 10 W limit—is this a separate requirement or just an informational sum?"
-    ],
+    "questions": [],
     "unsourced": [],
-    "model": "qwen3.8-max",
+    "model": "qwen3.8-27b-q3:64k",
     "usage": {
-      "prompt_tokens": 268,
-      "total_tokens": 633,
-      "completion_tokens": 365,
+      "prompt_tokens": 272,
       "prompt_tokens_details": {
-        "cached_tokens": 0,
-        "text_tokens": 268
-      }
+        "cached_tokens": 0
+      },
+      "completion_tokens": 640,
+      "total_tokens": 912
     }
   },
   "designs": [
     {
       "key": "A",
-      "source": "package DesignA {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The observation buoy total power draw shall not exceed the 10 W power limit. */\n    }\n    requirement def R2 {\n        doc /* R2: The camera subsystem shall draw 5 W of power. */\n    }\n    requirement def R3 {\n        doc /* R3: The radio subsystem shall draw 3 W of power. */\n    }\n    requirement def R4 {\n        doc /* R4: Local video recording shall operate at a data rate of 2 Mbps. */\n    }\n    requirement def R5 {\n        doc /* R5: Recorded video shall be retained for 4 hours on local storage. */\n    }\n    requirement def R6 {\n        doc /* R6: The buoy shall provide 32 GB of onboard storage capacity. */\n    }\n    requirement def R7 {\n        doc /* R7: The system shall upload data to shore at 2 Mbps. */\n    }\n    requirement def R8 {\n        doc /* R8: The radio uplink capacity shall support 4 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: Design A and Design B shall each be written from scratch, adapting no existing project. */\n    }\n\n    part def Camera;\n    part def Radio;\n    part def UnmannedSurfaceVessel;\n\n    part vessel : UnmannedSurfaceVessel {\n        attribute powerLimitW : Real = 10;\n        attribute dataRateMbps : Real = 2;\n        attribute retentionHours : Real = 4;\n        attribute storageGB : Real = 32;\n        attribute uploadMbps : Real = 2;\n        attribute uplinkMbps : Real = 4;\n\n        port imagery;\n        port toShore;\n        port fromProcessor;\n\n        part camera : Camera {\n            attribute drawW : Real = 5;\n            port imagery;\n        }\n\n        part radio : Radio {\n            attribute drawW : Real = 3;\n            port toShore;\n            port fromProcessor;\n        }\n\n        connect camera.imagery to radio.fromProcessor;\n        connect radio.toShore to vessel.toShore;\n    }\n}\n",
+      "source": "package DesignA {\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def EdgeComputer {\n        port imageryIn : ImageryPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromComputer : LinkPort;\n        port toShore : LinkPort;\n    }\n    part def UnmannedSurfaceVessel;\n\n    part usv : UnmannedSurfaceVessel {\n        attribute powerLimitW : Real = 60;  // R4\n        attribute dataRateMbps : Real = 12;  // R5\n        attribute retentionHours : Real = 8;  // R6\n        attribute storageGB : Real = 128;  // R7\n        attribute uploadMbps : Real = 12;  // R8\n        attribute uplinkMbps : Real = 20;  // R9\n\n        part eoCamera : Camera {\n            attribute drawW : Real = 28;  // R1\n        }\n        part irCamera : Camera {\n            attribute drawW : Real = 7;  // R3\n        }\n        part computer : EdgeComputer {\n            attribute drawW : Real = 14;  // R2\n        }\n        part radio : Radio;\n\n        connect eoCamera.imagery to computer.imageryIn;\n        connect irCamera.imagery to computer.imageryIn;\n        connect computer.uplink to radio.fromComputer;\n    }\n\n    requirement def R1 {\n        doc /* R1: The visible camera shall draw 28 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The edge computer shall draw 14 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The infrared camera shall draw 7 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The total power consumption shall not exceed 60 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Imagery shall be retained for 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: The local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 20 Mbps. */\n    }\n}\n",
       "sysml_status": "PASS",
       "attempts": [
         {
           "attempt": 1,
           "status": "PASS",
           "diagnostics": [],
-          "sha": "0a826da1b4c3",
+          "sha": "32e53ad5449f",
           "same_as_previous": false,
-          "run_id": "20261007T005659-9bcddbac",
-          "text": "package DesignA {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The observation buoy total power draw shall not exceed the 10 W power limit. */\n    }\n    requirement def R2 {\n        doc /* R2: The camera subsystem shall draw 5 W of power. */\n    }\n    requirement def R3 {\n        doc /* R3: The radio subsystem shall draw 3 W of power. */\n    }\n    requirement def R4 {\n        doc /* R4: Local video recording shall operate at a data rate of 2 Mbps. */\n    }\n    requirement def R5 {\n        doc /* R5: Recorded video shall be retained for 4 hours on local storage. */\n    }\n    requirement def R6 {\n        doc /* R6: The buoy shall provide 32 GB of onboard storage capacity. */\n    }\n    requirement def R7 {\n        doc /* R7: The system shall upload data to shore at 2 Mbps. */\n    }\n    requirement def R8 {\n        doc /* R8: The radio uplink capacity shall support 4 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: Design A and Design B shall each be written from scratch, adapting no existing project. */\n    }\n\n    part def Camera;\n    part def Radio;\n    part def UnmannedSurfaceVessel;\n\n    part vessel : UnmannedSurfaceVessel {\n        attribute powerLimitW : Real = 10;\n        attribute dataRateMbps : Real = 2;\n        attribute retentionHours : Real = 4;\n        attribute storageGB : Real = 32;\n        attribute uploadMbps : Real = 2;\n        attribute uplinkMbps : Real = 4;\n\n        port imagery;\n        port toShore;\n        port fromProcessor;\n\n        part camera : Camera {\n            attribute drawW : Real = 5;\n            port imagery;\n        }\n\n        part radio : Radio {\n            attribute drawW : Real = 3;\n            port toShore;\n            port fromProcessor;\n        }\n\n        connect camera.imagery to radio.fromProcessor;\n        connect radio.toShore to vessel.toShore;\n    }\n}\n"
+          "run_id": "20261007T022718-e5f4f452",
+          "text": "package DesignA {\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def EdgeComputer {\n        port imageryIn : ImageryPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromComputer : LinkPort;\n        port toShore : LinkPort;\n    }\n    part def UnmannedSurfaceVessel;\n\n    part usv : UnmannedSurfaceVessel {\n        attribute powerLimitW : Real = 60;  // R4\n        attribute dataRateMbps : Real = 12;  // R5\n        attribute retentionHours : Real = 8;  // R6\n        attribute storageGB : Real = 128;  // R7\n        attribute uploadMbps : Real = 12;  // R8\n        attribute uplinkMbps : Real = 20;  // R9\n\n        part eoCamera : Camera {\n            attribute drawW : Real = 28;  // R1\n        }\n        part irCamera : Camera {\n            attribute drawW : Real = 7;  // R3\n        }\n        part computer : EdgeComputer {\n            attribute drawW : Real = 14;  // R2\n        }\n        part radio : Radio;\n\n        connect eoCamera.imagery to computer.imageryIn;\n        connect irCamera.imagery to computer.imageryIn;\n        connect computer.uplink to radio.fromComputer;\n    }\n\n    requirement def R1 {\n        doc /* R1: The visible camera shall draw 28 W. */\n    }\n    requirement def R2 {\n        doc /* R2: The edge computer shall draw 14 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The infrared camera shall draw 7 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The total power consumption shall not exceed 60 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: Imagery shall be retained for 8 hours. */\n    }\n    requirement def R7 {\n        doc /* R7: The local storage capacity shall be 128 GB. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 20 Mbps. */\n    }\n}\n"
         }
       ],
       "repair_rounds": 0,
       "max_rounds": 20,
       "first_pass_attempt": 1,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T005659-9bcddbac",
-      "model": "qwen3.8-max",
-      "usage": {
-        "prompt_tokens": 794,
-        "total_tokens": 1306,
-        "completion_tokens": 512,
-        "prompt_tokens_details": {
-          "cached_tokens": 0,
-          "text_tokens": 794
-        }
-      },
+      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T022718-e5f4f452",
+      "model": "opencode on qwen3.8-27b (Ollama)",
+      "usage": null,
       "prompt_parts": [
         {
           "key": "rules",
@@ -388,51 +425,62 @@
           "key": "contract",
           "label": "Template · attribute contract",
           "paper": "p3",
-          "text": "attribute powerLimitW : Real = 10;  // R1\nattribute drawW : Real = 5;  // R2\nattribute drawW : Real = 3;  // R3\nattribute dataRateMbps : Real = 2;  // R4\nattribute retentionHours : Real = 4;  // R5\nattribute storageGB : Real = 32;  // R6\nattribute uploadMbps : Real = 2;  // R7\nattribute uplinkMbps : Real = 4;  // R8"
+          "text": "attribute drawW : Real = 28;  // R1\nattribute drawW : Real = 14;  // R2\nattribute drawW : Real = 7;  // R3\nattribute powerLimitW : Real = 60;  // R4\nattribute dataRateMbps : Real = 12;  // R5\nattribute retentionHours : Real = 8;  // R6\nattribute storageGB : Real = 128;  // R7\nattribute uploadMbps : Real = 12;  // R8\nattribute uplinkMbps : Real = 20;  // R9"
         },
         {
-          "key": "examples",
-          "label": "Examples · retrieved existing elements",
+          "key": "baseline",
+          "label": "Similar project to adapt · MaritimeISR",
           "paper": "p2",
-          "text": "PartDefinition MaritimeISR::Camera\nPartDefinition MaritimeISR::Radio\nPartUsage MaritimeISR::UnmannedSurfaceVessel::radio\nPortUsage MaritimeISR::Radio::toShore\nPortUsage MaritimeISR::Camera::imagery\nPortUsage MaritimeISR::Radio::fromProcessor\nPartDefinition MaritimeISR::UnmannedSurfaceVessel"
+          "text": "package MaritimeISR {\n    /* Synthetic maritime ISR reference model. Numbers are not RTX specifications.\n       Ground truth for the benchmark: frozen before any agent is scored against it. */\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def TrackPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def AisReceiver {\n        port tracks : TrackPort;\n    }\n    part def Radar {\n        port tracks : TrackPort;\n    }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n        port trackOut : TrackPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def UnmannedSurfaceVessel {\n        part eoCamera : Camera;\n        part irCamera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 60.0;\n        attribute uplinkMbps : Real = 8.0;\n        attribute storageGB : Real = 128.0;\n    }\n    part def FixedWingUav {\n        part eoCamera : Camera;\n        part searchRadar : Radar;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 120.0;\n        attribute downlinkMbps : Real = 20.0;\n    }\n    part def CommandShip {\n        port fromUsv : LinkPort;\n        port fromUav : LinkPort;\n        port toShore : LinkPort;\n        part fusion : Processor;\n        attribute fusionLatencyS : Real = 2.0;\n    }\n    part def ShoreStation {\n        port fromCommand : LinkPort;\n        part archive : Processor;\n        attribute backhaulMbps : Real = 50.0;\n    }\n\n    part usv : UnmannedSurfaceVessel;\n    part uav : FixedWingUav;\n    part commandShip : CommandShip;\n    part shore : ShoreStation;\n\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.irCamera.imagery to usv.processor.imageryIn;\n    connect usv.ais.tracks to usv.processor.trackIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n    connect usv.radio.toShore to commandShip.fromUsv;\n    connect uav.searchRadar.tracks to uav.processor.trackIn;\n    connect uav.eoCamera.imagery to uav.processor.imageryIn;\n    connect uav.processor.uplink to uav.radio.fromProcessor;\n    connect uav.radio.toShore to commandShip.fromUav;\n    connect commandShip.toShore to shore.fromCommand;\n\n    requirement def LocalRawRetention {\n        doc /* USV raw imagery is retained locally. Numeric retention is a separate synthetic budget, not implied here. */\n    }\n    requirement def PowerLimitUnchanged {\n        doc /* Synthetic: USV input power limit stays 60 W. An agent must not edit this limit to make a design pass. */\n    }\n    requirement def TrackSharing {\n        doc /* Synthetic: USV AIS tracks and UAV radar tracks are shared to the command ship, then to the shore archive. */\n    }\n}\n"
         },
         {
           "key": "task",
           "label": "Brief + requirements",
           "paper": "",
-          "text": "Small observation buoy for maritime ISR: one camera drawing 5 W and one radio drawing 3 W (8 W total) against a 10 W power limit; local video recording at 2 Mbps retained for 4 hours on 32 GB of storage; upload at 2 Mbps over a 4 Mbps uplink capacity. Write both design A and design B from scratch, adapting no existing project.\n\nR1: The observation buoy total power draw shall not exceed the 10 W power limit.\nR2: The camera subsystem shall draw 5 W of power.\nR3: The radio subsystem shall draw 3 W of power.\nR4: Local video recording shall operate at a data rate of 2 Mbps.\nR5: Recorded video shall be retained for 4 hours on local storage.\nR6: The buoy shall provide 32 GB of onboard storage capacity.\nR7: The system shall upload data to shore at 2 Mbps.\nR8: The radio uplink capacity shall support 4 Mbps.\nR9: Design A and Design B shall each be written from scratch, adapting no existing project."
+          "text": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 12 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 12 Mbps over one 20 Mbps uplink.\n\nR1: The visible camera shall draw 28 W.\nR2: The edge computer shall draw 14 W.\nR3: The infrared camera shall draw 7 W.\nR4: The total power consumption shall not exceed 60 W.\nR5: Imagery shall be recorded locally at a data rate of 12 Mbps.\nR6: Imagery shall be retained for 8 hours.\nR7: The local storage capacity shall be 128 GB.\nR8: Imagery shall be uploaded to shore at a rate of 12 Mbps.\nR9: The uplink capacity shall be 20 Mbps."
         },
         {
           "key": "variant",
           "label": "What this variant must do",
           "paper": "",
-          "text": "Design A: the straightforward allocation that follows the brief literally."
+          "text": "Design A: adapt the similar existing project. Start from its model: keep its structure, part names and port names where they fit the brief; change only what the requirements need; add what is missing; leave out what the brief does not need. Every number must come from the requirements, and a stated limit is never changed."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T005632/DesignA.sysml",
+      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T022418/DesignA.sysml",
       "numbers": {
-        "DesignA::vessel::uplinkMbps": 4.0,
-        "DesignA::vessel::camera::drawW": 5.0,
-        "DesignA::vessel::uploadMbps": 2.0,
-        "DesignA::vessel::powerLimitW": 10.0,
-        "DesignA::vessel::retentionHours": 4.0,
-        "DesignA::vessel::storageGB": 32.0,
-        "DesignA::vessel::dataRateMbps": 2.0,
-        "DesignA::vessel::radio::drawW": 3.0
+        "DesignA::usv::retentionHours": 8.0,
+        "DesignA::usv::powerLimitW": 60.0,
+        "DesignA::usv::uplinkMbps": 20.0,
+        "DesignA::usv::irCamera::drawW": 7.0,
+        "DesignA::usv::storageGB": 128.0,
+        "DesignA::usv::eoCamera::drawW": 28.0,
+        "DesignA::usv::uploadMbps": 12.0,
+        "DesignA::usv::dataRateMbps": 12.0,
+        "DesignA::usv::computer::drawW": 14.0
       },
       "connections": [
         [
-          "DesignA::vessel::camera.imagery",
-          "DesignA::vessel::radio.fromProcessor"
+          "DesignA::usv::irCamera.imagery",
+          "DesignA::usv::computer.imageryIn"
         ],
         [
-          "DesignA::vessel::radio.toShore",
-          "DesignA::vessel.toShore"
+          "DesignA::usv::computer.uplink",
+          "DesignA::usv::radio.fromComputer"
+        ],
+        [
+          "DesignA::usv::eoCamera.imagery",
+          "DesignA::usv::computer.imageryIn"
         ]
       ],
       "elements": [
         "DesignA",
         "DesignA::Camera",
+        "DesignA::Camera::imagery",
+        "DesignA::EdgeComputer",
+        "DesignA::EdgeComputer::imageryIn",
+        "DesignA::EdgeComputer::uplink",
+        "DesignA::ImageryPort",
+        "DesignA::LinkPort",
         "DesignA::R1",
         "DesignA::R2",
         "DesignA::R3",
@@ -443,24 +491,23 @@
         "DesignA::R8",
         "DesignA::R9",
         "DesignA::Radio",
+        "DesignA::Radio::fromComputer",
+        "DesignA::Radio::toShore",
         "DesignA::UnmannedSurfaceVessel",
-        "DesignA::vessel",
-        "DesignA::vessel::camera",
-        "DesignA::vessel::camera::drawW",
-        "DesignA::vessel::camera::imagery",
-        "DesignA::vessel::dataRateMbps",
-        "DesignA::vessel::fromProcessor",
-        "DesignA::vessel::imagery",
-        "DesignA::vessel::powerLimitW",
-        "DesignA::vessel::radio",
-        "DesignA::vessel::radio::drawW",
-        "DesignA::vessel::radio::fromProcessor",
-        "DesignA::vessel::radio::toShore",
-        "DesignA::vessel::retentionHours",
-        "DesignA::vessel::storageGB",
-        "DesignA::vessel::toShore",
-        "DesignA::vessel::uplinkMbps",
-        "DesignA::vessel::uploadMbps",
+        "DesignA::usv",
+        "DesignA::usv::computer",
+        "DesignA::usv::computer::drawW",
+        "DesignA::usv::dataRateMbps",
+        "DesignA::usv::eoCamera",
+        "DesignA::usv::eoCamera::drawW",
+        "DesignA::usv::irCamera",
+        "DesignA::usv::irCamera::drawW",
+        "DesignA::usv::powerLimitW",
+        "DesignA::usv::radio",
+        "DesignA::usv::retentionHours",
+        "DesignA::usv::storageGB",
+        "DesignA::usv::uplinkMbps",
+        "DesignA::usv::uploadMbps",
         "ScalarValues",
         "ScalarValues::Real"
       ],
@@ -470,8 +517,8 @@
           "label": "Total power vs limit",
           "formula": "sum of all drawW ≤ powerLimitW",
           "status": "PASS",
-          "actual": 8.0,
-          "limit": 10.0,
+          "actual": 49.0,
+          "limit": 60.0,
           "unit": "W"
         },
         {
@@ -479,8 +526,8 @@
           "label": "Upload vs uplink",
           "formula": "uploadMbps ≤ uplinkMbps",
           "status": "PASS",
-          "actual": 2.0,
-          "limit": 4.0,
+          "actual": 12.0,
+          "limit": 20.0,
           "unit": "Mbps"
         },
         {
@@ -488,8 +535,8 @@
           "label": "Recording storage",
           "formula": "dataRateMbps × retentionHours × 3600 ÷ 8000 ≤ storageGB",
           "status": "PASS",
-          "actual": 3.6,
-          "limit": 32.0,
+          "actual": 43.2,
+          "limit": 128.0,
           "unit": "GB"
         },
         {
@@ -497,61 +544,55 @@
           "label": "Numbered requirements in the model",
           "formula": "each requirement's attribute name and value appear in the official parse",
           "status": "PASS",
-          "actual": 8,
-          "limit": 8,
+          "actual": 9,
+          "limit": 9,
           "unit": "reqs"
         },
         {
           "id": "CONNECT",
           "label": "Connections",
           "status": "INFO",
-          "actual": 2,
+          "actual": 3,
           "unit": "links"
         }
       ],
-      "read_back": "R1: The observation buoy total power draw shall not exceed the 10 W power limit.\nR2: The camera subsystem shall draw 5 W of power.\nR3: The radio subsystem shall draw 3 W of power.\nR4: Local video recording shall operate at a data rate of 2 Mbps.\nR5: Recorded video shall be retained for 4 hours on local storage.\nR6: The buoy shall provide 32 GB of onboard storage capacity.\nR7: The system shall upload data to shore at 2 Mbps.\nR8: The radio uplink capacity shall support 4 Mbps.\nR9: Design A and Design B shall each be written from scratch, adapting no existing project.",
+      "agent_workspace": "/data/robotics/RTRC/mvp/agent-runs/20261007T022425-76d6-P-CODE-agent-A/workspace",
+      "read_back": "The visible camera shall draw 28 W.\nThe edge computer shall draw 14 W.\nThe infrared camera shall draw 7 W.\nThe total power consumption shall not exceed 60 W.\nImagery shall be recorded locally at a data rate of 12 Mbps.\nImagery shall be retained for 8 hours.\nThe local storage capacity shall be 128 GB.\nImagery shall be uploaded to shore at a rate of 12 Mbps.\nThe uplink capacity shall be 20 Mbps.",
       "read_back_numbers": {
-        "2": true,
-        "3": true,
-        "4": true,
-        "5": true,
-        "8": false,
-        "10": true,
-        "32": true
+        "7": true,
+        "8": true,
+        "12": true,
+        "14": true,
+        "20": true,
+        "28": true,
+        "60": true,
+        "128": true
       },
-      "diagram": "http://127.0.0.1:8781/diagram?run=20261007T005659-9bcddbac&view=connections",
-      "cameo_export": "analysis/cameo-exports/20261007T005632/DesignA.sysml"
+      "diagram": "http://127.0.0.1:8781/diagram?run=20261007T022718-e5f4f452&view=connections",
+      "cameo_export": "analysis/cameo-exports/20261007T022418/DesignA.sysml"
     },
     {
       "key": "B",
-      "source": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The observation buoy total power draw shall not exceed the 10 W power limit. */\n    }\n    requirement def R2 {\n        doc /* R2: The camera subsystem shall draw 5 W of power. */\n    }\n    requirement def R3 {\n        doc /* R3: The radio subsystem shall draw 3 W of power. */\n    }\n    requirement def R4 {\n        doc /* R4: Local video recording shall operate at a data rate of 2 Mbps. */\n    }\n    requirement def R5 {\n        doc /* R5: Recorded video shall be retained for 4 hours on local storage. */\n    }\n    requirement def R6 {\n        doc /* R6: The buoy shall provide 32 GB of onboard storage capacity. */\n    }\n    requirement def R7 {\n        doc /* R7: The system shall upload data to shore at 2 Mbps. */\n    }\n    requirement def R8 {\n        doc /* R8: The radio uplink capacity shall support 4 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: Design A and Design B shall each be written from scratch, adapting no existing project. */\n    }\n\n    part def Camera {\n        port imagery;\n    }\n\n    part def Recorder {\n        port fromCamera;\n        port toRadio;\n    }\n\n    part def Radio {\n        port fromProcessor;\n        port toShore;\n    }\n\n    part def ObservationBuoy {\n        attribute powerLimitW : Real = 10.0;\n        attribute dataRateMbps : Real = 2.0;\n        attribute retentionHours : Real = 4.0;\n        attribute storageGB : Real = 32.0;\n        attribute uploadMbps : Real = 2.0;\n        attribute uplinkMbps : Real = 4.0;\n\n        part camera : Camera {\n            attribute drawW : Real = 5.0;\n        }\n\n        part recorder : Recorder;\n\n        part radio : Radio {\n            attribute drawW : Real = 3.0;\n        }\n\n        connect camera.imagery to recorder.fromCamera;\n        connect recorder.toRadio to radio.fromProcessor;\n    }\n\n    part vessel : ObservationBuoy;\n}\n",
+      "source": "package DesignB {\n\tprivate import ScalarValues::*;\n\n\t// R1: The visible camera shall draw 28 W.\n\trequirement def R1 { }\n\n\t// R2: The edge computer shall draw 14 W.\n\trequirement def R2 { }\n\n\t// R3: The infrared camera shall draw 7 W.\n\trequirement def R3 { }\n\n\t// R4: The total power consumption shall not exceed 60 W.\n\trequirement def R4 { }\n\n\t// R5: Imagery shall be recorded locally at a data rate of 12 Mbps.\n\trequirement def R5 { }\n\n\t// R6: Imagery shall be retained for 8 hours.\n\trequirement def R6 { }\n\n\t// R7: The local storage capacity shall be 128 GB.\n\trequirement def R7 { }\n\n\t// R8: Imagery shall be uploaded to shore at a rate of 12 Mbps.\n\trequirement def R8 { }\n\n\t// R9: The uplink capacity shall be 20 Mbps.\n\trequirement def R9 { }\n\n\tpart vessel {\n\t\tattribute powerLimitW : Real = 60;  // R4\n\t\tattribute dataRateMbps : Real = 12;  // R5\n\t\tattribute retentionHours : Real = 8;  // R6\n\t\tattribute storageGB : Real = 128;  // R7\n\t\tattribute uploadMbps : Real = 12;  // R8\n\t\tattribute uplinkMbps : Real = 20;  // R9\n\n\t\tpart visibleCamera {\n\t\t\tattribute drawW : Real = 28;  // R1\n\t\t\tport imageryOut;\n\t\t}\n\n\t\tpart edgeComputer {\n\t\t\tattribute drawW : Real = 14;  // R2\n\t\t\tport imageryIn;\n\t\t\tport uplinkOut;\n\t\t}\n\n\t\tpart irCamera {\n\t\t\tattribute drawW : Real = 7;  // R3\n\t\t\tport imageryOut;\n\t\t}\n\n\t\tpart recorder {\n\t\t\tport imageryIn;\n\t\t\tport imageryOut;\n\t\t}\n\n\t\tpart shoreLink {\n\t\t\tport uplinkIn;\n\t\t}\n\n\t\tconnect visibleCamera.imageryOut to recorder.imageryIn;\n\t\tconnect irCamera.imageryOut to recorder.imageryIn;\n\t\tconnect recorder.imageryOut to edgeComputer.imageryIn;\n\t\tconnect edgeComputer.uplinkOut to shoreLink.uplinkIn;\n\t}\n}\n",
       "sysml_status": "PASS",
       "attempts": [
         {
           "attempt": 1,
           "status": "PASS",
           "diagnostics": [],
-          "sha": "439762f278c5",
+          "sha": "1bebccd753fb",
           "same_as_previous": false,
-          "run_id": "20261007T005702-5be60167",
-          "text": "package DesignB {\n    private import ScalarValues::*;\n\n    requirement def R1 {\n        doc /* R1: The observation buoy total power draw shall not exceed the 10 W power limit. */\n    }\n    requirement def R2 {\n        doc /* R2: The camera subsystem shall draw 5 W of power. */\n    }\n    requirement def R3 {\n        doc /* R3: The radio subsystem shall draw 3 W of power. */\n    }\n    requirement def R4 {\n        doc /* R4: Local video recording shall operate at a data rate of 2 Mbps. */\n    }\n    requirement def R5 {\n        doc /* R5: Recorded video shall be retained for 4 hours on local storage. */\n    }\n    requirement def R6 {\n        doc /* R6: The buoy shall provide 32 GB of onboard storage capacity. */\n    }\n    requirement def R7 {\n        doc /* R7: The system shall upload data to shore at 2 Mbps. */\n    }\n    requirement def R8 {\n        doc /* R8: The radio uplink capacity shall support 4 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: Design A and Design B shall each be written from scratch, adapting no existing project. */\n    }\n\n    part def Camera {\n        port imagery;\n    }\n\n    part def Recorder {\n        port fromCamera;\n        port toRadio;\n    }\n\n    part def Radio {\n        port fromProcessor;\n        port toShore;\n    }\n\n    part def ObservationBuoy {\n        attribute powerLimitW : Real = 10.0;\n        attribute dataRateMbps : Real = 2.0;\n        attribute retentionHours : Real = 4.0;\n        attribute storageGB : Real = 32.0;\n        attribute uploadMbps : Real = 2.0;\n        attribute uplinkMbps : Real = 4.0;\n\n        part camera : Camera {\n            attribute drawW : Real = 5.0;\n        }\n\n        part recorder : Recorder;\n\n        part radio : Radio {\n            attribute drawW : Real = 3.0;\n        }\n\n        connect camera.imagery to recorder.fromCamera;\n        connect recorder.toRadio to radio.fromProcessor;\n    }\n\n    part vessel : ObservationBuoy;\n}\n"
+          "run_id": "20261007T022722-d5285dac",
+          "text": "package DesignB {\n\tprivate import ScalarValues::*;\n\n\t// R1: The visible camera shall draw 28 W.\n\trequirement def R1 { }\n\n\t// R2: The edge computer shall draw 14 W.\n\trequirement def R2 { }\n\n\t// R3: The infrared camera shall draw 7 W.\n\trequirement def R3 { }\n\n\t// R4: The total power consumption shall not exceed 60 W.\n\trequirement def R4 { }\n\n\t// R5: Imagery shall be recorded locally at a data rate of 12 Mbps.\n\trequirement def R5 { }\n\n\t// R6: Imagery shall be retained for 8 hours.\n\trequirement def R6 { }\n\n\t// R7: The local storage capacity shall be 128 GB.\n\trequirement def R7 { }\n\n\t// R8: Imagery shall be uploaded to shore at a rate of 12 Mbps.\n\trequirement def R8 { }\n\n\t// R9: The uplink capacity shall be 20 Mbps.\n\trequirement def R9 { }\n\n\tpart vessel {\n\t\tattribute powerLimitW : Real = 60;  // R4\n\t\tattribute dataRateMbps : Real = 12;  // R5\n\t\tattribute retentionHours : Real = 8;  // R6\n\t\tattribute storageGB : Real = 128;  // R7\n\t\tattribute uploadMbps : Real = 12;  // R8\n\t\tattribute uplinkMbps : Real = 20;  // R9\n\n\t\tpart visibleCamera {\n\t\t\tattribute drawW : Real = 28;  // R1\n\t\t\tport imageryOut;\n\t\t}\n\n\t\tpart edgeComputer {\n\t\t\tattribute drawW : Real = 14;  // R2\n\t\t\tport imageryIn;\n\t\t\tport uplinkOut;\n\t\t}\n\n\t\tpart irCamera {\n\t\t\tattribute drawW : Real = 7;  // R3\n\t\t\tport imageryOut;\n\t\t}\n\n\t\tpart recorder {\n\t\t\tport imageryIn;\n\t\t\tport imageryOut;\n\t\t}\n\n\t\tpart shoreLink {\n\t\t\tport uplinkIn;\n\t\t}\n\n\t\tconnect visibleCamera.imageryOut to recorder.imageryIn;\n\t\tconnect irCamera.imageryOut to recorder.imageryIn;\n\t\tconnect recorder.imageryOut to edgeComputer.imageryIn;\n\t\tconnect edgeComputer.uplinkOut to shoreLink.uplinkIn;\n\t}\n}\n"
         }
       ],
       "repair_rounds": 0,
       "max_rounds": 20,
       "first_pass_attempt": 1,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T005702-5be60167",
-      "model": "qwen3.8-max",
-      "usage": {
-        "prompt_tokens": 827,
-        "total_tokens": 1363,
-        "completion_tokens": 536,
-        "prompt_tokens_details": {
-          "cached_tokens": 0,
-          "text_tokens": 827
-        }
-      },
+      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T022722-d5285dac",
+      "model": "opencode on qwen3.8-27b (Ollama)",
+      "usage": null,
       "prompt_parts": [
         {
           "key": "rules",
@@ -563,19 +604,19 @@
           "key": "contract",
           "label": "Template · attribute contract",
           "paper": "p3",
-          "text": "attribute powerLimitW : Real = 10;  // R1\nattribute drawW : Real = 5;  // R2\nattribute drawW : Real = 3;  // R3\nattribute dataRateMbps : Real = 2;  // R4\nattribute retentionHours : Real = 4;  // R5\nattribute storageGB : Real = 32;  // R6\nattribute uploadMbps : Real = 2;  // R7\nattribute uplinkMbps : Real = 4;  // R8"
+          "text": "attribute drawW : Real = 28;  // R1\nattribute drawW : Real = 14;  // R2\nattribute drawW : Real = 7;  // R3\nattribute powerLimitW : Real = 60;  // R4\nattribute dataRateMbps : Real = 12;  // R5\nattribute retentionHours : Real = 8;  // R6\nattribute storageGB : Real = 128;  // R7\nattribute uploadMbps : Real = 12;  // R8\nattribute uplinkMbps : Real = 20;  // R9"
         },
         {
           "key": "examples",
           "label": "Examples · retrieved existing elements",
           "paper": "p2",
-          "text": "PartDefinition MaritimeISR::Camera\nPartDefinition MaritimeISR::Radio\nPartUsage MaritimeISR::UnmannedSurfaceVessel::radio\nPortUsage MaritimeISR::Radio::toShore\nPortUsage MaritimeISR::Camera::imagery\nPortUsage MaritimeISR::Radio::fromProcessor\nPartDefinition MaritimeISR::UnmannedSurfaceVessel"
+          "text": "PortUsage MaritimeISR::Camera::imagery\nPartDefinition MaritimeISR::Camera\nAttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0\nPortDefinition MaritimeISR::ImageryPort\nPartDefinition MaritimeISR::UnmannedSurfaceVessel\nConjugatedPortDefinition MaritimeISR::ImageryPort::'~ImageryPort'"
         },
         {
           "key": "task",
           "label": "Brief + requirements",
           "paper": "",
-          "text": "Small observation buoy for maritime ISR: one camera drawing 5 W and one radio drawing 3 W (8 W total) against a 10 W power limit; local video recording at 2 Mbps retained for 4 hours on 32 GB of storage; upload at 2 Mbps over a 4 Mbps uplink capacity. Write both design A and design B from scratch, adapting no existing project.\n\nR1: The observation buoy total power draw shall not exceed the 10 W power limit.\nR2: The camera subsystem shall draw 5 W of power.\nR3: The radio subsystem shall draw 3 W of power.\nR4: Local video recording shall operate at a data rate of 2 Mbps.\nR5: Recorded video shall be retained for 4 hours on local storage.\nR6: The buoy shall provide 32 GB of onboard storage capacity.\nR7: The system shall upload data to shore at 2 Mbps.\nR8: The radio uplink capacity shall support 4 Mbps.\nR9: Design A and Design B shall each be written from scratch, adapting no existing project."
+          "text": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 12 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 12 Mbps over one 20 Mbps uplink.\n\nR1: The visible camera shall draw 28 W.\nR2: The edge computer shall draw 14 W.\nR3: The infrared camera shall draw 7 W.\nR4: The total power consumption shall not exceed 60 W.\nR5: Imagery shall be recorded locally at a data rate of 12 Mbps.\nR6: Imagery shall be retained for 8 hours.\nR7: The local storage capacity shall be 128 GB.\nR8: Imagery shall be uploaded to shore at a rate of 12 Mbps.\nR9: The uplink capacity shall be 20 Mbps."
         },
         {
           "key": "variant",
@@ -584,43 +625,38 @@
           "text": "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T005632/DesignB.sysml",
+      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T022418/DesignB.sysml",
       "numbers": {
-        "DesignB::ObservationBuoy::radio::drawW": 3.0,
-        "DesignB::ObservationBuoy::powerLimitW": 10.0,
-        "DesignB::ObservationBuoy::retentionHours": 4.0,
-        "DesignB::ObservationBuoy::dataRateMbps": 2.0,
-        "DesignB::ObservationBuoy::uplinkMbps": 4.0,
-        "DesignB::ObservationBuoy::storageGB": 32.0,
-        "DesignB::ObservationBuoy::uploadMbps": 2.0,
-        "DesignB::ObservationBuoy::camera::drawW": 5.0
+        "DesignB::vessel::uploadMbps": 12.0,
+        "DesignB::vessel::edgeComputer::drawW": 14.0,
+        "DesignB::vessel::powerLimitW": 60.0,
+        "DesignB::vessel::storageGB": 128.0,
+        "DesignB::vessel::visibleCamera::drawW": 28.0,
+        "DesignB::vessel::retentionHours": 8.0,
+        "DesignB::vessel::uplinkMbps": 20.0,
+        "DesignB::vessel::dataRateMbps": 12.0,
+        "DesignB::vessel::irCamera::drawW": 7.0
       },
       "connections": [
         [
-          "DesignB::ObservationBuoy::camera.imagery",
-          "DesignB::ObservationBuoy::recorder.fromCamera"
+          "DesignB::vessel::irCamera.imageryOut",
+          "DesignB::vessel::recorder.imageryIn"
         ],
         [
-          "DesignB::ObservationBuoy::recorder.toRadio",
-          "DesignB::ObservationBuoy::radio.fromProcessor"
+          "DesignB::vessel::visibleCamera.imageryOut",
+          "DesignB::vessel::recorder.imageryIn"
+        ],
+        [
+          "DesignB::vessel::edgeComputer.uplinkOut",
+          "DesignB::vessel::shoreLink.uplinkIn"
+        ],
+        [
+          "DesignB::vessel::recorder.imageryOut",
+          "DesignB::vessel::edgeComputer.imageryIn"
         ]
       ],
       "elements": [
         "DesignB",
-        "DesignB::Camera",
-        "DesignB::Camera::imagery",
-        "DesignB::ObservationBuoy",
-        "DesignB::ObservationBuoy::camera",
-        "DesignB::ObservationBuoy::camera::drawW",
-        "DesignB::ObservationBuoy::dataRateMbps",
-        "DesignB::ObservationBuoy::powerLimitW",
-        "DesignB::ObservationBuoy::radio",
-        "DesignB::ObservationBuoy::radio::drawW",
-        "DesignB::ObservationBuoy::recorder",
-        "DesignB::ObservationBuoy::retentionHours",
-        "DesignB::ObservationBuoy::storageGB",
-        "DesignB::ObservationBuoy::uplinkMbps",
-        "DesignB::ObservationBuoy::uploadMbps",
         "DesignB::R1",
         "DesignB::R2",
         "DesignB::R3",
@@ -630,13 +666,28 @@
         "DesignB::R7",
         "DesignB::R8",
         "DesignB::R9",
-        "DesignB::Radio",
-        "DesignB::Radio::fromProcessor",
-        "DesignB::Radio::toShore",
-        "DesignB::Recorder",
-        "DesignB::Recorder::fromCamera",
-        "DesignB::Recorder::toRadio",
         "DesignB::vessel",
+        "DesignB::vessel::dataRateMbps",
+        "DesignB::vessel::edgeComputer",
+        "DesignB::vessel::edgeComputer::drawW",
+        "DesignB::vessel::edgeComputer::imageryIn",
+        "DesignB::vessel::edgeComputer::uplinkOut",
+        "DesignB::vessel::irCamera",
+        "DesignB::vessel::irCamera::drawW",
+        "DesignB::vessel::irCamera::imageryOut",
+        "DesignB::vessel::powerLimitW",
+        "DesignB::vessel::recorder",
+        "DesignB::vessel::recorder::imageryIn",
+        "DesignB::vessel::recorder::imageryOut",
+        "DesignB::vessel::retentionHours",
+        "DesignB::vessel::shoreLink",
+        "DesignB::vessel::shoreLink::uplinkIn",
+        "DesignB::vessel::storageGB",
+        "DesignB::vessel::uplinkMbps",
+        "DesignB::vessel::uploadMbps",
+        "DesignB::vessel::visibleCamera",
+        "DesignB::vessel::visibleCamera::drawW",
+        "DesignB::vessel::visibleCamera::imageryOut",
         "ScalarValues",
         "ScalarValues::Real"
       ],
@@ -646,8 +697,8 @@
           "label": "Total power vs limit",
           "formula": "sum of all drawW ≤ powerLimitW",
           "status": "PASS",
-          "actual": 8.0,
-          "limit": 10.0,
+          "actual": 49.0,
+          "limit": 60.0,
           "unit": "W"
         },
         {
@@ -655,8 +706,8 @@
           "label": "Upload vs uplink",
           "formula": "uploadMbps ≤ uplinkMbps",
           "status": "PASS",
-          "actual": 2.0,
-          "limit": 4.0,
+          "actual": 12.0,
+          "limit": 20.0,
           "unit": "Mbps"
         },
         {
@@ -664,8 +715,8 @@
           "label": "Recording storage",
           "formula": "dataRateMbps × retentionHours × 3600 ÷ 8000 ≤ storageGB",
           "status": "PASS",
-          "actual": 3.6,
-          "limit": 32.0,
+          "actual": 43.2,
+          "limit": 128.0,
           "unit": "GB"
         },
         {
@@ -673,30 +724,32 @@
           "label": "Numbered requirements in the model",
           "formula": "each requirement's attribute name and value appear in the official parse",
           "status": "PASS",
-          "actual": 8,
-          "limit": 8,
+          "actual": 9,
+          "limit": 9,
           "unit": "reqs"
         },
         {
           "id": "CONNECT",
           "label": "Connections",
           "status": "INFO",
-          "actual": 2,
+          "actual": 4,
           "unit": "links"
         }
       ],
-      "read_back": "The observation buoy total power draw shall not exceed the 10 W power limit.\nThe camera subsystem shall draw 5 W of power.\nThe radio subsystem shall draw 3 W of power.\nLocal video recording shall operate at a data rate of 2 Mbps.\nRecorded video shall be retained for 4 hours on local storage.\nThe buoy shall provide 32 GB of onboard storage capacity.\nThe system shall upload data to shore at 2 Mbps.\nThe radio uplink capacity shall support 4 Mbps.\nDesign A and Design B shall each be written from scratch, adapting no existing project.",
+      "agent_workspace": "/data/robotics/RTRC/mvp/agent-runs/20261007T022523-d734-P-CODE-agent-B/workspace",
+      "read_back": "The visible camera shall draw 28 W.\nThe edge computer shall draw 14 W.\nThe infrared camera shall draw 7 W.\nThe total power consumption shall not exceed 60 W.\nImagery shall be recorded locally at a data rate of 12 Mbps.\nImagery shall be retained for 8 hours.\nThe local storage capacity shall be 128 GB.\nImagery shall be uploaded to shore at a rate of 12 Mbps.\nThe uplink capacity shall be 20 Mbps.",
       "read_back_numbers": {
-        "2": true,
-        "3": true,
-        "4": true,
-        "5": true,
-        "8": false,
-        "10": true,
-        "32": true
+        "7": true,
+        "8": true,
+        "12": true,
+        "14": true,
+        "20": true,
+        "28": true,
+        "60": true,
+        "128": true
       },
-      "diagram": "http://127.0.0.1:8781/diagram?run=20261007T005702-5be60167&view=connections",
-      "cameo_export": "analysis/cameo-exports/20261007T005632/DesignB.sysml"
+      "diagram": "http://127.0.0.1:8781/diagram?run=20261007T022722-d5285dac&view=connections",
+      "cameo_export": "analysis/cameo-exports/20261007T022418/DesignB.sysml"
     }
   ],
   "alignment": {
@@ -704,7 +757,7 @@
       {
         "design": "DesignA::Camera",
         "existing": "MaritimeISR::Camera",
-        "reason": "Both define the Camera part type in their respective models.",
+        "reason": "Both are part definitions representing a camera component.",
         "design_exists": true,
         "existing_exists": true,
         "ok": true,
@@ -714,106 +767,91 @@
         "index": 0
       },
       {
-        "design": "DesignA::Radio",
-        "existing": "MaritimeISR::Radio",
-        "reason": "Both define the Radio part type in their respective models.",
-        "design_exists": true,
-        "existing_exists": true,
-        "ok": true,
-        "construct": "alias",
-        "declared": true,
-        "statement": "alias Radio for MaritimeISR::Radio;",
-        "index": 1
-      },
-      {
-        "design": "DesignA::UnmannedSurfaceVessel",
-        "existing": "MaritimeISR::UnmannedSurfaceVessel",
-        "reason": "Both define the UnmannedSurfaceVessel part type representing the vessel platform.",
-        "design_exists": true,
-        "existing_exists": true,
-        "ok": true,
-        "construct": "alias",
-        "declared": true,
-        "statement": "alias UnmannedSurfaceVessel for MaritimeISR::UnmannedSurfaceVessel;",
-        "index": 2
-      },
-      {
-        "design": "DesignA::vessel::camera::imagery",
+        "design": "DesignA::Camera::imagery",
         "existing": "MaritimeISR::Camera::imagery",
-        "reason": "Both represent the imagery port on the Camera component used for video data output.",
+        "reason": "Both are ports named 'imagery' within the Camera part definition.",
         "design_exists": true,
         "existing_exists": true,
         "ok": true,
         "construct": "alias",
         "declared": true,
         "statement": "alias imagery for MaritimeISR::Camera::imagery;",
-        "level": "the design states it on a usage (PortUsage); the existing model states it in a definition",
+        "index": 1
+      },
+      {
+        "design": "DesignA::ImageryPort",
+        "existing": "MaritimeISR::ImageryPort",
+        "reason": "Both are port definitions named 'ImageryPort'.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias ImageryPort for MaritimeISR::ImageryPort;",
+        "index": 2
+      },
+      {
+        "design": "DesignA::UnmannedSurfaceVessel",
+        "existing": "MaritimeISR::UnmannedSurfaceVessel",
+        "reason": "Both are part definitions representing an Unmanned Surface Vessel.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias UnmannedSurfaceVessel for MaritimeISR::UnmannedSurfaceVessel;",
         "index": 3
       },
       {
-        "design": "DesignA::vessel::radio::toShore",
-        "existing": "MaritimeISR::Radio::toShore",
-        "reason": "Both represent the toShore port on the Radio component used for uplink communication.",
+        "design": "DesignA::usv::powerLimitW",
+        "existing": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW",
+        "reason": "Both are attributes named 'powerLimitW' associated with the Unmanned Surface Vessel.",
         "design_exists": true,
         "existing_exists": true,
         "ok": true,
         "construct": "alias",
         "declared": true,
-        "statement": "alias toShore for MaritimeISR::Radio::toShore;",
-        "level": "the design states it on a usage (PortUsage); the existing model states it in a definition",
+        "statement": "alias powerLimitW for MaritimeISR::UnmannedSurfaceVessel::powerLimitW;",
+        "level": "the design states it on a usage (AttributeUsage); the existing model states it in a definition",
         "index": 4
-      },
-      {
-        "design": "DesignA::vessel::radio::fromProcessor",
-        "existing": "MaritimeISR::Radio::fromProcessor",
-        "reason": "Both represent the fromProcessor port on the Radio component receiving data from the processor or camera.",
-        "design_exists": true,
-        "existing_exists": true,
-        "ok": true,
-        "construct": "alias",
-        "declared": true,
-        "statement": "alias fromProcessor for MaritimeISR::Radio::fromProcessor;",
-        "level": "the design states it on a usage (PortUsage); the existing model states it in a definition",
-        "index": 5
       }
     ],
-    "verified": 6,
-    "declared": 6,
+    "verified": 5,
+    "declared": 5,
     "refused": [],
-    "proposed": 6,
+    "proposed": 5,
     "existing_names": [
       "MaritimeISR::Camera",
       "MaritimeISR::Camera::imagery",
-      "MaritimeISR::Radio",
-      "MaritimeISR::Radio::fromProcessor",
-      "MaritimeISR::Radio::toShore",
+      "MaritimeISR::ImageryPort",
+      "MaritimeISR::ImageryPort::'~ImageryPort'",
       "MaritimeISR::UnmannedSurfaceVessel",
-      "MaritimeISR::UnmannedSurfaceVessel::radio"
+      "MaritimeISR::UnmannedSurfaceVessel::powerLimitW"
     ],
-    "model": "qwen3.8-max",
+    "model": "qwen3.8-27b-q3:64k",
     "constructs": "alias for definitions and definition features, allocation for usages",
     "note": "Mappings are proposals. Code checks both names exist, writes alias and allocation statements from the two parses, then the official Pilot parses the alignment package. Neither source model is edited. A person accepts or rejects each pair.",
     "package": {
-      "name": "AlignA_20261007T005632",
-      "source": "package AlignA_20261007T005632 {\n    doc /* Alignment package written by code from the model's verified mappings. Neither source model is edited. */\n    private import DesignA::*;\n    private import MaritimeISR::*;\n    alias Camera for MaritimeISR::Camera;\n    alias Radio for MaritimeISR::Radio;\n    alias UnmannedSurfaceVessel for MaritimeISR::UnmannedSurfaceVessel;\n    alias imagery for MaritimeISR::Camera::imagery;\n    alias toShore for MaritimeISR::Radio::toShore;\n    alias fromProcessor for MaritimeISR::Radio::fromProcessor;\n}\n",
+      "name": "AlignA_20261007T022418",
+      "source": "package AlignA_20261007T022418 {\n    doc /* Alignment package written by code from the model's verified mappings. Neither source model is edited. */\n    private import DesignA::*;\n    private import MaritimeISR::*;\n    alias Camera for MaritimeISR::Camera;\n    alias imagery for MaritimeISR::Camera::imagery;\n    alias ImageryPort for MaritimeISR::ImageryPort;\n    alias UnmannedSurfaceVessel for MaritimeISR::UnmannedSurfaceVessel;\n    alias powerLimitW for MaritimeISR::UnmannedSurfaceVessel::powerLimitW;\n}\n",
       "files": [
         "MaritimeISR.sysml",
         "DesignA.sysml",
-        "AlignA_20261007T005632.sysml"
+        "AlignA_20261007T022418.sysml"
       ],
       "sysml_status": "PASS",
-      "run_id": "20261007T005711-323b070e",
+      "run_id": "20261007T022729-0e245929",
       "diagnostics": []
     }
   },
   "usage": {
-    "calls": 6,
+    "calls": 4,
     "by_model": {
-      "qwen3.8-max": {
-        "calls": 6,
-        "prompt_tokens": 3937,
-        "completion_tokens": 1971,
-        "cached_tokens": 0
+      "qwen3.8-27b-q3:64k": {
+        "calls": 4,
+        "prompt_tokens": 2615,
+        "completion_tokens": 1168,
+        "cached_tokens": 32
       }
     }
   },

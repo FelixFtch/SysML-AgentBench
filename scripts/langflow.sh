@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Start the RTRC Langflow shell: the RTRC shell service (127.0.0.1:8781) and Langflow 1.12.5 (127.0.0.1:7860).
-#   scripts/langflow.sh            start both (Langflow in the foreground)
+# Start the RTRC Langflow shell: the RTRC shell service (127.0.0.1:8781), Ollama for the local Qwen3.8-27B
+# (127.0.0.1:11434) and Langflow 1.12.5 (127.0.0.1:7860).
+#   scripts/langflow.sh            start them (Langflow in the foreground)
 #   scripts/langflow.sh --import   also import langflow/flows/*.json into the project "RTRC SysML-AgentBench" and set up
 #                                  the knowledge base rtrc_memory (Qwen embeddings; langflow/flows/setup_knowledge.py)
 # Langflow runs local-only with login on, and executes only built-in components and ours (langflow/components);
@@ -27,9 +28,9 @@ if ! curl -s -m 2 http://127.0.0.1:8781/health >/dev/null; then
   for _ in $(seq 1 30); do curl -s -m 1 http://127.0.0.1:8781/health >/dev/null && break; sleep 1; done
 fi
 
-if ! curl -s -m 2 -o /dev/null http://127.0.0.1:8782/mcp; then
-  echo "Starting the RTRC assistant MCP server on 127.0.0.1:8782 (log: .langflow/assistant_mcp.log)"
-  nohup python3 -u tools/assistant_mcp.py >> .langflow/assistant_mcp.log 2>&1 &
+if ! curl -s -m 2 http://127.0.0.1:11434/api/tags >/dev/null; then
+  echo "Starting Ollama for the local Qwen3.8-27B (scripts/qwen38.sh --serve)"
+  scripts/qwen38.sh --serve || echo "Ollama did not start; the local model flow will say so when run" >&2
 fi
 
 export LANGFLOW_HOST=127.0.0.1 LANGFLOW_PORT="${LANGFLOW_PORT:-7860}"
@@ -39,7 +40,6 @@ export LANGFLOW_CONFIG_DIR="$ROOT/.langflow/config" LANGFLOW_COMPONENTS_PATH="$R
 export LANGFLOW_CORS_ORIGINS="http://127.0.0.1:$LANGFLOW_PORT,http://localhost:$LANGFLOW_PORT"
 export LANGFLOW_DO_NOT_TRACK=true LANGFLOW_OPEN_BROWSER=false
 export RTRC_SHELL_URL=http://127.0.0.1:8781
-export OLLAMA_BASE_URL=http://127.0.0.1:11434
 mkdir -p "$LANGFLOW_CONFIG_DIR"
 
 if [ "${1:-}" = "--import" ]; then
@@ -47,7 +47,6 @@ if [ "${1:-}" = "--import" ]; then
      curl -s -m 2 "http://127.0.0.1:$LANGFLOW_PORT/health" >/dev/null && break; sleep 2
    done
    .venv-langflow/bin/python langflow/flows/import_flows.py
-   .venv-langflow/bin/python langflow/flows/setup_knowledge.py
-   .venv-langflow/bin/python langflow/flows/setup_assistant.py) &
+   .venv-langflow/bin/python langflow/flows/setup_knowledge.py) &
 fi
 exec .venv-langflow/bin/langflow run --host "$LANGFLOW_HOST" --port "$LANGFLOW_PORT"

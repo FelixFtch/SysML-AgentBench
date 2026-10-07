@@ -1,10 +1,10 @@
 """Give everything RTRC in Langflow to one user: the project and its flows, the Qwen provider credentials, the
-enabled-models list, the knowledge base rtrc_memory (row, ingestion runs and files) and the rtrc-assistant MCP server.
+enabled-models list and the knowledge base rtrc_memory (row, ingestion runs and files).
 
     .venv-langflow/bin/python langflow/flows/move_to_user.py FelixFang
 
-Langflow keeps credentials, knowledge bases and MCP servers per user, so a flow owned by one user cannot use another
-user's provider key or knowledge base. Run this once for the account people log in with, then restart Langflow
+Langflow keeps credentials and knowledge bases per user, so a flow owned by one user cannot use another user's
+provider key or knowledge base. Run this once for the account people log in with, then restart Langflow
 (the knowledge-base files move to ~/.langflow/knowledge_bases/<username>/). Values are moved, never printed.
 """
 from __future__ import annotations
@@ -20,7 +20,6 @@ KB_ROOT = Path.home() / ".langflow" / "knowledge_bases"
 PROJECT = "RTRC SysML-AgentBench"
 VARIABLES = ("OPENAI_COMPATIBLE_BASE_URL", "OPENAI_COMPATIBLE_API_KEY", "__enabled_models__")
 KNOWLEDGE_BASE = "rtrc_memory"
-MCP_SERVER = "rtrc-assistant"
 
 
 def main() -> None:
@@ -36,20 +35,27 @@ def main() -> None:
     report = []
 
     # The project and every flow in any project of that name, whoever owns them; one project remains, owned by the target.
+    # A user cannot hold two flows with one name (an import run as the superuser creates a second copy of each flow),
+    # so of two flows with the same name the most recently updated one is kept, the other deleted, before the move.
     folders = list(cur.execute("SELECT id, user_id FROM folder WHERE name = ?", (PROJECT,)))
     if folders:
         keep = next((fid for fid, uid in folders if uid == target), folders[0][0])
+        marks = ",".join("?" * len(folders))
+        flows = list(cur.execute(f"SELECT id, name, updated_at FROM flow WHERE folder_id IN ({marks}) ORDER BY updated_at DESC", [fid for fid, _ in folders]))
+        keepers: dict[str, str] = {}
+        for flow_id, name, _ in flows:
+            if name in keepers:
+                cur.execute("DELETE FROM flow WHERE id = ?", (flow_id,))
+            else:
+                keepers[name] = flow_id
+        for flow_id in keepers.values():
+            cur.execute("UPDATE flow SET user_id = ?, folder_id = ? WHERE id = ?", (target, keep, flow_id))
+        seen = set(keepers)
         for fid, _ in folders:
-            cur.execute("UPDATE flow SET user_id = ?, folder_id = ? WHERE folder_id = ?", (target, keep, fid))
             if fid != keep:
                 cur.execute("DELETE FROM folder WHERE id = ?", (fid,))
         cur.execute("UPDATE folder SET user_id = ? WHERE id = ?", (target, keep))
-        # Two flows with the same name: keep the most recently updated one.
-        for (name,) in list(cur.execute("SELECT name FROM flow WHERE folder_id = ? GROUP BY name HAVING count(*) > 1", (keep,))):
-            rows = list(cur.execute("SELECT id FROM flow WHERE folder_id = ? AND name = ? ORDER BY updated_at DESC", (keep, name)))
-            for (fid,) in rows[1:]:
-                cur.execute("DELETE FROM flow WHERE id = ?", (fid,))
-        report.append(f"project {PROJECT}: {cur.execute('SELECT count(*) FROM flow WHERE folder_id = ?', (keep,)).fetchone()[0]} flows")
+        report.append(f"project {PROJECT}: {len(seen)} flows")
 
     # Provider credentials and the enabled-models list: the target's own rows are replaced by the moved ones.
     for name in VARIABLES:
@@ -63,30 +69,34 @@ def main() -> None:
         cur.execute("DELETE FROM variable WHERE name = ? AND user_id != ?", (name, target))
         report.append(f"variable {name}: moved")
 
-    # The knowledge base: the row, its ingestion runs and its files (the directory is rooted by username).
-    row = cur.execute("SELECT user_id FROM knowledge_base WHERE name = ?", (KNOWLEDGE_BASE,)).fetchone()
-    if row and row[0] != target:
-        old_owner = next(name for name, uid in users.items() if uid == row[0])
-        cur.execute("UPDATE knowledge_base SET user_id = ? WHERE name = ?", (target, KNOWLEDGE_BASE))
-        cur.execute("UPDATE ingestion_run SET user_id = ? WHERE kb_name = ?", (target, KNOWLEDGE_BASE))
-        old_dir, new_dir = KB_ROOT / old_owner / KNOWLEDGE_BASE, KB_ROOT / username / KNOWLEDGE_BASE
+    # The knowledge base: the row, its ingestion runs and its files (the directory is rooted by username). When the
+    # user already owns one, copies that setup_knowledge.py created for another account (an import run as the
+    # superuser makes an empty one) are removed, so the Knowledge page shows one rtrc_memory.
+    rows = list(cur.execute("SELECT user_id FROM knowledge_base WHERE name = ?", (KNOWLEDGE_BASE,)))
+    owners = [uid for (uid,) in rows]
+    new_dir = KB_ROOT / username / KNOWLEDGE_BASE
+    if rows and target not in owners:
+        old_owner = next(name for name, uid in users.items() if uid == owners[0])
+        cur.execute("UPDATE knowledge_base SET user_id = ? WHERE name = ? AND user_id = ?", (target, KNOWLEDGE_BASE, owners[0]))
+        cur.execute("UPDATE ingestion_run SET user_id = ? WHERE kb_name = ? AND user_id = ?", (target, KNOWLEDGE_BASE, owners[0]))
+        old_dir = KB_ROOT / old_owner / KNOWLEDGE_BASE
         if old_dir.is_dir() and not new_dir.exists():
             new_dir.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(str(old_dir), str(new_dir))
         report.append(f"knowledge base {KNOWLEDGE_BASE}: moved from {old_owner} (files {new_dir})")
-    else:
-        report.append(f"knowledge base {KNOWLEDGE_BASE}: " + ("already owned by the user" if row else "absent"))
-
-    # The assistant's MCP server registration.
-    rows = list(cur.execute("SELECT id, user_id FROM mcp_server WHERE name = ?", (MCP_SERVER,)))
-    if rows and not any(uid == target for _, uid in rows):
-        cur.execute("UPDATE mcp_server SET user_id = ? WHERE id = ?", (target, rows[0][0]))
-        report.append(f"mcp server {MCP_SERVER}: moved")
+        owners = [target] + owners[1:]
     elif rows:
-        cur.execute("DELETE FROM mcp_server WHERE name = ? AND user_id != ?", (MCP_SERVER, target))
-        report.append(f"mcp server {MCP_SERVER}: already owned by the user")
+        report.append(f"knowledge base {KNOWLEDGE_BASE}: already owned by the user")
     else:
-        report.append(f"mcp server {MCP_SERVER}: absent (run setup_assistant.py)")
+        report.append(f"knowledge base {KNOWLEDGE_BASE}: absent")
+    for uid in owners:
+        if uid == target:
+            continue
+        other = next(name for name, user_id in users.items() if user_id == uid)
+        cur.execute("DELETE FROM knowledge_base WHERE name = ? AND user_id = ?", (KNOWLEDGE_BASE, uid))
+        cur.execute("DELETE FROM ingestion_run WHERE kb_name = ? AND user_id = ?", (KNOWLEDGE_BASE, uid))
+        shutil.rmtree(KB_ROOT / other / KNOWLEDGE_BASE, ignore_errors=True)
+        report.append(f"knowledge base {KNOWLEDGE_BASE}: {other}'s copy removed")
 
     con.commit()
     print(f"Moved to {username}:")

@@ -16,8 +16,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BASE = f"http://127.0.0.1:{os.environ.get('LANGFLOW_PORT', '7860')}"
 PROJECT = "RTRC SysML-AgentBench"
-ORDER = ["rtrc-assistant", "rtrc-agent-flow", "rtrc-f0-memory", "rtrc-f1-exam-direct", "rtrc-f2-exam-agent", "rtrc-f3-results",
+ORDER = ["rtrc-agent-flow-local", "rtrc-agent-flow", "rtrc-f0-memory", "rtrc-f1-exam-direct", "rtrc-f2-exam-agent", "rtrc-f3-results",
          "rtrc-f5-mod-change", "rtrc-cameo-check"]
+RETIRED = ["RTRC design assistant", "RTRC design assistant (local Qwen3.8-27B)"]  # the Agent-harness flows of decision 031, removed by 032
 
 
 def _secrets() -> dict:
@@ -69,6 +70,10 @@ def main() -> None:
             saved = _request("POST", "/api/v1/flows/", token, payload)
             action = "created"
         print(f"{action}: {flow['name']}\n    {BASE}/flow/{saved['id']}")
+    for name in RETIRED:
+        if name in existing:
+            _request("DELETE", f"/api/v1/flows/{existing[name]['id']}", token)
+            print(f"removed: {name}")
 
 
 if __name__ == "__main__":

@@ -156,10 +156,15 @@ def build(name: str, description: str, graph: Graph, titles: dict, notes: list[t
 
 # ---------- the main agent flow (F4) ----------
 
-def main_flow() -> dict:
+def main_flow(local: bool = False) -> dict:
+    """The agent flow. local=True is the same graph with the Agent node preset to OpenCode on the 3-bit Qwen3.8-27B
+    served by Ollama on this machine (decision 032): every model call of the run stays on this computer."""
     chat_in = ChatInput(_id="ChatInput-brief")
     start = RtrcStart(_id="RtrcStart-start")
-    start.set(brief=chat_in.message_response, agent="Qwen direct", model="qwen3.8-flash", replay="")
+    if local:
+        start.set(brief=chat_in.message_response, agent="OpenCode on Qwen (sandbox)", model="qwen3.8-27b (Ollama)", replay="")
+    else:
+        start.set(brief=chat_in.message_response, agent="Qwen direct", model="qwen3.8-flash", replay="")
     steps = {}
     for key, step_name in (("retrieve", S[0]), ("req", S[1]), ("new", S[2]), ("adapt", S[3]), ("validate", S[4]),
                            ("align", S[5]), ("checks", S[6]), ("trade", S[7]), ("review", S[8])):
@@ -190,7 +195,8 @@ def main_flow() -> dict:
     graph = _graph(chat_in, outs)
     titles = {
         "ChatInput-brief": ("Requirement / brief", "Type the mission brief. Empty: the default brief of the 2.2 design space."),
-        "RtrcStart-start": ("Agent: Qwen only for now", "Qwen direct, or Claude Code / OpenCode on Qwen in the sandbox. Or replay a saved run without model calls."),
+        "RtrcStart-start": ("Agent: OpenCode on the local Qwen3.8-27B", "OpenCode in the sandbox, on the 3-bit Qwen3.8-27B that Ollama serves on this machine (scripts/qwen38.sh --serve). The other steps use the same local model. Or replay a saved run without model calls.") if local else
+                           ("Agent: Qwen only for now", "Qwen direct, or Claude Code / OpenCode on Qwen in the sandbox. Or replay a saved run without model calls."),
         "RtrcStep-retrieve": ("① Search memory · Paper 2", "Cards from the official parse of MaritimeISR and approved designs; MiniLM + FAISS, cosine ≥ 0.30 plus the exact-name bonus; seeds plus one hop."),
         "RtrcStep-req": ("② Requirements", "Numbered requirements; every number must come from the brief. The message starts with reuse or new."),
         "IfElse-similar": ("Similar project found?", "True (reuse): adapt the similar project. False (new): write a new design."),
@@ -214,11 +220,16 @@ def main_flow() -> dict:
              "info": "The run pauses here with the review text. Approve writes the design to memory; Send back returns the brief with a trade-off.",
              "prompt_from": ("RtrcStep-review", "message"),
              "branches": {label: [(f"RtrcRecord-{suffix}", "upstream")] for label, suffix in branches.items()}}
+    local_note = ("# RTRC agent flow · local Qwen3.8-27B via OpenCode\n\nThe agent flow with every model call on this computer: the 3-bit Qwen3.8-27B served by Ollama (`scripts/qwen38.sh --serve`), and OpenCode in the bubblewrap sandbox writing the designs with `./validate` (the official Pilot) in hand, up to 60 turns per design. Nothing leaves the machine.\n\n- Same nodes, same shell service, same checks as **RTRC agent flow**; only the Agent node's presets differ (OpenCode, qwen3.8-27b (Ollama)).\n- Direct writing with the 27B got stuck on `part usage vessel` for 20 identical repairs (run 20261007T014335); OpenCode gets the Pilot's errors as a tool result and edits the file (decision 032).\n- Stop the results page (8770) before a run: sandboxed agents and the page's answer keys do not run together.\n- Click a node after a run to read what it did; replay a saved run with *Replay a saved run* = `latest` or a run id.")
     notes = [
-        ("note-main", "# RTRC agent flow (Part 2)\n\nA requirement becomes an approvable SysML v2 design. Two cases: **new** (nothing similar in memory, start from scratch) or **reuse** (adapt the similar project found in memory).\n\n- Every RTRC node calls the code behind the results page through the RTRC shell service (`bench/shell_service.py`), so a run here and a run on the page give the same retrieval, prompts, Pilot results and checks.\n- **Qwen only for now** (RTRC has not answered which models may be used).\n- Click a node after a run to read what it did: the retrieved cards, every Pilot attempt and its errors, the alignment pairs, the checks.\n- Replay any saved run without model calls: set *Replay a saved run* in the Agent node to `latest` or a run id.", 40, -20),
+        ("note-main", local_note if local else "# RTRC agent flow (Part 2)\n\nA requirement becomes an approvable SysML v2 design. Two cases: **new** (nothing similar in memory, start from scratch) or **reuse** (adapt the similar project found in memory).\n\n- Every RTRC node calls the code behind the results page through the RTRC shell service (`bench/shell_service.py`), so a run here and a run on the page give the same retrieval, prompts, Pilot results and checks.\n- **Qwen only for now** (RTRC has not answered which models may be used).\n- Click a node after a run to read what it did: the retrieved cards, every Pilot attempt and its errors, the alignment pairs, the checks.\n- Replay any saved run without model calls: set *Replay a saved run* in the Agent node to `latest` or a run id.", 40, -20),
         ("note-papers", "## Where the three papers are used\n\n- **Paper 2** (Bader et al., GRAG): ① Search memory and Write to memory. Cards from the official parse, MiniLM + FAISS, seeds + one hop.\n- **Paper 3** (Longshore, Bell, Madachy): ③ create / modify with rules + template + examples; ④ the correction loop, with the Pilot's errors instead of a person; ⑥ read-back is its *query* use.\n- **Paper 1** (Li, Husung, Wang): ⑤ the alias / allocate alignment package, and ⑧ the person's review.\n- **Ours**: the Pilot as judge, the checks, trade-offs recomputed by code, the approval gate, the grades and times.", 540, -20),
         ("note-cameo", "## Cameo (when RTRC provides the license)\n\n⑦ already writes each passing design to `analysis/cameo-exports/<run>/`. Open it in Cameo's SysML v2 edition and record the result with the flow **RTRC Cameo check**. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability). Cameo has no headless command, so this is a person's step.", 1040, -20),
     ]
+    if local:
+        return build("RTRC agent flow · local Qwen3.8-27B via OpenCode",
+                     "The agent flow with every model call on this machine: OpenCode in the sandbox on the 3-bit Qwen3.8-27B served by Ollama; memory search, new or reuse, the official Pilot, alignment, checks, a person's decision, memory, grades and times.",
+                     graph, titles, notes, [human], ["rtrc", "agent", "local"])
     return build("RTRC agent flow: requirement to approved SysML v2 design",
                  "Part 2 of the results page as a Langflow flow: memory search, new or reuse, the official Pilot loop, alignment, checks, a person's decision, memory, grades and times.",
                  graph, titles, notes, [human], ["rtrc", "agent"])
@@ -362,7 +373,8 @@ def cameo_flow() -> dict:
 
 
 FLOWS = {
-    "rtrc-agent-flow": main_flow, "rtrc-f0-memory": memory_flow, "rtrc-f1-exam-direct": lambda: exam_flow(False),
+    "rtrc-agent-flow": main_flow, "rtrc-agent-flow-local": lambda: main_flow(local=True),
+    "rtrc-f0-memory": memory_flow, "rtrc-f1-exam-direct": lambda: exam_flow(False),
     "rtrc-f2-exam-agent": lambda: exam_flow(True), "rtrc-f3-results": results_flow, "rtrc-f5-mod-change": mod_flow,
     "rtrc-cameo-check": cameo_flow,
 }

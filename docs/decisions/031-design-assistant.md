@@ -1,6 +1,6 @@
 # 031 · A conversational design assistant on Langflow's Agent harness, over the verified pipeline
 
-Date: 2026-10-06. Status: done (user decisions of 2026-10-06: build it now; Langflow's Agent as the harness, OpenCode later if needed; qwen3.8-max for the conversation). Affects `tools/assistant_mcp.py` (new), `langflow/flows/build_assistant.py` and `rtrc-assistant.json` (new), `langflow/flows/setup_assistant.py` (new), `langflow/flows/move_to_user.py` (new), `scripts/langflow.sh`, `agents/llm_local.py` (new) and `bench/shell_service.py` (the local 3-bit Qwen3.8-27B as a model option; the frozen `agents/llm.py` is untouched), `langflow/README.md`.
+Date: 2026-10-06. Status: superseded by [032](032-local-opencode-fixed-flow.md) the same day (the Agent layer was removed; the code is in the history at commit 2569fb3). Built under the user decisions of 2026-10-06: build it now; Langflow's Agent as the harness, OpenCode later if needed; qwen3.8-max for the conversation. Affects `tools/assistant_mcp.py` (new), `langflow/flows/build_assistant.py` and `rtrc-assistant.json` (new), `langflow/flows/setup_assistant.py` (new), `langflow/flows/move_to_user.py` (new), `scripts/langflow.sh`, `agents/llm_local.py` (new) and `bench/shell_service.py` (the local 3-bit Qwen3.8-27B as a model option; the frozen `agents/llm.py` is untouched), `langflow/README.md`.
 
 ## Question
 

@@ -2,6 +2,10 @@
 
 The workspace holds the task input, the rules file and ./validate (the official Pilot). Gold, past runs and earlier
 sessions are not visible (decision 026). The prompt suffix is the same one Claude Code gets.
+
+The model comes from MVP_LLM_MODEL. The cloud Qwen models go to the Qwen endpoint of .env; the local model names of
+agents/llm_local.py go to Ollama on this machine (127.0.0.1:11434, no key, thinking off) through the same
+OpenAI-compatible provider package (decision 032). The sandbox shares the network, so Ollama is reachable from it.
 """
 from __future__ import annotations
 
@@ -30,6 +34,34 @@ def _base_url() -> str:
     return url
 
 
+def provider_config(model: str) -> tuple[str, dict]:
+    """OpenCode's provider block for one model name: (provider/model id, opencode.json contents)."""
+    from agents.llm_local import LOCAL_BASE, LOCAL_MODELS
+    if model in LOCAL_MODELS:
+        tag = LOCAL_MODELS[model]
+        # reasoningEffort is passed through as reasoning_effort; Ollama's OpenAI-compatible endpoint reads "none" as
+        # thinking off (the same switch agents/llm_local.py uses), so the token budget goes to the answer and the tools.
+        config = {
+            "model": f"ollama/{tag}",
+            "provider": {"ollama": {
+                "npm": "@ai-sdk/openai-compatible",
+                "name": "Ollama (local)",
+                "options": {"baseURL": LOCAL_BASE, "apiKey": "ollama"},
+                "models": {tag: {"name": tag, "options": {"reasoningEffort": "none"}}},
+            }},
+        }
+        return f"ollama/{tag}", config
+    config = {
+        "model": f"qwen/{model}",
+        "provider": {"qwen": {
+            "npm": "@ai-sdk/openai-compatible",
+            "options": {"baseURL": _base_url(), "apiKey": "{env:MVP_LLM_API_KEY}"},
+            "models": {model: {"name": model}},
+        }},
+    }
+    return f"qwen/{model}", config
+
+
 def run_opencode(task_dir: Path, *, jailed: bool = True) -> dict:
     if not BINARY.is_file():
         raise FileNotFoundError(f"Missing pinned binary {BINARY}")
@@ -40,17 +72,10 @@ def run_opencode(task_dir: Path, *, jailed: bool = True) -> dict:
     workspace.mkdir(parents=True)
     prepare_workspace(task_dir, workspace)
     model = os.environ.get("MVP_LLM_MODEL", "qwen3.8-flash")
-    config = {
-        "model": f"qwen/{model}",
-        "provider": {"qwen": {
-            "npm": "@ai-sdk/openai-compatible",
-            "options": {"baseURL": _base_url(), "apiKey": "{env:MVP_LLM_API_KEY}"},
-            "models": {model: {"name": model}},
-        }},
-    }
+    model_id, config = provider_config(model)
     (workspace / "opencode.json").write_text(json.dumps(config, indent=2), encoding="utf-8")
     prompt = (workspace / "input" / "requirements.md").read_text(encoding="utf-8") + PROMPT_SUFFIX
-    argv = [str(BINARY), "run", "--pure", "--auto", "--format", "json", "--dir", str(workspace), "--model", f"qwen/{model}", prompt]
+    argv = [str(BINARY), "run", "--pure", "--auto", "--format", "json", "--dir", str(workspace), "--model", model_id, prompt]
     home = None
     if jailed:
         home = fake_home(work.name)

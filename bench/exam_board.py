@@ -368,7 +368,7 @@ def _prepare_inbox(payload: dict) -> Path:
 
 
 def _execute(task_dir: Path, config: str, job: dict) -> None:
-    from agents.llm import chat
+    from agents.llm_local import chat  # the cloud models as before; the local Qwen when a Langflow run selects it
     from agents.solve import _answer, _retrieve, _task
     from bench.experiment import grade, load_env
 

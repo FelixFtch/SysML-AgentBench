@@ -3,7 +3,13 @@
 install() is called by bench/shell_service.py at start-up. It replaces the name `chat` in bench.discover and agents.solve
 with a dispatcher: when the step's model (agents.llm.MODEL_OVERRIDE) is one of LOCAL_MODELS, the request goes to Ollama's
 OpenAI-compatible endpoint on 127.0.0.1:11434 with no key; every other model goes to agents.llm.chat unchanged. The exam
-runners never import this module, so the frozen pipeline is unaffected.
+runners never import this module, so the frozen pipeline is unaffected. agents/external/opencode_run.py uses the same
+table to point OpenCode at Ollama when a run selects the local model.
+
+The Ollama tag is the derived model made by scripts/qwen38.sh (tools/ollama/qwen3.8-27b-q3-64k.Modelfile): the same
+3-bit weights as smtek/Qwen3.8-27B:Q3_K_XL with num_ctx 65536 instead of the published 224840, so the whole model sits
+in the RTX 4090's memory. With the published value Ollama reserved the cache for 224k tokens, kept a third of the
+weights on the CPU and ran at 8 tokens/s (run 20261007T014335).
 """
 from __future__ import annotations
 
@@ -15,11 +21,13 @@ import urllib.request
 
 from agents import llm
 
+OLLAMA_TAG = "qwen3.8-27b-q3:64k"
 LOCAL_MODELS = {
-    "qwen3.8-27b (Ollama)": "smtek/Qwen3.8-27B:Q3_K_XL",
-    "qwen3.8-27b local": "smtek/Qwen3.8-27B:Q3_K_XL",
+    "qwen3.8-27b (Ollama)": OLLAMA_TAG,
+    "qwen3.8-27b local": OLLAMA_TAG,
 }
 LOCAL_URL = os.environ.get("RTRC_LOCAL_LLM_URL", "http://127.0.0.1:11434/v1/chat/completions")
+LOCAL_BASE = LOCAL_URL[: -len("/chat/completions")] if LOCAL_URL.endswith("/chat/completions") else LOCAL_URL
 
 
 def chat(messages: list[dict], *, max_tokens: int = 4000, temperature: float = 0.2) -> dict:

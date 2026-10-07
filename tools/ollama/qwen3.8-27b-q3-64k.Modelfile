@@ -1,0 +1,7 @@
+# The local Qwen3.8-27B for the RTRC flows: the published 3-bit weights (Unsloth UD-Q3_K_XL, via smtek) with a
+# context window that fits the RTX 4090 (24 GB). The published tag sets num_ctx 224840; Ollama then reserves the
+# cache for 224k tokens, keeps a third of the weights on the CPU and runs at about 8 tokens/s. 65536 tokens hold a
+# whole OpenCode session on one design task and leave the weights on the GPU. Built by scripts/qwen38.sh as
+# qwen3.8-27b-q3:64k (the tag agents/llm_local.py and agents/external/opencode_run.py use).
+FROM smtek/Qwen3.8-27B:Q3_K_XL
+PARAMETER num_ctx 65536

@@ -49,6 +49,8 @@ CAMEO_DIR = ROOT / "analysis" / "cameo-exports"
 HELD = ROOT / "bench" / "tasks" / "t4_maritime_isr" / "heldout"
 MODELS = ("qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)", "qwen3.8-27b local")
 AGENTS = ("direct", "claude-code", "opencode")
+LOCAL_MODELS = {"qwen3.8-27b (Ollama)", "qwen3.8-27b local"}  # served by Ollama on this machine; direct or OpenCode (decision 032)
+LOCAL_REFUSED = "The local 3-bit model runs with Qwen direct or OpenCode; Claude Code still uses the cloud Qwen."
 VARIANT_ADAPT = ("Design A: adapt the similar existing project. Start from its model: keep its structure, part names and port names "
                  "where they fit the brief; change only what the requirements need; add what is missing; leave out what the brief does not need. "
                  "Every number must come from the requirements, and a stated limit is never changed.")
@@ -144,8 +146,8 @@ def run_start(body: dict) -> dict:
         model = body.get("model") or MODELS[0]
         if agent not in AGENTS or model not in MODELS:
             raise StepError(f"Agent must be one of {AGENTS} and model one of {MODELS} (Qwen only for now)")
-        if model in {"qwen3.8-27b (Ollama)", "qwen3.8-27b local"} and agent != "direct":
-            raise StepError("The local 3-bit model is only available with Qwen direct. Claude Code and OpenCode still use the cloud model.")
+        if model in LOCAL_MODELS and agent == "claude-code":
+            raise StepError(LOCAL_REFUSED)
         brief = (body.get("brief") or "").strip() or brief_from(CATALOG["default"])
         if len(brief) < 20:
             raise StepError("Write at least one full sentence for the brief")
@@ -257,7 +259,7 @@ def _agent_design(session: dict, key: str, task_text: str) -> dict:
 
 def _write(session: dict, key: str, variant: str, baseline: dict | None) -> dict:
     from bench.discover import DESIGN_RULES, write_design
-    from agents.llm import chat
+    from agents.llm_local import chat  # dispatches to agents.llm.chat for the cloud models, to Ollama for the local one
     record = session["record"]
     requirements = record["requirements"]["requirements"]
     cards = record["retrieval"].get("cards")
@@ -804,8 +806,8 @@ def exam_agent_run(body: dict) -> dict:
     from bench.experiment import validate_and_grade
     task_id, agent, model = body.get("task_id") or "", body.get("agent") or "opencode", body.get("model") or MODELS[1]
     task_dir = HELD / task_id
-    if model in {"qwen3.8-27b (Ollama)", "qwen3.8-27b local"}:
-        raise StepError("The local 3-bit model is only available with Qwen direct, not inside the sandbox")
+    if model in LOCAL_MODELS and agent == "claude-code":
+        raise StepError(LOCAL_REFUSED)
     if not (task_dir / "case.yaml").is_file() or agent not in {"opencode", "claude-code"} or model not in MODELS:
         raise StepError("Need a sealed task id, agent opencode or claude-code, and a Qwen model")
     if _page_running():

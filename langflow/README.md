@@ -11,25 +11,18 @@ scripts/langflow.sh --import    # the shell service (127.0.0.1:8781) and Langflo
 
 Open http://127.0.0.1:7860 and log in as `rtrc` with the password in `.langflow/secrets.env`, which `scripts/langflow_secrets.py` creates (gitignored, never printed). The flows are in the project **RTRC SysML-AgentBench**; the RTRC nodes are in the component list under **Rtrc**. Run **RTRC F0: memory** once (Playground) to fill the knowledge base, and again after a design is approved. A sandboxed agent (Claude Code or OpenCode) only runs while the results page is stopped, because the page serves answer keys.
 
-## The design assistant (for use)
+## The local model
 
-**RTRC design assistant** is the flow to talk to. It is Langflow's Agent harness (`qwen3.8-max`, a LangGraph tool-calling loop with chat history) over our tools: the MCP server `tools/assistant_mcp.py` on 127.0.0.1:8782 (list_projects, search_memory with the page's retrieval, read_project, run_design, design_status, validate_sysml_text, write_to_memory, record_decision, export_cameo) and the knowledge base `rtrc memory` in Retrieve mode. Open it, press **Playground**, and write as you would to a colleague:
+The 3-bit Qwen3.8-27B runs on this machine's RTX 4090 through Ollama (127.0.0.1:11434). `scripts/qwen38.sh --serve` starts Ollama and builds the tag `qwen3.8-27b-q3:64k` (the published weights with a 64k context, so the whole model stays on the GPU: `scripts/qwen38.sh --status` shows the placement); `scripts/langflow.sh` calls it. In the flows it is the model `qwen3.8-27b (Ollama)`, usable with **Qwen direct** and with **OpenCode (sandbox)**; Claude Code still uses the cloud Qwen. **RTRC agent flow · local Qwen3.8-27B via OpenCode** is the agent flow with those presets, so a run makes no call outside this computer; stop the results page before running it, as for every sandboxed agent. Decision 032 says why the designs are written by OpenCode and not by the model directly: written directly, the 27B got stuck on `part usage vessel` for 20 identical repairs; OpenCode gets the Pilot's errors as a tool result and edits the file.
 
-1. Ask what exists ("what projects are in the memory?"); it calls `list_projects` / `search_memory` and answers with the numbers.
-2. Describe a need in your own words. It reads the related elements, computes the power / upload / storage budgets by hand, asks for any number it is missing, and shows the exact brief it would send. It never invents a number and never moves a stated limit.
-3. Confirm ("option 1, run"). It calls `run_design`: the same verified pipeline as the fixed flow and the results page (requirements, designs A and B, the official Pilot repair loop, alignment, the four checks, trade-offs, diagram, Cameo export; 1 to 8 minutes). Say "start from an existing project" or "from scratch" and it passes `start_from` (similar / new); otherwise the pipeline adapts a similar project when the memory has one. Its record appears on page 2.3.
-4. Decide. "Approve A" writes the design into memory through the same gate as the page (all four checks must have passed; a refused approval records nothing); "Reject" or "Send back" records the decision with your reason.
-
-The fixed flows below stay as the benchmark; this one is the product. Every tool was exercised on 2026-10-06 through the Agent: a four-turn design conversation (ask, change request, run, send back), a brainstorm with no numbers (it read the memory, computed the 18 W headroom and the uplink bottleneck, offered directions, ran nothing), reading MaritimeISR's radio chain in plain words, validating pasted SysML (FAIL on a missing semicolon, then PASS after its fix), status and Cameo export of a run, a refused approval of a failing design (the Agent declined by rule; called directly, the service gate refused too), and a from-scratch run (`start_from="new"`, both designs PASS). Turns took 3 to 100 seconds. What it called, with inputs, outputs and durations, is stored with each answer (Langflow's `message` table) and shown in the Playground when you expand an answer.
-
-Set-up: `langflow/flows/setup_assistant.py` registers the MCP server and enables the chat model (run by `scripts/langflow.sh --import`). Langflow keeps credentials, knowledge bases and MCP servers per user, so if people log in with an account other than the superuser, run `langflow/flows/move_to_user.py <username>` once and restart Langflow.
+Langflow keeps credentials and knowledge bases per user, so if people log in with an account other than the superuser, run `langflow/flows/move_to_user.py <username>` once after an import and restart Langflow.
 
 ## The flows
 
 | Flow | What it shows | How it runs | Person |
 |---|---|---|---|
-| RTRC design assistant | the conversational assistant above: Agent harness, tools, memory | live, qwen3.8-max (the pipeline it calls can use flash, max or the local 27B) | asks, confirms, decides in the chat |
 | RTRC agent flow: requirement to approved SysML v2 design | ① search memory → ② requirements → new design, or adapt the similar project found in memory → ④ official Pilot ⇄ repair → ⑤ align with memory → ⑥ checks and read-back → trade-offs if a check fails → ⑦ diagram, Cameo export, review → ⑧ decision → write to memory, record grades and times | live on Qwen (direct, or Claude Code / OpenCode on Qwen in the sandbox), or replay of a saved run | ⑧ Approve A, Approve B, Reject or Send back |
+| RTRC agent flow · local Qwen3.8-27B via OpenCode | the same flow, preset to OpenCode in the sandbox on the local 27B; every model call stays on this machine | live, local only (Ollama); results page stopped | the same decision |
 | RTRC F0: memory | MaritimeISR plus every approved design, as cards from the official parse; fills the Langflow knowledge base **rtrc memory** (Knowledge page: search the cards, filter by metadata) | Qwen embeddings for new cards only; runs in the server (editor or API), not with `lfx run` | |
 | RTRC F1: exam cell, direct model | one exam cell step by step: task, retrieved notes, outline, answer, every Pilot attempt, repair, read values, verdict against the sealed key (missing items only), archive | replay any graded cell, or a live run (not added to any score) | |
 | RTRC F2: exam cell, sandboxed coding agent | the same for OpenCode / Claude Code, with their tool calls | replay, or live | |
@@ -98,12 +91,11 @@ Learned with Langflow 1.12.5:
 | `langflow/flows/build_flows.py`, `*.json` | the flows as code, and the generated flow files |
 | `langflow/flows/import_flows.py` | creates or updates the project |
 | `langflow/flows/setup_knowledge.py` | the Qwen embedding provider and the knowledge base `rtrc_memory` (safe to repeat) |
-| `langflow/flows/build_assistant.py`, `rtrc-assistant.json` | the design assistant flow as code |
-| `langflow/flows/setup_assistant.py` | registers the MCP server and enables the chat model |
-| `langflow/flows/move_to_user.py` | gives the project, credentials, knowledge base and MCP server to the account people log in with |
-| `tools/assistant_mcp.py` | the assistant's MCP tools (streamable HTTP, 127.0.0.1:8782) |
+| `langflow/flows/move_to_user.py` | gives the project, credentials and knowledge base to the account people log in with |
 | `bench/shell_service.py` | the local JSON API the nodes call |
 | `bench/langflow_parity.py` | the parity checks |
+| `agents/llm_local.py`, `agents/external/opencode_run.py` | the local model: direct calls, and OpenCode's provider pointed at Ollama |
+| `scripts/qwen38.sh`, `tools/ollama/qwen3.8-27b-q3-64k.Modelfile` | Ollama and the local tag |
 | `scripts/langflow.sh`, `scripts/langflow_secrets.py`, `requirements-langflow.txt` | start, secrets, pinned versions |
 
-The plan and its reasoning: [`plans/langflow-shell-plan.md`](../plans/langflow-shell-plan.md); the decision: [`docs/decisions/030-langflow-shell.md`](../docs/decisions/030-langflow-shell.md).
+The plan and its reasoning: [`plans/langflow-shell-plan.md`](../plans/langflow-shell-plan.md); the decisions: [`docs/decisions/030-langflow-shell.md`](../docs/decisions/030-langflow-shell.md) and [`032`](../docs/decisions/032-local-opencode-fixed-flow.md) (the local model through OpenCode; the Agent-harness assistant of 031 retired).

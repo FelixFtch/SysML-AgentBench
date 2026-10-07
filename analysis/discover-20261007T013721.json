@@ -1,0 +1,3718 @@
+{
+  "id": "20261007T013721",
+  "brief": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 12 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 12 Mbps over one 20 Mbps uplink.",
+  "synthetic": true,
+  "langflow": {
+    "mode": "live",
+    "agent": "direct",
+    "model": "qwen3.8-27b (Ollama)",
+    "started": "2026-10-07T01:37:21+00:00",
+    "timings": {
+      "retrieve": {
+        "started": "2026-10-07T01:37:21+00:00",
+        "seconds": 0.3,
+        "model_calls": 0
+      },
+      "requirements": {
+        "started": "2026-10-07T01:37:21+00:00",
+        "seconds": 43.8,
+        "model_calls": 1
+      },
+      "adapt": {
+        "started": "2026-10-07T01:38:05+00:00",
+        "seconds": 129.2,
+        "model_calls": 2
+      },
+      "validate": {
+        "started": "2026-10-07T01:40:14+00:00",
+        "seconds": 1323.3,
+        "model_calls": 20
+      },
+      "align": {
+        "started": "2026-10-07T02:02:18+00:00",
+        "seconds": 101.1,
+        "model_calls": 1
+      },
+      "checks": {
+        "started": "2026-10-07T02:03:59+00:00",
+        "seconds": 100.7,
+        "model_calls": 1
+      },
+      "tradeoffs": {
+        "started": "2026-10-07T02:05:40+00:00",
+        "seconds": 179.7,
+        "model_calls": 1
+      }
+    },
+    "path": "reuse",
+    "similar_project": {
+      "name": "MaritimeISR",
+      "path": "scenario/maritime-isr/MaritimeISR.sysml",
+      "package": "MaritimeISR",
+      "brief": ""
+    },
+    "branch": "reuse",
+    "failing": [
+      "Official syntax"
+    ],
+    "eligible": [
+      "A"
+    ],
+    "review": {
+      "at": "2026-10-07T02:08:39+00:00",
+      "text": "run 20261007T013721 · review for a person\nBrief: A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 12 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 12 Mbps over one 20 Mbps uplink.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T014014-fda5e5a4&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T013721/DesignA.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nDesign B: official Pilot FAIL after 21 parse(s); SYNTAX FAIL\n  approval: The official parse did not pass; it cannot go into memory.\nAlignment: 5/5 pairs verified; package PASS\nTrade-off 1: Balanced Standard Configuration · feasible when code recomputes it\nTrade-off 2: High-End Sensing with Low Power Compute · feasible when code recomputes it\nTrade-off 3: Minimal Power Footprint · feasible when code recomputes it\nGate: Design A passes all four checks and may be approved into memory by a person."
+    }
+  },
+  "retrieval": {
+    "method": "hybrid",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "threshold": 0.3,
+    "name_bonus": 0.1,
+    "index_key": "ebfd88c5869a633e",
+    "sources": [
+      {
+        "name": "MaritimeISR",
+        "label": "Existing maritime model MaritimeISR",
+        "path": "scenario/maritime-isr/MaritimeISR.sysml",
+        "cards": 63
+      },
+      {
+        "name": "approved 20261003T144529·A",
+        "label": "Approved design 20261003T144529 · A",
+        "path": "mvp/runs/20261003T144549-729f1302",
+        "cards": 44
+      },
+      {
+        "name": "approved 20261003T150116·A",
+        "label": "Approved design 20261003T150116 · A",
+        "path": "mvp/runs/20261003T150134-3563f91d",
+        "cards": 45
+      }
+    ],
+    "library_size": 152,
+    "query_words": [
+      "camera",
+      "carries",
+      "computer",
+      "drawing",
+      "edge",
+      "harbor",
+      "hours",
+      "imagery",
+      "infrared",
+      "limit",
+      "locally",
+      "mbps",
+      "patrol",
+      "power",
+      "recorded",
+      "shore",
+      "storage",
+      "surface",
+      "unmanned",
+      "uplink",
+      "uploaded",
+      "vessel",
+      "visible",
+      "7",
+      "8",
+      "12",
+      "14",
+      "20",
+      "28",
+      "60",
+      "128"
+    ],
+    "words": [
+      "camera",
+      "computer",
+      "edge",
+      "hours",
+      "imagery",
+      "infrared",
+      "limit",
+      "locally",
+      "mbps",
+      "power",
+      "recorded",
+      "shore",
+      "storage",
+      "surface",
+      "unmanned",
+      "uplink",
+      "uploaded",
+      "vessel",
+      "visible",
+      "7",
+      "8",
+      "12",
+      "14",
+      "20",
+      "28",
+      "60",
+      "128"
+    ],
+    "nodes": [
+      {
+        "id": "222bbb5d-3348-4aa8-a752-fa78cdaad5db",
+        "text": "PortUsage MaritimeISR::Camera::imagery",
+        "type": "PortUsage",
+        "name": "MaritimeISR::Camera::imagery",
+        "short": "imagery",
+        "role": "seed",
+        "score": 0.7757,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "1da2b6c0-c514-4608-8006-4a594305585e",
+        "text": "PartDefinition MaritimeISR::Camera",
+        "type": "PartDefinition",
+        "name": "MaritimeISR::Camera",
+        "short": "Camera",
+        "role": "seed",
+        "score": 0.6105,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+        "text": "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0",
+        "type": "AttributeUsage",
+        "name": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW",
+        "short": "powerLimitW",
+        "value": 60.0,
+        "role": "seed",
+        "score": 0.6045,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "0282b2b5-4182-484f-bf17-fba65bc7923e",
+        "text": "PortDefinition MaritimeISR::ImageryPort",
+        "type": "PortDefinition",
+        "name": "MaritimeISR::ImageryPort",
+        "short": "ImageryPort",
+        "role": "seed",
+        "score": 0.5487,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "e45964fc-9f09-4c8d-8b5c-d4d997e14d84",
+        "text": "PartDefinition MaritimeISR::UnmannedSurfaceVessel",
+        "type": "PartDefinition",
+        "name": "MaritimeISR::UnmannedSurfaceVessel",
+        "short": "UnmannedSurfaceVessel",
+        "role": "neighbor",
+        "via": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+        "score": 0.4964,
+        "source": "MaritimeISR"
+      },
+      {
+        "id": "0f716893-49f7-4d1c-a665-6774ae8f5a68",
+        "text": "ConjugatedPortDefinition MaritimeISR::ImageryPort::'~ImageryPort'",
+        "type": "ConjugatedPortDefinition",
+        "name": "MaritimeISR::ImageryPort::'~ImageryPort'",
+        "short": "'~ImageryPort'",
+        "role": "neighbor",
+        "via": "0282b2b5-4182-484f-bf17-fba65bc7923e",
+        "score": 0.4221,
+        "source": "MaritimeISR"
+      }
+    ],
+    "edges": [
+      {
+        "from": "d86a0ca5-770f-4a57-bbdb-1e589019d05a",
+        "to": "e45964fc-9f09-4c8d-8b5c-d4d997e14d84",
+        "kind": "owner"
+      },
+      {
+        "from": "0282b2b5-4182-484f-bf17-fba65bc7923e",
+        "to": "0f716893-49f7-4d1c-a665-6774ae8f5a68",
+        "kind": "owner"
+      }
+    ],
+    "cards": [
+      "PortUsage MaritimeISR::Camera::imagery",
+      "PartDefinition MaritimeISR::Camera",
+      "AttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0",
+      "PortDefinition MaritimeISR::ImageryPort",
+      "PartDefinition MaritimeISR::UnmannedSurfaceVessel",
+      "ConjugatedPortDefinition MaritimeISR::ImageryPort::'~ImageryPort'"
+    ],
+    "numbers": {
+      "MaritimeISR::UnmannedSurfaceVessel::powerLimitW": 60.0
+    },
+    "path": "reuse",
+    "note": "Reusable values found in existing models: reuse path."
+  },
+  "requirements": {
+    "requirements": [
+      {
+        "id": "R1",
+        "text": "The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit.",
+        "quantity": {
+          "name": "powerLimitW",
+          "value": 60,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R2",
+        "text": "The visible camera shall draw 28 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 28,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R3",
+        "text": "The edge computer shall draw 14 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 14,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R4",
+        "text": "The infrared camera shall draw 7 W.",
+        "quantity": {
+          "name": "drawW",
+          "value": 7,
+          "unit": "W"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R5",
+        "text": "Imagery shall be recorded locally at a data rate of 12 Mbps.",
+        "quantity": {
+          "name": "dataRateMbps",
+          "value": 12,
+          "unit": "Mbps"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R6",
+        "text": "The local storage shall have a capacity of 128 GB.",
+        "quantity": {
+          "name": "storageGB",
+          "value": 128,
+          "unit": "GB"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R7",
+        "text": "Imagery shall be retained for 8 hours.",
+        "quantity": {
+          "name": "retentionHours",
+          "value": 8,
+          "unit": "hours"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R8",
+        "text": "Imagery shall be uploaded to shore at a rate of 12 Mbps.",
+        "quantity": {
+          "name": "uploadMbps",
+          "value": 12,
+          "unit": "Mbps"
+        },
+        "unsourced_numbers": []
+      },
+      {
+        "id": "R9",
+        "text": "The uplink capacity shall be 20 Mbps.",
+        "quantity": {
+          "name": "uplinkMbps",
+          "value": 20,
+          "unit": "Mbps"
+        },
+        "unsourced_numbers": []
+      }
+    ],
+    "questions": [],
+    "unsourced": [],
+    "model": "smtek/Qwen3.8-27B:Q3_K_XL",
+    "usage": {
+      "prompt_tokens": 272,
+      "prompt_tokens_details": {
+        "cached_tokens": 268
+      },
+      "completion_tokens": 653,
+      "total_tokens": 925
+    }
+  },
+  "designs": [
+    {
+      "key": "A",
+      "source": "package DesignA {\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def UnmannedSurfaceVessel {\n        part eoCamera : Camera;\n        part irCamera : Camera;\n        part processor : Processor;\n        part radio : Radio;\n    }\n\n    part usv : UnmannedSurfaceVessel {\n        attribute powerLimitW : Real = 60;\n        attribute uplinkMbps : Real = 20;\n        attribute uploadMbps : Real = 12;\n        attribute storageGB : Real = 128;\n        attribute dataRateMbps : Real = 12;\n        attribute retentionHours : Real = 8;\n\n        part eoCamera : Camera {\n            attribute drawW : Real = 28;\n        }\n        part irCamera : Camera {\n            attribute drawW : Real = 7;\n        }\n        part processor : Processor {\n            attribute drawW : Real = 14;\n        }\n        part radio : Radio;\n\n        connect usv.eoCamera.imagery to usv.processor.imageryIn;\n        connect usv.irCamera.imagery to usv.processor.imageryIn;\n        connect usv.processor.uplink to usv.radio.fromProcessor;\n    }\n\n    requirement def R1 {\n        doc /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 28 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 14 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 7 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: The local storage shall have a capacity of 128 GB. */\n    }\n    requirement def R7 {\n        doc /* R7: Imagery shall be retained for 8 hours. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 20 Mbps. */\n    }\n}\n",
+      "sysml_status": "PASS",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "PASS",
+          "diagnostics": [
+            {
+              "severity": "WARNING",
+              "line": 34,
+              "column": 14,
+              "message": "Duplicate of inherited member name 'eoCamera' from UnmannedSurfaceVessel"
+            },
+            {
+              "severity": "WARNING",
+              "line": 37,
+              "column": 14,
+              "message": "Duplicate of inherited member name 'irCamera' from UnmannedSurfaceVessel"
+            },
+            {
+              "severity": "WARNING",
+              "line": 40,
+              "column": 14,
+              "message": "Duplicate of inherited member name 'processor' from UnmannedSurfaceVessel"
+            },
+            {
+              "severity": "WARNING",
+              "line": 43,
+              "column": 14,
+              "message": "Duplicate of inherited member name 'radio' from UnmannedSurfaceVessel"
+            }
+          ],
+          "sha": "af0dfbd2ccaf",
+          "same_as_previous": false,
+          "run_id": "20261007T014014-fda5e5a4",
+          "text": "package DesignA {\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def UnmannedSurfaceVessel {\n        part eoCamera : Camera;\n        part irCamera : Camera;\n        part processor : Processor;\n        part radio : Radio;\n    }\n\n    part usv : UnmannedSurfaceVessel {\n        attribute powerLimitW : Real = 60;\n        attribute uplinkMbps : Real = 20;\n        attribute uploadMbps : Real = 12;\n        attribute storageGB : Real = 128;\n        attribute dataRateMbps : Real = 12;\n        attribute retentionHours : Real = 8;\n\n        part eoCamera : Camera {\n            attribute drawW : Real = 28;\n        }\n        part irCamera : Camera {\n            attribute drawW : Real = 7;\n        }\n        part processor : Processor {\n            attribute drawW : Real = 14;\n        }\n        part radio : Radio;\n\n        connect usv.eoCamera.imagery to usv.processor.imageryIn;\n        connect usv.irCamera.imagery to usv.processor.imageryIn;\n        connect usv.processor.uplink to usv.radio.fromProcessor;\n    }\n\n    requirement def R1 {\n        doc /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n    }\n    requirement def R2 {\n        doc /* R2: The visible camera shall draw 28 W. */\n    }\n    requirement def R3 {\n        doc /* R3: The edge computer shall draw 14 W. */\n    }\n    requirement def R4 {\n        doc /* R4: The infrared camera shall draw 7 W. */\n    }\n    requirement def R5 {\n        doc /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n    }\n    requirement def R6 {\n        doc /* R6: The local storage shall have a capacity of 128 GB. */\n    }\n    requirement def R7 {\n        doc /* R7: Imagery shall be retained for 8 hours. */\n    }\n    requirement def R8 {\n        doc /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n    }\n    requirement def R9 {\n        doc /* R9: The uplink capacity shall be 20 Mbps. */\n    }\n}\n"
+        }
+      ],
+      "repair_rounds": 0,
+      "max_rounds": 20,
+      "first_pass_attempt": 1,
+      "diagnostics": [
+        "Duplicate of inherited member name 'eoCamera' from UnmannedSurfaceVessel",
+        "Duplicate of inherited member name 'irCamera' from UnmannedSurfaceVessel",
+        "Duplicate of inherited member name 'processor' from UnmannedSurfaceVessel",
+        "Duplicate of inherited member name 'radio' from UnmannedSurfaceVessel"
+      ],
+      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T014014-fda5e5a4",
+      "model": "smtek/Qwen3.8-27B:Q3_K_XL",
+      "usage": {
+        "prompt_tokens": 1609,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "completion_tokens": 650,
+        "total_tokens": 2259
+      },
+      "prompt_parts": [
+        {
+          "key": "rules",
+          "label": "Rules",
+          "paper": "p3",
+          "text": "You write SysML v2 textual notation.\nRules:\n- Output one fenced code block tagged sysml, and no prose before or after it.\n- The file contains exactly one package whose name is given in the task.\n- When you use Real, write `private import ScalarValues::*;` as the first line inside the package. In this toolchain an import inside a package needs the visibility keyword; a bare `import` is rejected. Do not import anything else.\n- Use only names the task requires. Do not invent numeric limits.\n- Do not change a number the task tells you to keep.\n- The first line inside the package is exactly: private import ScalarValues::*;\n- Declare attributes as `attribute name : Real = 12.0;` inside part usages, not part definitions, so values are literals.\n"
+        },
+        {
+          "key": "contract",
+          "label": "Template · attribute contract",
+          "paper": "p3",
+          "text": "attribute powerLimitW : Real = 60;  // R1\nattribute drawW : Real = 28;  // R2\nattribute drawW : Real = 14;  // R3\nattribute drawW : Real = 7;  // R4\nattribute dataRateMbps : Real = 12;  // R5\nattribute storageGB : Real = 128;  // R6\nattribute retentionHours : Real = 8;  // R7\nattribute uploadMbps : Real = 12;  // R8\nattribute uplinkMbps : Real = 20;  // R9"
+        },
+        {
+          "key": "baseline",
+          "label": "Similar project to adapt · MaritimeISR",
+          "paper": "p2",
+          "text": "package MaritimeISR {\n    /* Synthetic maritime ISR reference model. Numbers are not RTX specifications.\n       Ground truth for the benchmark: frozen before any agent is scored against it. */\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def TrackPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def AisReceiver {\n        port tracks : TrackPort;\n    }\n    part def Radar {\n        port tracks : TrackPort;\n    }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n        port trackOut : TrackPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def UnmannedSurfaceVessel {\n        part eoCamera : Camera;\n        part irCamera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 60.0;\n        attribute uplinkMbps : Real = 8.0;\n        attribute storageGB : Real = 128.0;\n    }\n    part def FixedWingUav {\n        part eoCamera : Camera;\n        part searchRadar : Radar;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 120.0;\n        attribute downlinkMbps : Real = 20.0;\n    }\n    part def CommandShip {\n        port fromUsv : LinkPort;\n        port fromUav : LinkPort;\n        port toShore : LinkPort;\n        part fusion : Processor;\n        attribute fusionLatencyS : Real = 2.0;\n    }\n    part def ShoreStation {\n        port fromCommand : LinkPort;\n        part archive : Processor;\n        attribute backhaulMbps : Real = 50.0;\n    }\n\n    part usv : UnmannedSurfaceVessel;\n    part uav : FixedWingUav;\n    part commandShip : CommandShip;\n    part shore : ShoreStation;\n\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.irCamera.imagery to usv.processor.imageryIn;\n    connect usv.ais.tracks to usv.processor.trackIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n    connect usv.radio.toShore to commandShip.fromUsv;\n    connect uav.searchRadar.tracks to uav.processor.trackIn;\n    connect uav.eoCamera.imagery to uav.processor.imageryIn;\n    connect uav.processor.uplink to uav.radio.fromProcessor;\n    connect uav.radio.toShore to commandShip.fromUav;\n    connect commandShip.toShore to shore.fromCommand;\n\n    requirement def LocalRawRetention {\n        doc /* USV raw imagery is retained locally. Numeric retention is a separate synthetic budget, not implied here. */\n    }\n    requirement def PowerLimitUnchanged {\n        doc /* Synthetic: USV input power limit stays 60 W. An agent must not edit this limit to make a design pass. */\n    }\n    requirement def TrackSharing {\n        doc /* Synthetic: USV AIS tracks and UAV radar tracks are shared to the command ship, then to the shore archive. */\n    }\n}\n"
+        },
+        {
+          "key": "task",
+          "label": "Brief + requirements",
+          "paper": "",
+          "text": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 12 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 12 Mbps over one 20 Mbps uplink.\n\nR1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit.\nR2: The visible camera shall draw 28 W.\nR3: The edge computer shall draw 14 W.\nR4: The infrared camera shall draw 7 W.\nR5: Imagery shall be recorded locally at a data rate of 12 Mbps.\nR6: The local storage shall have a capacity of 128 GB.\nR7: Imagery shall be retained for 8 hours.\nR8: Imagery shall be uploaded to shore at a rate of 12 Mbps.\nR9: The uplink capacity shall be 20 Mbps."
+        },
+        {
+          "key": "variant",
+          "label": "What this variant must do",
+          "paper": "",
+          "text": "Design A: adapt the similar existing project. Start from its model: keep its structure, part names and port names where they fit the brief; change only what the requirements need; add what is missing; leave out what the brief does not need. Every number must come from the requirements, and a stated limit is never changed."
+        }
+      ],
+      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T013721/DesignA.sysml",
+      "numbers": {
+        "DesignA::usv::uplinkMbps": 20.0,
+        "DesignA::usv::storageGB": 128.0,
+        "DesignA::usv::processor::drawW": 14.0,
+        "DesignA::usv::dataRateMbps": 12.0,
+        "DesignA::usv::irCamera::drawW": 7.0,
+        "DesignA::usv::powerLimitW": 60.0,
+        "DesignA::usv::uploadMbps": 12.0,
+        "DesignA::usv::retentionHours": 8.0,
+        "DesignA::usv::eoCamera::drawW": 28.0
+      },
+      "connections": [
+        [
+          "DesignA::usv.irCamera.imagery",
+          "DesignA::usv.processor.imageryIn"
+        ],
+        [
+          "DesignA::usv.eoCamera.imagery",
+          "DesignA::usv.processor.imageryIn"
+        ],
+        [
+          "DesignA::usv.processor.uplink",
+          "DesignA::usv.radio.fromProcessor"
+        ]
+      ],
+      "elements": [
+        "DesignA",
+        "DesignA::Camera",
+        "DesignA::Camera::imagery",
+        "DesignA::ImageryPort",
+        "DesignA::LinkPort",
+        "DesignA::Processor",
+        "DesignA::Processor::imageryIn",
+        "DesignA::Processor::uplink",
+        "DesignA::R1",
+        "DesignA::R2",
+        "DesignA::R3",
+        "DesignA::R4",
+        "DesignA::R5",
+        "DesignA::R6",
+        "DesignA::R7",
+        "DesignA::R8",
+        "DesignA::R9",
+        "DesignA::Radio",
+        "DesignA::Radio::fromProcessor",
+        "DesignA::Radio::toShore",
+        "DesignA::UnmannedSurfaceVessel",
+        "DesignA::UnmannedSurfaceVessel::eoCamera",
+        "DesignA::UnmannedSurfaceVessel::irCamera",
+        "DesignA::UnmannedSurfaceVessel::processor",
+        "DesignA::UnmannedSurfaceVessel::radio",
+        "DesignA::usv",
+        "DesignA::usv::dataRateMbps",
+        "DesignA::usv::eoCamera",
+        "DesignA::usv::eoCamera::drawW",
+        "DesignA::usv::irCamera",
+        "DesignA::usv::irCamera::drawW",
+        "DesignA::usv::powerLimitW",
+        "DesignA::usv::processor",
+        "DesignA::usv::processor::drawW",
+        "DesignA::usv::radio",
+        "DesignA::usv::retentionHours",
+        "DesignA::usv::storageGB",
+        "DesignA::usv::uplinkMbps",
+        "DesignA::usv::uploadMbps",
+        "ScalarValues",
+        "ScalarValues::Real"
+      ],
+      "checks": [
+        {
+          "id": "POWER",
+          "label": "Total power vs limit",
+          "formula": "sum of all drawW ≤ powerLimitW",
+          "status": "PASS",
+          "actual": 49.0,
+          "limit": 60.0,
+          "unit": "W"
+        },
+        {
+          "id": "LINK",
+          "label": "Upload vs uplink",
+          "formula": "uploadMbps ≤ uplinkMbps",
+          "status": "PASS",
+          "actual": 12.0,
+          "limit": 20.0,
+          "unit": "Mbps"
+        },
+        {
+          "id": "STORE",
+          "label": "Recording storage",
+          "formula": "dataRateMbps × retentionHours × 3600 ÷ 8000 ≤ storageGB",
+          "status": "PASS",
+          "actual": 43.2,
+          "limit": 128.0,
+          "unit": "GB"
+        },
+        {
+          "id": "TRACE",
+          "label": "Numbered requirements in the model",
+          "formula": "each requirement's attribute name and value appear in the official parse",
+          "status": "PASS",
+          "actual": 9,
+          "limit": 9,
+          "unit": "reqs"
+        },
+        {
+          "id": "CONNECT",
+          "label": "Connections",
+          "status": "INFO",
+          "actual": 3,
+          "unit": "links"
+        }
+      ],
+      "read_back": "The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit.\nThe visible camera shall draw 28 W.\nThe edge computer shall draw 14 W.\nThe infrared camera shall draw 7 W.\nImagery shall be recorded locally at a data rate of 12 Mbps.\nThe local storage shall have a capacity of 128 GB.\nImagery shall be retained for 8 hours.\nImagery shall be uploaded to shore at a rate of 12 Mbps.\nThe uplink capacity shall be 20 Mbps.",
+      "read_back_numbers": {
+        "7": true,
+        "8": true,
+        "12": true,
+        "14": true,
+        "20": true,
+        "28": true,
+        "60": false,
+        "128": true
+      },
+      "diagram": "http://127.0.0.1:8781/diagram?run=20261007T014014-fda5e5a4&view=connections",
+      "cameo_export": "analysis/cameo-exports/20261007T013721/DesignA.sysml"
+    },
+    {
+      "key": "B",
+      "source": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n",
+      "sysml_status": "FAIL",
+      "attempts": [
+        {
+          "attempt": 1,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 21,
+              "message": "no viable alternative at input 'of'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 35,
+              "message": "no viable alternative at input '::'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 30,
+              "message": "no viable alternative at input 'of'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 44,
+              "message": "no viable alternative at input '::'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 31,
+              "message": "no viable alternative at input 'of'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 45,
+              "message": "no viable alternative at input '::'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 35,
+              "message": "no viable alternative at input 'of'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 49,
+              "message": "no viable alternative at input '::'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 30,
+              "message": "no viable alternative at input 'of'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 44,
+              "message": "no viable alternative at input '::'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 31,
+              "message": "no viable alternative at input 'of'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 45,
+              "message": "no viable alternative at input '::'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 32,
+              "message": "no viable alternative at input 'of'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 46,
+              "message": "no viable alternative at input '::'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 27,
+              "message": "no viable alternative at input 'of'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 41,
+              "message": "no viable alternative at input '::'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 33,
+              "column": 27,
+              "message": "Couldn't resolve reference to Feature 'imagery'."
+            },
+            {
+              "severity": "ERROR",
+              "line": 34,
+              "column": 28,
+              "message": "Couldn't resolve reference to Feature 'imagery'."
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 33,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 46,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 34,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 47,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 38,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 51,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 33,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 46,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 34,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 47,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 35,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 48,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 30,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 43,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "945b3e0123bc",
+          "same_as_previous": false,
+          "run_id": "20261007T014019-eb4acebf",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel of MaritimeISR::UnmannedSurfaceVessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera of MaritimeISR::Camera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera of MaritimeISR::Camera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort of MaritimeISR::ImageryPort;\n    port usage irImageryPort of MaritimeISR::ImageryPort;\n    port usage recorderInPort of MaritimeISR::ImageryPort;\n    port usage recorderOutPort of MaritimeISR::ImageryPort;\n    port usage uplinkPort of MaritimeISR::ImageryPort;\n\n    connect visibleCamera.imagery to visibleImageryPort;\n    connect infraredCamera.imagery to irImageryPort;\n    connect visibleImageryPort to recorderInPort;\n    connect irImageryPort to recorderInPort;\n    connect recorderOutPort to uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 2,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 33,
+              "column": 27,
+              "message": "Couldn't resolve reference to Feature 'imagery'."
+            },
+            {
+              "severity": "ERROR",
+              "line": 34,
+              "column": 28,
+              "message": "Couldn't resolve reference to Feature 'imagery'."
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "a9bb2d7d9c55",
+          "same_as_previous": false,
+          "run_id": "20261007T014057-f5da3b61",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n\n    connect visibleCamera.imagery to visibleImageryPort;\n    connect infraredCamera.imagery to irImageryPort;\n    connect visibleImageryPort to recorderInPort;\n    connect irImageryPort to recorderInPort;\n    connect recorderOutPort to uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 3,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": false,
+          "run_id": "20261007T014133-c190cdd9",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 4,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T014207-caecc2d9",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 5,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T014242-82e83635",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 6,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T014317-69e05684",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 7,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T014409-4e115a47",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 8,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T014524-6ce4c345",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 9,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T014641-6ec02bea",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 10,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T014744-ffa6bb98",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 11,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T014847-32abea0d",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 12,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T014951-c49a85a1",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 13,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T015108-06599e08",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 14,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T015212-fbcdd055",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 15,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T015316-d2fb3bfa",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 16,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T015423-4b0a1cfa",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 17,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T015535-7fc419f3",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 18,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T015653-ec14c83b",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 19,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T015808-34be83d9",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 20,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T020021-8e447f90",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        },
+        {
+          "attempt": 21,
+          "status": "FAIL",
+          "diagnostics": [
+            {
+              "severity": "ERROR",
+              "line": 4,
+              "column": 14,
+              "message": "no viable alternative at input 'vessel'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 12,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 16,
+              "column": 16,
+              "message": "no viable alternative at input 'edgeComputer'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 20,
+              "column": 16,
+              "message": "no viable alternative at input 'infraredCamera'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 24,
+              "column": 16,
+              "message": "no viable alternative at input 'recorder'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 27,
+              "column": 16,
+              "message": "no viable alternative at input 'visibleImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 28,
+              "column": 16,
+              "message": "no viable alternative at input 'irImageryPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 29,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderInPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 30,
+              "column": 16,
+              "message": "no viable alternative at input 'recorderOutPort'"
+            },
+            {
+              "severity": "ERROR",
+              "line": 31,
+              "column": 16,
+              "message": "no viable alternative at input 'uplinkPort'"
+            },
+            {
+              "severity": "WARNING",
+              "line": 12,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 16,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 20,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 24,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 27,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 28,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 29,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 30,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            },
+            {
+              "severity": "WARNING",
+              "line": 31,
+              "column": 10,
+              "message": "Duplicate of other owned member name"
+            }
+          ],
+          "sha": "cb4b903c8a49",
+          "same_as_previous": true,
+          "run_id": "20261007T020215-f1b64f36",
+          "text": "package DesignB {\n  private import ScalarValues::*;\n\n  part usage vessel {\n    attribute powerLimitW : Real = 60;\n    attribute dataRateMbps : Real = 12;\n    attribute storageGB : Real = 128;\n    attribute retentionHours : Real = 8;\n    attribute uploadMbps : Real = 12;\n    attribute uplinkMbps : Real = 20;\n\n    part usage visibleCamera {\n      attribute drawW : Real = 28;\n    }\n\n    part usage edgeComputer {\n      attribute drawW : Real = 14;\n    }\n\n    part usage infraredCamera {\n      attribute drawW : Real = 7;\n    }\n\n    part usage recorder {\n    }\n\n    port usage visibleImageryPort;\n    port usage irImageryPort;\n    port usage recorderInPort;\n    port usage recorderOutPort;\n    port usage uplinkPort;\n  }\n\n  requirement def R1 {\n    /* R1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit. */\n  }\n\n  requirement def R2 {\n    /* R2: The visible camera shall draw 28 W. */\n  }\n\n  requirement def R3 {\n    /* R3: The edge computer shall draw 14 W. */\n  }\n\n  requirement def R4 {\n    /* R4: The infrared camera shall draw 7 W. */\n  }\n\n  requirement def R5 {\n    /* R5: Imagery shall be recorded locally at a data rate of 12 Mbps. */\n  }\n\n  requirement def R6 {\n    /* R6: The local storage shall have a capacity of 128 GB. */\n  }\n\n  requirement def R7 {\n    /* R7: Imagery shall be retained for 8 hours. */\n  }\n\n  requirement def R8 {\n    /* R8: Imagery shall be uploaded to shore at a rate of 12 Mbps. */\n  }\n\n  requirement def R9 {\n    /* R9: The uplink capacity shall be 20 Mbps. */\n  }\n}\n"
+        }
+      ],
+      "repair_rounds": 20,
+      "max_rounds": 20,
+      "first_pass_attempt": null,
+      "diagnostics": [
+        "no viable alternative at input 'vessel'",
+        "no viable alternative at input 'visibleCamera'",
+        "no viable alternative at input 'edgeComputer'",
+        "no viable alternative at input 'infraredCamera'",
+        "no viable alternative at input 'recorder'",
+        "no viable alternative at input 'visibleImageryPort'",
+        "no viable alternative at input 'irImageryPort'",
+        "no viable alternative at input 'recorderInPort'",
+        "no viable alternative at input 'recorderOutPort'",
+        "no viable alternative at input 'uplinkPort'",
+        "Duplicate of other owned member name",
+        "Duplicate of other owned member name",
+        "Duplicate of other owned member name",
+        "Duplicate of other owned member name",
+        "Duplicate of other owned member name",
+        "Duplicate of other owned member name",
+        "Duplicate of other owned member name",
+        "Duplicate of other owned member name",
+        "Duplicate of other owned member name"
+      ],
+      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T020215-f1b64f36",
+      "model": "smtek/Qwen3.8-27B:Q3_K_XL",
+      "usage": {
+        "prompt_tokens": 861,
+        "prompt_tokens_details": {
+          "cached_tokens": 182
+        },
+        "completion_tokens": 620,
+        "total_tokens": 1481
+      },
+      "prompt_parts": [
+        {
+          "key": "rules",
+          "label": "Rules",
+          "paper": "p3",
+          "text": "You write SysML v2 textual notation.\nRules:\n- Output one fenced code block tagged sysml, and no prose before or after it.\n- The file contains exactly one package whose name is given in the task.\n- When you use Real, write `private import ScalarValues::*;` as the first line inside the package. In this toolchain an import inside a package needs the visibility keyword; a bare `import` is rejected. Do not import anything else.\n- Use only names the task requires. Do not invent numeric limits.\n- Do not change a number the task tells you to keep.\n- The first line inside the package is exactly: private import ScalarValues::*;\n- Declare attributes as `attribute name : Real = 12.0;` inside part usages, not part definitions, so values are literals.\n"
+        },
+        {
+          "key": "contract",
+          "label": "Template · attribute contract",
+          "paper": "p3",
+          "text": "attribute powerLimitW : Real = 60;  // R1\nattribute drawW : Real = 28;  // R2\nattribute drawW : Real = 14;  // R3\nattribute drawW : Real = 7;  // R4\nattribute dataRateMbps : Real = 12;  // R5\nattribute storageGB : Real = 128;  // R6\nattribute retentionHours : Real = 8;  // R7\nattribute uploadMbps : Real = 12;  // R8\nattribute uplinkMbps : Real = 20;  // R9"
+        },
+        {
+          "key": "examples",
+          "label": "Examples · retrieved existing elements",
+          "paper": "p2",
+          "text": "PortUsage MaritimeISR::Camera::imagery\nPartDefinition MaritimeISR::Camera\nAttributeUsage MaritimeISR::UnmannedSurfaceVessel::powerLimitW 60.0\nPortDefinition MaritimeISR::ImageryPort\nPartDefinition MaritimeISR::UnmannedSurfaceVessel\nConjugatedPortDefinition MaritimeISR::ImageryPort::'~ImageryPort'"
+        },
+        {
+          "key": "task",
+          "label": "Brief + requirements",
+          "paper": "",
+          "text": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 12 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 12 Mbps over one 20 Mbps uplink.\n\nR1: The total power consumption of the visible camera, edge computer, and infrared camera must not exceed the vessel power limit.\nR2: The visible camera shall draw 28 W.\nR3: The edge computer shall draw 14 W.\nR4: The infrared camera shall draw 7 W.\nR5: Imagery shall be recorded locally at a data rate of 12 Mbps.\nR6: The local storage shall have a capacity of 128 GB.\nR7: Imagery shall be retained for 8 hours.\nR8: Imagery shall be uploaded to shore at a rate of 12 Mbps.\nR9: The uplink capacity shall be 20 Mbps."
+        },
+        {
+          "key": "variant",
+          "label": "What this variant must do",
+          "paper": "",
+          "text": "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A."
+        }
+      ],
+      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T013721/DesignB.sysml",
+      "checks": [
+        {
+          "id": "SYNTAX",
+          "label": "Official syntax",
+          "status": "FAIL",
+          "detail": "The parse failed, so nothing was computed."
+        }
+      ],
+      "diagram": "",
+      "cameo_export": null
+    }
+  ],
+  "alignment": {
+    "mappings": [
+      {
+        "design": "DesignA::Camera",
+        "existing": "MaritimeISR::Camera",
+        "reason": "Both are part definitions representing a camera component.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias Camera for MaritimeISR::Camera;",
+        "index": 0
+      },
+      {
+        "design": "DesignA::Camera::imagery",
+        "existing": "MaritimeISR::Camera::imagery",
+        "reason": "Both are ports on the Camera part definition named 'imagery'.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias imagery for MaritimeISR::Camera::imagery;",
+        "index": 1
+      },
+      {
+        "design": "DesignA::ImageryPort",
+        "existing": "MaritimeISR::ImageryPort",
+        "reason": "Both are port definitions named 'ImageryPort'.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias ImageryPort for MaritimeISR::ImageryPort;",
+        "index": 2
+      },
+      {
+        "design": "DesignA::UnmannedSurfaceVessel",
+        "existing": "MaritimeISR::UnmannedSurfaceVessel",
+        "reason": "Both are part definitions representing the Unmanned Surface Vessel system.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias UnmannedSurfaceVessel for MaritimeISR::UnmannedSurfaceVessel;",
+        "index": 3
+      },
+      {
+        "design": "DesignA::usv::powerLimitW",
+        "existing": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW",
+        "reason": "Both represent the power limit attribute for the vessel, though one is an instance attribute and the other a part definition attribute.",
+        "design_exists": true,
+        "existing_exists": true,
+        "ok": true,
+        "construct": "alias",
+        "declared": true,
+        "statement": "alias powerLimitW for MaritimeISR::UnmannedSurfaceVessel::powerLimitW;",
+        "level": "the design states it on a usage (AttributeUsage); the existing model states it in a definition",
+        "index": 4
+      }
+    ],
+    "verified": 5,
+    "declared": 5,
+    "refused": [],
+    "proposed": 5,
+    "existing_names": [
+      "MaritimeISR::Camera",
+      "MaritimeISR::Camera::imagery",
+      "MaritimeISR::ImageryPort",
+      "MaritimeISR::ImageryPort::'~ImageryPort'",
+      "MaritimeISR::UnmannedSurfaceVessel",
+      "MaritimeISR::UnmannedSurfaceVessel::powerLimitW"
+    ],
+    "model": "smtek/Qwen3.8-27B:Q3_K_XL",
+    "constructs": "alias for definitions and definition features, allocation for usages",
+    "note": "Mappings are proposals. Code checks both names exist, writes alias and allocation statements from the two parses, then the official Pilot parses the alignment package. Neither source model is edited. A person accepts or rejects each pair.",
+    "package": {
+      "name": "AlignA_20261007T013721",
+      "source": "package AlignA_20261007T013721 {\n    doc /* Alignment package written by code from the model's verified mappings. Neither source model is edited. */\n    private import DesignA::*;\n    private import MaritimeISR::*;\n    alias Camera for MaritimeISR::Camera;\n    alias imagery for MaritimeISR::Camera::imagery;\n    alias ImageryPort for MaritimeISR::ImageryPort;\n    alias UnmannedSurfaceVessel for MaritimeISR::UnmannedSurfaceVessel;\n    alias powerLimitW for MaritimeISR::UnmannedSurfaceVessel::powerLimitW;\n}\n",
+      "files": [
+        "MaritimeISR.sysml",
+        "DesignA.sysml",
+        "AlignA_20261007T013721.sysml"
+      ],
+      "sysml_status": "PASS",
+      "run_id": "20261007T020350-1dd386b9",
+      "diagnostics": [
+        {
+          "line": 34,
+          "message": "Duplicate of inherited member name 'eoCamera' from UnmannedSurfaceVessel"
+        },
+        {
+          "line": 37,
+          "message": "Duplicate of inherited member name 'irCamera' from UnmannedSurfaceVessel"
+        },
+        {
+          "line": 40,
+          "message": "Duplicate of inherited member name 'processor' from UnmannedSurfaceVessel"
+        },
+        {
+          "line": 43,
+          "message": "Duplicate of inherited member name 'radio' from UnmannedSurfaceVessel"
+        }
+      ]
+    }
+  },
+  "tradeoffs": {
+    "proposals": [
+      {
+        "title": "Balanced Standard Configuration",
+        "rationale": "Uses standard visible and IR cameras with the standard edge computer. Total power draw is 41 + 12 + 25 = 78 W, which exceeds the 60 W limit. Wait, the brief says 'visible camera drawing 28 W' and 'edge computer drawing 14 W' in the scenario description, but the catalogue has specific items. Let's look at the catalogue. eo_std is 41W, eo_lite is 28W. edge_std is 25W, edge_low is 14W. ir_std is 12W, ir_lite is 7W. The brief describes the *current* state or a target state? 'A harbor patrol... carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W.' This implies the current setup is eo_lite (28W) and edge_low (14W). Adding ir_lite (7W) results in 28+14+7 = 49W, which is under 60W. The failing check is 'Official syntax'. I need to provide valid JSON. Let's create 3 distinct valid configurations that stay under 60W.",
+        "choice": {
+          "visible_camera": "eo_lite",
+          "ir_camera": "ir_lite",
+          "computer": "edge_low",
+          "uplink": "cell_20",
+          "storage": "ssd_128",
+          "dataRateMbps": 12,
+          "retentionHours": 8,
+          "uploadMbps": 12
+        },
+        "valid": true,
+        "budgets": {
+          "power": {
+            "actual": 49,
+            "limit": 60,
+            "unit": "W",
+            "status": "PASS"
+          },
+          "link": {
+            "actual": 12.0,
+            "limit": 20,
+            "unit": "Mbps",
+            "status": "PASS"
+          },
+          "store": {
+            "actual": 43.2,
+            "limit": 128,
+            "unit": "GB",
+            "status": "PASS"
+          },
+          "preview": false
+        },
+        "feasible": true,
+        "brief": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 12 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 12 Mbps over one 20 Mbps uplink."
+      },
+      {
+        "title": "High-End Sensing with Low Power Compute",
+        "rationale": "Uses the standard visible camera (41W) and standard IR camera (12W). To stay under 60W, we must use the low-power computer (14W). Total: 41 + 12 + 14 = 67W. This exceeds 60W. So we cannot use eo_std with ir_std. Let's try eo_std (41W) + ir_lite (7W) + edge_low (14W) = 62W. Still over. Let's try eo_lite (28W) + ir_std (12W) + edge_std (25W) = 65W. Over. Let's try eo_lite (28W) + ir_std (12W) + edge_low (14W) = 54W. This works. This configuration prioritizes better IR sensing while keeping power low.",
+        "choice": {
+          "visible_camera": "eo_lite",
+          "ir_camera": "ir_std",
+          "computer": "edge_low",
+          "uplink": "cell_8",
+          "storage": "ssd_256",
+          "dataRateMbps": 18,
+          "retentionHours": 8,
+          "uploadMbps": 6
+        },
+        "valid": true,
+        "budgets": {
+          "power": {
+            "actual": 54,
+            "limit": 60,
+            "unit": "W",
+            "status": "PASS"
+          },
+          "link": {
+            "actual": 6.0,
+            "limit": 8,
+            "unit": "Mbps",
+            "status": "PASS"
+          },
+          "store": {
+            "actual": 64.8,
+            "limit": 256,
+            "unit": "GB",
+            "status": "PASS"
+          },
+          "preview": true
+        },
+        "feasible": true,
+        "brief": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 12 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 256 GB of storage. A 6 Mbps preview is uploaded to shore over one 8 Mbps uplink; the full-rate upload is not required."
+      },
+      {
+        "title": "Minimal Power Footprint",
+        "rationale": "Uses the lowest power options for all components to maximize battery life or allow for other systems. eo_lite (28W) + ir_lite (7W) + edge_low (14W) = 49W. This leaves 11W headroom. Uses the smaller storage and lower data rates to reduce complexity and power associated with data handling, though data rate is a parameter not directly tied to power in the catalogue, it affects storage usage. 12 Mbps * 8 hours * 3600 seconds / 8 = 54 GB. Fits in 128 GB.",
+        "choice": {
+          "visible_camera": "eo_lite",
+          "ir_camera": "ir_lite",
+          "computer": "edge_low",
+          "uplink": "cell_8",
+          "storage": "ssd_128",
+          "dataRateMbps": 6,
+          "retentionHours": 4,
+          "uploadMbps": 2
+        },
+        "valid": true,
+        "budgets": {
+          "power": {
+            "actual": 49,
+            "limit": 60,
+            "unit": "W",
+            "status": "PASS"
+          },
+          "link": {
+            "actual": 2.0,
+            "limit": 8,
+            "unit": "Mbps",
+            "status": "PASS"
+          },
+          "store": {
+            "actual": 10.8,
+            "limit": 128,
+            "unit": "GB",
+            "status": "PASS"
+          },
+          "preview": true
+        },
+        "feasible": true,
+        "brief": "A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add an infrared camera drawing 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 6 Mbps for 4 hours on 128 GB of storage. A 2 Mbps preview is uploaded to shore over one 8 Mbps uplink; the full-rate upload is not required."
+      }
+    ],
+    "model": "smtek/Qwen3.8-27B:Q3_K_XL",
+    "usage": {
+      "prompt_tokens": 548,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens": 947,
+      "total_tokens": 1495
+    }
+  },
+  "usage": {
+    "calls": 26,
+    "by_model": {
+      "smtek/Qwen3.8-27B:Q3_K_XL": {
+        "calls": 26,
+        "prompt_tokens": 245690,
+        "completion_tokens": 13264,
+        "cached_tokens": 198117
+      }
+    }
+  },
+  "gate": {
+    "answer": "awaiting-person",
+    "eligible": [
+      "A"
+    ],
+    "effect": "Design A passes all four checks and may be approved into memory by a person."
+  }
+}

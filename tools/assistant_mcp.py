@@ -130,18 +130,26 @@ def read_project(name: str) -> str:
     "memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, "
     "parses both with the official SysML v2 Pilot and repairs on its errors, aligns A with the memory, computes the "
     "power / upload / storage / trace checks, proposes trade-offs when a check fails, draws the diagram and exports "
-    "the passing designs for Cameo. Takes 3 to 8 minutes. model: qwen3.8-max (default), qwen3.8-flash or "
-    "'qwen3.8-27b (Ollama)' for the local 3-bit model."))
-def run_design(brief: str, model: str = "qwen3.8-max") -> str:
+    "the passing designs for Cameo. Takes 1 to 8 minutes. model: qwen3.8-max (default), qwen3.8-flash or "
+    "'qwen3.8-27b (Ollama)' for the local 3-bit model. start_from: 'auto' adapts a similar project when the memory "
+    "has one and starts new otherwise; 'new' always writes both designs from scratch; 'similar' insists on adapting "
+    "and fails when nothing similar exists. Use what the engineer asked for."))
+def run_design(brief: str, model: str = "qwen3.8-max", start_from: str = "auto") -> str:
     if model not in MODELS:
         raise ValueError(f"model must be one of {MODELS}")
+    if start_from not in {"auto", "new", "similar"}:
+        raise ValueError("start_from must be auto, new or similar")
     if len((brief or "").strip()) < 20:
         raise ValueError("The brief must be a full description with the engineer's numbers")
     started = _shell("/run/start", {"brief": brief, "agent": "direct", "model": model})
     run = started["run"]
     retrieve = _shell("/run/retrieve", {"run": run})
     _shell("/run/requirements", {"run": run})
-    _shell("/run/adapt" if retrieve.get("path") == "reuse" else "/run/design", {"run": run})
+    similar = (retrieve.get("data") or {}).get("similar_project")
+    if start_from == "similar" and not similar:
+        raise ValueError("The memory has no similar project to adapt; run with start_from 'new' or 'auto'")
+    adapt = start_from == "similar" or (start_from == "auto" and retrieve.get("path") == "reuse")
+    _shell("/run/adapt" if adapt else "/run/design", {"run": run})
     _shell("/run/validate", {"run": run})
     _shell("/run/align", {"run": run})
     checks = _shell("/run/checks", {"run": run})
@@ -152,8 +160,8 @@ def run_design(brief: str, model: str = "qwen3.8-max") -> str:
         except RuntimeError as exc:
             tradeoffs = f"trade-offs not available: {exc}"
     review = _shell("/run/review", {"run": run})
-    return _dump({"run_id": run, "similar_project": (retrieve.get("data") or {}).get("similar_project"),
-                  "review": review["summary"], "checks": checks["summary"], "tradeoffs": tradeoffs,
+    return _dump({"run_id": run, "started_from": "the similar project " + similar["name"] if adapt and similar else "scratch",
+                  "similar_project": similar, "review": review["summary"], "checks": checks["summary"], "tradeoffs": tradeoffs,
                   "diagrams": (review.get("data") or {}).get("diagrams"), "cameo_exports": (review.get("data") or {}).get("cameo_exports"),
                   "next": "Explain the review to the engineer. If a design passed all four checks and the engineer approves it, "
                           "call write_to_memory; otherwise call record_decision with Reject or Send back."})
@@ -202,8 +210,14 @@ def write_to_memory(run_id: str, design: str = "A") -> str:
     if key not in {"A", "B"}:
         raise ValueError("design must be A or B")
     approval = _shell("/run/approve", {"run": run, "key": key})
+    approved = bool((approval.get("data") or {}).get("approved"))
+    if not approved:
+        # The gate refused (a check failed, the Pilot failed, or a number has no source): nothing is written and no
+        # approval is recorded; the engineer may still record Reject or Send back.
+        return _dump({"run_id": run, "approved": False, "result": approval["summary"],
+                      "next": "Tell the engineer why the gate refused. Record Reject or Send back if they decide so."})
     decision = _shell("/run/decision", {"run": run, "decision": f"Approve design {key}", "note": approval["summary"].splitlines()[-1]})
-    return _dump({"run_id": run, "approved": (approval.get("data") or {}).get("approved"), "result": approval["summary"], "record": decision["summary"]})
+    return _dump({"run_id": run, "approved": True, "result": approval["summary"], "record": decision["summary"]})
 
 
 @server.tool(description="Record the engineer's decision on a design run without writing memory: decision is 'Reject' or 'Send back'; note is the reason.")

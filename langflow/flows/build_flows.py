@@ -40,8 +40,10 @@ from rtrc.rtrc_record import RtrcRecord  # noqa: E402
 from rtrc.rtrc_results import RtrcResults  # noqa: E402
 from rtrc.rtrc_start import RtrcStart  # noqa: E402
 from rtrc.rtrc_step import STEPS, RtrcStep  # noqa: E402
+from rtrc.rtrc_tool import STEPS as TOOL_STEPS, RtrcTool  # noqa: E402
 
 S = list(STEPS)
+T = list(TOOL_STEPS)
 KNOWLEDGE_BASE = "rtrc_memory"
 sys.path.insert(0, str(ROOT))
 from agents.llm_local import OLLAMA_TAG  # noqa: E402
@@ -50,19 +52,29 @@ from agents.llm_local import OLLAMA_TAG  # noqa: E402
 MCP_SERVER = {"name": "rtrc-assistant", "config": {"url": "http://127.0.0.1:8782/mcp"}}
 PIPELINE_TOOL_NAME = "RTRC design pipeline"  # Run Flow names the tool "<flow name>_tool" with spaces turned into dashes
 PIPELINE_TOOL = "RTRC-design-pipeline_tool"
-# The nine tools of tools/assistant_mcp.py, in the order they appear on the canvas; run_design is left out because
-# the pipeline is the Run Flow card. (name, card title, what the card says)
+# The single-step tools of tools/assistant_mcp.py stay MCP cards (name, card title, what the card says). search_memory,
+# write_to_memory, validate_sysml_text and run_design are sub-flows run as tools instead (decisions 033, 034).
 ASSISTANT_TOOLS = [
-    ("list_projects", "Tool · list projects", "What is in the memory: MaritimeISR and every approved design, with card counts."),
-    ("search_memory", "Tool · search memory · Paper 2", "The results page's own retrieval: MiniLM + FAISS over the Pilot-parsed cards, seeds plus one hop."),
-    ("read_project", "Tool · read a project", "The SysML v2 text of MaritimeISR or of an approved design."),
-    ("design_status", "Tool · status of a run", "What a saved run produced: path, requirements, each design's Pilot result and checks, the decision."),
-    ("validate_sysml_text", "Tool · official Pilot on pasted SysML", "Parses text the engineer pastes with the official SysML v2 Pilot: PASS or FAIL with the diagnostics."),
-    ("write_to_memory", "Tool · write to memory · approval card", "Writes an approved design into the memory. Gated twice: all four checks must have passed, and this call pauses for the person's approval (Actions row)."),
-    ("record_decision", "Tool · record a decision", "Saves Approve, Reject or Send back with the engineer's reason on the run's record (page 2.3)."),
+    ("list_projects", "Tool · list projects", "What is in the memory: MaritimeISR and every approved design, with card counts. Reads analysis/memory/approved.jsonl."),
+    ("read_project", "Tool · read a project", "The SysML v2 text of MaritimeISR or of an approved design, from the file itself."),
+    ("design_status", "Tool · status of a run", "What a saved run produced (analysis/discover-<run>.json): path, requirements, each design's Pilot result and checks, the decision."),
+    ("record_decision", "Tool · record a decision", "Saves Reject or Send back with the engineer's reason on the run's record (page 2.3)."),
     ("export_cameo", "Tool · export for Cameo", "Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when RTRC provides the license)."),
 ]
-ASSISTANT_TOOL_NAMES = [name for name, _, _ in ASSISTANT_TOOLS] + ["run_design"]
+ASSISTANT_TOOL_NAMES = [name for name, _, _ in ASSISTANT_TOOLS] + ["search_memory", "validate_sysml_text", "write_to_memory", "run_design"]
+# The sub-flows the unfolded assistant runs as tools: (slug, flow name, Run Flow tool name, chat-input node id, card title, card text)
+TOOL_FLOWS = {
+    "search": ("rtrc-tool-search", "RTRC memory search", "RTRC-memory-search_tool", "ChatInput-query",
+               "Tool · search memory (a flow) · Paper 2",
+               "Runs the flow \"RTRC memory search\": the memory library → MiniLM + FAISS seeds → one hop of neighbours → cards. Open it to see each step."),
+    "write": ("rtrc-tool-write", "RTRC write to memory", "RTRC-write-to-memory_tool", "ChatInput-approval",
+              "Tool · write to memory (a flow) · approval card · Paper 2",
+              "Pauses for your approval, then runs the flow \"RTRC write to memory\": the gate (Pilot PASS, four checks PASS) → the write → the record → "
+              "the knowledge base refreshed with the new cards."),
+    "validate": ("rtrc-tool-validate", "RTRC validate SysML", "RTRC-validate-SysML_tool", "ChatInput-sysml",
+                 "Tool · official Pilot on pasted SysML (a flow) · Paper 3",
+                 "Runs the flow \"RTRC validate SysML\": the pasted text saved as a file → the official SysML v2 Pilot → PASS or FAIL with the diagnostics."),
+}
 TOOL_OUTPUT = {"allows_loop": False, "cache": True, "display_name": "Toolset", "group_outputs": False, "hidden": None, "loop_types": None,
                "method": "to_toolkit", "name": "component_as_tool", "options": None, "required_inputs": None, "selected": "Tool",
                "tool_mode": True, "types": ["Tool"], "value": "__UNDEFINED__"}
@@ -74,7 +86,12 @@ UNFOLDED_VARIANTS = {
 }
 UNFOLDED_PROMPT = (ROOT / "tools" / "assistant" / "rtrc-assistant.md").read_text(encoding="utf-8").split("\n\nTools:")[0] + """
 
-Tools: list_projects, search_memory and read_project read the memory with the results page's own retrieval. The knowledge-base search is Langflow's semantic search over the same cards. RTRC-design-pipeline_tool runs the verified pipeline on a brief (2 to 10 minutes; pass the brief as its input value): memory search, numbered requirements, designs A and B written by OpenCode in a sandbox with the official Pilot as a tool, the Pilot's verdict, alignment with the memory, the power / upload / storage / trace checks, trade-offs when a check fails, diagram and Cameo export; it returns the review text with the run id. It needs the results page (port 8770) stopped; if it says so, tell the engineer. design_status shows a saved run. validate_sysml_text parses SysML the engineer pastes. write_to_memory pauses for the person's approval before it writes; record_decision and export_cameo act on a finished run.
+Tools. list_projects and read_project read the memory's files. The knowledge-base search is Langflow's semantic search over the same cards. Four tools are flows; each takes one argument and must be called exactly like this:
+- RTRC-memory-search_tool, flow_tweak_data = {"ChatInput-query~input_value": <a few search words>}: the memory library → MiniLM + FAISS seeds → one hop of neighbours → the matching cards with values and sources.
+- RTRC-design-pipeline_tool, flow_tweak_data = {"ChatInput-brief~input_value": <the confirmed brief, word for word>} (2 to 10 minutes): memory search, numbered requirements, designs A and B written by OpenCode in a sandbox with the official Pilot as a tool, the Pilot's verdict, alignment with the memory, the power / upload / storage / trace checks, trade-offs when a check fails, diagram and Cameo export; returns the review text with the run id. An empty or misnamed argument is refused. When it returns, compare its "Brief:" line with the brief the engineer confirmed; if they differ, say so and do not present the verdicts as the engineer's design. It needs the results page (port 8770) stopped; if it says so, tell the engineer.
+- RTRC-validate-SysML_tool, flow_tweak_data = {"ChatInput-sysml~input_value": <the SysML text the engineer pasted>}: saves it as a file and runs the official Pilot; PASS or FAIL with the diagnostics.
+- RTRC-write-to-memory_tool, flow_tweak_data = {"ChatInput-approval~input_value": "<run id> A" or "<run id> B"}: pauses for the person's approval, then checks the gate (Pilot PASS and all four checks PASS), writes the design into the memory, records the approval and refreshes the knowledge base. Call it only after the engineer named the design.
+design_status shows a saved run; record_decision (Reject or Send back, with the reason) and export_cameo act on a finished run.
 
 Brief format for the pipeline: the vessel and its devices with power draws in W, the power limit in W, the local recording rate in Mbps, the retention hours, the storage in GB, the upload rate in Mbps and the uplink capacity in Mbps, all from the engineer."""
 
@@ -276,24 +293,33 @@ def unfolded_flow(slug: str) -> dict:
                             "system_prompt": UNFOLDED_PROMPT, "n_messages": 30, "max_iterations": 20, "add_current_date_tool": False,
                             "handle_parsing_errors": True})
     chat_out = _frontend_node(ChatOutput(_id="ChatOutput-answer"), "ChatOutput-answer", 1240, 420, "Answer", "", {})
-    cards = []
-    for index, (name, title, info) in enumerate(ASSISTANT_TOOLS):
-        x, y = 40 + (index % 3) * 420, 820 + (index // 3) * 340
+    grid = [(40 + (i % 3) * 420, 820 + (i // 3) * 340) for i in range(12)]
+    cards: list[dict] = []
+    # The four tools that are flows (decisions 033, 034), first on the canvas; the write card asks for approval.
+    for kind in ("search", "pipeline", "validate", "write"):
+        if kind == "pipeline":
+            flow_name, tool_name, title, info = PIPELINE_TOOL_NAME, PIPELINE_TOOL, "Tool · run the design pipeline (a flow) · Papers 2, 3, 1", (
+                f"Runs the flow \"{PIPELINE_TOOL_NAME}\": ① memory → ② requirements → ③ designs by OpenCode in the sandbox (its rules, template and examples shown as cards) → "
+                "④ official Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review. Open that flow to see every step; edit it and this assistant runs the edited version.")
+        else:
+            _, flow_name, tool_name, _, title, info = TOOL_FLOWS[kind]
+        x, y = grid[len(cards)]
+        # The flow is found by name for the user running the assistant; import_flows.py fills in the id (an empty-string id
+        # would be compared with the loaded flow's id and refused).
+        values = {"flow_name_selected": flow_name, "flow_id_selected": None, "cache_flow": False}
+        if kind == "write":
+            values["tools_metadata"] = _flow_tool_metadata(tool_name, approval=True)
+        cards.append(_frontend_node(RunFlowComponent(_id=f"RunFlow-{kind}"), f"RunFlow-{kind}", x, y, title, info, values, tool_mode=True))
+    for name, title, info in ASSISTANT_TOOLS:
+        x, y = grid[len(cards)]
         cards.append(_frontend_node(MCPToolsComponent(_id=f"MCPTools-{name}"), f"MCPTools-{name}", x, y, title, info,
                                     {"mcp_server": MCP_SERVER, "use_cache": False, "tool_execution_timeout": 1200,
                                      "tools_metadata": _tools_metadata(descriptions, name)}, tool_mode=True))
-    index = len(ASSISTANT_TOOLS)
-    knowledge = _frontend_node(KnowledgeComponent(_id="Knowledge-rtrc"), "Knowledge-rtrc", 40 + (index % 3) * 420, 820 + (index // 3) * 340,
-                               "Memory as knowledge base", "Langflow's semantic search over the same cards (Qwen embeddings).",
+    x, y = grid[len(cards)]
+    knowledge = _frontend_node(KnowledgeComponent(_id="Knowledge-rtrc"), "Knowledge-rtrc", x, y,
+                               "Memory as knowledge base · Paper 2", "Langflow's semantic search over the same cards (Qwen embeddings, filled by F0 and by the write-to-memory flow).",
                                {"knowledge_base": KNOWLEDGE_BASE, "mode": "Retrieve", "top_k": 8, "include_metadata": True}, tool_mode=True)
     knowledge["data"]["node"]["template"]["knowledge_base"]["options"] = [KNOWLEDGE_BASE]
-    index += 1
-    pipeline = _frontend_node(RunFlowComponent(_id="RunFlow-pipeline"), "RunFlow-pipeline", 40 + (index % 3) * 420, 820 + (index // 3) * 340,
-                              "Tool · run the design pipeline (a flow)",
-                              f"Runs the flow \"{PIPELINE_TOOL_NAME}\": ① memory → ② requirements → ③ designs by OpenCode in the sandbox → ④ official Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review. Open that flow to see every step; edit it and this assistant runs the edited version.",
-                              # The flow is found by name for the user running the assistant; an empty-string id would be compared
-                              # with the loaded flow's id and refused, so the id stays None.
-                              {"flow_name_selected": PIPELINE_TOOL_NAME, "flow_id_selected": None, "cache_flow": False}, tool_mode=True)
     agent_template = agent["data"]["node"]["template"]
     tools_handle = {"fieldName": "tools", "id": "Agent-rtrc", "inputTypes": agent_template["tools"]["input_types"], "type": agent_template["tools"]["type"]}
     edges = [_edge("ChatInput-ask", "Agent-rtrc", {"dataType": "ChatInput", "id": "ChatInput-ask", "name": "message", "output_types": ["Message"]},
@@ -301,12 +327,14 @@ def unfolded_flow(slug: str) -> dict:
              _edge("Agent-rtrc", "ChatOutput-answer", {"dataType": "Agent", "id": "Agent-rtrc", "name": "response", "output_types": ["Message"]},
                    {"fieldName": "input_value", "id": "ChatOutput-answer",
                     "inputTypes": chat_out["data"]["node"]["template"]["input_value"]["input_types"], "type": chat_out["data"]["node"]["template"]["input_value"]["type"]})]
-    for node in [*cards, knowledge, pipeline]:
+    for node in [*cards, knowledge]:
         edges.append(_edge(node["id"], "Agent-rtrc", {"dataType": node["data"]["type"], "id": node["id"], "name": "component_as_tool", "output_types": ["Tool"]}, tools_handle))
     note_text = (f"# RTRC design assistant · unfolded ({variant['label']})\n\nThe same assistant as **RTRC design assistant**, with its parts on the canvas: Langflow's own Agent in the middle, "
-                 "one card per RTRC tool around it, the memory as a knowledge base, and the design pipeline as a flow the Agent runs as a tool.\n\n"
+                 "one card per RTRC tool around it, the memory as a knowledge base, and four tools that are flows of their own.\n\n"
                  f"- Talk to it like a colleague: ask what exists, describe a need, answer its questions about missing numbers, confirm the brief it proposes, decide on the result. Model: {variant['where']}.\n"
-                 f"- **Tool · run the design pipeline** opens into the flow *{PIPELINE_TOOL_NAME}*: ① memory → ② requirements → ③ designs written by OpenCode in a sandbox with the official Pilot in hand → ④ Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review. Edit that flow and this assistant runs the edited version. Stop the results page (8770) first.\n"
+                 f"- Flows run as tools, open them to see each step: **RTRC memory search** (library → MiniLM + FAISS seeds → one hop → cards, paper 2); **{PIPELINE_TOOL_NAME}** "
+                 "(① memory → ② requirements → ③ designs by OpenCode in the sandbox, with the rules, template and examples it was given shown as cards → ④ Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; stop the results page 8770 first); "
+                 "**RTRC validate SysML** (file → official Pilot, paper 3); **RTRC write to memory** (gate → write → record → knowledge base refreshed). Edit a flow and this assistant runs the edited version.\n"
                  "- **Tool · write to memory** pauses for your approval (its Actions row): the AGENTS.md gate as a card. Every answer shows the tools it called when you expand it in the Playground.\n"
                  "- It never invents numbers and never moves a stated limit; verdicts come from the official Pilot and the checks. Records appear on page 2.3.")
     note = {"id": "note-unfolded", "type": "noteNode", "position": {"x": 40, "y": -60}, "width": 1240, "height": 320, "style": {"width": 1240, "height": 320},
@@ -315,7 +343,80 @@ def unfolded_flow(slug: str) -> dict:
     return {"name": f"RTRC design assistant · unfolded ({variant['slug_label']})",
             "description": f"The assistant with its parts on the canvas: Langflow's Agent ({variant['label']}), one card per RTRC tool, the memory knowledge base, the design pipeline as a flow run as a tool; write to memory pauses for approval.",
             "endpoint_name": slug, "is_component": False, "tags": ["rtrc", "assistant", "unfolded"] + (["local"] if slug.endswith("local") else []),
-            "data": {"nodes": [note, chat_in, agent, chat_out, *cards, knowledge, pipeline], "edges": edges, "viewport": {"x": 0, "y": 0, "zoom": 0.5}}}
+            "data": {"nodes": [note, chat_in, agent, chat_out, *cards, knowledge], "edges": edges, "viewport": {"x": 0, "y": 0, "zoom": 0.5}}}
+
+
+def _flow_tool_metadata(tool_name: str, *, approval: bool) -> dict:
+    """The Actions table of a Run Flow tool card; approval=True makes the Agent pause for the person before running it."""
+    from lfx.base.tools.constants import TOOLS_METADATA_INFO
+    from lfx.inputs.inputs import ToolsInput
+    rows = [{"name": tool_name, "description": "", "tags": [tool_name], "status": True, "approval_actions": ["approve", "reject"] if approval else []}]
+    return ToolsInput(name="tools_metadata", display_name="Actions", info=TOOLS_METADATA_INFO, value=rows).to_dict()
+
+
+def _as_tool(flow: dict, chat_input_id: str) -> dict:
+    """Run Flow turns the input component's listed fields into the tool's arguments; only the engineer's text."""
+    node = next(node for node in flow["data"]["nodes"] if node["id"] == chat_input_id)
+    node["data"]["node"]["field_order"] = ["input_value"]
+    return flow
+
+
+def tool_flow(kind: str) -> dict:
+    """One assistant tool unfolded as a flow of cards, run by the unfolded assistant through Run Flow (decision 034)."""
+    slug, name, tool_name, chat_id, _, _ = TOOL_FLOWS[kind]
+    chat_in = ChatInput(_id=chat_id)
+    if kind == "search":
+        library, seeds, hop = RtrcTool(_id="RtrcTool-library"), RtrcTool(_id="RtrcTool-seeds"), RtrcTool(_id="RtrcTool-hop")
+        library.set(text=chat_in.message_response, step=T[0])
+        seeds.set(text=chat_in.message_response, upstream=library.as_message, step=T[1])
+        hop.set(text=chat_in.message_response, upstream=seeds.as_message, step=T[2])
+        out = ChatOutput(_id="ChatOutput-cards")
+        out.set(input_value=hop.as_message)
+        graph = _graph(chat_in, [out])
+        titles = {chat_id: ("Search words (the tool's argument)", "What the engineer is asking about."),
+                  "RtrcTool-library": ("Memory library · Paper 2", "The sources the search reads: MaritimeISR and every approved design (analysis/memory/approved.jsonl), as element cards from the official Pilot parse."),
+                  "RtrcTool-seeds": ("MiniLM + FAISS seeds · Paper 2", "bench/vector_index.py (frozen): the query embedded by the pinned MiniLM, searched in a FAISS index of the cards; cosine ≥ 0.30 plus the exact-name bonus. The index is cached by content hash and rebuilt when the memory changes."),
+                  "RtrcTool-hop": ("One hop of neighbours · Paper 2", "bench/discover.py retrieve_existing: each seed's linked elements, then the cards the assistant receives, with values and sources."),
+                  "ChatOutput-cards": ("Cards (the tool's result)", "")}
+        notes = [("note-search", "# RTRC memory search\n\nThe assistant's memory search as cards, in the order the code runs: the library, the vector seeds, the one-hop expansion. Every card calls the same function the results page and the pipeline's ① Search memory use, so the cards here are the cards there.\n\n- The library is the memory itself: MaritimeISR plus every approved design, re-read on every call, so a newly approved design is searchable at once.\n- The MiniLM + FAISS index is a derived cache keyed by the cards' content; it rebuilds itself when the memory changes (bench/vector_index.py, frozen).\n- The knowledge base rtrc_memory (Qwen embeddings) is a second, separate index for Langflow's own search; the write-to-memory flow refreshes it.", 40, -20)]
+        description = "Search the memory for parts, attributes, limits and connections related to the engineer's words: the memory library, MiniLM + FAISS seeds (cosine ≥ 0.30 plus the exact-name bonus), one hop of neighbours; returns the matching cards with values and sources."
+    elif kind == "write":
+        gate, write, record = RtrcTool(_id="RtrcTool-gate"), RtrcTool(_id="RtrcTool-write"), RtrcTool(_id="RtrcTool-record")
+        gate.set(text=chat_in.message_response, step=T[3])
+        write.set(text=chat_in.message_response, upstream=gate.as_message, step=T[4])
+        record.set(text=chat_in.message_response, upstream=write.as_message, step=T[5])
+        memory = RtrcMemory(_id="RtrcMemory-refresh")
+        memory.set(after=record.as_message)
+        knowledge = KnowledgeComponent(_id="Knowledge-refresh")
+        knowledge.set(input_df=memory.as_dataframe, knowledge_base=KNOWLEDGE_BASE, mode="Ingest", allow_duplicates=False, chunk_size=10,
+                      column_config=[{"column_name": "text", "vectorize": True, "identifier": False},
+                                     {"column_name": "id", "vectorize": False, "identifier": True}])
+        out = ChatOutput(_id="ChatOutput-written")
+        out.set(input_value=record.as_message)
+        graph = _graph(chat_in, [out, knowledge])
+        titles = {chat_id: ("'<run id> A' or '<run id> B' (the tool's argument)", "The design the engineer approved."),
+                  "RtrcTool-gate": ("Gate · read only", "The page's rule before anything is written: official Pilot PASS, and POWER, LINK, STORE, TRACE all PASS; refuses a design already in memory."),
+                  "RtrcTool-write": ("Write into memory · Paper 2", "Appends the design to analysis/memory/approved.jsonl and keeps its SysML file; the same gate refuses when a check failed."),
+                  "RtrcTool-record": ("Record the approval", "The decision, grades and times on the run's record (page 2.3); only when the write happened."),
+                  "RtrcMemory-refresh": ("Re-read the library · Paper 2", "MaritimeISR plus every approved design, now including the new one, as cards from the official parse."),
+                  "Knowledge-refresh": ("Refresh the knowledge base rtrc_memory", "Embeds only the new cards with Qwen (qwen3.7-text-embedding); rows already there are skipped. Langflow's search sees the new design without running F0 by hand."),
+                  "ChatOutput-written": ("Result (the tool's result)", "")}
+        notes = [("note-write", "# RTRC write to memory\n\nThe approval gate of AGENTS.md as cards. The unfolded assistant pauses for the person before running this flow (the Actions row of its card); then: the gate (read only) → the write through the page's gate → the record → the memory re-read and the knowledge base refreshed with the new cards.\n\n- Nothing is written when the gate is closed: a failed check, a failed parse, or an unsourced number.\n- The MiniLM + FAISS index and list/read/search tools see the new design at once (they re-read the memory); this flow also refreshes Langflow's own knowledge base, so F0 no longer has to be run by hand after an approval.", 40, -20)]
+        description = "Write an approved design into the memory: the gate (official Pilot PASS and all four checks PASS), the write, the record on the run, and the knowledge base refreshed with the new cards. The argument is '<run id> A' or '<run id> B'. Refuses a design that did not pass or is already in memory."
+    else:
+        save, pilot = RtrcTool(_id="RtrcTool-save"), RtrcTool(_id="RtrcTool-pilot")
+        save.set(text=chat_in.message_response, step=T[6])
+        pilot.set(upstream=save.as_message, step=T[7])
+        out = ChatOutput(_id="ChatOutput-verdict")
+        out.set(input_value=pilot.as_message)
+        graph = _graph(chat_in, [out])
+        titles = {chat_id: ("SysML v2 text (the tool's argument)", "What the engineer pasted."),
+                  "RtrcTool-save": ("Save as a file", "The text becomes <package>.sysml under mvp/exam-inbox/; the package name is read from the text."),
+                  "RtrcTool-pilot": ("Official SysML v2 Pilot · Paper 3", "mvp/engine.py run_submitted_model: the same Pilot 0.62 that grades the exam; PASS or FAIL with every diagnostic."),
+                  "ChatOutput-verdict": ("Verdict (the tool's result)", "")}
+        notes = [("note-validate", "# RTRC validate SysML\n\nThe official Pilot on text the engineer pastes, as two cards: the file, then the parse. The Pilot is the judge here as everywhere else; the assistant only reports what it says.", 40, -20)]
+        description = "Parse SysML v2 text the engineer pasted with the official SysML v2 Pilot: the text is saved as a file and parsed; returns PASS or FAIL with the diagnostics (line and message)."
+    return _as_tool(build(name, description, graph, titles, notes, None, ["rtrc", "tool", kind]), chat_id)
 
 
 # ---------- the main agent flow (F4) ----------
@@ -329,9 +430,9 @@ def main_flow(local: bool = False, as_tool: bool = False) -> dict:
     chat_in = ChatInput(_id="ChatInput-brief")
     start = RtrcStart(_id="RtrcStart-start")
     if local:
-        start.set(brief=chat_in.message_response, agent="OpenCode on Qwen (sandbox)", model="qwen3.8-27b (Ollama)", replay="")
+        start.set(brief=chat_in.message_response, agent="OpenCode on Qwen (sandbox)", model="qwen3.8-27b (Ollama)", replay="", require_brief=as_tool)
     else:
-        start.set(brief=chat_in.message_response, agent="Qwen direct", model="qwen3.8-flash", replay="")
+        start.set(brief=chat_in.message_response, agent="Qwen direct", model="qwen3.8-flash", replay="", require_brief=False)
     steps = {}
     for key, step_name in (("retrieve", S[0]), ("req", S[1]), ("new", S[2]), ("adapt", S[3]), ("validate", S[4]),
                            ("align", S[5]), ("checks", S[6]), ("trade", S[7]), ("review", S[8])):
@@ -353,8 +454,17 @@ def main_flow(local: bool = False, as_tool: bool = False) -> dict:
     if as_tool:
         out = ChatOutput(_id="ChatOutput-review")
         out.set(input_value=steps["review"].as_message)
-        graph = _graph(chat_in, [out])
+        # Read-only cards: what ③ handed to OpenCode (decision 034). They hang off both design branches and feed nothing.
+        prompt_cards = []
+        for key, step_name in (("rules", T[8]), ("contract", T[9]), ("examples", T[10])):
+            card = RtrcTool(_id=f"RtrcTool-prompt-{key}")
+            card.set(upstream=steps["adapt"].as_message, upstream_alt=steps["new"].as_message, step=step_name)
+            prompt_cards.append(card)
+        graph = _graph(chat_in, [out, *prompt_cards])
         titles = {
+            "RtrcTool-prompt-rules": ("③ shown · Rules · Paper 3", "The SysML v2 rules OpenCode wrote the designs under (bench/discover.py DESIGN_RULES). Read only."),
+            "RtrcTool-prompt-contract": ("③ shown · Attribute template · Paper 3", "The attribute contract: one attribute per requirement, names verbatim, numbers from the brief. Read only."),
+            "RtrcTool-prompt-examples": ("③ shown · Similar project or retrieved examples · Paper 2", "What came from the memory: the similar project's model to adapt, or the retrieved element cards. Read only."),
             "ChatInput-brief": ("Brief (the tool's argument)", "The unfolded assistant passes the confirmed brief here."),
             "RtrcStart-start": ("OpenCode on the local Qwen3.8-27B", "Preset: OpenCode in the sandbox, qwen3.8-27b (Ollama). Every model call stays on this machine."),
             "RtrcStep-retrieve": ("① Search memory · Paper 2", "Cards from the official parse of MaritimeISR and approved designs; MiniLM + FAISS; seeds plus one hop."),
@@ -378,10 +488,7 @@ def main_flow(local: bool = False, as_tool: bool = False) -> dict:
         flow = build(PIPELINE_TOOL_NAME,
                      "Run the verified RTRC design pipeline on a confirmed brief: memory search, numbered requirements, designs A and B written by OpenCode in a sandbox with the official SysML v2 Pilot, the Pilot's verdict, alignment with the memory, the power / upload / storage / trace checks, trade-offs when a check fails, diagram and Cameo export. Returns the review text with the run id. Takes 2 to 10 minutes; the results page (port 8770) must be stopped.",
                      graph, titles, notes, None, ["rtrc", "pipeline", "tool"])
-        # Run Flow turns the input components' listed fields into the tool's arguments; the brief is the only one.
-        brief_node = next(node for node in flow["data"]["nodes"] if node["id"] == "ChatInput-brief")
-        brief_node["data"]["node"]["field_order"] = ["input_value"]
-        return flow
+        return _as_tool(flow, "ChatInput-brief")
     # One chain per Human Input branch: Langflow keeps a decision's unchosen branches out of a run, not out of a join.
     branches = {"Approve design A": "A", "Approve design B": "B", "Reject": "reject", "Send back": "sendback"}
     outs = []
@@ -573,6 +680,7 @@ def cameo_flow() -> dict:
 
 FLOWS = {
     "rtrc-assistant": assistant_flow,
+    "rtrc-tool-search": lambda: tool_flow("search"), "rtrc-tool-write": lambda: tool_flow("write"), "rtrc-tool-validate": lambda: tool_flow("validate"),
     "rtrc-pipeline-tool": lambda: main_flow(as_tool=True),
     "rtrc-assistant-unfolded": lambda: unfolded_flow("rtrc-assistant-unfolded"),
     "rtrc-assistant-unfolded-local": lambda: unfolded_flow("rtrc-assistant-unfolded-local"),

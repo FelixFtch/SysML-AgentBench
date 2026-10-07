@@ -6,7 +6,7 @@ import urllib.error
 import urllib.request
 
 from lfx.custom.custom_component.component import Component
-from lfx.io import Output
+from lfx.io import MessageInput, Output
 from lfx.schema.data import Data
 from lfx.schema.dataframe import DataFrame
 from lfx.schema.message import Message
@@ -34,7 +34,11 @@ class RtrcMemory(Component):
     icon = "database"
     name = "RtrcMemory"
 
-    inputs = []
+    inputs = [
+        MessageInput(name="after", display_name="After (optional)", required=False, advanced=True,
+                     info="Connect the card that changes the memory (the write card of the write-to-memory tool) so the "
+                          "library is read after the write; F0 leaves it empty."),
+    ]
     outputs = [
         Output(display_name="Summary", name="summary", method="as_message"),
         Output(display_name="Cards", name="cards", method="as_dataframe"),

@@ -14,6 +14,83 @@
           "node": {
             "template": {
               "_type": "Component",
+              "after": {
+                "trace_as_input": true,
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "load_from_db": false,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "after",
+                "value": {
+                  "text_key": "text",
+                  "data": {
+                    "text": "",
+                    "files": [],
+                    "sender": null,
+                    "sender_name": null,
+                    "session_id": "",
+                    "context_id": "",
+                    "run_id": null,
+                    "timestamp": "2026-10-06 00:00:00 UTC",
+                    "flow_id": null,
+                    "error": false,
+                    "edit": false,
+                    "properties": {
+                      "edited": false,
+                      "source": {
+                        "id": null,
+                        "display_name": null,
+                        "source": null
+                      },
+                      "allow_markdown": false,
+                      "state": "complete",
+                      "targets": []
+                    },
+                    "category": "message",
+                    "content_blocks": [],
+                    "duration": null,
+                    "session_metadata": null
+                  },
+                  "default_value": "",
+                  "files": [],
+                  "session_id": "",
+                  "context_id": "",
+                  "timestamp": "2026-10-06 00:00:00 UTC",
+                  "error": false,
+                  "edit": false,
+                  "properties": {
+                    "edited": false,
+                    "source": {
+                      "id": null,
+                      "display_name": null,
+                      "source": null
+                    },
+                    "allow_markdown": false,
+                    "state": "complete",
+                    "targets": []
+                  },
+                  "category": "message",
+                  "content_blocks": [],
+                  "text": ""
+                },
+                "display_name": "After (optional)",
+                "advanced": true,
+                "api_editable": false,
+                "input_types": [
+                  "Message"
+                ],
+                "dynamic": false,
+                "info": "Connect the card that changes the memory (the write card of the write-to-memory tool) so the library is read after the write; F0 leaves it empty.",
+                "title_case": false,
+                "track_in_telemetry": false,
+                "type": "str",
+                "_input_type": "MessageInput"
+              },
               "code": {
                 "type": "code",
                 "required": true,
@@ -21,7 +98,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Memory: F0, the library the agent searches (paper 2): MaritimeISR plus every approved design, as cards\nbuilt from the official Pilot parse. The DataFrame output can be ingested into a Langflow knowledge base for browsing.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=1800) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcMemory(Component):\n    display_name = \"RTRC Memory (paper 2)\"\n    description = \"F0: MaritimeISR and every approved design as element cards from the official parse, with their links.\"\n    icon = \"database\"\n    name = \"RtrcMemory\"\n\n    inputs = []\n    outputs = [\n        Output(display_name=\"Summary\", name=\"summary\", method=\"as_message\"),\n        Output(display_name=\"Cards\", name=\"cards\", method=\"as_dataframe\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            self._cached = _call(\"/memory\", {})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_dataframe(self) -> DataFrame:\n        rows = self._result()[\"data\"][\"rows\"]\n        return DataFrame(data=[{key: row[key] for key in (\"id\", \"type\", \"name\", \"source\", \"links\", \"documentation\", \"text\")} for row in rows])\n\n    def as_data(self) -> Data:\n        return Data(data={\"sources\": self._result()[\"data\"][\"sources\"]})\n",
+                "value": "\"\"\"RTRC Memory: F0, the library the agent searches (paper 2): MaritimeISR plus every approved design, as cards\nbuilt from the official Pilot parse. The DataFrame output can be ingested into a Langflow knowledge base for browsing.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=1800) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcMemory(Component):\n    display_name = \"RTRC Memory (paper 2)\"\n    description = \"F0: MaritimeISR and every approved design as element cards from the official parse, with their links.\"\n    icon = \"database\"\n    name = \"RtrcMemory\"\n\n    inputs = [\n        MessageInput(name=\"after\", display_name=\"After (optional)\", required=False, advanced=True,\n                     info=\"Connect the card that changes the memory (the write card of the write-to-memory tool) so the \"\n                          \"library is read after the write; F0 leaves it empty.\"),\n    ]\n    outputs = [\n        Output(display_name=\"Summary\", name=\"summary\", method=\"as_message\"),\n        Output(display_name=\"Cards\", name=\"cards\", method=\"as_dataframe\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            self._cached = _call(\"/memory\", {})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_dataframe(self) -> DataFrame:\n        rows = self._result()[\"data\"][\"rows\"]\n        return DataFrame(data=[{key: row[key] for key in (\"id\", \"type\", \"name\", \"source\", \"links\", \"documentation\", \"text\")} for row in rows])\n\n    def as_data(self) -> Data:\n        return Data(data={\"sources\": self._result()[\"data\"][\"sources\"]})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,

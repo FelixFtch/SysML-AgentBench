@@ -897,7 +897,174 @@ def mod_run(body: dict) -> dict:
     return mod_case({"task": task})
 
 
+# ---------- the unfolded assistant's tool sub-flows (decision 034): one card per step, all stateless ----------
+
+def _tool_text(body: dict, key: str) -> str:
+    value = body.get(key)
+    return str(value or "").strip()
+
+
+def tool_memory_library(_: dict) -> dict:
+    """Card 1 of memory search: what the library is made of (the same sources the search reads)."""
+    body = memory({})
+    return {"summary": body["summary"], "data": {"sources": body["data"]["sources"]}}
+
+
+def tool_memory_seeds(body: dict) -> dict:
+    """Card 2 of memory search: the MiniLM + FAISS seeds for the query (paper 2's first step)."""
+    from bench.discover import retrieve_existing
+    query = _tool_text(body, "query")
+    if len(query) < 3:
+        raise StepError("Give the search a few words")
+    found = retrieve_existing(query)
+    seeds = [node for node in found["nodes"] if node.get("role") == "seed"]
+    lines = [f"Seeds for \"{query[:80]}\": {len(seeds)} of {found['library_size']} cards · {found['embedding_model']} · cosine ≥ {found['threshold']}"
+             f" plus the exact-name bonus {found['name_bonus']}",
+             *[f"  {node['score']:.2f} · {node['text']}  [{node['source']}]" for node in seeds]]
+    return {"summary": "\n".join(lines), "data": {"query": query, "seeds": seeds, "method": found["method"], "threshold": found["threshold"]}}
+
+
+def tool_memory_hop(body: dict) -> dict:
+    """Card 3 of memory search: each seed's one-hop neighbours, then the cards handed to the assistant."""
+    from bench.discover import retrieve_existing
+    query = _tool_text(body, "query")
+    if len(query) < 3:
+        raise StepError("Give the search a few words")
+    found = retrieve_existing(query)
+    hops = [node for node in found["nodes"] if node.get("role") == "neighbor"]
+    short = {node["id"]: node.get("short") or node.get("name") or node["id"] for node in found["nodes"]}
+    lines = [f"One hop from the seeds: {len(hops)} neighbour(s); {len(found['cards'])} cards in all · {found['note']}",
+             *[f"  via {short.get(node['via'], node['via'])} → {node['text']}  [{node['source']}]" for node in hops],
+             "Cards returned to the assistant:", *[f"  {card}" for card in found["cards"]]]
+    return {"summary": "\n".join(lines), "data": {"query": query, "cards": found["cards"], "numbers": found["numbers"], "path": found["path"]}}
+
+
+def _run_and_key(body: dict) -> tuple[str, str]:
+    text = _tool_text(body, "request")
+    run = re.search(r"\d{8}T\d{6}", text)
+    key = re.search(r"\b([AB])\b", text.upper().replace(run.group(0), "") if run else text.upper())
+    if not run or not key:
+        raise StepError("Say which run and which design: '<run id> A' or '<run id> B'")
+    return run.group(0), key.group(1)
+
+
+def tool_gate(body: dict) -> dict:
+    """Card 1 of write to memory: the gate, read only. The same rule as the page: Pilot PASS and all four checks PASS."""
+    from bench.discover import approval_block, load_memory
+    run, key = _run_and_key(body)
+    path = ROOT / "analysis" / f"discover-{run}.json"
+    if not path.is_file():
+        raise StepError(f"No such run: {run}")
+    record = json.loads(path.read_text(encoding="utf-8"))
+    design = next((item for item in record.get("designs", []) if item.get("key") == key), None)
+    if not design:
+        raise StepError(f"Run {run} has no design {key}")
+    reason = approval_block(record, design)
+    already = any(entry["run_id"] == run and entry["design"] == key for entry in load_memory())
+    checks = {c["id"]: c["status"] for c in design.get("checks", []) if c["id"] != "CONNECT"}
+    verdict = "already in memory" if already else ("gate open" if not reason else f"gate closed: {reason}")
+    lines = [f"run {run} · design {key} · {verdict}",
+             f"  official Pilot {design.get('sysml_status')} after {len(design.get('attempts', []))} parse(s)",
+             *[f"  {name} {status}" for name, status in checks.items()]]
+    return {"summary": "\n".join(lines), "data": {"run": run, "key": key, "open": not reason and not already, "reason": reason, "already": already}}
+
+
+def _has_session(run: str) -> bool:
+    return run in SESSIONS or (SESSIONS_DIR / f"{run}.json").is_file()
+
+
+def tool_write(body: dict) -> dict:
+    """Card 2 of write to memory: the write itself, through the page's gate (refuses when the gate is closed).
+    Runs made before the Langflow shell have no session; they go through the page's approve() directly."""
+    run, key = _run_and_key(body)
+    if _has_session(run):
+        result = run_approve({"run": run, "key": key})
+    else:
+        from bench.discover import approve
+        try:
+            outcome = approve(run, key)
+            result = {"run": run, "summary": f"run {run}\nDesign {key} approved into memory ({len(outcome['memory'])} designs now); the next search can find it.",
+                      "data": {"approved": True, "memory_size": len(outcome["memory"])}}
+        except ValueError as exc:
+            result = {"run": run, "summary": f"run {run}\nDesign {key} not approved: {exc}", "data": {"approved": False, "reason": str(exc)}}
+    return _with_upstream(result, body)
+
+
+def _with_upstream(result: dict, body: dict) -> dict:
+    """The write and record cards repeat the cards before them, so the flow's last message tells the whole story."""
+    upstream = _tool_text(body, "upstream")
+    if upstream:
+        result["summary"] = upstream.rstrip() + "\n" + result["summary"]
+    return result
+
+
+def tool_record_approval(body: dict) -> dict:
+    """Card 3 of write to memory: the decision on the run's record, only when the write happened."""
+    run, key = _run_and_key(body)
+    written_now = "approved into memory" in _tool_text(body, "upstream")
+    if not _has_session(run):
+        result = {"run": run, "summary": f"Record: run {run} · design {key} · " + ("approval kept on the run's record (a run from before the Langflow shell: no grades and times to add)"
+                                                                                  if written_now else "nothing written this time, so no approval is recorded"),
+                  "data": {"recorded": written_now}}
+        return _with_upstream(result, body)
+    session = _session(run)
+    approvals = session["record"]["langflow"].get("approvals", [])
+    if not written_now or not any(a.get("design") == key and a.get("approved") for a in approvals):
+        return _with_upstream({"run": run, "summary": f"Record: run {run} · design {key} · nothing written this time, so no approval is recorded", "data": {"recorded": False}}, body)
+    result = run_decision({"run": run, "decision": f"Approve design {key}", "note": "approved in the assistant's chat"})
+    result["summary"] = "Record: " + result["summary"]
+    return _with_upstream(result, body)
+
+
+def tool_validate_save(body: dict) -> dict:
+    """Card 1 of validate: the pasted text becomes a file, the package name is read from it."""
+    sysml = _tool_text(body, "sysml")
+    match = re.search(r"\bpackage\s+(\w+)", sysml)
+    if not match:
+        raise StepError("The text declares no package")
+    package = match.group(1)
+    folder = ROOT / "mvp" / "exam-inbox" / f"assistant-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%f')}"
+    folder.mkdir(parents=True)
+    path = folder / f"{package}.sysml"
+    path.write_text(sysml, encoding="utf-8")
+    return {"summary": f"file: {path.relative_to(ROOT)}\npackage: {package}\n  {len(sysml.splitlines())} line(s), {len(sysml)} characters",
+            "data": {"file": str(path.relative_to(ROOT)), "package": package}}
+
+
+def tool_validate_pilot(body: dict) -> dict:
+    """Card 2 of validate: the official SysML v2 Pilot on that file."""
+    from mvp.engine import run_submitted_model
+    text = _tool_text(body, "saved")
+    file_match = re.search(r"file:\s*(\S+)", text)
+    package_match = re.search(r"package:\s*(\w+)", text)
+    if not file_match or not package_match:
+        raise StepError("Connect this card after the save card")
+    path = ROOT / file_match.group(1)
+    result = run_submitted_model([path], package_match.group(1), label="assistant-validate")
+    diagnostics = result["sysml"].get("diagnostics", [])[:12]
+    lines = [f"official Pilot {result['sysml']['status']} · package {package_match.group(1)} · run {result['run_id']}",
+             *[f"  line {item.get('line')}: {item.get('message')}" for item in diagnostics]]
+    return {"summary": "\n".join(lines), "data": {"sysml_status": result["sysml"]["status"], "diagnostics": diagnostics}}
+
+
+def tool_prompt_part(body: dict) -> dict:
+    """Read-only card of the pipeline: one part of the prompt the designs were written from (rules, template, examples)."""
+    session = _session(body.get("run"))
+    part_key = _tool_text(body, "part")
+    written = session["record"].get("written") or session.get("written") or {}
+    for key in ("A", "B"):
+        parts = (written.get(key) or {}).get("prompt_parts") or []
+        part = next((p for p in parts if p.get("key") == part_key), None)
+        if part:
+            return {"run": session["id"], "summary": f"run {session['id']} · {part['label']} (design {key}, paper {part.get('paper') or '-'})\n{part['text']}",
+                    "data": {"key": part_key, "text": part["text"]}}
+    return {"run": session["id"], "summary": f"run {session['id']} · no {part_key} part on this run", "data": {"key": part_key}}
+
+
 ROUTES = {
+    "/tool/memory/library": tool_memory_library, "/tool/memory/seeds": tool_memory_seeds, "/tool/memory/hop": tool_memory_hop,
+    "/tool/gate": tool_gate, "/tool/write": tool_write, "/tool/record-approval": tool_record_approval,
+    "/tool/validate/save": tool_validate_save, "/tool/validate/pilot": tool_validate_pilot, "/tool/prompt-part": tool_prompt_part,
     "/run/start": run_start, "/run/retrieve": run_retrieve, "/run/requirements": run_requirements,
     "/run/design": lambda body: _designs(body, adapt=False), "/run/adapt": lambda body: _designs(body, adapt=True),
     "/run/validate": run_validate, "/run/align": run_align, "/run/checks": run_checks, "/run/tradeoffs": run_tradeoffs,
@@ -933,7 +1100,7 @@ def _readable(handler):
     return wrapped
 
 
-ROUTES |= {path: _readable(handler) for path, handler in ROUTES.items() if path.startswith(("/run/", "/cameo/", "/gate/"))}
+ROUTES |= {path: _readable(handler) for path, handler in ROUTES.items() if path.startswith(("/run/", "/cameo/", "/gate/", "/tool/"))}
 
 
 class Handler(BaseHTTPRequestHandler):

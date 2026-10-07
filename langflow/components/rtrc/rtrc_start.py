@@ -5,7 +5,7 @@ import urllib.error
 import urllib.request
 
 from lfx.custom.custom_component.component import Component
-from lfx.io import DropdownInput, MultilineInput, Output, StrInput
+from lfx.io import BoolInput, DropdownInput, MultilineInput, Output, StrInput
 from lfx.schema.message import Message
 
 AGENTS = {"Qwen direct": "direct", "Claude Code on Qwen (sandbox)": "claude-code", "OpenCode on Qwen (sandbox)": "opencode"}
@@ -42,10 +42,16 @@ class RtrcStart(Component):
                       info="qwen3.8-27b (Ollama) is the 3-bit model on this machine, for Qwen direct or OpenCode. Start it with scripts/qwen38.sh --serve."),
         StrInput(name="replay", display_name="Replay a saved run", value="",
                  info="Empty for a live run. 'latest' or a run id such as 20261006T211951 replays that run without model calls."),
+        BoolInput(name="require_brief", display_name="Refuse an empty brief", value=False, advanced=True,
+                  info="On in the pipeline used as a tool: an empty brief is an error, never the default brief of page 2.2. "
+                       "A tool call with a wrong argument name then fails loudly instead of running the demo numbers."),
     ]
     outputs = [Output(display_name="Run", name="run", method="start")]
 
     def start(self) -> Message:
+        if self.require_brief and not str(self.brief or "").strip() and not str(self.replay or "").strip():
+            raise ValueError("No brief reached the pipeline. The tool's argument is flow_tweak_data {\"ChatInput-brief~input_value\": <the confirmed brief>}; "
+                             "nothing was run, and the default brief of page 2.2 was not used.")
         body = _call("/run/start", {"brief": str(self.brief or ""), "agent": AGENTS.get(self.agent, "direct"),
                                     "model": self.model, "replay": str(self.replay or "").strip()})
         self.status = body["summary"]

@@ -28,14 +28,19 @@ The 3-bit Qwen3.8-27B runs on this machine's RTX 4090 through Ollama (127.0.0.1:
 
 Langflow keeps credentials and knowledge bases per user, so if people log in with an account other than the superuser, run `langflow/flows/move_to_user.py <username>` once after an import and restart Langflow.
 
+After a design is approved, the memory tools see it at once (they re-read `analysis/memory/approved.jsonl`), and the write-to-memory flow of the unfolded assistants also refreshes the knowledge base `rtrc_memory`; only an approval made in the three-card assistant or on the agent flow's ⑧ card still needs **RTRC F0: memory** run once to refresh that knowledge base.
+
 ## The flows
 
 | Flow | What it shows | How it runs | Person |
 |---|---|---|---|
 | RTRC design assistant | the conversational assistant above: OpenCode on the local 27B, the RTRC tools, memory | live, local only | asks, confirms, decides in the chat |
 | RTRC design assistant (Langflow Agent, qwen3.8-max) | the same tools and rules on Langflow's own Agent component, `run_design` with the model writing directly (decision 031); kept to compare the two harnesses | live, qwen3.8-max (cloud) | the same |
-| RTRC design assistant · unfolded (qwen3.8-max) / (local 27B) | the assistant with its parts on the canvas: Langflow's Agent, one card per RTRC tool, the knowledge base, and the design pipeline as a flow the Agent runs as a tool; **write to memory pauses for approval** (decision 033) | live; the pipeline runs on the local 27B with OpenCode | asks, confirms, decides in the chat; approves on a card |
-| RTRC design pipeline | the design pipeline as a tool of the unfolded assistants: ① memory → ② requirements → ③ designs by OpenCode in the sandbox → ④ official Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; no person's step (the chat decides). Edit it and the unfolded assistants run the edited version | live, local only; results page stopped | |
+| RTRC design assistant · unfolded (qwen3.8-max) / (local 27B) | the assistant with its parts on the canvas: Langflow's Agent, one card per single-step tool, the knowledge base, and four tools that are flows (below); **write to memory pauses for approval** (decisions 033, 034) | live; the pipeline runs on the local 27B with OpenCode | asks, confirms, decides in the chat; approves on a card |
+| RTRC design pipeline | the design pipeline as a tool of the unfolded assistants: ① memory → ② requirements → ③ designs by OpenCode in the sandbox, with the rules, template and examples it was given shown as read-only cards → ④ official Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; no person's step (the chat decides). Edit it and the unfolded assistants run the edited version | live, local only; results page stopped | |
+| RTRC memory search | the memory search as cards: library → MiniLM + FAISS seeds → one hop → cards (paper 2); a tool of the unfolded assistants | no model call | |
+| RTRC write to memory | gate (Pilot PASS, four checks PASS) → write → record → library re-read → knowledge base `rtrc_memory` refreshed; a tool of the unfolded assistants, run after the approval card | Qwen embeddings for the new cards | approves on the card |
+| RTRC validate SysML | pasted text saved as a file → official Pilot → verdict (paper 3); a tool of the unfolded assistants | no model call | |
 | RTRC agent flow: requirement to approved SysML v2 design | ① search memory → ② requirements → new design, or adapt the similar project found in memory → ④ official Pilot ⇄ repair → ⑤ align with memory → ⑥ checks and read-back → trade-offs if a check fails → ⑦ diagram, Cameo export, review → ⑧ decision → write to memory, record grades and times | live on Qwen (direct, or Claude Code / OpenCode on Qwen in the sandbox), or replay of a saved run | ⑧ Approve A, Approve B, Reject or Send back |
 | RTRC agent flow · local Qwen3.8-27B via OpenCode | the same flow, preset to OpenCode in the sandbox on the local 27B; every model call stays on this machine | live, local only (Ollama); results page stopped | the same decision |
 | RTRC F0: memory | MaritimeISR plus every approved design, as cards from the official parse; fills the Langflow knowledge base **rtrc memory** (Knowledge page: search the cards, filter by metadata) | Qwen embeddings for new cards only; runs in the server (editor or API), not with `lfx run` | |
@@ -106,7 +111,8 @@ Learned with Langflow 1.12.5:
 | `tools/assistant_mcp.py` | the assistant's tools (MCP, streamable HTTP, 127.0.0.1:8782) |
 | `tools/assistant/`, `scripts/assistant.sh` | the assistant's rules and OpenCode workspace; the terminal entry |
 | `langflow/flows/build_assistant.py`, `rtrc-assistant-langchain.json`, `setup_assistant.py` | the Langflow-Agent comparison flow; the per-user set-up of every Langflow-Agent flow (credentials, Ollama address, models, MCP registration) |
-| `langflow/flows/rtrc-assistant-unfolded*.json`, `rtrc-pipeline-tool.json` | the unfolded assistants and the pipeline flow they run as a tool (built by `build_flows.py`; needs the MCP server running for the tool descriptions) |
+| `langflow/flows/rtrc-assistant-unfolded*.json`, `rtrc-pipeline-tool.json`, `rtrc-tool-*.json` | the unfolded assistants and the flows they run as tools (built by `build_flows.py`; needs the MCP server running for the tool descriptions) |
+| `langflow/components/rtrc/rtrc_tool.py` | the cards of the tool flows (memory library, seeds, hop; gate, write, record; save, Pilot; the pipeline's prompt parts), calling `/tool/...` of the shell service |
 | `langflow/flows/build_flows.py`, `*.json` | the flows as code, and the generated flow files |
 | `langflow/flows/import_flows.py` | creates or updates the project |
 | `langflow/flows/setup_knowledge.py` | the Qwen embedding provider and the knowledge base `rtrc_memory` (safe to repeat) |

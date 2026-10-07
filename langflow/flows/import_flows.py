@@ -16,7 +16,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 BASE = f"http://127.0.0.1:{os.environ.get('LANGFLOW_PORT', '7860')}"
 PROJECT = "RTRC SysML-AgentBench"
-ORDER = ["rtrc-assistant", "rtrc-pipeline-tool", "rtrc-assistant-unfolded", "rtrc-assistant-unfolded-local", "rtrc-assistant-langchain",
+ORDER = ["rtrc-assistant", "rtrc-tool-search", "rtrc-tool-write", "rtrc-tool-validate", "rtrc-pipeline-tool",
+         "rtrc-assistant-unfolded", "rtrc-assistant-unfolded-local", "rtrc-assistant-langchain",
          "rtrc-agent-flow", "rtrc-agent-flow-local", "rtrc-f0-memory", "rtrc-f1-exam-direct", "rtrc-f2-exam-agent", "rtrc-f3-results",
          "rtrc-f5-mod-change", "rtrc-cameo-check"]
 RETIRED = ["RTRC design assistant (local Qwen3.8-27B)",  # the Langflow-Agent flow of decision 031, replaced by the OpenCode assistant (032)
@@ -51,6 +52,25 @@ def _request(method: str, path: str, token: str | None = None, body=None, form: 
     return json.loads(raw) if raw else None
 
 
+def _point_run_flow_cards(flow: dict, imported: dict[str, dict]) -> None:
+    """A Run Flow card holds the sub-flow's name in the flow file; the id exists only after the import. Fill it in,
+    with the metadata the editor reads when it refreshes the card, so opening the flow does not report
+    "Error building graph" and the run path compares the id with the flow it loads."""
+    for node in flow["data"]["nodes"]:
+        template = node.get("data", {}).get("node", {}).get("template", {})
+        name = (template.get("flow_name_selected") or {}).get("value")
+        if node.get("data", {}).get("type") != "RunFlow" or not name:
+            continue
+        target = imported.get(name)
+        if target is None:
+            raise SystemExit(f"{flow['name']}: its Run Flow card points at {name!r}, which must be imported first (ORDER)")
+        meta = {"id": target["id"], "updated_at": target.get("updated_at")}
+        template["flow_id_selected"]["value"] = target["id"]
+        template["flow_name_selected"]["options"] = [name]
+        template["flow_name_selected"]["options_metadata"] = [meta]
+        template["flow_name_selected"]["selected_metadata"] = meta
+
+
 def main() -> None:
     secrets = _secrets()
     token = _request("POST", "/api/v1/login", form={"username": secrets["LANGFLOW_SUPERUSER"],
@@ -61,8 +81,10 @@ def main() -> None:
             "name": PROJECT, "description": "The RTRC SysML v2 agent flows: the Part 2 agent flow, memory, exam cells, results, MOD change, Cameo check."})
     existing = {f["name"]: f for f in _request("GET", f"/api/v1/flows/?folder_id={project['id']}&get_all=true&header_flows=true", token) or []
                 if f.get("folder_id") == project["id"]}
+    imported: dict[str, dict] = {}
     for slug in ORDER:
         flow = json.loads((ROOT / "langflow" / "flows" / f"{slug}.json").read_text(encoding="utf-8"))
+        _point_run_flow_cards(flow, imported)
         payload = {"name": flow["name"], "description": flow["description"], "data": flow["data"],
                    "endpoint_name": slug, "tags": flow.get("tags") or [], "folder_id": project["id"]}
         if flow["name"] in existing:
@@ -71,6 +93,7 @@ def main() -> None:
         else:
             saved = _request("POST", "/api/v1/flows/", token, payload)
             action = "created"
+        imported[flow["name"]] = saved
         print(f"{action}: {flow['name']}\n    {BASE}/flow/{saved['id']}")
     for name in RETIRED:
         if name in existing:

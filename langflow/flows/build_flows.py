@@ -32,6 +32,7 @@ from rtrc.rtrc_gate import RtrcGateRecord  # noqa: E402
 from rtrc.rtrc_memory import RtrcMemory  # noqa: E402
 from rtrc.rtrc_mod import RtrcModChange  # noqa: E402
 from rtrc.rtrc_mod_step import RtrcModStep  # noqa: E402
+from rtrc.rtrc_opencode import RtrcOpenCodeAssistant  # noqa: E402
 from rtrc.rtrc_record import RtrcRecord  # noqa: E402
 from rtrc.rtrc_results import RtrcResults  # noqa: E402
 from rtrc.rtrc_start import RtrcStart  # noqa: E402
@@ -152,6 +153,38 @@ def build(name: str, description: str, graph: Graph, titles: dict, notes: list[t
                                "node": {"description": text, "display_name": "", "documentation": "", "template": {"backgroundColor": "neutral" if index else "blue"}}}})
     return {"name": name, "description": description, "endpoint_name": None, "is_component": False, "tags": tags or [],
             "data": {"nodes": nodes, "edges": edges, "viewport": {"x": 0, "y": 0, "zoom": 0.55}}}
+
+
+# ---------- the design assistant (for use) ----------
+
+def assistant_flow() -> dict:
+    """Chat Input -> RTRC OpenCode assistant -> Chat Output: OpenCode on the local Qwen3.8-27B over the RTRC MCP tools."""
+    chat_in = ChatInput(_id="ChatInput-ask")
+    assistant = RtrcOpenCodeAssistant(_id="RtrcOpenCode-assistant")
+    assistant.set(message=chat_in.message_response)
+    chat_out = ChatOutput(_id="ChatOutput-answer")
+    chat_out.set(input_value=assistant.turn)
+    graph = _graph(chat_in, [chat_out])
+    titles = {
+        "ChatInput-ask": ("Engineer", "Ask, describe a need, confirm a brief, or decide."),
+        "RtrcOpenCode-assistant": ("RTRC design assistant · OpenCode on the local Qwen3.8-27B",
+                                   "OpenCode is the harness: the model decides which RTRC tool to call and when; the tools decide nothing by themselves. "
+                                   "Each chat session continues one OpenCode session."),
+        "ChatOutput-answer": ("Answer", ""),
+    }
+    notes = [("note-assistant",
+              "# RTRC design assistant\n\nTalk to it like a colleague: ask what exists in the memory, describe a need in your own words, "
+              "answer its questions about missing numbers, confirm the brief it proposes, and decide on the result.\n\n"
+              "- The harness is OpenCode (the exam's pinned binary) on the 3-bit Qwen3.8-27B served by Ollama on this machine; its tools are the RTRC MCP "
+              "server (`tools/assistant_mcp.py`, 127.0.0.1:8782): memory search, the verified design pipeline, the official Pilot, the memory gate, decisions, "
+              "Cameo export. Its own file and shell tools are off. Nothing leaves this computer.\n"
+              "- `run_design` is the same verified pipeline as the agent flow and the results page (2 to 10 minutes); inside it a second, sandboxed OpenCode "
+              "writes the designs with `./validate` in hand, so the results page (8770) must be stopped first. Its record appears on page 2.3.\n"
+              "- It never invents numbers, never moves a stated limit, and writes to memory only after you approve a design that passed all four checks.\n"
+              "- The same assistant in the terminal: `scripts/assistant.sh`. The fixed flows below stay as the benchmark; this one is for use.", 40, -20)]
+    return build("RTRC design assistant",
+                 "Ask, discuss, confirm requirements, run the verified design pipeline, decide. OpenCode on the local Qwen3.8-27B over the RTRC MCP tools.",
+                 graph, titles, notes, None, ["rtrc", "assistant", "local"])
 
 
 # ---------- the main agent flow (F4) ----------
@@ -373,6 +406,7 @@ def cameo_flow() -> dict:
 
 
 FLOWS = {
+    "rtrc-assistant": assistant_flow,
     "rtrc-agent-flow": main_flow, "rtrc-agent-flow-local": lambda: main_flow(local=True),
     "rtrc-f0-memory": memory_flow, "rtrc-f1-exam-direct": lambda: exam_flow(False),
     "rtrc-f2-exam-agent": lambda: exam_flow(True), "rtrc-f3-results": results_flow, "rtrc-f5-mod-change": mod_flow,

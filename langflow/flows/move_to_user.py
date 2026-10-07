@@ -1,11 +1,12 @@
 """Give everything RTRC in Langflow to one user: the project and its flows, the Qwen provider credentials, the
-enabled-models list and the knowledge base rtrc_memory (row, ingestion runs and files).
+enabled-models list, the knowledge base rtrc_memory (row, ingestion runs and files) and the rtrc-assistant MCP
+registration used by the Langflow-Agent comparison flow.
 
     .venv-langflow/bin/python langflow/flows/move_to_user.py FelixFang
 
-Langflow keeps credentials and knowledge bases per user, so a flow owned by one user cannot use another user's
-provider key or knowledge base. Run this once for the account people log in with, then restart Langflow
-(the knowledge-base files move to ~/.langflow/knowledge_bases/<username>/). Values are moved, never printed.
+Langflow keeps credentials, knowledge bases and MCP registrations per user, so a flow owned by one user cannot use
+another user's provider key or knowledge base. Run this once for the account people log in with, then restart
+Langflow (the knowledge-base files move to ~/.langflow/knowledge_bases/<username>/). Values are moved, never printed.
 """
 from __future__ import annotations
 
@@ -20,6 +21,7 @@ KB_ROOT = Path.home() / ".langflow" / "knowledge_bases"
 PROJECT = "RTRC SysML-AgentBench"
 VARIABLES = ("OPENAI_COMPATIBLE_BASE_URL", "OPENAI_COMPATIBLE_API_KEY", "__enabled_models__")
 KNOWLEDGE_BASE = "rtrc_memory"
+MCP_SERVER = "rtrc-assistant"
 
 
 def main() -> None:
@@ -97,6 +99,18 @@ def main() -> None:
         cur.execute("DELETE FROM ingestion_run WHERE kb_name = ? AND user_id = ?", (KNOWLEDGE_BASE, uid))
         shutil.rmtree(KB_ROOT / other / KNOWLEDGE_BASE, ignore_errors=True)
         report.append(f"knowledge base {KNOWLEDGE_BASE}: {other}'s copy removed")
+
+    # The MCP registration of the Langflow-Agent comparison flow (the OpenCode assistant reaches the server directly).
+    rows = list(cur.execute("SELECT id, user_id FROM mcp_server WHERE name = ?", (MCP_SERVER,)))
+    if rows and not any(uid == target for _, uid in rows):
+        cur.execute("UPDATE mcp_server SET user_id = ? WHERE id = ?", (target, rows[0][0]))
+        report.append(f"mcp server {MCP_SERVER}: moved")
+    if rows:
+        cur.execute("DELETE FROM mcp_server WHERE name = ? AND user_id != ?", (MCP_SERVER, target))
+        if any(uid == target for _, uid in rows):
+            report.append(f"mcp server {MCP_SERVER}: already owned by the user")
+    else:
+        report.append(f"mcp server {MCP_SERVER}: absent (run setup_assistant.py)")
 
     con.commit()
     print(f"Moved to {username}:")

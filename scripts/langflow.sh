@@ -28,9 +28,14 @@ if ! curl -s -m 2 http://127.0.0.1:8781/health >/dev/null; then
   for _ in $(seq 1 30); do curl -s -m 1 http://127.0.0.1:8781/health >/dev/null && break; sleep 1; done
 fi
 
+if ! curl -s -m 2 -o /dev/null http://127.0.0.1:8782/mcp; then
+  echo "Starting the RTRC assistant MCP server on 127.0.0.1:8782 (log: .langflow/assistant_mcp.log)"
+  nohup python3 -u tools/assistant_mcp.py >> .langflow/assistant_mcp.log 2>&1 &
+fi
+
 if ! curl -s -m 2 http://127.0.0.1:11434/api/tags >/dev/null; then
   echo "Starting Ollama for the local Qwen3.8-27B (scripts/qwen38.sh --serve)"
-  scripts/qwen38.sh --serve || echo "Ollama did not start; the local model flow will say so when run" >&2
+  scripts/qwen38.sh --serve || echo "Ollama did not start; the local model flows will say so when run" >&2
 fi
 
 export LANGFLOW_HOST=127.0.0.1 LANGFLOW_PORT="${LANGFLOW_PORT:-7860}"
@@ -39,7 +44,7 @@ export LANGFLOW_ALLOW_CUSTOM_COMPONENTS=False LANGFLOW_CUSTOM_COMPONENT_ADMIN_ON
 export LANGFLOW_CONFIG_DIR="$ROOT/.langflow/config" LANGFLOW_COMPONENTS_PATH="$ROOT/langflow/components"
 export LANGFLOW_CORS_ORIGINS="http://127.0.0.1:$LANGFLOW_PORT,http://localhost:$LANGFLOW_PORT"
 export LANGFLOW_DO_NOT_TRACK=true LANGFLOW_OPEN_BROWSER=false
-export RTRC_SHELL_URL=http://127.0.0.1:8781
+export RTRC_SHELL_URL=http://127.0.0.1:8781 RTRC_ROOT="$ROOT"
 mkdir -p "$LANGFLOW_CONFIG_DIR"
 
 if [ "${1:-}" = "--import" ]; then
@@ -47,6 +52,7 @@ if [ "${1:-}" = "--import" ]; then
      curl -s -m 2 "http://127.0.0.1:$LANGFLOW_PORT/health" >/dev/null && break; sleep 2
    done
    .venv-langflow/bin/python langflow/flows/import_flows.py
-   .venv-langflow/bin/python langflow/flows/setup_knowledge.py) &
+   .venv-langflow/bin/python langflow/flows/setup_knowledge.py
+   .venv-langflow/bin/python langflow/flows/setup_assistant.py) &
 fi
 exec .venv-langflow/bin/langflow run --host "$LANGFLOW_HOST" --port "$LANGFLOW_PORT"

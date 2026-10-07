@@ -235,3 +235,7 @@ Built and tested; guide in `langflow/README.md`, decision 030.
   - The agent flow's adapt step (reuse) is new; on the page both designs are always new.
   - The memory mirror (§7, option A): Langflow 1.12.5 knowledge bases embed only through a model provider (OpenAI, Google, Ollama, WatsonX, Azure, or the "OpenAI Compatible" bundle), not a local MiniLM. The user chose Qwen's embeddings: the knowledge base "rtrc memory" uses `qwen3.7-text-embedding` through "OpenAI Compatible", with the Qwen key stored in Langflow as an encrypted credential (the only key Langflow holds). F0 filled it with the 152 cards.
 - **Open finding:** Part 2's repair loop has no stop on identical resubmissions (design B used all 20 repairs in both live runs, 16 of 21 attempts identical to the previous one); kept so the flow matches the page.
+
+## 16. The conversational assistant (2026-10-06)
+
+The fixed flows measure; they are not how an engineer works. Decision 031 adds **RTRC design assistant**: Langflow's Agent harness (`qwen3.8-max`) over an MCP server that exposes our memory search, the verified design pipeline (`run_design`, the same code as the fixed flow and page 2.3), the official Pilot, the memory gate and the decision record, plus the knowledge base `rtrc memory`. The engineer asks, describes a need, confirms the brief the assistant proposes, and decides; verdicts still come from the Pilot and the checks. The local 3-bit Qwen3.8-27B (Ollama) is a model option for the pipeline. Set-up and the per-user ownership step are in `langflow/README.md`.

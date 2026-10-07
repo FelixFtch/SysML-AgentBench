@@ -38,7 +38,8 @@ class RtrcStart(Component):
                        info="Everything the agent receives. Empty: the default brief of the 2.2 design space on the results page."),
         DropdownInput(name="agent", display_name="Agent (Qwen only for now)", options=list(AGENTS), value="Qwen direct",
                       info="Qwen directly, or Claude Code / OpenCode running on Qwen inside the bubblewrap sandbox."),
-        DropdownInput(name="model", display_name="Qwen model", options=["qwen3.8-flash", "qwen3.8-max"], value="qwen3.8-flash"),
+        DropdownInput(name="model", display_name="Qwen model", options=["qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)"], value="qwen3.8-flash",
+                      info="qwen3.8-27b (Ollama) is the 3-bit model on this machine. Keep Agent on Qwen direct. Start Ollama with qwen38."),
         StrInput(name="replay", display_name="Replay a saved run", value="",
                  info="Empty for a live run. 'latest' or a run id such as 20261006T211951 replays that run without model calls."),
     ]

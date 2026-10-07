@@ -42,7 +42,8 @@ class RtrcExamCell(Component):
         StrInput(name="task_id", display_name="Task for a live run", value="GEN-03"),
         DropdownInput(name="configuration", display_name="Approach (direct)", options=["P0", "P1", "P2", "P3"], value="P1"),
         DropdownInput(name="agent", display_name="Agent (sandboxed)", options=["opencode", "claude-code"], value="opencode"),
-        DropdownInput(name="model", display_name="Qwen model", options=["qwen3.8-flash", "qwen3.8-max"], value="qwen3.8-flash"),
+        DropdownInput(name="model", display_name="Qwen model", options=["qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)"], value="qwen3.8-flash",
+                      info="qwen3.8-27b (Ollama) is the 3-bit model on this machine. Live direct runs only; sandboxed agents stay on the cloud model."),
     ]
     outputs = [
         Output(display_name="Cell", name="cell_data", method="as_data"),

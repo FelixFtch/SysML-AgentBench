@@ -2,7 +2,7 @@
 
 **You get:** Langflow running on your computer with the RTRC cards loaded and the six projects imported.
 **You need:** a terminal, about 25 minutes, 6 GB of disk (Langflow 2 GB, the local model 14 GB more if you want it).
-**Works on:** Windows, macOS, Linux for everything on this page. Only the *sandboxed coding-agent exams* need Linux; see [../benchmark/05-sandbox-agents.md](../benchmark/05-sandbox-agents.md).
+**Works on:** Windows, macOS, Linux for everything on this page (the chats). Scoring an exam needs the official SysML v2 Pilot on Java, which runs on Linux and macOS; on Windows use WSL2 for that part ([../benchmark/06-task-bank.md](../benchmark/06-task-bank.md#the-toolchain)). The two *sandboxed coding-agent* columns need Linux or WSL2 ([../benchmark/05-sandbox-agents.md](../benchmark/05-sandbox-agents.md)).
 
 Three programs, each installed the way its maker says. Nothing here is packaged by us.
 
@@ -60,27 +60,15 @@ Download the release pinned in [`tools/opencode/VERSION`](../../tools/opencode/V
 
 ## Step 7 · Start
 
-macOS / Linux:
+All three systems:
 
 ```bash
-scripts/langflow.sh --import
+python scripts/up.py --import       # macOS / Linux: python3 scripts/up.py --import
 ```
 
-Windows (PowerShell), the same steps by hand (a `scripts/up.py` launcher is on the way; until then):
+It starts what is not running (the shell service on 8781, the MCP server on 8782, Ollama if installed), exports the Langflow settings, starts Langflow on 7860, and with `--import` imports the flow files into the six projects and runs the two set-up scripts once Langflow answers. Every command is printed before it runs; `python scripts/up.py --status` says what is up. On macOS / Linux `scripts/langflow.sh --import` does the same in bash.
 
-```powershell
-python scripts\langflow_secrets.py                              # once: creates .langflow\secrets.env (login + tokens)
-Start-Process .venv\Scripts\python -ArgumentList "-u bench\shell_service.py"      # the service the RTRC cards call, 127.0.0.1:8781
-Start-Process .venv\Scripts\python -ArgumentList "-u tools\assistant_mcp.py"      # the RTRC tools as an MCP server, 127.0.0.1:8782
-$env:LANGFLOW_COMPONENTS_PATH = "$PWD\langflow\components"; $env:LANGFLOW_ALLOW_CUSTOM_COMPONENTS = "False"
-$env:LANGFLOW_AUTO_LOGIN = "False"; $env:LANGFLOW_CONFIG_DIR = "$PWD\.langflow\config"; $env:RTRC_ROOT = "$PWD"; $env:RTRC_SHELL_URL = "http://127.0.0.1:8781"
-Get-Content .langflow\secrets.env | ForEach-Object { $k, $v = $_ -split "=", 2; Set-Item -Path "env:$k" -Value $v }
-.venv-langflow\Scripts\langflow run --host 127.0.0.1 --port 7860
-```
-
-then, in a second terminal once http://127.0.0.1:7860 answers: `.venv-langflow\Scripts\python langflow\scripts\import_flows.py`.
-
-What `scripts/langflow.sh` does, line by line, is in the script itself: start the shell service, the MCP server and Ollama if they are not running, export the Langflow settings, start Langflow, and with `--import` run `import_flows.py`, `setup_knowledge.py`, `setup_assistant.py` once Langflow answers.
+First start takes a minute or two (Langflow builds its component index). Ctrl-C stops Langflow; the services keep running.
 
 ## Step 8 · Log in
 

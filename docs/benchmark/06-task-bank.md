@@ -45,6 +45,14 @@ When a real task bank arrives, the shape stays and the content changes. The step
 
 ## The toolchain
 
-The official SysML v2 Pilot (release 2026-08, kernel 0.62.0) runs on Java 21. `mvp/toolchain/bootstrap_java.py` fetches a pinned JDK and `bootstrap_kernel.py` the kernel; `python3 -m mvp.bootstrap --all-references` clones the pinned `SysML-v2-Release` library (`vendor/`). Today the JDK bootstrap is written for Linux x64 (`mvp/toolchain/java.lock.json`); on macOS or Windows, install Temurin 21 yourself and point `mvp/toolchain/java21` at it (a symlink or junction) until the bootstrap learns the other platforms. The library path is `vendor/SysML-v2-Release/sysml.library`, checked against the pinned commit on every run.
+The official SysML v2 Pilot (release 2026-08, kernel 0.62.0) runs on Java 21. Three commands, once per computer:
+
+```bash
+python3 -m mvp.bootstrap                       # clones the pinned upstream repositories into vendor/, among them the SysML-v2-Release library (checked against its commit on every run)
+python3 mvp/toolchain/bootstrap_java.py        # a checksum-verified Temurin 21 under mvp/toolchain/ (Linux x64 pinned; macOS x64 / Apple silicon supported)
+python3 mvp/toolchain/bootstrap_kernel.py      # the Pilot kernel jar, checksum-verified
+```
+
+Already have a JDK 21? Skip the second step and point the alias at it: `ln -s /path/to/jdk-21 mvp/toolchain/java21` (macOS: `…/temurin-21.jdk/Contents/Home`). The validator only needs `mvp/toolchain/java21/bin/java`. Windows is not supported natively: the frozen validator (`mvp/toolchain/validate.py`) takes a POSIX file lock; WSL2 is Linux and runs everything. On macOS the validation results still record the project's pinned Linux lock (the frozen validator reads `java.lock.json`); the JDK actually used is the one `java.lock.mac-<arch>.json` names.
 
 Next: [07-scoring-rules.md](07-scoring-rules.md).

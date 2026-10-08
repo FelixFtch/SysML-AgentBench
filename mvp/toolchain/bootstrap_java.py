@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
-"""Download a checksum-verified, project-local Temurin 21 JDK; no global setup."""
+"""Download a checksum-verified, project-local Temurin 21 JDK; no global setup.
+
+Linux x64 is the pinned platform of the frozen toolchain (java.lock.json, recorded in every validation result).
+macOS (x64, Apple silicon) is supported for people who run the exam on their own computer: the same Adoptium API,
+a lock of its own (java.lock.mac-<arch>.json, written on first use, not pinned by the project), and the alias
+mvp/toolchain/java21 pointing at the JDK's Contents/Home. Windows is not supported natively because the frozen
+validator (validate.py) uses a POSIX file lock; use WSL2, which is Linux.
+
+Already have a JDK 21? Point the alias at it instead of downloading:  ln -s /path/to/jdk-21 mvp/toolchain/java21
+(macOS: .../temurin-21.jdk/Contents/Home). validate.py only needs mvp/toolchain/java21/bin/java to exist.
+"""
 import hashlib
 import json
-import os
 from pathlib import Path
 import platform
 import subprocess
@@ -11,8 +20,24 @@ import urllib.parse
 import urllib.request
 
 ROOT = Path(__file__).resolve().parent
-LOCK = ROOT / "java.lock.json"
-API = "https://api.adoptium.net/v3/assets/latest/21/hotspot?architecture=x64&image_type=jdk&os=linux&vendor=eclipse"
+
+
+def _platform() -> tuple[str, str]:
+    system, machine = platform.system(), platform.machine().lower()
+    if system == "Linux" and machine in ("x86_64", "amd64"):
+        return "linux", "x64"
+    if system == "Darwin" and machine in ("x86_64", "amd64"):
+        return "mac", "x64"
+    if system == "Darwin" and machine in ("arm64", "aarch64"):
+        return "mac", "aarch64"
+    if system == "Windows":
+        raise SystemExit("Windows is not supported natively (the frozen validator uses a POSIX file lock). Use WSL2 and run this inside it.")
+    raise SystemExit(f"No pinned JDK for {system} {machine}. Install Temurin 21 yourself and symlink it to mvp/toolchain/java21.")
+
+
+OS, ARCH = _platform()
+LOCK = ROOT / ("java.lock.json" if (OS, ARCH) == ("linux", "x64") else f"java.lock.{OS}-{ARCH}.json")
+API = f"https://api.adoptium.net/v3/assets/latest/21/hotspot?architecture={ARCH}&image_type=jdk&os={OS}&vendor=eclipse"
 
 
 def request(url):
@@ -26,8 +51,6 @@ def request(url):
 
 
 def main():
-    if platform.system() != "Linux" or platform.machine() not in ("x86_64", "AMD64"):
-        raise SystemExit("This pinned bootstrap supports Linux x64 only.")
     if LOCK.exists():
         lock = json.loads(LOCK.read_text())
     else:
@@ -37,8 +60,11 @@ def main():
         package = asset["binary"]["package"]
         lock = {"vendor": "Eclipse Adoptium", "release": asset["release_name"],
                 "metadata_url": API, "url": package["link"], "sha256": package["checksum"],
-                "filename": package["name"], "major": 21, "os": "linux", "arch": "x64"}
+                "filename": package["name"], "major": 21, "os": OS, "arch": ARCH}
         LOCK.write_text(json.dumps(lock, indent=2) + "\n")
+        if LOCK.name != "java.lock.json":
+            print(f"Wrote {LOCK.name} for this computer. Validation results still record the project's pinned Linux lock "
+                  "(java.lock.json, read by the frozen validate.py); the JDK actually used is the one this file names.")
     downloads = ROOT / "downloads"
     downloads.mkdir(exist_ok=True)
     archive = downloads / lock["filename"]
@@ -69,14 +95,15 @@ def main():
             if member.islnk() or member.isdev() or member.isfifo():
                 raise ValueError("Unsupported archive special entry")
         java_root = runtime / tar.getmembers()[0].name.split("/")[0]
-        if not (java_root / "bin/java").exists():
+        home = java_root / "Contents" / "Home" if OS == "mac" else java_root
+        if not (home / "bin/java").exists():
             tar.extractall(runtime)
     alias = ROOT / "java21"
     if alias.is_symlink():
         alias.unlink()
     elif alias.exists():
         raise SystemExit(f"Refusing to replace non-symlink {alias}")
-    alias.symlink_to(java_root.relative_to(ROOT), target_is_directory=True)
+    alias.symlink_to(home.relative_to(ROOT), target_is_directory=True)
     subprocess.run([str(alias / "bin/java"), "-version"], check=True)
     print(f"Verified SHA-256: {lock['sha256']}")
     print(f"JAVA executable: {alias / 'bin/java'}")

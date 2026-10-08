@@ -23,6 +23,10 @@ Langflow's official way to share is files, not a store: the Store was removed (l
 - `bench/langflow_exam.py --flow "Langflow Agent, Pilot only exam" --model "qwen3.8-27b (Ollama)" --tasks GEN-01 --repeats 1`: the Agent ran on `qwen3.8-27b-q3:64k` (the stored message's source), PASS, 104 s, 6 tool calls.
 - `python3 bench/freeze.py --check`: unchanged. `py_compile` on every edited Python file; `node --check bench/board.js`.
 
+## Platforms
+
+`scripts/up.py` starts the shell on Windows, macOS and Linux (the steps of `scripts/langflow.sh`, every command printed). `mvp/toolchain/bootstrap_java.py` fetches Temurin 21 for Linux x64 (the pinned lock) and for macOS x64 / Apple silicon (a lock of its own, written on first use; the frozen `validate.py` still records the pinned Linux lock in results, said so in the output and the docs). Windows cannot run the validator natively: the frozen `validate.py` takes a POSIX file lock (`fcntl`), so scoring on Windows means WSL2; the chats and the page run natively.
+
 ## Not done, said so in the pages
 
-A cross-platform launcher (`scripts/up.py`) and a JDK bootstrap for macOS and Windows (`mvp/toolchain/bootstrap_java.py` is Linux x64) are described as missing in `docs/langflow/01-install.md` and `docs/benchmark/06-task-bank.md`. The page's scenario-specific texts (task-type guide, the MOD-05 note, the drawn scene) would have to become per-bank configuration before a real RTRC bank replaces the synthetic one (`docs/benchmark/06-task-bank.md`, step 4).
+The page's scenario-specific texts (task-type guide, the MOD-05 note, the drawn scene) would have to become per-bank configuration before a real RTRC bank replaces the synthetic one (`docs/benchmark/06-task-bank.md`, step 4). The three Langflow columns on the local 27B were started after this record was written and appear on the page as their folders fill.

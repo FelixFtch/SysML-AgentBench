@@ -6,14 +6,14 @@
 
 | | I want to… | Go to | First command |
 |---|---|---|---|
-| **Langflow** | talk to the agents, change a flow, build my own flow or tool, use my own API key or a local model | [`langflow/README.md`](../langflow/README.md) → [01 · Install](langflow/01-install.md) | `scripts/langflow.sh --import` |
+| **Langflow** | talk to the agents, change a flow, build my own flow or tool, use my own API key or a local model | [`langflow/README.md`](../langflow/README.md) → [01 · Install](langflow/01-install.md) | `python scripts/up.py --import` |
 | **Benchmark** | see the results, understand a cell, run one task, examine my own flow and put it on the page, replace the tasks with real ones | [`docs/benchmark/README.md`](benchmark/README.md) → [01 · Open the page](benchmark/01-open-the-page.md) | `python3 bench/exam_board.py` → http://127.0.0.1:8770 |
 
 ## Ten minutes
 
 1. Clone, make the two Python environments, copy `.env.example` to `.env` and fill in one key ([install page](langflow/01-install.md), steps 1–3).
 2. `python3 bench/exam_board.py` → http://127.0.0.1:8770. The results page: every score of the frozen exam, the local-27B rerun, and every Langflow column, read from files in the repository. No model call.
-3. `scripts/langflow.sh --import` → http://127.0.0.1:7860. Langflow with the six projects. Open `Direct model chat · P1 repair from errors`, press Playground, ask for a small SysML package.
+3. `python scripts/up.py --import` → http://127.0.0.1:7860. Langflow with the six projects. Open `Direct model chat · P1 repair from errors`, press Playground, ask for a small SysML package.
 
 ## What you need
 
@@ -21,7 +21,7 @@
 |---|---|---|---|
 | Python 3.12 (Langflow) + Python 3.10+ (benchmark) | yes | yes | yes |
 | An API key or Ollama | yes | yes | yes |
-| Java 21 (the official Pilot) | no | yes | yes |
+| Java 21 (the official Pilot) | no | yes, Linux or macOS (Windows: WSL2) | yes |
 | Linux (bubblewrap sandbox) | no | no | yes (Windows: WSL2) |
 
 ## Where things are

@@ -18,7 +18,7 @@ Talk to the agents, change a flow, build your own flow or tool, use your own API
 → [1 · Install](docs/langflow/01-install.md) · [2 · Keys and models](docs/langflow/02-keys-and-models.md) · [3 · Import](docs/langflow/03-import-flows.md) · [6 · Make your own](docs/langflow/06-make-your-own.md)
 
 ```bash
-scripts/langflow.sh --import     # → http://127.0.0.1:7860
+python scripts/up.py --import    # → http://127.0.0.1:7860 (all systems; macOS/Linux also: scripts/langflow.sh --import)
 ```
 
 </td>

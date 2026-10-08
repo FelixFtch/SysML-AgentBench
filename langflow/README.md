@@ -29,8 +29,8 @@ Examining a flow you built and seeing it on the results page is the other half: 
 ```bash
 python3.12 -m venv .venv-langflow && .venv-langflow/bin/pip install -r requirements-langflow.txt
 python3 -m venv .venv && .venv/bin/pip install -r requirements-bench.txt
-cp .env.example .env          # fill in your endpoint and key
-scripts/langflow.sh --import  # Linux / macOS; Windows: see the install page
+cp .env.example .env            # fill in your endpoint and key
+python scripts/up.py --import   # all systems; prints every command it runs (macOS / Linux also: scripts/langflow.sh --import)
 ```
 
 Open http://127.0.0.1:7860, log in as `rtrc` with the password in `.langflow/secrets.env`, open `1 · Direct model …` → `Direct model chat · P1 repair from errors` → **Playground**.

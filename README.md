@@ -1,62 +1,85 @@
-# RTRC · Agentic AI for Systems Engineering Discovery and Design
+# SysML-AgentBench · RTRC Agentic AI for Systems Engineering
 
-**SysML-AgentBench** — a reproducible benchmark of AI agents that translate requirements into SysML v2 models, evaluated on a synthetic maritime ISR scenario with the official SysML v2 toolchain as adjudicator.
+A reproducible benchmark of AI agents that translate requirements into SysML v2 models, scored only by the official SysML v2 toolchain and answer keys written in advance, on a synthetic maritime ISR scenario; and a set of Langflow flows that run those agents, let you talk to them, and let you build and examine your own.
 
-Sponsor: RTX Technology Research Center (RTRC). Faculty advisor: Prof. George Bollas (UConn). Team: Thomas Johanns, Tianchonghui Fang, Tedi Naqo.
+Sponsor: RTX Technology Research Center (RTRC). Faculty advisor: Prof. George Bollas (UConn). Team: Thomas Johanns, Tianchonghui Fang, Tedi Naqo. Every maritime number is synthetic and is not an RTX specification.
 
-## Start here
+## Two doors
 
-| Document | Purpose |
-|---|---|
-| [`STATUS.md`](STATUS.md) | **Current numbers**, generated from saved results by `python3 scripts/make_status.py` |
-| `python3 bench/exam_board.py` → http://127.0.0.1:8770/ | Results page and demo: the 27-task exam cell by cell for four candidates, live runs, the MOD change chain, the Part 2 prototype, cost |
-| `scripts/langflow.sh --import` → http://127.0.0.1:7860/ · [`langflow/README.md`](langflow/README.md) | Langflow 1.12.5, six projects: each exam candidate with an **exam** version (sits the 27 tasks; `bench/langflow_exam.py` runs a whole column onto results page 1.3 with time and tokens) and a **chat** version side by side: the direct model P0–P3; OpenCode, Claude Code in the sandbox and a Pilot-only Langflow Agent; **OpenCode with memory** (the design assistant; also `scripts/assistant.sh`); **Langflow Agent with memory** (the same tools one card each); the shared tool flows; the design agent flow with a person's decision, memory, results, MOD chain, Cameo check; Qwen only |
-| [`analysis/report/exam-20261006/index.html`](analysis/report/exam-20261006/index.html) | Exam report, rebuilt by `python3 analysis/report/build_exam_report.py` |
-| [`docs/report/D4-draft.md`](docs/report/D4-draft.md) | Report draft (D4) |
-| [`docs/knowledge-base/`](docs/knowledge-base/README.md) | Process knowledge base (D7): the process, Pilot notes, what helps, evaluating agents fairly, extending the bank, glossary |
-| [`docs/failure_taxonomy.md`](docs/failure_taxonomy.md) | The failures of the four candidates by class |
-| [`bench/FREEZE.md`](bench/FREEZE.md) · [`REVIEW.md`](bench/tasks/t4_maritime_isr/heldout/REVIEW.md) | What is frozen (hashes, tag `freeze-2026-10-06-r2`, with the history of the freeze) and the second review of the 27 answer keys |
-| [`docs/decisions/`](docs/decisions/) | Decision records; 016–027 (2026-10-03 to 2026-10-06) override the plan where they differ |
-| [`plans/execution-plan-v2.md`](plans/execution-plan-v2.md) | Execution plan v2.0: deliverables, ground-truth method, task suite, schedule, decisions §18 |
-| [`plans/project-statement.md`](plans/project-statement.md) | Project statement v1.1 for sponsor signature (English) |
-| [`research/source-extracts/rtx-brief.txt`](research/source-extracts/rtx-brief.txt) | Sponsor brief (verbatim) |
-| [`mvp/README.md`](mvp/README.md) | Official toolchain, engine checks and evidence layer, used as the syntax adjudicator |
+<table>
+<tr>
+<td width="50%" valign="top">
 
-Scoring (decisions 019, 025): a task passes when the official parse passes (GEN, MOD, ALN), every required name, connection or mapping is present, no number was invented, every value to keep is unchanged, and every engineering check comes out as the answer key expects. Whether the design meets its budget is a separate design verdict. Only the official Pilot and the keys score; no model judges.
+### Langflow — use and build flows
 
-Candidates (bench/batches.py): direct qwen3.8-flash and direct qwen3.8-max, 27 tasks × P0–P3 × 3 repeats; OpenCode and Claude Code on qwen3.8-flash, 27 tasks × 3 repeats, in a bubblewrap sandbox that shows only the task input, the rules and `./validate` (decision 026). The agents' ALN rows come from a rerun after `./validate` was made to pass files in the scorer's order: the official Pilot's verdict on an alignment package can depend on that order (`bench/check_validator_order.py`).
+Talk to the agents, change a flow, build your own flow or tool, use your own API key or a local Ollama model.
+
+→ [`langflow/README.md`](langflow/README.md)
+→ [1 · Install](docs/langflow/01-install.md) · [2 · Keys and models](docs/langflow/02-keys-and-models.md) · [3 · Import](docs/langflow/03-import-flows.md) · [6 · Make your own](docs/langflow/06-make-your-own.md)
+
+```bash
+scripts/langflow.sh --import     # → http://127.0.0.1:7860
+```
+
+</td>
+<td width="50%" valign="top">
+
+### Benchmark — the exam and the results page
+
+See every score, open a cell end to end, run one task, examine your own flow and put it on the page, replace the tasks with real ones.
+
+→ [`docs/benchmark/README.md`](docs/benchmark/README.md)
+→ [1 · Open the page](docs/benchmark/01-open-the-page.md) · [4 · Examine your flow](docs/benchmark/04-exam-your-flow.md) · [6 · The task bank](docs/benchmark/06-task-bank.md)
+
+```bash
+python3 bench/exam_board.py      # → http://127.0.0.1:8770
+```
+
+</td>
+</tr>
+</table>
+
+New here: [`docs/START-HERE.md`](docs/START-HERE.md) (ten minutes, what you need, where things are). Want to contribute a flow, a card or a column: [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## What the numbers say
+
+27 sealed tasks (generate, modify, align, query, ask-when-ambiguous, round-trip), scored only by the official SysML v2 Pilot 0.62 and the keys. Frozen results (`bench/FREEZE.md`, tag `freeze-2026-10-06-r2`): direct qwen3.8-max 313/324, direct qwen3.8-flash 270/324, OpenCode and Claude Code on flash in the sandbox 78/81 each; the three Langflow agent flows on flash 81, 81 and 79 of 81; the same matrix on the local 3-bit Qwen3.8-27B 196/324, 60/81, 68/81. All of it, cell by cell, is on the results page; the current numbers are generated into [`STATUS.md`](STATUS.md) by `python3 scripts/make_status.py`.
+
+Scoring rule (decisions 019, 025): a task passes when the official parse passes (GEN, MOD, ALN), every required name, connection or mapping is present, no number was invented, every value to keep is unchanged, and every engineering check comes out as the key expects. Whether a design meets its budget is a separate design verdict. No model judges.
 
 ## Repository layout
 
 ```
-mvp/          official SysML v2 toolchain (pinned), engine, evidence packs; mvp/runs/ and mvp/agent-runs/ hold every run (git-ignored)
-agents/       P0–P3 and the repair loop (solve.py), LLM client with usage logging (llm.py), approval gate, LangGraph read-only view,
-              external/ (OpenCode runner, the agent sandbox jail.py)
-bench/        tasks (t4 maritime ISR, t5 requirements), scorers, runners, batches.py, freeze and review tools, the results page
-tools/        tool functions and MCP server
-scenario/     synthetic maritime ISR reference model
-datasets/     external data registry: source, date, SHA-256, license (SOURCES.md)
-analysis/     scored batches, side benchmarks, failure classes, retrieval library, memory of approved designs, report, archive/
-docs/         decisions/, failure taxonomy, report draft
-scripts/      make_status.py
+langflow/     flows/ (the flow files, one folder per Langflow project) · components/rtrc/ (the cards) · scripts/ (build, import, export, set-up)
+bench/        tasks (t4 maritime ISR, t5 requirements), scorers, runners, batches.py, freeze and review tools, the results page, the shell service
+agents/       P0–P3 and the repair loop (solve.py), the model client (llm.py), the local-model dispatcher (llm_local.py),
+              external/ (the sandbox jail.py, the OpenCode runner)
+mvp/          the pinned official SysML v2 toolchain, the engine, evidence packs; mvp/runs/ and mvp/agent-runs/ hold every run (git-ignored)
+tools/        the RTRC tools as an MCP server (assistant_mcp.py), the OpenCode assistant workspace, Ollama model files
+scenario/     the synthetic maritime ISR reference model
+analysis/     every score file the page reads: the frozen batches, the local-27B rerun, the Langflow exam columns, side benchmarks, the memory
+docs/         langflow/ and benchmark/ (the two doors), decisions/ (why things are the way they are), knowledge-base/, report/
+datasets/     external data registry: source, date, SHA-256, license
 research/     literature review, paper artifacts, audits (read-only history)
 plans/        plan and project statement
-vendor/       symlink to full upstream clones (not in git; recreate with `python3 -m mvp.bootstrap --all-references`)
+vendor/       upstream clones (not in git; `python3 -m mvp.bootstrap --all-references`)
 ```
+
+Further reading: the exam report [`analysis/report/exam-20261006/index.html`](analysis/report/exam-20261006/index.html), the report draft [`docs/report/D4-draft.md`](docs/report/D4-draft.md), the process knowledge base [`docs/knowledge-base/`](docs/knowledge-base/README.md), the failure taxonomy [`docs/failure_taxonomy.md`](docs/failure_taxonomy.md), the second review of the keys [`REVIEW.md`](bench/tasks/t4_maritime_isr/heldout/REVIEW.md), the decision records [`docs/decisions/`](docs/decisions/), the plan [`plans/execution-plan-v2.md`](plans/execution-plan-v2.md), the sponsor brief [`research/source-extracts/rtx-brief.txt`](research/source-extracts/rtx-brief.txt), the toolchain [`mvp/README.md`](mvp/README.md).
 
 ## Quick checks
 
-Retrieval (paper 2) is MiniLM + FAISS only, with pinned versions: `pip install --user -r requirements-retrieval.txt`, then `python3 bench/vector_index.py --check` (versions, the pinned MiniLM snapshot, a test search). Without them retrieval stops with an error; there is no other ranking, and the results page refuses to start. (`rdflib` is needed only to rerun the paper 2 authors' code under `research/`.) The exam's retrieval library is built once with `python3 bench/build_examples_library.py` (official SysML-v2-Release examples through the Pilot, about 7 minutes). The agent sandbox needs `bwrap` (bubblewrap). Model diagrams on the page (`bench/model_diagram.py`: any officially parsed model, drawn from its parse, plus the Pilot's own tree view) need Graphviz in `tools/graphviz`: `micromamba create -p tools/graphviz -c conda-forge graphviz`.
-
 ```bash
-python3 -m unittest discover -s mvp/tests -v      # 11 toolchain boundary tests
+python3 -m unittest discover -s mvp/tests -v                         # toolchain boundary tests
 python3 -m unittest bench.test_score_pwr01 bench.test_score_answer   # scoring rule tests
-python3 bench/validate_gold.py                    # every gold reference passes its own answer list
-python3 bench/review_gold.py                      # mechanical second-review checks over the 27 keys
-python3 bench/freeze.py --check                   # the frozen files are unchanged
-python3 -m mvp.engine baseline                    # real official toolchain run → mvp/runs/<id>/
-python3 bench/exam_board.py                       # results page at http://127.0.0.1:8770/
+python3 bench/validate_gold.py                                       # every gold reference passes its own answer list
+python3 bench/review_gold.py                                         # mechanical second-review checks over the 27 keys
+python3 bench/freeze.py --check                                      # the frozen files are unchanged
+python3 bench/vector_index.py --check                                # retrieval: versions, the pinned MiniLM snapshot, a test search
+python3 -m mvp.engine baseline                                       # a real official toolchain run → mvp/runs/<id>/
 ```
+
+Retrieval (paper 2) is MiniLM + FAISS only, pinned in `requirements-retrieval.txt` (included by `requirements-bench.txt`); the exam's retrieval library is built once with `python3 bench/build_examples_library.py`. The agent sandbox needs `bwrap` (bubblewrap, Linux). Model diagrams on the page need Graphviz in `tools/graphviz` (`micromamba create -p tools/graphviz -c conda-forge graphviz`).
 
 ## Rules (do not violate)
 
@@ -66,4 +89,5 @@ python3 bench/exam_board.py                       # results page at http://127.0
 4. All maritime values are **synthetic**; never present them as RTX specifications.
 5. Public/synthetic data only; no EAR/ITAR; register every external source in `datasets/SOURCES.md`.
 6. Do not modify `vendor/`; the toolchain is pinned and hashed.
-7. Gold answers are visible only to the scorer process, never to agents, retrieval indexes, or few-shot prompts; agents run in the sandbox, and the results page server is not running while they do.
+7. Gold answers are visible only to the scorer process, never to agents, retrieval indexes, or few-shot prompts; sandboxed agents run while the results page server is stopped.
+8. No key in any committed file: keys live in `.env` and in Langflow's Global Variables, both outside git.

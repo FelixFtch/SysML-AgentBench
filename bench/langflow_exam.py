@@ -1,25 +1,32 @@
-"""Sit the 27-task exam through a Langflow flow (decision 035): one task per run, three repeats, scored by the frozen
-scorer, time and tokens recorded.
+"""Sit the 27-task exam through a Langflow flow: one task per run, three repeats, scored by the frozen scorer, time and
+tokens recorded. The result is a column of results page 1.3.
 
-    python3 bench/langflow_exam.py --flow "OpenCode with memory exam"            # project 3, a new column on page 1.3
-    python3 bench/langflow_exam.py --flow "Langflow Agent with memory exam"      # project 4, a new column
-    python3 bench/langflow_exam.py --flow "Langflow Agent, Pilot only exam"      # project 2, a new column
+    python3 bench/langflow_exam.py --flow "OpenCode with memory exam"            # project 3's column (decision 035), qwen3.8-flash
+    python3 bench/langflow_exam.py --flow "Langflow Agent with memory exam"      # project 4's column
+    python3 bench/langflow_exam.py --flow "Langflow Agent, Pilot only exam"      # project 2's column
+    python3 bench/langflow_exam.py --flow "Langflow Agent, Pilot only exam" --model "qwen3.8-27b (Ollama)"   # the same column on the local model
+    python3 bench/langflow_exam.py --flow "My P1 with a checklist" --column my-p1-checklist --login tedi    # your own flow: a new column
     python3 bench/langflow_exam.py --flow "Direct model exam · P1 repair from errors" --repeats 1   # a rerun of a frozen column
     python3 bench/langflow_exam.py --flow "OpenCode in the sandbox exam" --tasks GEN-01,MOD-05       # a rerun, two tasks
 
-Two kinds of flow:
-- a chat flow (Chat Input → agent → Chat Output): the task statement built as the direct candidates get it (agents.solve._task:
-  requirements plus the given models) is sent as the message, a fresh session per cell, and the reply is scored here with
-  bench.experiment.validate_and_grade (the official Pilot once, then the frozen scorer). Time is the wall clock of the run;
-  tokens come from the Agent's usage field on the stored message (Langflow Agent) or from the OpenCode node's usage file.
-- an exam-cell flow (RTRC Exam cell → steps): the task id is passed as a tweak and the shell service scores the cell as it
-  does for the results-page console; the row it returns is kept.
+Any flow shaped Chat Input → … → Chat Output can sit the exam: the task statement built as the direct candidates get it
+(agents.solve._task: requirements plus the given models) is sent as the message, a fresh session per cell, and the reply is
+scored here with bench.experiment.validate_and_grade (the official Pilot once, then the frozen scorer). Time is the wall
+clock of the run; tokens come from the Agent's usage field on the stored message (Langflow Agent) or from the OpenCode
+node's usage file. The repository's six exam-cell flows (RTRC Exam cell → steps) are the other kind: the task id is passed
+as a tweak and the shell service scores the cell as it does for the results-page console.
 
-Output: analysis/langflow-exam-<column>-qwen3.8-flash-<stamp>/ (a new column of results page 1.3, read by bench/batches.py
-LANGFLOW_COHORTS) or analysis/langflow-rerun-<slug>-<stamp>/ (a rerun of a frozen column; shown nowhere, kept as a record).
-Each folder holds results.jsonl, summary.json and the answers. The frozen batches are never touched. The results page
-(8770) must be stopped while a sandboxed or OpenCode flow runs; the runner refuses to start otherwise. The login token is
-cached in .langflow/exam-token (gitignored) because Langflow rate-limits logins.
+--model puts a model on the flow's model node for this run only (a tweak; the flow file is unchanged): a cloud name, or
+"<tag> (Ollama)" for a model pulled into Ollama. Without it, your own flow runs exactly as saved; the three repository
+columns default to qwen3.8-flash, the model of the frozen exam. --login runs the flow as the account that owns it
+(Langflow shows an account only its own flows); the password is asked for and never stored.
+
+Output: analysis/langflow-exam-<column>-<model tag>-<stamp>/ with results.jsonl, summary.json and the answers. Results page
+1.3 lists every such folder as a column (bench.batches.exam_columns), so a finished run appears on the next refresh and,
+once committed, on everyone's page. A rerun of a cell flow goes to analysis/langflow-rerun-<slug>-<stamp>/ and is shown
+nowhere. The frozen batches are never touched. The results page (8770) must be stopped while a flow runs a sandboxed
+coding agent (OpenCode, Claude Code; pass --sandboxed for your own such flow), because the page serves answer keys. The
+superuser's login token is cached in .langflow/exam-token (gitignored) because Langflow rate-limits logins.
 """
 from __future__ import annotations
 
@@ -41,9 +48,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / "langflow" / "flows"))
+sys.path.insert(0, str(ROOT / "langflow" / "flows"))    # catalog.py: the flow names, projects and files
+sys.path.insert(0, str(ROOT / "langflow" / "scripts"))  # import_flows.py: pointing Run Flow cards at the tool flows
 
-from catalog import NAMES  # noqa: E402
+from catalog import NAMES, flow_file  # noqa: E402
 
 BASE = f"http://127.0.0.1:{os.environ.get('LANGFLOW_PORT', '7860')}"
 DB = ROOT / ".venv-langflow" / "lib" / "python3.12" / "site-packages" / "langflow" / "langflow.db"
@@ -101,18 +109,27 @@ def _request(method: str, path: str, token: str | None = None, body=None, form: 
     return json.loads(raw) if raw else None
 
 
+_LOGIN: dict = {"username": None, "password": None}  # set by --login; otherwise the superuser of .langflow/secrets.env
+
+
 def _login() -> str:
-    secrets = _secrets()
-    token = _request("POST", "/api/v1/login", form={"username": secrets["LANGFLOW_SUPERUSER"], "password": secrets["LANGFLOW_SUPERUSER_PASSWORD"]})["access_token"]
-    TOKEN_FILE.write_text(token, encoding="utf-8")
-    TOKEN_FILE.chmod(0o600)
+    if _LOGIN["username"]:
+        username, password = _LOGIN["username"], _LOGIN["password"]
+    else:
+        secrets = _secrets()
+        username, password = secrets["LANGFLOW_SUPERUSER"], secrets["LANGFLOW_SUPERUSER_PASSWORD"]
+    token = _request("POST", "/api/v1/login", form={"username": username, "password": password})["access_token"]
+    if not _LOGIN["username"]:
+        TOKEN_FILE.write_text(token, encoding="utf-8")
+        TOKEN_FILE.chmod(0o600)
     _AUTH["token"] = token
     return token
 
 
 def _token() -> str:
-    """A cached login (the login route rate-limits); re-login when the cached token is refused."""
-    if TOKEN_FILE.is_file():
+    """A cached login (the login route rate-limits); re-login when the cached token is refused. A --login account is
+    never cached on disk."""
+    if not _LOGIN["username"] and TOKEN_FILE.is_file():
         token = TOKEN_FILE.read_text(encoding="utf-8").strip()
         try:
             _request("GET", "/api/v1/users/whoami", token)
@@ -134,7 +151,7 @@ KEY_ERRORS = ("Incorrect API key", "API key is required")
 
 def _ensure_provider(token: str) -> None:
     """The runner's login needs the Qwen provider variables of its own. Langflow keeps them per user, and
-    langflow/flows/move_to_user.py moves them to the people's account; after that the Agent in a private copy ran with
+    langflow/scripts/move_to_user.py moves them to the people's account; after that the Agent in a private copy ran with
     an empty key and every cell failed in eight seconds (2026-10-07). Set from .env as setup_assistant.py does.
     The Ollama address (the local model's provider) is checked the same way."""
     names = {item["name"] for item in _request("GET", "/api/v1/variables/", token) or []}
@@ -152,21 +169,28 @@ def _ensure_provider(token: str) -> None:
     print("The runner's login lacked provider variables (move_to_user.py moves them to the people's account); set from .env", flush=True)
 
 
-def _model_tweaks(flow: dict, model: str) -> dict:
-    """The tweak that puts `model` on the flow's model node. The flow files are preset to qwen3.8-flash; for the local model
-    the Langflow Agent gets the Ollama provider and tag (as the local chat variant of build_flows.py has them), and the
-    OpenCode exam node gets the model name its dropdown lists. Cloud flash needs no tweak."""
-    if model == MODEL:
+def _model_tweaks(flow: dict, model: str | None) -> dict:
+    """The tweak that puts `model` on the flow's model node, when a model was asked for. No --model: the flow runs as
+    saved (whatever provider and model its cards hold), which is how a person examines a flow they set up on the canvas.
+    A local name ("<tag> (Ollama)"): the Langflow Agent gets the Ollama provider and tag (as the local chat variant of
+    build_flows.py has them), the OpenCode and RTRC cards get the name. Any other name: the Agent keeps the flow's provider
+    (our files: "OpenAI Compatible", the endpoint of the Global Variables) with that model name; the cards get the name."""
+    if not model:
         return {}
-    from agents.llm_local import LOCAL_MODELS
-    ids = {node["id"] for node in flow["data"]["nodes"]}
+    from agents.llm_local import local_tag
     tweaks: dict = {}
-    if "Agent-rtrc" in ids:
-        tweaks["Agent-rtrc"] = {"model": [{"name": LOCAL_MODELS[model], "provider": "Ollama", "metadata": {"model_type": "llm", "tool_calling": True}}]}
-    if "RtrcOpenCode-assistant" in ids:
-        tweaks["RtrcOpenCode-assistant"] = {"model": model}
+    tag = local_tag(model)
+    for node in flow["data"]["nodes"]:
+        node_id, kind = node["id"], node.get("data", {}).get("type")
+        template = node.get("data", {}).get("node", {}).get("template", {})
+        if kind == "Agent" or node_id == "Agent-rtrc":
+            current = (template.get("model") or {}).get("value") or []
+            provider = "Ollama" if tag else ((current[0].get("provider") if current and isinstance(current[0], dict) else None) or "OpenAI Compatible")
+            tweaks[node_id] = {"model": [{"name": tag or model, "provider": provider, "metadata": {"model_type": "llm", "tool_calling": True}}]}
+        elif "model" in template and kind in {"RtrcOpenCodeAssistant", "RtrcChat", "RtrcExamCell", "RtrcStart"}:
+            tweaks[node_id] = {"model": model}
     if not tweaks:
-        raise SystemExit(f"{flow['name']}: no model node to point at {model}")
+        raise SystemExit(f"{flow['name']}: no model node to point at {model!r}; run without --model to examine the flow as saved")
     return tweaks
 
 
@@ -183,13 +207,16 @@ def _flow(token: str, name: str) -> dict:
     if name in visible:
         return _request("GET", f"/api/v1/flows/{visible[name]['id']}", token)
     from import_flows import _point_run_flow_cards
-    slug = next(s for s, n in NAMES.items() if n == name)
+    slug = next((s for s, n in NAMES.items() if n == name), None)
+    if slug is None:
+        raise SystemExit(f"No flow named {name!r} is visible to this login, and it is not one of the repository's flows. "
+                         "Langflow shows an account only its own flows: run again with --login <the account that owns it>.")
     projects = {p["name"]: p for p in _request("GET", "/api/v1/projects/", token) or []}
     project = projects.get(RUNNER_PROJECT) or _request("POST", "/api/v1/projects/", token, {
         "name": RUNNER_PROJECT, "description": "Private copies of the exam flows for bench/langflow_exam.py (the superuser cannot run another user's flows). Same files as the six projects."})
     imported: dict[str, dict] = {}
     for item in NEEDS.get(name, []) + [slug]:
-        data = json.loads((ROOT / "langflow" / "flows" / f"{item}.json").read_text(encoding="utf-8"))
+        data = json.loads(flow_file(item).read_text(encoding="utf-8"))
         _point_run_flow_cards(data, imported)
         payload = {"name": data["name"], "description": data["description"], "data": data["data"], "endpoint_name": None,
                    "tags": data.get("tags") or [], "folder_id": project["id"]}
@@ -276,7 +303,7 @@ def _rel(path: Path) -> str:
     return str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path)
 
 
-def _chat_cell(token: str, flow: dict, task_dir: Path, repeat: int, out: Path, timeout: int, column: str, model: str = MODEL) -> dict:
+def _chat_cell(token: str, flow: dict, task_dir: Path, repeat: int, out: Path, timeout: int, column: str, model: str | None = MODEL) -> dict:
     """One task through a chat flow: the message is the statement the direct candidates get; the reply is scored here."""
     from agents.solve import _task
     from bench.experiment import validate_and_grade
@@ -298,9 +325,9 @@ def _chat_cell(token: str, flow: dict, task_dir: Path, repeat: int, out: Path, t
     answer_file = out / "answers" / f"{case['id']}-r{repeat}.md"
     answer_file.parent.mkdir(parents=True, exist_ok=True)
     answer_file.write_text(text, encoding="utf-8")
-    row = {"repeat": repeat, "task_id": case["id"], "type": case["type"], "configuration": "P-LANGFLOW", "model": model, "flow": flow["name"],
-           "job_id": job["job_id"], "job_status": final.get("status"), "session": session, "elapsed_s": elapsed, "tool_calls": tools, "usage": usage,
-           "answer_file": _rel(answer_file)}
+    row = {"repeat": repeat, "task_id": case["id"], "type": case["type"], "configuration": "P-LANGFLOW", "model": model or "as saved in the flow",
+           "flow": flow["name"], "job_id": job["job_id"], "job_status": final.get("status"), "session": session, "elapsed_s": elapsed,
+           "tool_calls": tools, "usage": usage, "answer_file": _rel(answer_file)}
     if final.get("status") != "completed" or not text:
         row.update({"status": "FAIL", "sysml_status": None, "engineering_status": "FAIL",
                     "reason": f"The Langflow job ended {final.get('status')} " + ("with no reply." if not text else "."), "error": json.dumps((final.get("errors") or [])[:2])[:600]})
@@ -358,14 +385,35 @@ def main() -> None:
     parser.add_argument("--tasks", default="all", help="all, or a comma-separated list of task ids")
     parser.add_argument("--timeout", type=int, default=1800, help="seconds to wait for one run")
     parser.add_argument("--out", default=None, help="the batch folder (default: a new one under analysis/)")
-    parser.add_argument("--model", default=MODEL, choices=[MODEL, LOCAL_MODEL],
-                        help=f"{MODEL} (the model of the frozen exam) or {LOCAL_MODEL} (the 3-bit model on this machine; the column's local run)")
+    parser.add_argument("--model", default=None,
+                        help=f"the model to put on the flow's model node for this run: {MODEL} (the model of the frozen exam; the default for the three "
+                             f"columns of decision 035), {LOCAL_MODEL} (the 3-bit model on this machine), '<tag> (Ollama)' for another Ollama model, or any "
+                             "cloud model name. Omit it for your own flow to examine the flow exactly as saved (its own provider and model).")
+    parser.add_argument("--column", default=None,
+                        help="for a flow that is not one of the repository's: the column id it gets on results page 1.3 (letters, digits, dashes), "
+                             "e.g. my-p1-checklist. The three repository columns have fixed ids: agent-pilot, opencode-memory, agent-memory.")
+    parser.add_argument("--login", default=None,
+                        help="the Langflow account that owns the flow (the password is asked for and never stored); default: the superuser of "
+                             ".langflow/secrets.env, who sees only its own flows and private copies of the repository's")
+    parser.add_argument("--sandboxed", action="store_true",
+                        help="your flow runs a sandboxed coding agent (OpenCode / Claude Code card): the results page must be stopped first")
     args = parser.parse_args()
-    if args.flow not in COLUMNS and args.flow not in CELL_FLOWS:
-        raise SystemExit(f"--flow must be one of {list(COLUMNS) + list(CELL_FLOWS)}")
-    if args.model != MODEL and args.flow not in COLUMNS:
-        raise SystemExit(f"--model {args.model} is for the three column flows {list(COLUMNS)}; the cell flows take their model from the cell node")
-    sandboxed = "sandbox" in CELL_FLOWS.get(args.flow, "") or args.flow == NAMES["opencode-memory-exam"]
+    if args.login:
+        import getpass
+        _LOGIN["username"], _LOGIN["password"] = args.login, getpass.getpass(f"Langflow password for {args.login}: ")
+    own_flow = args.flow not in COLUMNS and args.flow not in CELL_FLOWS
+    if own_flow:
+        if not args.column:
+            raise SystemExit(f"{args.flow!r} is not one of the repository's flows; give it a column id with --column <id> (it becomes a column of results page 1.3)")
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]*", args.column):
+            raise SystemExit("--column: letters, digits and dashes only")
+        if args.column in {"agent-pilot", "opencode-memory", "agent-memory"}:
+            raise SystemExit(f"--column {args.column} is one of the repository's column ids; choose another")
+    elif args.column and args.column != COLUMNS.get(args.flow):
+        raise SystemExit(f"{args.flow!r} has the fixed column id {COLUMNS.get(args.flow) or '(a cell flow, no column)'}; --column is for your own flows")
+    if args.model and args.flow in CELL_FLOWS:
+        raise SystemExit(f"--model is for chat flows; the cell flows {list(CELL_FLOWS)} take their model from the cell node")
+    sandboxed = args.sandboxed or "sandbox" in CELL_FLOWS.get(args.flow, "") or args.flow == NAMES["opencode-memory-exam"]
     if sandboxed and _page_running():
         raise SystemExit("The results page (8770) is running and serves answer keys; stop it before an OpenCode or sandboxed run")
     from bench.experiment import load_env
@@ -374,19 +422,26 @@ def main() -> None:
     _ensure_provider(token)
     flow = _flow(token, args.flow)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
-    column = COLUMNS.get(args.flow)
-    model = args.model
-    model_tag = LOCAL_FOLDER_TAG if model == LOCAL_MODEL else model
+    column = COLUMNS.get(args.flow) or (args.column if own_flow else None)
+    # The three repository columns default to the frozen exam's model so their folders stay comparable; a person's own
+    # flow defaults to "as saved", which is what they built on the canvas.
+    model = args.model or (MODEL if args.flow in COLUMNS else None)
+    from bench.batches import model_tag as _model_tag
+    model_tag = _model_tag(model) if model else "flow"
     out = Path(args.out) if args.out else ROOT / "analysis" / (f"langflow-exam-{column}-{model_tag}-{stamp}" if column else f"langflow-rerun-{CELL_FLOWS[args.flow]}-{stamp}")
     out.mkdir(parents=True, exist_ok=True)
     tasks = _tasks(args.tasks)
     results = out / "results.jsonl"
     done = {(row["task_id"], row["repeat"]) for row in (json.loads(line) for line in results.read_text(encoding="utf-8").splitlines() if line.strip())} if results.is_file() else set()
-    summary = {"flow": args.flow, "flow_id": flow["id"], "column": column, "model": model, "started": stamp, "repeats": args.repeats,
+    summary = {"flow": args.flow, "flow_id": flow["id"], "column": column, "model": model or "as saved in the flow", "model_tag": model_tag,
+               "login": args.login or "superuser", "started": stamp, "repeats": args.repeats,
                "tasks": [item["id"] for item in tasks], "scored_by": "bench.experiment.validate_and_grade (frozen scorer)" if column else "the shell service's exam cell",
                "model_tweaks": _model_tweaks(flow, model) if column else {},
-               "note": ("Not part of the frozen score (bench/FREEZE.md); a Langflow exam column of decision 035." if column else "A rerun of a frozen column through Langflow; shown nowhere.")
-                       + (" The local 3-bit Qwen3.8-27B via Ollama, set on the model node by a run-time tweak; the flow file keeps qwen3.8-flash." if model == LOCAL_MODEL else "")}
+               "note": (("Not part of the frozen score (bench/FREEZE.md); a Langflow exam column of decision 035." if not own_flow
+                         else "Not part of the frozen score (bench/FREEZE.md); a person's own flow examined with bench/langflow_exam.py --column.") if column
+                        else "A rerun of a frozen column through Langflow; shown nowhere.")
+                       + (" The model was set on the model node by a run-time tweak; the flow file is unchanged." if model and model != MODEL else "")
+                       + (" The flow ran as saved, with its own provider and model." if not model else "")}
     (out / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
     shown = str(out.relative_to(ROOT)) if out.is_relative_to(ROOT) else str(out)
     print(f"{args.flow}: {len(tasks)} task(s) × {args.repeats} → {shown}", flush=True)

@@ -1,0 +1,8 @@
+# The benchmark side: the shell service, the exam runners, the results page, the MCP tool server.
+# Python 3.10 or newer. Install into a virtual environment of its own (the Langflow one is separate):
+#   python3 -m venv .venv && .venv/bin/pip install -r requirements-bench.txt
+# The results page (bench/exam_board.py) and the scorers need only pyyaml; retrieval (P3, memory search) needs the
+# rest; the MCP tool server (tools/assistant_mcp.py) needs mcp.
+pyyaml>=5.4
+mcp==2.3.0
+-r requirements-retrieval.txt

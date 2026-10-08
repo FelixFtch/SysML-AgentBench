@@ -160,6 +160,73 @@ def _direct_folders(model: str, start: str) -> dict[tuple[str, str], list[str]]:
     return {key: sorted(value) for key, value in groups.items()}
 
 
+def model_tag(model: str | None) -> str:
+    """The short, path-safe form of a model name used in batch folder names and matrix set ids: our local 27B is
+    'local27b' (the name of its batches), a cloud name is kept, any other name is slugified."""
+    name = (model or "").strip()
+    if not name:
+        return "flow"
+    if name in {"qwen3.8-27b (Ollama)", "qwen3.8-27b local"}:
+        return "local27b"
+    return re.sub(r"[^A-Za-z0-9.]+", "-", name).strip("-").lower() or "flow"
+
+
+# The Langflow exam columns in their fixed order on page 1.3; any other column id found on disk follows them.
+EXAM_COLUMN_ORDER = ["agent-pilot", "opencode-memory", "agent-memory"]
+EXAM_COLUMN_SHORT = {"agent-pilot": "Langflow Agent, Pilot only", "opencode-memory": "OpenCode with memory", "agent-memory": "Langflow Agent with memory"}
+
+
+@lru_cache(maxsize=1)
+def _exam_columns_cached(stamp: float) -> dict[str, dict]:  # noqa: ARG001 - the stamp invalidates the cache when a folder appears
+    out: dict[str, dict] = {}
+    for folder in sorted(ANALYSIS.glob("langflow-exam-*")):
+        summary_file = folder / "summary.json"
+        if not summary_file.is_file() or not (folder / "results.jsonl").is_file():
+            continue
+        try:
+            summary = json.loads(summary_file.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        column = summary.get("column")
+        if not column:
+            continue
+        model = summary.get("model") or "qwen3.8-flash"
+        tag = model_tag(model)
+        cohort = f"lf:{column}:{tag}"
+        short = EXAM_COLUMN_SHORT.get(column) or column
+        # Several folders for one (column, model): the newest wins; folders sort by their time stamp.
+        out[cohort] = {"id": cohort, "column": column, "model": model, "model_tag": tag, "flow": summary.get("flow") or "",
+                       "short": short, "label": f"{short} · {model}", "kind": "agent", "folder": folder.name,
+                       "project": summary.get("project") or ""}
+    return out
+
+
+def exam_columns() -> dict[str, dict]:
+    """Every Langflow exam column on disk, keyed by cohort id 'lf:<column>:<model tag>': the three columns of decision 035
+    on qwen3.8-flash, their local-27B runs, and any column a person added with bench/langflow_exam.py --column. The page
+    shows a column as soon as its folder exists; nothing is registered by hand."""
+    folders = [p for p in ANALYSIS.glob("langflow-exam-*") if p.is_dir()]
+    stamp = max((p.stat().st_mtime for p in folders), default=0.0) + len(folders)
+    return _exam_columns_cached(stamp)
+
+
+def exam_column_rows(cohort: str) -> list[dict]:
+    """Score rows of one Langflow exam column (a half-written last line is skipped while a run appends)."""
+    spec = exam_columns().get(cohort)
+    if not spec:
+        return []
+    out = []
+    for line in (ANALYSIS / spec["folder"] / "results.jsonl").read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        out.append({**row, "cohort_id": cohort, "cohort": spec["label"], "model": spec["model"], "batch": spec["folder"]})
+    return out
+
+
 def local_batch_dir(cohort: str) -> Path | None:
     """The newest local-27B folder of one matrix column, or None when that column has not started."""
     found = sorted(path for path in ANALYSIS.glob(LOCAL_MATRIX[cohort]["glob"]) if (path / "results.jsonl").is_file())

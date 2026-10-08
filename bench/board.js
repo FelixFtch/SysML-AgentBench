@@ -21,7 +21,7 @@ async function api(url, body) {
 }
 
 const S = { facts: null, tasks: [], cells: [], cell: null, cellLive: false, record: null, memory: [], catalog: null, budgets: null,
-  choice: null, edited: false, mod: null, modTask: "MOD-05", mods: {}, mxSet: "flash", mxModel: "flash", runStage: "", cellStage: "", modStage: "", appJob: null };
+  choice: null, edited: false, mod: null, modTask: "MOD-05", mods: {}, mxSet: "qwen3.8-flash", mxModel: "flash", runStage: "", cellStage: "", modStage: "", appJob: null };
 const FLOW = {};
 const TYPE_NAME = { GEN: "Generate a new model", MOD: "Modify an existing model", ALN: "Align two models (paper 1)", QRY: "Query a model", AMB: "Ambiguous: ask, don't guess", RT: "Round trip: model back to text" };
 const TYPE_SHORT = { GEN: "generate", MOD: "modify", ALN: "align", QRY: "query", AMB: "ambiguous", RT: "round trip" };
@@ -761,12 +761,10 @@ function renderGlossary() {
     ["GEN-03", "task 3 of type GEN; each type has 3–5 tasks"],
     ["P0 … P3", "four approaches with the same model: one-shot · repair loop (up to 20) · outline first + repair · retrieval + outline + repair"],
     ["1 2 3", "repeat number; every task × approach ran three times"],
-    ["OC · CL", S.mxSet === "local"
-      ? "OpenCode and Claude Code on the local Qwen3.8-27B, in the sandbox, three runs per task; grey until that run writes the cell"
-      : "OpenCode and Claude Code on qwen3.8-flash, in the sandbox, three runs per task"],
-    ["Langflow columns", S.mxSet === "local"
-      ? "the same three Langflow exam columns on the local Qwen3.8-27B; grey until that run exists. Not part of the frozen score"
-      : "the agent flows of Langflow projects 2, 3 and 4 on qwen3.8-flash (Pilot only; OpenCode with memory; Langflow Agent with memory), three runs per task, run by bench/langflow_exam.py, scored by the frozen scorer, not part of the frozen score; grey until run"],
+    ["OC · CL", S.mxSet === "qwen3.8-flash"
+      ? "OpenCode and Claude Code on qwen3.8-flash, in the sandbox, three runs per task"
+      : `OpenCode and Claude Code on ${setModelName(S.mxSet)}, in the sandbox, three runs per task; grey until that run writes the cell`],
+    ["Langflow columns", `Langflow flows that sat the exam on ${setModelName(S.mxSet)}: the three of projects 2, 3 and 4 (Pilot only; OpenCode with memory; Langflow Agent with memory) first, then any flow examined with bench/langflow_exam.py --column; three runs per task, scored by the frozen scorer, not part of the frozen score; grey until run`],
     ["↻n", "a cell whose official parse needed n repairs"],
     ["11/12", "row end: passes out of 12 for the direct model shown (4 approaches × 3 repeats); column foot: that column's pass rate"],
   ];
@@ -777,40 +775,82 @@ function renderGlossary() {
 
 /* The Langflow exam columns (decision 035): the agent flows of Langflow projects 2, 3 and 4 on qwen3.8-flash, run by
    bench/langflow_exam.py and scored by the frozen scorer; a column with no batch yet shows "not run yet". */
+/* The Langflow exam columns: the three of decision 035 come first in this order; any other column found on disk
+   (a flow someone examined with bench/langflow_exam.py --column) follows. Columns are read from facts.exam_columns,
+   one entry per (column, model) folder under analysis/langflow-exam-*; nothing is registered by hand. */
 const LANGFLOW_COLS = [["agent-pilot", "Langflow Agent, Pilot only"], ["opencode-memory", "OpenCode with memory"], ["agent-memory", "Langflow Agent with memory"]];
 const AGENT_IDS = new Set(["opencode", "claude", ...LANGFLOW_COLS.map(([id]) => id)]);
+/* A matrix "set" is one model: the frozen flash archive, our local 27B run, and any other model tag that has exam columns. */
+const SET_LABEL = { "qwen3.8-flash": "qwen3.8-flash", local27b: "local 27B" };
+const SET_DIRECT = { "qwen3.8-flash": { direct: null, opencode: "opencode", claude: "claude" }, local27b: { direct: "local", opencode: "local-opencode", claude: "local-claude" } };
+
+function matrixSets() {
+  const tags = ["qwen3.8-flash", "local27b"];
+  for (const c of S.facts.exam_columns || []) if (!tags.includes(c.model_tag)) tags.push(c.model_tag);
+  return tags;
+}
+
+function setModelName(tag) {
+  if (tag === "qwen3.8-flash") return "qwen3.8-flash";
+  if (tag === "local27b") return "the local Qwen3.8-27B";
+  const c = (S.facts.exam_columns || []).find((x) => x.model_tag === tag);
+  return c ? c.model : tag;
+}
+
+function examColumnsOf(tag) {
+  const found = (S.facts.exam_columns || []).filter((c) => c.model_tag === tag);
+  const cols = LANGFLOW_COLS.map(([id, name]) => ({ id, name, spec: found.find((c) => c.column === id) || null }));
+  for (const c of found) if (!LANGFLOW_COLS.some(([id]) => id === c.column)) cols.push({ id: c.column, name: c.short, spec: c });
+  return cols;
+}
 
 function matrixDirect() {
-  if (S.mxSet === "local") return (S.facts.local_cohorts || {}).local || { short: "local 27B", label: "Direct · local Qwen3.8-27B", by_type: {} };
-  return S.facts.cohorts[S.mxModel];
+  const tag = S.mxSet;
+  if (tag === "qwen3.8-flash") return S.facts.cohorts[S.mxModel];
+  if (tag === "local27b") return (S.facts.local_cohorts || {}).local || { short: "local 27B", label: "Direct · local Qwen3.8-27B", by_type: {} };
+  return { short: setModelName(tag), label: `Direct · ${setModelName(tag)}`, by_type: {} };
 }
 
 function matrixAgent(id) {
-  if (S.mxSet === "local") return (S.facts.local_cohorts || {})[`local-${id}`] || {};
-  if (id === "opencode" || id === "claude") return S.facts.cohorts[id] || {};
-  return (S.facts.langflow_cohorts || {})[id] || {};
+  const tag = S.mxSet;
+  if (id === "opencode" || id === "claude") {
+    const cohort = (SET_DIRECT[tag] || {})[id];
+    if (!cohort) return {};
+    return tag === "qwen3.8-flash" ? S.facts.cohorts[cohort] || {} : (S.facts.local_cohorts || {})[cohort] || {};
+  }
+  return (S.facts.exam_columns || []).find((c) => c.model_tag === tag && c.column === id) || {};
 }
 
 function isAgentCohort(id) {
-  return AGENT_IDS.has(id) || (String(id).startsWith("local-") && id !== "local");
+  return AGENT_IDS.has(id) || String(id).startsWith("lf:") || (String(id).startsWith("local-") && id !== "local");
+}
+
+function renderSetToggle() {
+  const host = $("#mx-set");
+  if (!host) return;
+  host.innerHTML = matrixSets().map((tag) => `<button data-set="${esc(tag)}"${tag === S.mxSet ? ' class="on"' : ""} title="${esc(setModelName(tag))}">${esc(SET_LABEL[tag] || setModelName(tag))}</button>`).join("");
 }
 
 function renderMatrix() {
   renderGlossary();
-  const local = S.mxSet === "local";
+  renderSetToggle();
+  const tag = S.mxSet;
+  const flash = tag === "qwen3.8-flash";
   const mode = $("#mx-mode");
-  if (mode) mode.hidden = local;
-  const directCohort = local ? "local" : S.mxModel;
-  const modelName = local ? "the local Qwen3.8-27B" : "qwen3.8-flash";
+  if (mode) mode.hidden = !flash;
+  const directCohort = flash ? S.mxModel : (SET_DIRECT[tag] || {}).direct;
+  const modelName = setModelName(tag);
+  const examCols = examColumnsOf(tag);
   const direct = {};
   const agents = {};
   for (const c of S.cells) {
-    if (c.cohort_id === directCohort) direct[`${c.task_id}|${c.configuration}|${c.repeat}`] = c;
-    if (local ? String(c.cohort_id).startsWith("local-") : AGENT_IDS.has(c.cohort_id)) agents[`${c.cohort_id}|${c.task_id}|${c.repeat}`] = c;
+    if (directCohort && c.cohort_id === directCohort) direct[`${c.task_id}|${c.configuration}|${c.repeat}`] = c;
+    if (isAgentCohort(c.cohort_id)) agents[`${c.cohort_id}|${c.task_id}|${c.repeat}`] = c;
   }
+  const agentCohort = (id) => (id === "opencode" || id === "claude" ? (SET_DIRECT[tag] || {})[id] : `lf:${id}:${tag}`);
   const cols = [];
   for (const cfg of ["P0", "P1", "P2", "P3"]) for (const r of [1, 2, 3]) cols.push({ cfg, r, direct: true, get: (t) => direct[`${t}|${cfg}|${r}`] });
-  for (const [cid, tag] of [["opencode", "OC"], ["claude", "CL"], ...LANGFLOW_COLS]) for (const r of [1, 2, 3]) cols.push({ cfg: tag, r, id: cid, get: (t) => agents[`${local ? `local-${cid}` : cid}|${t}|${r}`] });
+  for (const [cid, label] of [["opencode", "OC"], ["claude", "CL"], ...examCols.map((c) => [c.id, c.name])]) for (const r of [1, 2, 3]) cols.push({ cfg: label, r, id: cid, get: (t) => agents[`${agentCohort(cid)}|${t}|${r}`] });
   const lastOfGroup = (i) => cols[i].r === 3 && i < cols.length - 1;
   const tasks = [...S.tasks].sort((a, b) => TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) || a.id.localeCompare(b.id));
   $("#mx-legend").innerHTML = [["#c9ecd7", "pass"], ["#f5c3bf", "fail"], ["#edf1f4", "not run yet"]].map(([c, t]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
@@ -818,11 +858,12 @@ function renderMatrix() {
   const label = shown.label;
   const agentHead = (id, name, cls, leadGap) => {
     const c = matrixAgent(id);
-    const tip = c.n ? `${name} on ${modelName}: ${c.pass}/${c.n} pass${c.usage ? ` · ${num(c.usage.input)} in / ${num(c.usage.output)} out tokens` : ""}${c.usd ? ` · ${money(c.usd)}` : ""}${c.seconds_total != null ? ` · ${c.seconds_total} s in all` : ""}`
-      : `${name} on ${modelName}: not run yet`;
+    const flow = c.flow ? ` · flow "${c.flow}"` : "";
+    const tip = c.n ? `${name} on ${modelName}${flow}: ${c.pass}/${c.n} pass${c.usage ? ` · ${num(c.usage.input)} in / ${num(c.usage.output)} out tokens` : ""}${c.usd != null ? ` · ${money(c.usd)}` : ""}${c.seconds_total != null ? ` · ${c.seconds_total} s in all` : ""}${c.folder ? ` · analysis/${c.folder}` : ""}`
+      : `${name} on ${modelName}: not run yet (python3 bench/langflow_exam.py --flow "<flow name>" --column ${id})`;
     return `${leadGap ? `<th class="gap"></th>` : ""}<th colspan="3"${cls ? ` class="${cls}"` : ""} title="${esc(tip)}">${esc(name)}${c.n ? "" : `<small>not run yet</small>`}</th>`;
   };
-  const head1 = `<tr><th></th>${["P0", "P1", "P2", "P3"].map((p) => `<th colspan="3">${CONFIG_NAME[p]}</th><th class="gap"></th>`).join("")}${agentHead("opencode", "OpenCode", "", false)}${agentHead("claude", "Claude Code", "", true)}${LANGFLOW_COLS.map(([id, name]) => agentHead(id, name, "lf", true)).join("")}<th></th></tr>`;
+  const head1 = `<tr><th></th>${["P0", "P1", "P2", "P3"].map((p) => `<th colspan="3">${CONFIG_NAME[p]}</th><th class="gap"></th>`).join("")}${agentHead("opencode", "OpenCode", "", false)}${agentHead("claude", "Claude Code", "", true)}${examCols.map((c) => agentHead(c.id, c.name, "lf", true)).join("")}<th></th></tr>`;
   const head2 = `<tr><th class="mx-model">${esc(label)}</th>${cols.map((col, i) => `<th>${col.r}</th>${lastOfGroup(i) ? `<th class="gap"></th>` : ""}`).join("")}<th>Pass</th></tr>`;
   const span = cols.length + cols.filter((_, i) => lastOfGroup(i)).length + 2;
   let body = "";
@@ -2096,10 +2137,10 @@ document.addEventListener("click", (e) => {
 });
 
 async function refreshMatrix() {
-  if (document.hidden || S.mxSet !== "local") return;
+  if (document.hidden) return;
   const [facts, cells] = await Promise.all([api("/api/facts"), api("/api/cells")]);
   const signature = (facts.local_cohorts || {}).local;
-  const mark = signature ? `${signature.n}:${signature.pass}` : "0";
+  const mark = `${signature ? `${signature.n}:${signature.pass}` : "0"}|${(facts.exam_columns || []).map((c) => `${c.id}=${c.n}`).join(",")}`;
   if (mark === refreshMatrix.mark && cells.length === S.cells.length) return;
   refreshMatrix.mark = mark;
   const wrap = $("#matrix");
@@ -2123,6 +2164,7 @@ async function boot() {
   renderPapers();
   renderScores();
   renderMatrix();
+  refreshMatrix.mark = `${(S.facts.local_cohorts || {}).local ? `${S.facts.local_cohorts.local.n}:${S.facts.local_cohorts.local.pass}` : "0"}|${(S.facts.exam_columns || []).map((c) => `${c.id}=${c.n}`).join(",")}`;
   setInterval(() => { refreshMatrix().catch(() => {}); }, 15000);
   renderTrace();
   setupConsole();

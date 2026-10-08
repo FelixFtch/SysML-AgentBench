@@ -5,7 +5,9 @@ sessions are not visible (decision 026). The prompt suffix is the same one Claud
 
 The model comes from MVP_LLM_MODEL. The cloud Qwen models go to the Qwen endpoint of .env; the local model names of
 agents/llm_local.py go to Ollama on this machine (127.0.0.1:11434, no key, thinking off) through the same
-OpenAI-compatible provider package (decision 032). The sandbox shares the network, so Ollama is reachable from it.
+OpenAI-compatible provider package (decision 032). OPENCODE_MODEL in .env ("provider/model") hands the model to
+OpenCode's own provider list and login instead (provider_config). The sandbox shares the network, so Ollama is
+reachable from it.
 """
 from __future__ import annotations
 
@@ -35,10 +37,18 @@ def _base_url() -> str:
 
 
 def provider_config(model: str) -> tuple[str, dict]:
-    """OpenCode's provider block for one model name: (provider/model id, opencode.json contents)."""
-    from agents.llm_local import LOCAL_BASE, LOCAL_MODELS
-    if model in LOCAL_MODELS:
-        tag = LOCAL_MODELS[model]
+    """OpenCode's provider block for one model name: (provider/model id, opencode.json contents).
+
+    Three cases. OPENCODE_MODEL set in the environment (.env): OpenCode's own provider and login are used
+    (`opencode auth login`), the value is a "provider/model" id as `opencode models` lists them, and no provider block
+    is written. A local model name ("<tag> (Ollama)"): Ollama on this machine, no key. Anything else: the
+    OpenAI-compatible endpoint of .env (MVP_LLM_URL, MVP_LLM_API_KEY), the way the Qwen runs were made."""
+    from agents.llm_local import LOCAL_BASE, local_tag
+    own = os.environ.get("OPENCODE_MODEL", "").strip()
+    if own and local_tag(model) is None:
+        return own, {"model": own}
+    tag = local_tag(model)
+    if tag is not None:
         # reasoningEffort is passed through as reasoning_effort; Ollama's OpenAI-compatible endpoint reads "none" as
         # thinking off (the same switch agents/llm_local.py uses), so the token budget goes to the answer and the tools.
         config = {

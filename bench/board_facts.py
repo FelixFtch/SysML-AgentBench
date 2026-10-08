@@ -61,12 +61,23 @@ PRICES = {
 }
 
 
-def _usd(model: str, tokens: dict, intl: bool = False) -> float:
-    price = PRICES["models"][model]
+def _usd(model: str, tokens: dict, intl: bool = False) -> float | None:
+    """Tokens priced at the list price of PRICES; None for a model with no price there (the page shows a dash, never a guess).
+    A local model has no API price and costs 0."""
+    from agents.llm_local import is_local
+    if is_local(model):
+        return 0.0
+    price = PRICES["models"].get(model)
+    if not price:
+        return None
     if intl and price.get("intl"):
         price = price["intl"]
     fresh = max((tokens.get("input") or 0) - (tokens.get("cached") or 0), 0)
     return (fresh * price["input"] + (tokens.get("cached") or 0) * price["cache"] + (tokens.get("output") or 0) * price["output"]) / 1e6
+
+
+def _round(value: float | None, digits: int) -> float | None:
+    return None if value is None else round(value, digits)
 
 
 def _sum_usage(items: list[dict]) -> dict:
@@ -121,7 +132,7 @@ def _summary(cohort: str, cells: list[dict]) -> dict:
         "batch": folder.name if folder else None, "rerun_batch": rerun.name if rerun else None,
         "rerun_scope": rerun_scope(cohort), "n": len(cells), "expected": EXPECTED[spec["kind"]],
         "pass": sum(row["status"] == "PASS" for row in cells), "fail": sum(row["status"] != "PASS" for row in cells),
-        "by_type": by_type, "usage": usage, "usd": round(_usd(spec["model"], usage), 4), "usd_intl": round(_usd(spec["model"], usage, intl=True), 4),
+        "by_type": by_type, "usage": usage, "usd": _round(_usd(spec["model"], usage), 4), "usd_intl": _round(_usd(spec["model"], usage, intl=True), 4),
         "reliability": {"groups": len(groups), "flips": len(flip_keys), "flip_tasks": sorted({task for task, _config in flip_keys})},
         "fail_tasks": dict(Counter(row["task_id"] for row in cells if row["status"] != "PASS")),
         "errors": sum(1 for row in cells if row.get("error")),
@@ -169,7 +180,7 @@ def _configs(cohort: str, cells: list[dict]) -> list[dict]:
             "id": name, "n": len(part), "pass": sum(row["status"] == "PASS" for row in part),
             "fail": sum(row["status"] != "PASS" for row in part),
             "tokens": usage["input"] + usage["output"], "usage": usage,
-            "usd": round(_usd(model, usage), 5), "usd_intl": round(_usd(model, usage, intl=True), 5),
+            "usd": _round(_usd(model, usage), 5), "usd_intl": _round(_usd(model, usage, intl=True), 5),
             "syntax_n": len(sysml),
             "syntax_first": sum(row.get("first_pass_attempt") == 1 for row in sysml),
             "syntax_final": sum(row.get("sysml_status") == "PASS" for row in sysml),
@@ -245,8 +256,8 @@ def _costs(cohorts: dict, side: dict) -> dict:
         items.append({"id": "mod", "group_id": "mod", "group": "MOD change chain",
                       "label": "One run" if len(mod_runs) == 1 else f"One run (average of {len(mod_runs)})", "model": "qwen3.8-max", **average})
     for item in items:
-        item["usd"] = round(_usd(item["model"], item), 6)
-        item["usd_intl"] = round(_usd(item["model"], item, intl=True), 6)
+        item["usd"] = _round(_usd(item["model"], item), 6)
+        item["usd_intl"] = _round(_usd(item["model"], item, intl=True), 6)
     unrecorded = []
     if part2_partial:
         unrecorded.append(f"{part2_partial} Part 2 runs recorded only requirements, designs and trade-offs, not alignment and read-back; later runs record everything.")
@@ -262,10 +273,10 @@ def _costs(cohorts: dict, side: dict) -> dict:
     counted = [item for item in items if item["group_id"] not in {"part2", "mod"}]
     return {"prices": PRICES, "items": items, "runs": runs, "mod_runs": mod_runs, "unrecorded": unrecorded,
             "missing": {"part2_partial": part2_partial, "mod_unlogged": mod_unlogged},
-            "batch_usd": round(sum(item["usd"] for item in counted if item["group_id"] in {"direct", "agent", "side"}), 4),
-            "recorded_usd": round(sum(item["usd"] for item in counted)
-                                  + sum(_usd("qwen3.8-max", run) for run in runs)
-                                  + sum(_usd("qwen3.8-max", run) for run in mod_runs), 4)}
+            "batch_usd": round(sum(item["usd"] or 0 for item in counted if item["group_id"] in {"direct", "agent", "side"}), 4),
+            "recorded_usd": round(sum(item["usd"] or 0 for item in counted)
+                                  + sum(_usd("qwen3.8-max", run) or 0 for run in runs)
+                                  + sum(_usd("qwen3.8-max", run) or 0 for run in mod_runs), 4)}
 
 
 def _knowledge() -> dict:
@@ -372,7 +383,26 @@ def facts() -> dict:
                 "expects. Whether the design meets its budget is a separate design verdict (decision 019).",
         "langflow_cohorts": _langflow_cohorts(),
         "local_cohorts": _local_cohorts(),
+        "exam_columns": _exam_columns(),
     }
+    return out
+
+
+def _exam_columns() -> list[dict]:
+    """Every Langflow exam column folder on disk (bench.batches.exam_columns), with its pass count, tokens and time, in
+    the page's order: the three columns of decision 035 first, then any column a person added, by model."""
+    from bench.batches import EXAM_COLUMN_ORDER, exam_column_rows, exam_columns
+    out = []
+    for cohort, spec in exam_columns().items():
+        cells = exam_column_rows(cohort)
+        seconds = [row.get("elapsed_s") for row in cells if isinstance(row.get("elapsed_s"), (int, float))]
+        usage = _sum_usage([usage_of_row(row) for row in cells])
+        out.append({**spec, "n": len(cells), "expected": EXPECTED["agent"],
+                    "pass": sum(row.get("status") == "PASS" for row in cells), "fail": sum(row.get("status") != "PASS" for row in cells),
+                    "usage": usage, "usd": _usd(spec["model"], usage), "seconds_total": round(sum(seconds), 1),
+                    "tool_calls": sum(len(row.get("tool_calls") or []) for row in cells)})
+    order = {column: index for index, column in enumerate(EXAM_COLUMN_ORDER)}
+    out.sort(key=lambda item: (item["model_tag"] != "qwen3.8-flash", item["model_tag"] != "local27b", item["model_tag"], order.get(item["column"], 99), item["column"]))
     return out
 
 

@@ -11,11 +11,29 @@ Each project holds one candidate's exam version and chat version side by side, s
 6. Other: the design agent flow with a person's decision, the knowledge-base fill, the results tables, the MOD
    change chain, the Cameo check.
 
-A slug is the flow file name (langflow/flows/<slug>.json) and the flow's endpoint name; the name is what Langflow
-shows. Run Flow names a tool "<flow name with spaces as dashes>_tool", so the shared tool flows keep short names.
-RETIRED lists names of earlier versions of these flows that an import removes.
+A slug is the flow file name (langflow/flows/<project folder>/<slug>.json; flow_file(slug) gives the path) and the
+flow's endpoint name; the name is what Langflow shows. Run Flow names a tool "<flow name with spaces as dashes>_tool",
+so the shared tool flows keep short names. RETIRED lists names of earlier versions of these flows that an import removes.
+
+The flow files are laid out the way Langflow's own template repository is (one folder per group, a JSON per flow, a
+README per folder), so a person can import one file by dragging it into Langflow, or the whole set with
+langflow/scripts/import_flows.py.
 """
 from __future__ import annotations
+
+from pathlib import Path
+
+FLOWS_DIR = Path(__file__).resolve().parent
+
+# Project name (as Langflow shows it) -> folder under langflow/flows/
+FOLDERS: dict[str, str] = {
+    "1 · Direct model, approaches P0 to P3": "1-direct-model",
+    "2 · Coding agents without memory: OpenCode, Claude Code, Langflow Agent": "2-coding-agents",
+    "3 · OpenCode with memory": "3-opencode-with-memory",
+    "4 · Langflow Agent with memory": "4-langflow-agent-with-memory",
+    "5 · Shared tool flows": "5-shared-tools",
+    "6 · Other": "6-other",
+}
 
 PROJECTS: list[tuple[str, str, list[tuple[str, str]]]] = [
     ("5 · Shared tool flows",
@@ -65,6 +83,12 @@ PROJECTS: list[tuple[str, str, list[tuple[str, str]]]] = [
 NAMES: dict[str, str] = {slug: name for _, _, flows in PROJECTS for slug, name in flows}
 PROJECT_OF: dict[str, str] = {slug: project for project, _, flows in PROJECTS for slug, _ in flows}
 ORDER: list[str] = [slug for _, _, flows in PROJECTS for slug, _ in flows]
+SLUG_OF: dict[str, str] = {name: slug for slug, name in NAMES.items()}
+
+
+def flow_file(slug: str) -> Path:
+    """The flow file of a slug: langflow/flows/<project folder>/<slug>.json."""
+    return FLOWS_DIR / FOLDERS[PROJECT_OF[slug]] / f"{slug}.json"
 
 # The single project of decisions 030 to 034 and the flow names it held; an import moves everything into the six
 # projects above and removes these.

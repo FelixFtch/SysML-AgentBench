@@ -48,10 +48,10 @@ SESSIONS_DIR = ROOT / "analysis" / "langflow-runs"
 CONSOLE_DIR = ROOT / "analysis" / "langflow-console"
 CAMEO_DIR = ROOT / "analysis" / "cameo-exports"
 HELD = ROOT / "bench" / "tasks" / "t4_maritime_isr" / "heldout"
+# The model names our runs used, offered by the cards' dropdowns. Any other name is accepted as typed: a cloud name goes
+# to the endpoint of .env (or to OpenCode's / Claude Code's own provider, see .env.example), "<tag> (Ollama)" to Ollama.
 MODELS = ("qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)", "qwen3.8-27b local")
 AGENTS = ("direct", "claude-code", "opencode")
-LOCAL_MODELS = {"qwen3.8-27b (Ollama)", "qwen3.8-27b local"}  # served by Ollama on this machine; direct or OpenCode (decision 032)
-LOCAL_REFUSED = "The local 3-bit model runs with Qwen direct or OpenCode; a Claude Code exam still uses the cloud Qwen."
 VARIANT_ADAPT = ("Design A: adapt the similar existing project. Start from its model: keep its structure, part names and port names "
                  "where they fit the brief; change only what the requirements need; add what is missing; leave out what the brief does not need. "
                  "Every number must come from the requirements, and a stated limit is never changed.")
@@ -144,11 +144,9 @@ def run_start(body: dict) -> dict:
                              "langflow": {"replay_of": source.get("id"), "mode": "replay"}}
     else:
         agent = body.get("agent") or "direct"
-        model = body.get("model") or MODELS[0]
-        if agent not in AGENTS or model not in MODELS:
-            raise StepError(f"Agent must be one of {AGENTS} and model one of {MODELS} (Qwen only for now)")
-        if model in LOCAL_MODELS and agent == "claude-code":
-            raise StepError(LOCAL_REFUSED)
+        model = str(body.get("model") or MODELS[0]).strip()
+        if agent not in AGENTS or not model:
+            raise StepError(f"Agent must be one of {AGENTS} and the model a name (for example one of {MODELS})")
         brief = (body.get("brief") or "").strip() or brief_from(CATALOG["default"])
         if len(brief) < 20:
             raise StepError("Write at least one full sentence for the brief")
@@ -775,10 +773,10 @@ def exam_run(body: dict) -> dict:
     """F1 live: one sealed task with one approach, exactly as the page console runs it; the key is used only to score."""
     from agents.llm import MODEL_OVERRIDE, USAGE_LOG, usage_summary
     board = _board()
-    task_id, config, model = body.get("task_id") or "", body.get("configuration") or "P0", body.get("model") or MODELS[0]
+    task_id, config, model = body.get("task_id") or "", body.get("configuration") or "P0", str(body.get("model") or MODELS[0]).strip()
     task_dir = HELD / task_id
-    if not (task_dir / "case.yaml").is_file() or config not in {"P0", "P1", "P2", "P3"} or model not in MODELS:
-        raise StepError("Need a sealed task id, an approach P0–P3 and a Qwen model")
+    if not (task_dir / "case.yaml").is_file() or config not in {"P0", "P1", "P2", "P3"} or not model:
+        raise StepError("Need a sealed task id, an approach P0–P3 and a model name")
     job = {"id": "langflow", "status": "running", "steps": [], "current": 0, "attempts": [], "retrieved": [], "requirements": "",
            "answer": "", "gold": "", "phase": "", "phase_detail": "", "error": "", "task_id": task_id, "configuration": config,
            "type": "", "cohort": "Langflow run", "repeat": 1, "status_label": "RUNNING", "sysml_status": None,
@@ -805,12 +803,10 @@ def exam_run(body: dict) -> dict:
 def exam_agent_run(body: dict) -> dict:
     """F2 live: one sealed task by a sandboxed coding agent on Qwen, with the scored batches' limits (15 min; Claude Code 60 turns)."""
     from bench.experiment import validate_and_grade
-    task_id, agent, model = body.get("task_id") or "", body.get("agent") or "opencode", body.get("model") or MODELS[1]
+    task_id, agent, model = body.get("task_id") or "", body.get("agent") or "opencode", str(body.get("model") or MODELS[1]).strip()
     task_dir = HELD / task_id
-    if model in LOCAL_MODELS and agent == "claude-code":
-        raise StepError(LOCAL_REFUSED)
-    if not (task_dir / "case.yaml").is_file() or agent not in {"opencode", "claude-code"} or model not in MODELS:
-        raise StepError("Need a sealed task id, agent opencode or claude-code, and a Qwen model")
+    if not (task_dir / "case.yaml").is_file() or agent not in {"opencode", "claude-code"} or not model:
+        raise StepError("Need a sealed task id, agent opencode or claude-code, and a model name")
     if _page_running():
         raise StepError("The results page is running and serves answer keys; stop it before running a sandboxed agent")
     started = time.monotonic()
@@ -862,12 +858,12 @@ def chat_turn(body: dict) -> dict:
     Langflow session; the reply, parsed by the official Pilot only when it holds a model. Nothing is scored."""
     from bench import chat_turns
     text = str(body.get("text") or "").strip()
-    candidate, model = str(body.get("candidate") or "direct-P1"), body.get("model") or MODELS[0]
+    candidate, model = str(body.get("candidate") or "direct-P1"), str(body.get("model") or MODELS[0]).strip()
     session = str(body.get("session") or "default")
     if not text:
         raise StepError("Write a message")
-    if model not in MODELS:
-        raise StepError(f"model must be one of {MODELS}")
+    if not model:
+        raise StepError(f"model must be a name (for example one of {MODELS})")
     if candidate.startswith("direct-"):
         approach = candidate[len("direct-"):]
         if approach not in chat_turns.APPROACHES:

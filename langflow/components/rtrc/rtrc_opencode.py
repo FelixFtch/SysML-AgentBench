@@ -55,8 +55,9 @@ class RtrcOpenCodeAssistant(Component):
         MessageInput(name="message", display_name="Engineer's message",
                      info="Ask what exists, describe a need, confirm the brief it proposes, or decide on a run. In exam mode: one task statement."),
         DropdownInput(name="mode", display_name="Mode", options=MODES, value=MODES[0], advanced=True),
-        DropdownInput(name="model", display_name="Model", options=MODELS, value=MODELS[0], advanced=True,
-                      info="qwen3.8-27b (Ollama) is the 3-bit model on this machine; the exam flows use qwen3.8-flash, the model of the frozen exam."),
+        DropdownInput(name="model", display_name="Model", options=MODELS, value=MODELS[0], advanced=True, combobox=True,
+                      info="Pick one of the names our runs used, or type any name: a cloud name goes to the endpoint of .env (or to OpenCode's own provider when "
+                           "OPENCODE_MODEL is set), '<tag> (Ollama)' to a model you pulled into Ollama. The exam flows used qwen3.8-flash."),
     ]
     outputs = [Output(display_name="Answer", name="answer", method="turn")]
 

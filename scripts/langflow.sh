@@ -2,8 +2,8 @@
 # Start the RTRC Langflow shell: the RTRC shell service (127.0.0.1:8781), Ollama for the local Qwen3.8-27B
 # (127.0.0.1:11434) and Langflow 1.12.5 (127.0.0.1:7860).
 #   scripts/langflow.sh            start them (Langflow in the foreground)
-#   scripts/langflow.sh --import   also import langflow/flows/*.json into the six projects of langflow/flows/catalog.py and
-#                                  set up the knowledge base rtrc_memory (Qwen embeddings; langflow/flows/setup_knowledge.py)
+#   scripts/langflow.sh --import   also import the flow files of langflow/flows/ into the six projects of langflow/flows/catalog.py
+#                                  and set up the knowledge base rtrc_memory (Qwen embeddings; langflow/scripts/setup_knowledge.py)
 # Langflow runs local-only with login on, and executes only built-in components and ours (langflow/components);
 # edited or pasted component code is refused. The RTRC nodes call the shell service, which reads .env itself; the only
 # key Langflow holds is the Qwen key for the knowledge base's embeddings, stored as an encrypted credential.
@@ -51,8 +51,8 @@ if [ "${1:-}" = "--import" ]; then
   (for _ in $(seq 1 180); do
      curl -s -m 2 "http://127.0.0.1:$LANGFLOW_PORT/health" >/dev/null && break; sleep 2
    done
-   .venv-langflow/bin/python langflow/flows/import_flows.py
-   .venv-langflow/bin/python langflow/flows/setup_knowledge.py
-   .venv-langflow/bin/python langflow/flows/setup_assistant.py) &
+   .venv-langflow/bin/python langflow/scripts/import_flows.py
+   .venv-langflow/bin/python langflow/scripts/setup_knowledge.py
+   .venv-langflow/bin/python langflow/scripts/setup_assistant.py) &
 fi
 exec .venv-langflow/bin/langflow run --host "$LANGFLOW_HOST" --port "$LANGFLOW_PORT"

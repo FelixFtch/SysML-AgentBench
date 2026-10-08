@@ -204,11 +204,19 @@ BY_ID = {row["id"]: row for row in CELLS}
 
 
 def _local_cells() -> list[dict]:
-    """Local-27B rows read from disk on each request, so a refresh shows cells the running batch has just written."""
-    from bench.batches import LOCAL_MATRIX, local_rows
+    """Rows read from disk on each request, so a refresh shows cells a running batch has just written: the local-27B
+    matrix, and every Langflow exam column folder (bench.batches.exam_columns: the three columns of decision 035, their
+    local runs, and any column a person adds with bench/langflow_exam.py --column)."""
+    from bench.batches import LOCAL_MATRIX, exam_column_rows, exam_columns, local_rows
     cells = []
     for cohort in LOCAL_MATRIX:
+        if cohort.startswith("local-") and cohort[len("local-"):] in {"agent-pilot", "opencode-memory", "agent-memory"}:
+            continue  # these are served below as lf:<column>:local27b
         for row in local_rows(cohort):
+            row["id"] = f"{cohort}:{row.get('repeat')}:{row['task_id']}:{row.get('configuration')}"
+            cells.append(row)
+    for cohort in exam_columns():
+        for row in exam_column_rows(cohort):
             row["id"] = f"{cohort}:{row.get('repeat')}:{row['task_id']}:{row.get('configuration')}"
             cells.append(row)
     return cells

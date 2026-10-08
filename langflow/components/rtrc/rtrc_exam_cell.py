@@ -44,8 +44,9 @@ class RtrcExamCell(Component):
         # that fails (lfx.interface.initialize.loading.convert_kwargs), so a live run always fell back to the default.
         DropdownInput(name="approach", display_name="Approach (direct)", options=["P0", "P1", "P2", "P3"], value="P1"),
         DropdownInput(name="agent", display_name="Agent (sandboxed)", options=["opencode", "claude-code"], value="opencode"),
-        DropdownInput(name="model", display_name="Qwen model", options=["qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)"], value="qwen3.8-flash",
-                      info="qwen3.8-27b (Ollama) is the 3-bit model on this machine. Live direct runs only; sandboxed agents stay on the cloud model."),
+        DropdownInput(name="model", display_name="Model", options=["qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)"], value="qwen3.8-flash", combobox=True,
+                      info="Pick one of the names our runs used, or type any name: a cloud name goes to the endpoint of .env, '<tag> (Ollama)' to a model you pulled "
+                           "into Ollama. The frozen columns were run on qwen3.8-flash (docs/langflow/02-keys-and-models.md)."),
     ]
     outputs = [
         Output(display_name="Cell", name="cell_data", method="as_data"),

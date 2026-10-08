@@ -33,7 +33,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from agents.external.opencode_run import provider_config  # noqa: E402
-from agents.llm_local import LOCAL_MODELS  # noqa: E402
+from agents.llm_local import is_local  # noqa: E402
 
 HOME = Path(os.environ.get("RTRC_ASSISTANT_HOME", Path.home() / ".rtrc-assistant"))
 EXAM_HOME = Path(os.environ.get("RTRC_ASSISTANT_EXAM_HOME", Path.home() / ".rtrc-assistant-exam"))
@@ -69,7 +69,7 @@ def prepare(model: str = DEFAULT_MODEL, mode: str = "chat") -> tuple[Path, str]:
     """Write opencode.json and the prompt into the workspace of `mode`; return (path, provider/model id)."""
     if mode not in MODES:
         raise ValueError(f"mode must be one of {MODES}")
-    if model not in LOCAL_MODELS:
+    if not is_local(model):
         from bench.experiment import load_env
         load_env()  # the cloud provider block reads the Qwen endpoint from .env (the key stays an {env:...} reference)
     model_id, config = provider_config(model)
@@ -105,8 +105,8 @@ def main() -> None:
     parser.add_argument("--mode", default="chat", choices=MODES, help="chat (the design assistant) or exam (one task per session, two tools)")
     args = parser.parse_args()
     model = args.model or (DEFAULT_MODEL if args.mode == "chat" else EXAM_MODEL)
-    if model not in LOCAL_MODELS and model not in CLOUD_MODELS:
-        sys.exit(f"Unknown model {model!r}")
+    if not model.strip():
+        sys.exit("Give a model name")
     path, model_id = prepare(model, args.mode)
     print(path)
     print(model_id, file=sys.stderr)

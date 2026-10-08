@@ -42,7 +42,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from agents.llm import MODEL_OVERRIDE, USAGE_LOG, usage_summary  # noqa: E402
-from agents.llm_local import LOCAL_MODELS, chat  # noqa: E402  (routes the local model to Ollama, the rest to agents.llm.chat)
+from agents.llm_local import chat  # noqa: E402  (routes a local model to Ollama, the rest to agents.llm.chat)
 
 SESSIONS = ROOT / "mvp" / "chat-sessions"
 SANDBOXES = ROOT / "mvp" / "chat-sandbox"
@@ -334,11 +334,9 @@ def sandbox_turn(session: str, text: str, agent: str, model: str, *, timeout: in
             argv += ["--session", state["agent_session"]] if state.get("agent_session") else ["--title", f"Chat {session}"]
             argv.append(text)
         else:
-            # Local Qwen is the CCR provider "ollama" (Ollama on this machine). Cloud names stay "qwen,<model>".
-            # The exam routes still refuse Claude Code on the local model; only this chat path uses it.
-            ccr_model = f"ollama,{LOCAL_MODELS[model]}" if model in LOCAL_MODELS else f"qwen,{model}"
-            argv = ["ccr", "default-claude-code", "--", "-p", "--output-format", "json", "--max-turns", str(max_turns),
-                    "--allowedTools", *CLAUDE_TOOLS, "--model", ccr_model]
+            # The same command as the exam runner builds (CLAUDE_CODE_MODEL, the router's qwen / ollama providers), plus --resume.
+            from bench.run_claude_qwen import claude_argv
+            argv = claude_argv(model, max_turns=max_turns, tools=CLAUDE_TOOLS)
             argv += ["--resume", state["agent_session"]] if state.get("agent_session") else []
             argv.append(text)
         started = time.monotonic()

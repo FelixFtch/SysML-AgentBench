@@ -36,10 +36,11 @@ class RtrcStart(Component):
     inputs = [
         MultilineInput(name="brief", display_name="Requirement / brief",
                        info="Everything the agent receives. Empty: the default brief of the 2.2 design space on the results page."),
-        DropdownInput(name="agent", display_name="Agent (Qwen only for now)", options=list(AGENTS), value="Qwen direct",
-                      info="Qwen directly, or Claude Code / OpenCode running on Qwen inside the bubblewrap sandbox."),
-        DropdownInput(name="model", display_name="Qwen model", options=["qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)"], value="qwen3.8-flash",
-                      info="qwen3.8-27b (Ollama) is the 3-bit model on this machine, for Qwen direct or OpenCode. Start it with scripts/qwen38.sh --serve."),
+        DropdownInput(name="agent", display_name="Agent", options=list(AGENTS), value="Qwen direct",
+                      info="The model directly, or Claude Code / OpenCode running on it inside the bubblewrap sandbox."),
+        DropdownInput(name="model", display_name="Model", options=["qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)"], value="qwen3.8-flash", combobox=True,
+                      info="Pick one of the names our runs used, or type any name: a cloud name goes to the endpoint of .env, '<tag> (Ollama)' to a model you pulled "
+                           "into Ollama (docs/langflow/02-keys-and-models.md)."),
         StrInput(name="replay", display_name="Replay a saved run", value="",
                  info="Empty for a live run. 'latest' or a run id such as 20261006T211951 replays that run without model calls."),
         BoolInput(name="require_brief", display_name="Refuse an empty brief", value=False, advanced=True,

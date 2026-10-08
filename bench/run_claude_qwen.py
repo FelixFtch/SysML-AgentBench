@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -43,6 +44,25 @@ def usage_of(result: dict) -> dict:
             "duration_ms": result.get("duration_ms"), "model_usage": result.get("modelUsage")}
 
 
+def claude_argv(model: str, *, max_turns: int, tools: list[str]) -> list[str]:
+    """The Claude Code command for one model name, without the prompt.
+
+    CLAUDE_CODE_MODEL in .env ("provider,model") wins for cloud names: "anthropic,<model>" runs `claude` itself on
+    Claude Code's own login; any other provider goes through claude-code-router (`ccr`), whose provider page holds the
+    key. Without it, the routes our runs used: the router's provider "qwen" for the cloud Qwen names, and its provider
+    "ollama" for a local name ("<tag> (Ollama)", agents/llm_local.local_tag)."""
+    from agents.llm_local import local_tag
+    base = ["-p", "--output-format", "json", "--max-turns", str(max_turns), "--allowedTools", *tools]
+    tag = local_tag(model)
+    own = os.environ.get("CLAUDE_CODE_MODEL", "").strip()
+    if own and tag is None:
+        provider, _, name = own.partition(",")
+        if provider.strip().lower() == "anthropic" and name.strip():
+            return ["claude", *base, "--model", name.strip()]
+        return ["ccr", "default-claude-code", "--", *base, "--model", own]
+    return ["ccr", "default-claude-code", "--", *base, "--model", f"ollama,{tag}" if tag else f"qwen,{model}"]
+
+
 def run_claude(task_dir: Path, *, model: str, max_turns: int, timeout: int, label: str = "P-CODE-2") -> dict:
     """One Claude Code session on one task folder (input/requirements.md is the prompt), inside the sandbox.
     Returns the answer text (answer.md, else the final message), the parsed JSON result and the run folder."""
@@ -52,12 +72,7 @@ def run_claude(task_dir: Path, *, model: str, max_turns: int, timeout: int, labe
     workspace.mkdir(parents=True)
     prepare_workspace(task_dir, workspace)
     prompt = (workspace / "input" / "requirements.md").read_text(encoding="utf-8") + PROMPT_SUFFIX
-    from agents.llm_local import LOCAL_MODELS
-    # Cloud names stay on the CCR provider "qwen". The local 27B is the provider "ollama" added for the chat
-    # check; this exam runner uses the same route. The Langflow exam endpoints still refuse the local model.
-    ccr_model = f"ollama,{LOCAL_MODELS[model]}" if model in LOCAL_MODELS else f"qwen,{model}"
-    command = ["ccr", "default-claude-code", "--", "-p", "--output-format", "json", "--max-turns", str(max_turns),
-               "--allowedTools", *TOOLS, "--model", ccr_model, prompt]
+    command = [*claude_argv(model, max_turns=max_turns, tools=TOOLS), prompt]
     home = fake_home(work.name)
     try:
         completed = subprocess.run(wrap(command, workspace, home), cwd=workspace, text=True, capture_output=True, timeout=timeout)

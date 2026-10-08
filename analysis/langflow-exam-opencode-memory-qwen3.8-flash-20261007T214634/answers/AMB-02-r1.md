@@ -1,0 +1,1 @@
+What watt limit should the vessel's total power draw be checked against — that is, what is the maximum allowed power consumption in watts?

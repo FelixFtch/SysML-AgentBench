@@ -1,0 +1,1 @@
+What is the track data rate at which the shore must retain data — that is, how many tracks per unit time (e.g., tracks/second or tracks/day) and how many bytes per stored track record, or a single combined sustained rate (e.g., Mbps or GB/day) — so that the 30-day retention requirement can be checked against the 128 GB of storage?

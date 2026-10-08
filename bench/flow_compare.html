@@ -10,6 +10,44 @@
   #s4 td:nth-child(5) { box-shadow: inset 3px 0 0 #2f9c7d; }
   #s4 th:nth-child(3), #s4 td:nth-child(3) { background: #fffaf3; }
   #s4 th:nth-child(5), #s4 td:nth-child(5) { background: #f4fbf6; }
+  .flow[data-paper="p0"] { --pc: #20c997; --pcs: rgba(32, 201, 151, .45); --pbg: #12362e; }
+  .arch-legend { display: flex; gap: 16px; flex-wrap: wrap; margin: 0 0 12px; font-size: 12.5px; color: var(--ink-2); }
+  .arch-legend i { display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 6px; vertical-align: -2px; }
+  .sw-on { background: #176b7a; }
+  .sw-in { background: #e5f2f3; border: 1.5px dashed #176b7a; }
+  .sw-no { background: #fdf5e6; border: 1.5px dashed #a86b12; }
+  .arch-grid { display: grid; grid-template-columns: minmax(180px, 240px) repeat(7, minmax(0, 1fr)); gap: 6px; align-items: stretch; }
+  .arch-h, .arch-name, .arch-cell { border-radius: 10px; min-height: 64px; }
+  .arch-h { padding: 8px 8px 10px; background: #f4f8fa; border: 1px solid var(--line); font-size: 12px; font-weight: 800; color: var(--navy); line-height: 1.25; }
+  .arch-h small { display: block; margin-top: 4px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: 10px; }
+  .arch-h.on { box-shadow: inset 0 -3px 0 #176b7a; }
+  .arch-h.off { background: #fdf5e6; box-shadow: inset 0 -3px 0 #a86b12; }
+  .arch-h button, .arch-name { width: 100%; height: 100%; text-align: left; border: 0; background: transparent; padding: 0; border-radius: 10px; }
+  .arch-name { padding: 8px 10px; background: #fff; border: 1px solid var(--line); font-weight: 750; font-size: 12.5px; color: var(--navy); }
+  .arch-name small { display: block; font-weight: 600; color: var(--ink-3); }
+  .arch-cell { border: 1px solid transparent; background: #f7fafb; }
+  .arch-cell.on { background: #176b7a; color: #fff; }
+  .arch-cell.in { background: #e5f2f3; color: #176b7a; border: 1.5px dashed #176b7a; }
+  .arch-cell button { width: 100%; height: 100%; min-height: 64px; border: 0; background: transparent; color: inherit; border-radius: 10px; font-size: 11px; font-weight: 800; letter-spacing: .02em; }
+  .arch-name.is-sel { border-color: #176b7a; background: #f3fbfb; }
+  .arch-detail { margin-top: 12px; display: grid; grid-template-columns: 1.3fr .7fr; gap: 12px; }
+  .arch-detail article { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: #f8fbfc; }
+  .arch-detail .q { font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--teal); }
+  .arch-detail b { display: block; margin: 4px 0 6px; color: var(--navy); }
+  .arch-detail p { font-size: 13px; color: var(--ink-2); }
+  .arch-shapes { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+  .arch-shapes span { background: #183a4a; color: #e6f2f6; border-radius: 8px; padding: 6px 8px; font-size: 11px; font-weight: 700; }
+  .arch-shapes span.loop { background: #176b7a; }
+  .arch-shapes span.gap { background: #fff; color: #a86b12; border: 1.5px dashed #a86b12; }
+  .arch-shapes em { color: var(--ink-3); font-style: normal; font-weight: 800; }
+  .prop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .prop { border: 1.5px dashed #e0c48a; background: #fffaf3; border-radius: 12px; padding: 12px 14px; }
+  .prop b { display: block; color: #8a5a10; margin-bottom: 4px; }
+  .prop p { font-size: 12.5px; color: var(--ink-2); }
+  @media (max-width: 980px) {
+    .arch-grid { grid-template-columns: minmax(140px, 1fr); }
+    .arch-detail, .prop-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -37,6 +75,13 @@
     <a href="#s2"><b>2</b>Unfolded agent</a>
     <a href="#s3"><b>3</b>Four fixed chains</a>
     <a href="#s4"><b>4</b>What each choice did</a>
+    <a href="#s5"><b>5</b>Seven architectures</a>
+    <a href="#s51"><b>5.1</b>P0–P3 · switch highlight</a>
+    <a href="#s52"><b>5.2</b>Sandbox chats</a>
+    <a href="#s53"><b>5.3</b>Pilot-only chat</a>
+    <a href="#s54"><b>5.4</b>Memory chats</a>
+    <a href="#s55"><b>5.5</b>Design graph</a>
+    <a href="#s56"><b>5.6</b>Not built</a>
     <h5>Back</h5>
     <a href="/#s11"><b>1.1</b>Exam flow</a>
     <a href="/#s21"><b>2.1</b>Agent flow</a>
@@ -145,6 +190,41 @@
         </table>
       </div>
       <p class="hint" style="margin-top:10px">Sources: Lecture 5 slides and the flow JSON in the 2026-10-07 meeting zip (not executed here). RTRC runs: analysis/assistant-harness-comparison-20261007.md, docs/decisions/034-unfolded-tools.md, analysis/discover-20261007T064005.json, analysis/discover-20261007T074333.json.</p>
+    </section>
+
+    <section class="card" id="s5">
+      <div class="sec-head"><span class="sec-num">5</span><div><h3>Seven architectures, on the chats you open</h3><p class="sec-lead">Teal is a pattern this chat already is. A dashed teal cell means the pattern sits inside one tool, not around the whole chat. Amber is a pattern we have not built. Click a row. The four amber cards under the grid are proposals, not flows.</p></div></div>
+      <div class="arch-legend"><span><i class="sw-on"></i>This chat</span><span><i class="sw-in"></i>Inside one tool</span><span><i class="sw-no"></i>Not built</span></div>
+      <div id="arch"></div>
+      <p class="hint" style="margin-top:10px">The seven names are the set in the 2026 short video “Agent的7种架构” and the write-ups that follow it. They are not a standard, and they are not one ladder. Mapping: langflow/flows/build_flows.py and bench/shell_service.py. The diagrams under this grid use the same picture as the course chain above: click a node.</p>
+    </section>
+
+    <section class="card op" id="s51">
+      <div class="sec-head"><span class="sec-num">5.1</span><div><h3>Direct model chat · P0 through P3</h3><p class="sec-lead">Project 1, one picture. Your words go in as written and the conversation continues (decision 036). Each later approach adds a step in front of the one before it. Light P0, P1, P2, or P3. Dim nodes are not on that approach. The model fills a step. It does not choose the step.</p></div><div class="sec-tools"><span class="op-pill">Click a node</span></div></div>
+      <div id="flow-p03"></div>
+    </section>
+    <section class="card op" id="s52">
+      <div class="sec-head"><span class="sec-num">5.2</span><div><h3>OpenCode and Claude Code sandbox chats · ReAct</h3><p class="sec-lead">Project 2. One model decides whether to read a file, write a file, or run ./validate, then reads the result and continues. One sandbox and one agent session per chat. Not scored, so it runs while this page (port 8770) is up (decision 036).</p></div><div class="sec-tools"><span class="op-pill">Click a node</span></div></div>
+      <div id="flow-sand"></div>
+    </section>
+    <section class="card op" id="s53">
+      <div class="sec-head"><span class="sec-num">5.3</span><div><h3>Langflow Agent, Pilot only chat · ReAct</h3><p class="sec-lead">Project 2. The agent keeps the last 30 messages. Its only tool is the official Pilot. It can answer without calling it. This chat runs while port 8770 is up.</p></div><div class="sec-tools"><span class="op-pill">Click a node</span></div></div>
+      <div id="flow-pilot"></div>
+    </section>
+    <section class="card op" id="s54">
+      <div class="sec-head"><span class="sec-num">5.4</span><div><h3>Memory chats · ReAct outside, a graph inside one tool</h3><p class="sec-lead">Projects 3 and 4. The top row is every message. The middle row runs only if the model calls that card. The bottom row is the design card, and it runs left to right when called. Light “May skip” or “Inside the design”.</p></div><div class="sec-tools"><span class="op-pill">Click a node</span></div></div>
+      <div id="flow-mem"></div>
+    </section>
+    <section class="card op" id="s55">
+      <div class="sec-head"><span class="sec-num">5.5</span><div><h3>Design agent flow and the four tool flows · graph workflow</h3><p class="sec-lead">Projects 5 and 6. Not a chat box. Cards run in order. Trade-offs run only when a check fails. Step 8 waits for a person. The memory chats call these as tools.</p></div><div class="sec-tools"><span class="op-pill">Click a node</span></div></div>
+      <div id="flow-design"></div>
+    </section>
+    <section class="card op" id="s56">
+      <div class="sec-head"><span class="sec-num">5.6</span><div><h3>The four we have not built</h3><p class="sec-lead">Same picture, drawn as a proposal. None of these flows exist in Langflow. Each one would sit in front of, or beside, a flow above.</p></div><div class="sec-tools"><span class="op-pill">Click a node</span></div></div>
+      <div id="flow-plan"></div>
+      <div id="flow-multi"></div>
+      <div id="flow-router"></div>
+      <div id="flow-board"></div>
     </section>
   </main>
 </div>

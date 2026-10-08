@@ -1,0 +1,1 @@
+{"attribute": "MaritimeISR::UnmannedSurfaceVessel::powerLimitW", "value": 60}

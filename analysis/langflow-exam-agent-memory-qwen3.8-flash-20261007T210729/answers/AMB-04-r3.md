@@ -1,0 +1,1 @@
+Which is correct for the uplink value: is it 8 MHz, or 8 in some other unit (e.g., kHz or Mbps), or a unitless 8?

@@ -1,0 +1,1 @@
+What end-to-end latency limit (in ms) and what bandwidth/data-rate budget (in kbps or Mbps) apply to the vessel-to-shore track feed, since the requirement to check against is missing both numbers?

@@ -1,6 +1,6 @@
 {
   "name": "Direct model chat · P2 outline first",
-  "description": "Direct model · P2 outline first on a task text: the answer, the official Pilot's verdict on a model answer, nothing scored.",
+  "description": "Direct model · P2 outline first in a conversation: your words as written, a reply, the official Pilot on a model in it, nothing scored.",
   "endpoint_name": "direct-chat-p2",
   "is_component": false,
   "tags": [
@@ -237,12 +237,12 @@
                 "_input_type": "BoolInput"
               }
             },
-            "description": "A task statement in the exam's wording ('Package name: X' for a model task); paste the given model(s) as fenced sysml blocks for MOD, ALN, QRY and RT tasks.",
+            "description": "Write as you would to a colleague. Earlier messages of this session stay in the conversation.",
             "icon": "MessagesSquare",
             "base_classes": [
               "Message"
             ],
-            "display_name": "Task text",
+            "display_name": "Person",
             "documentation": "https://docs.langflow.org/chat-input-and-output",
             "minimized": true,
             "custom_fields": {},
@@ -274,13 +274,13 @@
             "tool_mode": false
           },
           "type": "ChatInput",
-          "id": "ChatInput-task"
+          "id": "ChatInput-person"
         },
-        "id": "ChatInput-task",
+        "id": "ChatInput-person",
         "type": "genericNode",
         "position": {
           "x": 40,
-          "y": 548
+          "y": 728
         }
       },
       {
@@ -514,7 +514,7 @@
             "base_classes": [
               "Message"
             ],
-            "display_name": "Answer (not scored)",
+            "display_name": "Reply (not scored)",
             "documentation": "https://docs.langflow.org/chat-input-and-output",
             "minimized": true,
             "custom_fields": {},
@@ -546,13 +546,13 @@
             "tool_mode": false
           },
           "type": "ChatOutput",
-          "id": "ChatOutput-answer"
+          "id": "ChatOutput-reply"
         },
-        "id": "ChatOutput-answer",
+        "id": "ChatOutput-reply",
         "type": "genericNode",
         "position": {
           "x": 980,
-          "y": 548
+          "y": 728
         }
       },
       {
@@ -564,7 +564,7 @@
                 "tool_mode": false,
                 "trace_as_metadata": true,
                 "options": [
-                  "Direct model · P0 one-shot",
+                  "Direct model · P0 one answer",
                   "Direct model · P1 repair from errors",
                   "Direct model · P2 outline first",
                   "Direct model · P3 retrieval then outline",
@@ -599,7 +599,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Exam chat: the chat version of an exam candidate (decision 035). A task text comes in from Chat Input, the\ncandidate answers it the way it answers an exam cell, and the answer comes out. There is no answer key, so nothing\nis scored; the official Pilot still parses a model answer.\n\nCandidates: the direct model with one approach (P0 one-shot; P1 repair from the Pilot's complete error list; P2\noutline first; P3 retrieval, then outline), or a coding agent in the sandbox (OpenCode, Claude Code) with AGENTS.md\nand ./validate. The shell service runs the same code as the exam cell (bench/shell_service.py /exam/chat).\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nCANDIDATES = {\n    \"Direct model · P0 one-shot\": \"direct-P0\",\n    \"Direct model · P1 repair from errors\": \"direct-P1\",\n    \"Direct model · P2 outline first\": \"direct-P2\",\n    \"Direct model · P3 retrieval then outline\": \"direct-P3\",\n    \"OpenCode in the sandbox\": \"opencode\",\n    \"Claude Code in the sandbox\": \"claude-code\",\n}\nTYPES = [\"GEN · generate a new model\", \"MOD · modify the given model\", \"ALN · align the two given packages\",\n         \"QRY · answer a question about the given model in JSON\", \"AMB · ask when a number is missing\", \"RT · restate the given model in sentences\"]\nMODELS = [\"qwen3.8-flash\", \"qwen3.8-max\", \"qwen3.8-27b (Ollama)\"]\nPACKAGE_LINE = re.compile(r\"Package name:\\s*([A-Za-z_][A-Za-z0-9_]*)\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcExamChat(Component):\n    display_name = \"RTRC Exam chat\"\n    description = \"A task text in, an exam candidate's answer out: the direct model with one approach, or a sandboxed coding agent. No answer key, nothing scored.\"\n    icon = \"message-square-text\"\n    name = \"RtrcExamChat\"\n\n    inputs = [\n        MessageInput(name=\"message\", display_name=\"Task text\", info=\"The task statement, as the exam would give it; for MOD, ALN, QRY and RT tasks paste the given model(s) as fenced sysml blocks after it.\"),\n        DropdownInput(name=\"candidate\", display_name=\"Candidate\", options=list(CANDIDATES), value=list(CANDIDATES)[0]),\n        DropdownInput(name=\"model\", display_name=\"Qwen model\", options=MODELS, value=MODELS[0],\n                      info=\"qwen3.8-flash is the model of the frozen exam; qwen3.8-27b (Ollama) is the 3-bit model on this machine (direct or OpenCode).\"),\n        DropdownInput(name=\"task_type\", display_name=\"Task type\", options=TYPES, value=TYPES[0],\n                      info=\"Decides the rules the direct model gets and whether the official Pilot parses the answer. Sandboxed agents read the task text alone.\"),\n        StrInput(name=\"package\", display_name=\"Package name (GEN, MOD, ALN)\", value=\"\", advanced=True,\n                 info=\"Empty: read from a 'Package name:' line in the task text, else Inbox.\"),\n    ]\n    outputs = [\n        Output(display_name=\"Answer\", name=\"answer\", method=\"as_message\"),\n        Output(display_name=\"Details\", name=\"details\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            text = (self.message.text if isinstance(self.message, Message) else str(self.message or \"\")).strip()\n            if not text:\n                raise ValueError(\"Write the task text\")\n            package = str(self.package or \"\").strip()\n            if not package:\n                match = PACKAGE_LINE.search(text)\n                package = match.group(1) if match else \"\"\n            self._cached = _call(\"/exam/chat\", {\"text\": text, \"candidate\": CANDIDATES[self.candidate], \"model\": self.model,\n                                                \"task_type\": str(self.task_type).split(\" \", 1)[0], \"package\": package})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"data\"].get(\"answer\") or \"\")\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n",
+                "value": "\"\"\"RTRC Chat: the chat version of an exam candidate (decision 036). The person's message goes to the candidate as\nwritten, in the conversation of this Langflow session, and the reply comes back. Nothing is scored.\n\nCandidates: the direct model with one approach (P0 one answer; P1 the official Pilot's complete error list back for\nrepair; P2 an outline first; P3 retrieval from the official examples with the person's words, then the outline), or a\ncoding agent in a persistent sandbox (OpenCode, Claude Code) with ./validate and its own session continued across\nmessages. The shell service runs it (bench/shell_service.py /chat/turn, bench/chat_turns.py).\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, IntInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nCANDIDATES = {\n    \"Direct model · P0 one answer\": \"direct-P0\",\n    \"Direct model · P1 repair from errors\": \"direct-P1\",\n    \"Direct model · P2 outline first\": \"direct-P2\",\n    \"Direct model · P3 retrieval then outline\": \"direct-P3\",\n    \"OpenCode in the sandbox\": \"opencode\",\n    \"Claude Code in the sandbox\": \"claude-code\",\n}\nMODELS = [\"qwen3.8-flash\", \"qwen3.8-max\", \"qwen3.8-27b (Ollama)\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcChat(Component):\n    display_name = \"RTRC Chat\"\n    description = (\"A person's message to an exam candidate, as written, in a conversation that continues: the direct model with one \"\n                   \"approach, or a coding agent in its sandbox. The official Pilot parses a reply only when it holds a model. Nothing is scored.\")\n    icon = \"message-square-text\"\n    name = \"RtrcChat\"\n\n    inputs = [\n        MessageInput(name=\"message\", display_name=\"Message\", info=\"Whatever the person writes. A question gets an answer; a request for a model gets a model.\"),\n        DropdownInput(name=\"candidate\", display_name=\"Candidate\", options=list(CANDIDATES), value=list(CANDIDATES)[1]),\n        DropdownInput(name=\"model\", display_name=\"Qwen model\", options=MODELS, value=MODELS[0],\n                      info=\"qwen3.8-flash is the model of the frozen exam; qwen3.8-27b (Ollama) is the 3-bit model on this machine (direct or OpenCode).\"),\n        IntInput(name=\"rounds\", display_name=\"Repair rounds (P1 to P3)\", value=20, advanced=True,\n                 info=\"How many times the official Pilot's error list goes back to the model in this conversation. P0 never repairs.\"),\n        IntInput(name=\"history\", display_name=\"Messages kept\", value=30, advanced=True,\n                 info=\"How many earlier messages of this session the direct model sees. The sandboxed agents keep their own session.\"),\n    ]\n    outputs = [\n        Output(display_name=\"Reply\", name=\"reply\", method=\"as_message\"),\n        Output(display_name=\"Details\", name=\"details\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            text = (self.message.text if isinstance(self.message, Message) else str(self.message or \"\")).strip()\n            if not text:\n                raise ValueError(\"Write a message\")\n            session = getattr(self.message, \"session_id\", None) or getattr(getattr(self, \"graph\", None), \"session_id\", None) or \"default\"\n            self._cached = _call(\"/chat/turn\", {\"text\": text, \"candidate\": CANDIDATES[self.candidate], \"model\": self.model, \"session\": str(session),\n                                                \"rounds\": self.rounds, \"history\": self.history})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        data = self._result()[\"data\"]\n        usage = data.get(\"usage\") or {}\n        return Message(text=data.get(\"answer\") or \"\",\n                       properties={\"usage\": {\"input_tokens\": usage.get(\"input\") or 0, \"output_tokens\": usage.get(\"output\") or 0,\n                                             \"total_tokens\": (usage.get(\"input\") or 0) + (usage.get(\"output\") or 0)},\n                                   \"build_duration\": data.get(\"seconds\")})\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -610,6 +610,27 @@
                 "info": "",
                 "load_from_db": false,
                 "title_case": false
+              },
+              "history": {
+                "tool_mode": false,
+                "trace_as_metadata": true,
+                "list": false,
+                "list_add_label": "Add More",
+                "override_skip": false,
+                "required": false,
+                "placeholder": "",
+                "show": true,
+                "name": "history",
+                "value": 30,
+                "display_name": "Messages kept",
+                "advanced": true,
+                "api_editable": false,
+                "dynamic": false,
+                "info": "How many earlier messages of this session the direct model sees. The sandboxed agents keep their own session.",
+                "title_case": false,
+                "track_in_telemetry": true,
+                "type": "int",
+                "_input_type": "IntInput"
               },
               "message": {
                 "trace_as_input": true,
@@ -675,14 +696,14 @@
                   "content_blocks": [],
                   "text": ""
                 },
-                "display_name": "Task text",
+                "display_name": "Message",
                 "advanced": false,
                 "api_editable": false,
                 "input_types": [
                   "Message"
                 ],
                 "dynamic": false,
-                "info": "The task statement, as the exam would give it; for MOD, ALN, QRY and RT tasks paste the given model(s) as fenced sysml blocks after it.",
+                "info": "Whatever the person writes. A question gets an answer; a request for a model gets a model.",
                 "title_case": false,
                 "track_in_telemetry": false,
                 "type": "str",
@@ -717,62 +738,29 @@
                 "type": "str",
                 "_input_type": "DropdownInput"
               },
-              "package": {
+              "rounds": {
                 "tool_mode": false,
                 "trace_as_metadata": true,
-                "load_from_db": false,
                 "list": false,
                 "list_add_label": "Add More",
                 "override_skip": false,
                 "required": false,
                 "placeholder": "",
                 "show": true,
-                "name": "package",
-                "value": "",
-                "display_name": "Package name (GEN, MOD, ALN)",
+                "name": "rounds",
+                "value": 20,
+                "display_name": "Repair rounds (P1 to P3)",
                 "advanced": true,
                 "api_editable": false,
                 "dynamic": false,
-                "info": "Empty: read from a 'Package name:' line in the task text, else Inbox.",
-                "title_case": false,
-                "track_in_telemetry": false,
-                "type": "str",
-                "_input_type": "StrInput"
-              },
-              "task_type": {
-                "tool_mode": false,
-                "trace_as_metadata": true,
-                "options": [
-                  "GEN · generate a new model",
-                  "MOD · modify the given model",
-                  "ALN · align the two given packages",
-                  "QRY · answer a question about the given model in JSON",
-                  "AMB · ask when a number is missing",
-                  "RT · restate the given model in sentences"
-                ],
-                "options_metadata": [],
-                "combobox": false,
-                "dialog_inputs": {},
-                "toggle": false,
-                "override_skip": false,
-                "required": false,
-                "placeholder": "",
-                "show": true,
-                "name": "task_type",
-                "value": "GEN · generate a new model",
-                "display_name": "Task type",
-                "advanced": false,
-                "api_editable": false,
-                "dynamic": false,
-                "info": "Decides the rules the direct model gets and whether the official Pilot parses the answer. Sandboxed agents read the task text alone.",
+                "info": "How many times the official Pilot's error list goes back to the model in this conversation. P0 never repairs.",
                 "title_case": false,
                 "track_in_telemetry": true,
-                "external_options": {},
-                "type": "str",
-                "_input_type": "DropdownInput"
+                "type": "int",
+                "_input_type": "IntInput"
               }
             },
-            "description": "The same fixed path as the exam cell, on your text: outline, answer, repair. Set the task type; the official Pilot parses model answers.",
+            "description": "Your message, as written, plus the last 30 of this session: an outline first when the message asks for a model, then the answer, then the repair loop. The system prompt lets it talk; only a request for a model gets a model.",
             "icon": "message-square-text",
             "base_classes": [
               "JSON",
@@ -792,8 +780,8 @@
                   "Message"
                 ],
                 "selected": "Message",
-                "name": "answer",
-                "display_name": "Answer",
+                "name": "reply",
+                "display_name": "Reply",
                 "method": "as_message",
                 "value": "__UNDEFINED__",
                 "cache": true,
@@ -823,14 +811,14 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcExamChat",
-          "id": "RtrcExamChat-candidate"
+          "type": "RtrcChat",
+          "id": "RtrcChat-candidate"
         },
-        "id": "RtrcExamChat-candidate",
+        "id": "RtrcChat-candidate",
         "type": "genericNode",
         "position": {
           "x": 510,
-          "y": 548
+          "y": 728
         }
       },
       {
@@ -841,20 +829,20 @@
           "y": -20
         },
         "width": 460,
-        "height": 488,
+        "height": 668,
         "style": {
           "width": 460,
-          "height": 488
+          "height": 668
         },
         "measured": {
           "width": 460,
-          "height": 488
+          "height": 668
         },
         "data": {
           "id": "note-chat",
           "type": "note",
           "node": {
-            "description": "# Direct model chat · P2 outline first\n\nThe chat version of **Direct model exam · P2 outline first**: the same candidate, the same path, on a task you type instead of a sealed task id. There is no answer key here, so nothing is scored; the official Pilot still parses a model answer and the repair loop still runs where the approach has one.\n\n- Use it to try a task's wording before adding it to the bank, or to watch one approach on one input.\n- Each run is saved under analysis/langflow-console/ as a chat run; it never enters the frozen matrix.",
+            "description": "# Direct model chat · P2 outline first\n\nThe chat version of **Direct model exam · P2 outline first**: the same candidate talking to a person. Your words reach it as written, and the conversation continues across messages, so \"change the last one\" has something to change. Nothing is scored; the official Pilot parses a reply only when it holds a fenced sysml block.\n\n- What the approach adds happens around your message, not instead of it: P3 retrieves with your own words (no query rewrite), P2 and P3 outline only when you ask for a model, P1 to P3 repair from the Pilot's complete error list, P0 does not.\n- Each turn is saved under analysis/langflow-console/ as a chat run; it never enters the frozen matrix. The exam version next to this flow still sits the sealed tasks through the frozen solver.",
             "display_name": "",
             "documentation": "",
             "template": {
@@ -866,12 +854,12 @@
     ],
     "edges": [
       {
-        "source": "ChatInput-task",
-        "target": "RtrcExamChat-candidate",
+        "source": "ChatInput-person",
+        "target": "RtrcChat-candidate",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
-            "id": "ChatInput-task",
+            "id": "ChatInput-person",
             "name": "message",
             "output_types": [
               "Message"
@@ -879,35 +867,35 @@
           },
           "targetHandle": {
             "fieldName": "message",
-            "id": "RtrcExamChat-candidate",
+            "id": "RtrcChat-candidate",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-taskœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œmessageœ, œidœ: œRtrcExamChat-candidateœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-task{œdataTypeœ:œChatInputœ,œidœ:œChatInput-taskœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcExamChat-candidate{œfieldNameœ:œmessageœ,œidœ:œRtrcExamChat-candidateœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-personœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œmessageœ, œidœ: œRtrcChat-candidateœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-person{œdataTypeœ:œChatInputœ,œidœ:œChatInput-personœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcChat-candidate{œfieldNameœ:œmessageœ,œidœ:œRtrcChat-candidateœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcExamChat-candidate",
-        "target": "ChatOutput-answer",
+        "source": "RtrcChat-candidate",
+        "target": "ChatOutput-reply",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcExamChat",
-            "id": "RtrcExamChat-candidate",
-            "name": "answer",
+            "dataType": "RtrcChat",
+            "id": "RtrcChat-candidate",
+            "name": "reply",
             "output_types": [
               "Message"
             ]
           },
           "targetHandle": {
             "fieldName": "input_value",
-            "id": "ChatOutput-answer",
+            "id": "ChatOutput-reply",
             "inputTypes": [
               "Data",
               "JSON",
@@ -918,9 +906,9 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcExamChatœ, œidœ: œRtrcExamChat-candidateœ, œnameœ: œanswerœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-answerœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcExamChat-candidate{œdataTypeœ:œRtrcExamChatœ,œidœ:œRtrcExamChat-candidateœ,œnameœ:œanswerœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-answer{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-answerœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "sourceHandle": "{œdataTypeœ: œRtrcChatœ, œidœ: œRtrcChat-candidateœ, œnameœ: œreplyœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-replyœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RtrcChat-candidate{œdataTypeœ:œRtrcChatœ,œidœ:œRtrcChat-candidateœ,œnameœ:œreplyœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-reply{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-replyœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false

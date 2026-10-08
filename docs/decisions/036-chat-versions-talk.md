@@ -1,0 +1,31 @@
+# 036 · The chat versions of projects 1 and 2 talk: a person's words as written, a conversation that continues
+
+Date: 2026-10-08. Status: done (user decision of 2026-10-08, after reviewing Lecture 5's wiring of Chat Input). Affects `bench/chat_turns.py` (new), `bench/shell_service.py` (`/chat/turn`, `/chat/forget`; `/exam/chat` removed), `langflow/components/rtrc/rtrc_chat.py` (new; `rtrc_exam_chat.py` removed), `langflow/flows/build_flows.py`, `langflow/flows/catalog.py`, `langflow/README.md`, `bench/flow_compare.html`, `bench/flow_compare.js`, `.gitignore`. Frozen files untouched (`bench/freeze.py --check`: unchanged). The exam versions, the frozen batches and the three Langflow exam columns of page 1.3 are unchanged.
+
+## Why
+
+Decision 035 gave the direct approaches (P0–P3) and the two sandboxed coding agents a "chat" version by feeding the person's message into the exam solver (`agents/solve.py` through `/exam/chat`). That solver is right for a sealed task id: the exam's system prompt says "one fenced sysml block and no prose", a task type is fixed before the model sees the text, P2 and P3 insert an invented exchange ("Outline: … / I will follow that outline"), the sandboxed agents get "write the answer into answer.md, follow AGENTS.md" and a fresh sandbox every time. For a person it meant every message, including "hello", came back as an exam answer, and nobody can say "change the last one". The user judged this a design error: a test of how people talk to an agent cannot replace the person's words with other words. The lecture's chain keeps the person's question as the question (its mistake is elsewhere: a query rewrite that carries the answer key into the retrieval string, which we do not copy).
+
+## What was built
+
+`bench/chat_turns.py`, behind `POST /chat/turn` on the shell service, called by the new Langflow card `RTRC Chat` (Chat Input → RTRC Chat → Chat Output in the six chat flows of projects 1 and 2; the Langflow session id is the conversation id).
+
+**Direct model, P0–P3.** One conversation per Langflow session (`mvp/chat-sessions/`, the last 30 messages). The system prompt is an assistant's: answer in the person's language, a question gets an answer, only a request for a model gets a model (one fenced sysml block, one package, `private import ScalarValues::*;` when Real is used, no invented numbers, a stated limit is never changed). What the approach adds happens around the person's turn, not instead of it:
+- P3 retrieves from the official-examples library with the person's own words (`agents.solve._retrieve`, paper 2) and attaches the cards, each with its source and score, as a system note for that turn. No query rewrite.
+- P2 and P3 ask for an outline first, only when the message asks for a model (the outline call answers `NONE` otherwise); the outline is passed as a working note, not as an invented exchange.
+- The official Pilot parses the reply only when it holds a fenced sysml block (`mvp.engine.run_submitted_model`; fenced blocks in the person's message that declare another package are parsed with it as sources). P1–P3 paste the complete error list back into the same conversation and ask for the whole file again, up to the exam's cap (20, three identical resubmissions stop it); P0 does not repair. The person sees the final version; the stored history keeps the person's turn and that final reply.
+
+**Sandboxed coding agents.** One sandbox per Langflow session (`mvp/chat-sandbox/<agent>-<session>/`), the same bubblewrap view as the exam (`agents/external/jail.wrap`), `./validate` (the official Pilot), and `AGENTS.md`/`CLAUDE.md` written for a conversation (answer what was asked; write a `.sysml` file and run `./validate` only when a model is asked for; never invent a number; do not edit `input/`). The agent's own session continues across messages: OpenCode `--session <id>`, Claude Code `--resume <id>`; the agent's home persists with the sandbox so its session store survives. The person's text is the whole prompt. The reply is the agent's last message, not `answer.md`.
+
+**The results page no longer blocks the sandboxed chats.** The sandbox shares the network and could request the page's answer-key API; the exam path keeps refusing while the page runs because its runs are scored. A conversation is not scored, so nothing it could read can enter a score. The user accepted this relaxation on 2026-10-08. `_sandbox_chat`'s check is gone with the function; `exam_agent_run`, `_agent_design` and the exam runner still check.
+
+## Checked (2026-10-08, qwen3.8-flash, saved under analysis/langflow-console/ and mvp/chat-sessions/)
+
+- Direct P1, three turns in one session: a question about `port def` vs `part def` got a two-sentence answer in Chinese and no SysML; a request for package `UsvLink` got a model, Pilot PASS at parse 1; "add `uplinkMbps : Real = 8.0` to the Radio of the one just now" edited that model (the import line added, the attribute added), Pilot PASS at parse 1.
+- Direct P2 through the Langflow flow itself (two `/api/v2/workflows` runs on one session id): a question got an answer; a request for package `Tiny` ran the outline, the first version failed the Pilot (`in`/`out` are reserved), one repair in the same conversation passed. History held 4 messages.
+- OpenCode in the sandbox, three turns in one session with the results page up: a question got a one-sentence answer and no file; a request for package `ShoreHop` wrote `ShoreHop.sysml`, ran `./validate` (PASS) and pasted the final file (11 tool calls, 105 s); the third message was answered in the same OpenCode session with the file still in the workspace (the model asked back for the attribute name it had been given: a model lapse, recorded as such).
+- Claude Code in the sandbox: wired the same way (`--resume`), not run in this check.
+
+## What this does not change
+
+The exam versions still send a sealed task id through the exam cell and the frozen solver, and the three Langflow exam columns of page 1.3 (81/81, 79/81, 81/81) were produced by the exam flows, which never used the chat card. `Langflow Agent, Pilot only chat` already had this wiring (Chat Input straight into Langflow's Agent) and is unchanged.

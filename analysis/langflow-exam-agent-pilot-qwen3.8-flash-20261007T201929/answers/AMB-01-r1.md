@@ -1,0 +1,1 @@
+What is the maximum allowed end-to-end latency for sharing tracks from the vessel to shore (numeric value and unit, e.g., 500 ms) — and what bandwidth/track-rate budget (e.g., minimum uplink bandwidth in kbit/s, or tracks per second with payload size per track) should be used to check that this "real time" requirement is met?

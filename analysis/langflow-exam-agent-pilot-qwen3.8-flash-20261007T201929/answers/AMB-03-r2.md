@@ -1,0 +1,1 @@
+What is the track data rate the shore must ingest — for example GB/day (or Mbit/s sustained) of track data — so that the 128 GB storage can be checked against the 30-day retention period?

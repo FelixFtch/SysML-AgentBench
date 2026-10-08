@@ -1,0 +1,1 @@
+What maximum end-to-side latency (with its unit, e.g. ms) and what minimum sustained bandwidth (with its unit, e.g. Mbps or kb/s per track) must the vessel-to-shore track sharing satisfy — and at what track update rate should those limits be checked?

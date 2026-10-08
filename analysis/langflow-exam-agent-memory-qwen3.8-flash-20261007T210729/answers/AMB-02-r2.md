@@ -1,0 +1,1 @@
+What is the maximum allowable vessel power consumption, expressed as a numeric limit with a unit (e.g., in watts)?

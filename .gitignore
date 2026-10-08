@@ -24,6 +24,8 @@ __pycache__/
 /mvp/app/data/
 /mvp/agent-runs/
 /mvp/exam-inbox/
+/mvp/chat-sessions/
+/mvp/chat-sandbox/
 /mvp/toolchain/runs/
 /mvp/verification/*/
 /runs/*

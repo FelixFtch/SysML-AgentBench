@@ -1,0 +1,1 @@
+What latency limit (and bandwidth budget), with units, should apply to the real-time track-sharing requirement from vessel to shore?

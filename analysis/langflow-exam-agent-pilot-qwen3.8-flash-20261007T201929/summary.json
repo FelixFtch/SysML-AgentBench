@@ -1,0 +1,52 @@
+{
+  "flow": "Langflow Agent, Pilot only exam",
+  "flow_id": "d2522762-7801-4dd6-bbe2-ce05b941a6c9",
+  "column": "agent-pilot",
+  "model": "qwen3.8-flash",
+  "started": "20261007T203636",
+  "repeats": 3,
+  "tasks": [
+    "GEN-01",
+    "GEN-02",
+    "GEN-03",
+    "GEN-04",
+    "GEN-05",
+    "MOD-01",
+    "MOD-02",
+    "MOD-03",
+    "MOD-04",
+    "MOD-05",
+    "QRY-01",
+    "QRY-02",
+    "QRY-03",
+    "QRY-04",
+    "QRY-05",
+    "AMB-01",
+    "AMB-02",
+    "AMB-03",
+    "AMB-04",
+    "RT-01",
+    "RT-02",
+    "RT-03",
+    "RT-04",
+    "RT-05",
+    "ALN-01",
+    "ALN-02",
+    "ALN-03"
+  ],
+  "scored_by": "bench.experiment.validate_and_grade (frozen scorer)",
+  "note": "Not part of the frozen score (bench/FREEZE.md); a Langflow exam column of decision 035.",
+  "finished": "20261007T210724",
+  "n": 81,
+  "pass": 81,
+  "seconds_total": 2222.8,
+  "tokens": {
+    "input": 240574,
+    "output": 116698
+  },
+  "redone": {
+    "empty_key_cells": 31,
+    "expired_token_cells": 29,
+    "why": "First pass of 2026-10-07: the runner's login had no Qwen provider variable (move_to_user.py had moved it to the people's account), so Langflow's Agent ran with an empty key and 31 cells failed in eight seconds with no reply; then the login token expired and 29 cells were refused (HTTP 401). Those rows are set aside in the two discarded-*.jsonl files and the cells were run again after the variable was set and the runner learned to log in again. Not part of the score."
+  }
+}

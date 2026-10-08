@@ -1,0 +1,1 @@
+What is the track data rate the shore must ingest and retain (and in what units — e.g., GB/day or Mbps), so the 128 GB storage budget over the 30-day retention period can be checked?

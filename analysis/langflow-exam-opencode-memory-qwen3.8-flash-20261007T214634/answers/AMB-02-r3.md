@@ -1,0 +1,1 @@
+What maximum vessel power value — number and unit (for example, watts) — must the vessel power use be checked against, since "as low as possible" gives no verifiable limit and no watt bound is stated in the brief?

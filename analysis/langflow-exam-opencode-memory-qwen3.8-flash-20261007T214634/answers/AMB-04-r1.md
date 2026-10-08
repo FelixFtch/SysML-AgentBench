@@ -1,0 +1,1 @@
+What does the uplink figure of 8 actually measure, and what is its unit — is the uplink 8 MHz (as a frequency or as a bandwidth, and of which quantity: e.g., uplink frequency or uplink data rate), or is the bare 8 a different value with a unit not yet stated (e.g., 8 Mbps)? Please confirm the settled value and unit for the uplink before I check it.

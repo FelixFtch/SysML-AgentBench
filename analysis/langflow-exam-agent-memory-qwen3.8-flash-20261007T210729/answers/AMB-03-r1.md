@@ -1,0 +1,1 @@
+What is the track data rate (with units — e.g., messages per second or MB per day, along with the message size and number of simultaneous tracks) that the shore system must ingest, so that the 30-day retention can be checked against the 128 GB of storage?

@@ -1,0 +1,1 @@
+What track data rate should the shore receive — that is, how many GB per day of track data (or, equivalently, the track arrival rate in tracks per second together with the size of one track record) — so that the 128 GB of storage can be checked against the 30-day retention?

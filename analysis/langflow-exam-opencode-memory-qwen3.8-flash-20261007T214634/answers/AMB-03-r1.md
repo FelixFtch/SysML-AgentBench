@@ -1,0 +1,1 @@
+What is the track data rate the shore must absorb, and in what unit (for example, MB per day, or Mbit/s per track)? Without a data rate, the 128 GB of storage held for 30 days cannot be checked against any requirement — please supply the data rate (and, if it is per-track, the number of tracks retained) and I will perform the check.

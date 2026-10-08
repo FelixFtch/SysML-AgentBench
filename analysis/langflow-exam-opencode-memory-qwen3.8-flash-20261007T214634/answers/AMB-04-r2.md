@@ -1,0 +1,1 @@
+Which figure governs the uplink — the bare "8" or the "8 MHz" — and, if the intent is a data rate rather than a bandwidth, what unit belongs with the 8 (e.g. Mbps)?

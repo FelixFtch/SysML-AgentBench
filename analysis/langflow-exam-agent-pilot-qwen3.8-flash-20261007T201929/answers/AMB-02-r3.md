@@ -1,0 +1,1 @@
+What numeric limit (with unit, e.g., W) should the vessel's total power use be checked against — "as low as possible" gives no value to verify?

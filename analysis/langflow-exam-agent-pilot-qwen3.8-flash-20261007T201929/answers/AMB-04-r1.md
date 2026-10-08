@@ -1,0 +1,1 @@
+What is the unit for the uplink value of 8 — should it be read as 8 MHz, or is some other unit (or no unit) intended?

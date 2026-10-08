@@ -1,0 +1,1 @@
+What is the required maximum vessel power use — the numeric limit and its unit (e.g., watts, and at which load/operating condition)?

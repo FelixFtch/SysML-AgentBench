@@ -1,0 +1,1 @@
+What is the track data rate the shore must store (e.g., MB/day or bits/s, and whether the 128 GB is shared across all USVs), so the 30-day retention can be checked against the storage capacity?

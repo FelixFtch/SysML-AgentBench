@@ -1,0 +1,1 @@
+What are the required numeric limits for the vessel-to-shore track-sharing link — specifically, the maximum end-to-end latency (with unit, e.g. ms or s) and the available bandwidth (with unit, e.g. kbit/s or Mbit/s) that "real time" must be checked against?

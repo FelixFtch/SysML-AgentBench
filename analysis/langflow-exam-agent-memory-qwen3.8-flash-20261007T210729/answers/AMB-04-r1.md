@@ -1,0 +1,1 @@
+What is the unit of the uplink value 8 — is it 8 MHz (bandwidth), 8 Mbps (data rate), or a dimensionless 8 — so that the two sentences can be reconciled?

@@ -1,0 +1,1 @@
+What is the maximum allowable vessel power use, in watts, that the design must stay under?

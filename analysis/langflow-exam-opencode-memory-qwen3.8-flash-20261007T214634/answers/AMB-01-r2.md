@@ -1,0 +1,1 @@
+What end-to-end latency limit (value and unit, e.g. ms) must the vessel-to-shore track update satisfy, and which uplink bandwidth figure governs — the existing MaritimeISR UnmannedSurfaceVessel::uplinkMbps of 8.0 or the approved DesignA R9 requirement of 20 Mbps?

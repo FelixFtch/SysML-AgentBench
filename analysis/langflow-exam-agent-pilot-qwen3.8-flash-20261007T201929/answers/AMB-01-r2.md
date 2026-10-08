@@ -1,0 +1,1 @@
+What numeric value and unit should be used for the "real time" track-sharing requirement — i.e., what is the maximum allowed end-to-side latency from vessel to shore (in ms or s), and is there a maximum track-sharing bandwidth (in kbit/s or Mbit/s) that must also be checked?

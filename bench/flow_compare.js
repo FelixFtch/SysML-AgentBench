@@ -103,7 +103,10 @@ function makeFlow(host, spec) {
     for (const el of $$(".wire, .wlabel", host)) {
       const { from, to } = el.dataset;
       if (!from) continue;
-      const on = !!paper && ((byId[from].papers || []).includes(paper) || (byId[to].papers || []).includes(paper));
+      const declared = (el.dataset.papers || "").trim().split(/\s+/).filter(Boolean);
+      const on = !!paper && (declared.length
+        ? declared.includes(paper)
+        : ((byId[from].papers || []).includes(paper) || (byId[to].papers || []).includes(paper)));
       el.classList.toggle("p-path", on);
       el.classList.toggle("dim", !!paper && !on);
     }
@@ -135,8 +138,9 @@ function makeFlow(host, spec) {
       const r = route(e, geom(a, box), geom(b, box));
       const d = rounded(r.pts);
       if (!d) continue;
-      paths.push(`<path class="wire ${e.kind}" data-from="${e.from}" data-to="${e.to}" d="${d}" marker-end="url(#${spec.id}-m-${e.kind})"/>`);
-      if (e.label) labels.push(`<span class="wlabel ${e.kind}" data-from="${e.from}" data-to="${e.to}" style="left:${r.lab[0].toFixed(1)}px;top:${r.lab[1].toFixed(1)}px">${esc(e.label)}</span>`);
+      const papersAttr = (e.papers || []).length ? ` data-papers="${e.papers.join(" ")}"` : "";
+      paths.push(`<path class="wire ${e.kind}" data-from="${e.from}" data-to="${e.to}"${papersAttr} d="${d}" marker-end="url(#${spec.id}-m-${e.kind})"/>`);
+      if (e.label) labels.push(`<span class="wlabel ${e.kind}" data-from="${e.from}" data-to="${e.to}"${papersAttr} style="left:${r.lab[0].toFixed(1)}px;top:${r.lab[1].toFixed(1)}px">${esc(e.label)}</span>`);
     }
     svg.innerHTML = defs + paths.join("");
     labelLayer.innerHTML = labels.join("");
@@ -448,6 +452,441 @@ const PIPE = {
   ],
 };
 
+const ARCH_PATTERNS = [
+  { id: "single", name: "Single agent", built: true, one: "One model, one call, no tool." },
+  { id: "react", name: "ReAct", built: true, one: "One model loops: think, tool, result." },
+  { id: "plan", name: "Plan and execute", built: false, one: "A planner writes the steps. A cheaper model follows them." },
+  { id: "multi", name: "Multi-agent", built: false, one: "Several agents, different tools, hand work to each other." },
+  { id: "router", name: "Router + skill", built: false, one: "A classifier picks one existing skill." },
+  { id: "board", name: "Blackboard", built: false, one: "Agents wake up when a shared board changes." },
+  { id: "graph", name: "Graph workflow", built: true, one: "The program orders the steps. A branch is a condition." },
+];
+
+const ARCH_ROWS = [
+  { id: "p03", name: "Direct model chat · P0–P3", where: "Project 1", marks: { single: "on", graph: "on" },
+    say: "One picture, four highlights. Your words go in as written and the conversation continues (decision 036). P0 answers once. P1 adds the repair loop from the official Pilot's complete error list. P2 adds an outline when you ask for a model. P3 adds retrieval of official examples with your own words. The program orders those steps; the model fills them.",
+    shape: [["P0 write once", ""], ["P1 repair", "loop"], ["P2 outline", ""], ["P3 retrieve", ""]] },
+  { id: "sand", name: "OpenCode and Claude Code sandbox chat", where: "Project 2", marks: { react: "on" },
+    say: "One model loops: write or read a file, or run ./validate, then read the result. No second agent and no project memory. One sandbox and one agent session per chat, so “change the last one” has something to change. Nothing here is scored, so the chat runs while this results page is up (decision 036).",
+    shape: [["Model", "loop"], ["File or ./validate", ""], ["Result", ""], ["Model again", "loop"]] },
+  { id: "pilot", name: "Langflow Agent, Pilot only chat", where: "Project 2", marks: { react: "on" },
+    say: "Langflow’s Agent keeps the last 30 messages and may call one tool, the official Pilot. It does not search memory or run a design. This chat runs while port 8770 is up.",
+    shape: [["Last 30 messages", ""], ["Agent", "loop"], ["Official Pilot", ""], ["Answer", ""]] },
+  { id: "mem", name: "OpenCode with memory · Langflow Agent with memory", where: "Projects 3 and 4", marks: { react: "on", graph: "in" },
+    say: "The outer model chooses the cards and the conversation continues. One card, run the design, is a fixed graph: memory, requirements, two designs, Pilot, alignment, four checks, trade-offs only if a check fails. Writing each design is another ReAct loop, sandboxed OpenCode with ./validate. That inner sandbox needs port 8770 stopped.",
+    shape: [["Outer ReAct", "loop"], ["Chooses a card", ""], ["Design graph", ""], ["Inner ./validate", "loop"]] },
+  { id: "pipe", name: "Design agent flow and the four tool flows", where: "Projects 5 and 6", marks: { graph: "on" },
+    say: "Not a chat box. Cards run in order. Trade-offs are a branch. Step 8 waits for a person. The memory chats call the four tools in project 5.",
+    shape: [["Memory", ""], ["Requirements", ""], ["Designs", ""], ["Checks", ""], ["Person at 8", ""]] },
+];
+
+const ARCH_PROPOSALS = [
+  { id: "plan", name: "Plan and execute",
+    why: "Numbered requirements are one fixed card. No model writes a step list for a cheaper model to follow.",
+    build: "After memory search, one model call returns JSON: devices, limits, missing numbers. Code stops if a limit is missing. The cards that already exist then run in today’s order. The plan must not skip the Pilot or the four checks." },
+  { id: "multi", name: "Multi-agent",
+    why: "The outer model calls the pipeline. OpenCode writes the files. They do not assign work to each other.",
+    build: "Keep sandboxed OpenCode as the only writer. After the four checks, one reviewer call sees the check results and the two package names. Give it no file tool and no memory write." },
+  { id: "router", name: "Router + skill",
+    why: "Nothing classifies the message. A person picks the task type, or the same model both understands you and picks the tool.",
+    build: "One flow, Chat router. One classification call, then a conditional router starts a chat that already exists. If the label is weak, stay on the memory assistant." },
+  { id: "board", name: "Blackboard",
+    why: "Approved designs can be searched later. During one design, cards pass a message forward. Nothing wakes up because a shared board changed.",
+    build: "Use the run record as the board. Each design card writes only its own section. The outer agent reads that record. A card runs when its inputs are present. Do not add agents that poll the board." },
+];
+
+function renderArch(host) {
+  if (!host) return;
+  let selected = "mem";
+  const head = ARCH_PATTERNS.map((p) => `<div class="arch-h ${p.built ? "on" : "off"}"><button type="button" data-arch="${p.id}">${esc(p.name)}<small>${p.built ? "Built" : "Not built"}</small></button></div>`).join("");
+  const body = ARCH_ROWS.map((row) => {
+    const cells = ARCH_PATTERNS.map((p) => {
+      const mark = row.marks[p.id] || "";
+      const label = mark === "on" ? "This chat" : mark === "in" ? "Inside a tool" : "";
+      return `<div class="arch-cell ${mark}"><button type="button" data-row="${row.id}" data-arch="${p.id}">${label}</button></div>`;
+    }).join("");
+    return `<div class="arch-name"><button type="button" data-row="${row.id}">${esc(row.name)}<small>${esc(row.where)}</small></button></div>${cells}`;
+  }).join("");
+  host.innerHTML = `<div class="arch-grid"><div></div>${head}${body}</div><div class="arch-detail"></div><div class="prop-grid"></div>`;
+  const detail = $(".arch-detail", host);
+  const props = $(".prop-grid", host);
+  function paint() {
+    const row = ARCH_ROWS.find((r) => r.id === selected) || ARCH_ROWS[0];
+    for (const el of $$(".arch-name, .arch-cell", host)) {
+      const btn = $("button", el);
+      el.classList.toggle("is-sel", btn && btn.dataset.row === selected);
+    }
+    const shape = row.shape.map(([t, k]) => `<span class="${k}">${esc(t)}</span>`).join('<em>→</em>');
+    detail.innerHTML = `<article><span class="q">${esc(row.where)}</span><b>${esc(row.name)}</b><p>${esc(row.say)}</p><div class="arch-shapes">${shape}</div></article>
+      <article><span class="q">Marks on this row</span><b>${ARCH_PATTERNS.filter((p) => row.marks[p.id]).map((p) => p.name).join(" · ") || "None"}</b><p>${ARCH_PATTERNS.filter((p) => row.marks[p.id]).map((p) => `${p.name}: ${p.one}`).join(" ")}</p></article>`;
+  }
+  props.innerHTML = ARCH_PROPOSALS.map((p) => `<article class="prop"><b>${esc(p.name)} · not built</b><p>${esc(p.why)}</p><p style="margin-top:6px"><b style="display:inline;color:var(--navy)">Add: </b>${esc(p.build)}</p></article>`).join("");
+  host.addEventListener("click", (ev) => {
+    const btn = ev.target.closest("button[data-row]");
+    if (!btn || !host.contains(btn)) return;
+    selected = btn.dataset.row;
+    paint();
+  });
+  paint();
+}
+
+const P03 = {
+  id: "p03", cols: 7, nowTitle: "How this approach runs",
+  tags: { p0: "P0", p1: "P1", p2: "P2", p3: "P3" },
+  filters: [["", "All"], ["p0", "P0 one-shot"], ["p1", "P1 repair"], ["p2", "P2 outline"], ["p3", "P3 retrieval"]],
+  captions: {
+    p0: "<b>P0.</b> Write once. The Pilot parses a SysML answer once and does not send the errors back.",
+    p1: "<b>P1.</b> P0, plus the repair loop: the full error list goes back into the same conversation until the parse passes or the round cap is hit. No outline and no retrieval.",
+    p2: "<b>P2.</b> P1, plus one outline call before the model writes SysML. No retrieval.",
+    p3: "<b>P3.</b> P2, plus retrieval of official SysML examples before the outline. Not MaritimeISR.",
+  },
+  rows: [{ id: "src", label: "What it reads", hint: "P3 only" }, { id: "main", label: "Every message", hint: "the program picks the step" }],
+  nodes: [
+    { id: "lib", row: "src", col: 2, kind: "source", owner: "Official examples", title: "Example library", sub: "not our memory", papers: ["p3"],
+      does: "MiniLM + FAISS over the official SysML examples, then one hop. MaritimeISR and the approved designs are not in this library.",
+      input: "The task text", output: "Example cards",
+      effect: "Only P3 reads this. P0, P1, and P2 do not." },
+    { id: "in", row: "main", col: 1, kind: "human", owner: "Person", title: "Chat input", sub: "your words, as written", papers: ["p0", "p1", "p2", "p3"],
+      does: "Your message goes to the model as written, with the last 30 messages of this session (decision 036). The flow you opened fixes P0, P1, P2, or P3. Nothing is scored.",
+      input: "The message", output: "The task text",
+      effect: "Project 1. Direct model chat · P0 through P3." },
+    { id: "ret", row: "main", col: 2, owner: "Code", title: "Retrieve", sub: "before the outline", papers: ["p3"], cond: "P3 only",
+      does: "The program retrieves. The query is the task text. There is no model call in this step, and the model cannot skip it on P3.",
+      input: "The task text", output: "Notes for the outline",
+      effect: "This is what P3 adds in front of P2." },
+    { id: "outl", row: "main", col: 3, owner: "One model call", title: "Outline", sub: "parts, ports, attributes", papers: ["p2", "p3"], cond: "P2 and P3",
+      does: "One call lists the parts, ports, connections, and attributes. It does not write SysML yet. On P3 the retrieved notes are in the prompt.",
+      input: "The task, and on P3 the example cards", output: "A JSON outline",
+      effect: "This is what P2 adds in front of P1. P0 and P1 skip it." },
+    { id: "write", row: "main", col: 4, owner: "One model call", title: "Write", sub: "the answer", papers: ["p0", "p1", "p2", "p3"],
+      does: "The model writes the answer. On P0 and P1 that is from the task alone. On P2 and P3 it also has the outline.",
+      input: "The task, and the outline when there is one", output: "A first answer",
+      effect: "Every approach reaches this step. The program calls it." },
+    { id: "once", row: "main", col: 5, owner: "Official Pilot", title: "Validate once", sub: "no second try", papers: ["p0"], cond: "P0 only",
+      does: "A SysML answer is parsed once. The error list is not sent back. Query, ambiguity, and round-trip answers are not parsed.",
+      input: "The answer", output: "PASS or FAIL, kept as the answer",
+      effect: "P0 stops here. P1, P2, and P3 use the repair node instead." },
+    { id: "pilot", row: "main", col: 6, owner: "Official Pilot", title: "Repair from errors", sub: "same loop on P1, P2, P3", papers: ["p1", "p2", "p3"], cond: "If the parse fails",
+      does: "The full error list is pasted back into the same conversation. Earlier versions and earlier error lists stay visible. The model rewrites until the parse passes or the round cap is hit (default 20).",
+      input: "The answer", output: "The last rewrite",
+      effect: "This is what P1 adds over P0. P2 and P3 keep this loop." },
+    { id: "out", row: "main", col: 7, owner: "Langflow", title: "Chat output", sub: "not scored", papers: ["p0", "p1", "p2", "p3"],
+      does: "Shows the last answer. A chat run has no answer key.",
+      input: "The last text", output: "The playground message",
+      effect: "The conversation continues; the next message can refer to this reply." },
+  ],
+  edges: [
+    { from: "in", to: "write", papers: ["p0", "p1"], label: "P0 · P1" },
+    { from: "in", to: "outl", papers: ["p2"] },
+    { from: "in", to: "ret", papers: ["p3"] },
+    { from: "ret", to: "outl", papers: ["p3"] },
+    { from: "outl", to: "write", papers: ["p2", "p3"] },
+    { from: "write", to: "once", papers: ["p0"], label: "P0" },
+    { from: "once", to: "out", papers: ["p0"] },
+    { from: "write", to: "pilot", papers: ["p1", "p2", "p3"], label: "P1–P3" },
+    { from: "pilot", to: "out", papers: ["p1", "p2", "p3"] },
+    { from: "lib", to: "ret", kind: "feed", route: "v", papers: ["p3"], label: "P3 only" },
+    { from: "pilot", to: "write", kind: "loop", papers: ["p1", "p2", "p3"], label: "errors back" },
+  ],
+};
+
+const SAND = {
+  id: "sand", cols: 4, nowTitle: "How this chat runs",
+  tags: { p3: "May skip" },
+  filters: [["", "All"], ["p3", "May skip"]],
+  captions: { p3: "<b>May skip.</b> The model decides whether to read, write, or run ./validate. It can also answer without a tool." },
+  rows: [{ id: "main", label: "Every message", hint: "one sandbox per chat" }, { id: "tools", label: "Tools it may call", hint: "files and ./validate" }],
+  nodes: [
+    { id: "in", row: "main", col: 1, kind: "human", owner: "Person", title: "Chat input", sub: "saved as requirements.md",
+      does: "Your text is written as input/requirements.md of a fresh task folder. The previous message is not in that folder.",
+      input: "The message", output: "One task folder",
+      effect: "Project 2. OpenCode in the sandbox chat, and Claude Code in the sandbox chat. They run while port 8770 is up: a conversation is not scored (decision 036)." },
+    { id: "agent", row: "main", col: 2, owner: "One model", title: "OpenCode or Claude Code", sub: "ReAct loop",
+      does: "One model in the bubblewrap sandbox. It chooses the next action: read a file, write a file, or run ./validate. Then it reads the result and chooses again. There is no second agent.",
+      input: "The task folder and AGENTS.md", output: "answer.md, or the last message",
+      effect: "Single-agent ReAct. The loop count is not fixed." },
+    { id: "out", row: "main", col: 4, owner: "Langflow", title: "Chat output", sub: "not scored",
+      does: "Returns the agent's reply. The sandbox and the agent's own session stay for this chat, so the next message can say “change the last one”.",
+      input: "answer.md", output: "The playground message",
+      effect: "No project memory." },
+    { id: "read", row: "tools", col: 1, owner: "Tool", title: "Read a file", sub: "in the sandbox", papers: ["p3"], cond: "If it chooses",
+      does: "Reads a file in the task folder. The repository and the answer keys are not in the sandbox.",
+      input: "A path in the task folder", output: "File text",
+      effect: "Optional. The model may skip it." },
+    { id: "edit", row: "tools", col: 2, owner: "Tool", title: "Write a file", sub: "the SysML", papers: ["p3"], cond: "If it chooses",
+      does: "Writes or edits a file in the task folder. The next ./validate reads that file.",
+      input: "The model’s edit", output: "A file",
+      effect: "Optional." },
+    { id: "val", row: "tools", col: 3, owner: "Tool", title: "./validate", sub: "official Pilot", papers: ["p3"], cond: "If it chooses",
+      does: "The sandbox wrapper around the official Pilot. The model sees PASS or FAIL and the diagnostics, then decides whether to edit again.",
+      input: "The package name and the files", output: "PASS or FAIL",
+      effect: "This is the act step of the ReAct loop." },
+  ],
+  edges: [
+    { from: "in", to: "agent" }, { from: "agent", to: "out", label: "then answers" },
+    { from: "agent", to: "read", kind: "side", route: "v", label: "may call" },
+    { from: "agent", to: "edit", kind: "side", route: "v" },
+    { from: "agent", to: "val", kind: "side", route: "v" },
+    { from: "val", to: "agent", kind: "loop", label: "result" },
+  ],
+};
+
+const PILOT = {
+  id: "pilotc", cols: 4, nowTitle: "How this chat runs",
+  tags: { p3: "May skip" },
+  filters: [["", "All"], ["p3", "May skip"]],
+  captions: { p3: "<b>May skip.</b> The only tool is the official Pilot. The agent can answer from the last 30 messages without calling it." },
+  rows: [{ id: "src", label: "What it reads", hint: "the conversation" }, { id: "main", label: "Every message", hint: "one agent" }],
+  nodes: [
+    { id: "hist", row: "src", col: 2, kind: "source", owner: "This playground", title: "Last 30 messages", sub: "no project memory",
+      does: "Langflow keeps the recent turns of this playground session. It does not know MaritimeISR or the approved designs.",
+      input: "Earlier messages in this chat", output: "Context for the agent",
+      effect: "This is why you can say “change the last answer” here, and not in P0 or the sandbox chats." },
+    { id: "in", row: "main", col: 1, kind: "human", owner: "Person", title: "Chat input", sub: "any wording",
+      does: "You write in the playground. There is no task-type dropdown.",
+      input: "The message", output: "The agent’s input",
+      effect: "Project 2, Langflow Agent, Pilot only chat. It runs while port 8770 is up." },
+    { id: "agent", row: "main", col: 2, owner: "Langflow Agent", title: "Chooses the Pilot", sub: "qwen3.8-flash · ReAct",
+      does: "One agent. It may call the Pilot on text it wrote, read the diagnostics, and call it again. It may also answer with no tool.",
+      input: "The message and the last 30 turns", output: "An answer, after zero or more Pilot calls",
+      effect: "Single-agent ReAct. One tool." },
+    { id: "tool", row: "main", col: 3, owner: "One tool", title: "Official Pilot", sub: "may skip", papers: ["p3"], cond: "If it chooses",
+      does: "Saves the pasted SysML and parses it. Returns PASS or FAIL and the diagnostics.",
+      input: "SysML text", output: "The Pilot result",
+      effect: "The only card on this chat." },
+    { id: "out", row: "main", col: 4, owner: "Langflow", title: "Chat output", sub: "not scored",
+      does: "The playground reply. Nothing is written to project memory.",
+      input: "The agent’s text", output: "The message you read",
+      effect: "No design pipeline." },
+  ],
+  edges: [
+    { from: "in", to: "agent" }, { from: "agent", to: "out", label: "then answers" },
+    { from: "hist", to: "agent", kind: "feed", route: "v", label: "30 messages" },
+    { from: "agent", to: "tool", kind: "side", label: "may call" },
+    { from: "tool", to: "agent", kind: "loop", label: "PASS or FAIL" },
+  ],
+};
+
+const MEM = {
+  id: "memc", cols: 7, nowTitle: "How this chat runs",
+  tags: { p3: "May skip", p2: "Inside the design" },
+  filters: [["", "All"], ["p3", "May skip"], ["p2", "Inside the design"]],
+  captions: {
+    p3: "<b>May skip.</b> The outer model chooses which card to call. It can call none.",
+    p2: "<b>Inside the design.</b> These cards run left to right only when the model calls “run the design”. Writing each design is another ReAct loop.",
+  },
+  rows: [
+    { id: "main", label: "Every message", hint: "the conversation continues" },
+    { id: "tools", label: "Cards it may call", hint: "ReAct" },
+    { id: "graph", label: "Inside “run the design”", hint: "a fixed graph" },
+  ],
+  nodes: [
+    { id: "in", row: "main", col: 1, kind: "human", owner: "Engineer", title: "Message", sub: "projects 3 and 4",
+      does: "You talk as you would to a colleague: ask what exists, describe a need, confirm a brief, or decide. The session keeps the earlier turns.",
+      input: "The message", output: "The outer agent’s context",
+      effect: "OpenCode with memory chat, and the three Langflow Agent with memory chats. Same tools. The outer harness differs." },
+    { id: "agent", row: "main", col: 2, owner: "One model", title: "Chooses a card", sub: "ReAct",
+      does: "One model decides which card to call, or answers with none. It does not walk the cards in order.",
+      input: "The message and the session", output: "Zero or more tool calls, then a reply",
+      effect: "Project 3’s outer model is OpenCode. Project 4’s outer model is Langflow’s Agent. Both are one ReAct loop." },
+    { id: "out", row: "main", col: 7, owner: "The same model", title: "Reply", sub: "after the cards",
+      does: "The playground message. It is supposed to quote tool results and not invent a number.",
+      input: "Tool results, or the conversation", output: "The answer",
+      effect: "The conversation continues, so the next message can refer to this one." },
+    { id: "search", row: "tools", col: 1, owner: "A flow", title: "Memory search", sub: "may skip", papers: ["p3"], cond: "If it chooses",
+      does: "Library, MiniLM + FAISS seeds, one hop, cards. No model in that flow.",
+      input: "A few search words", output: "Cards with source and score",
+      effect: "MaritimeISR and approved designs. Not the official-example library used by P3." },
+    { id: "valid", row: "tools", col: 2, owner: "A flow", title: "Validate SysML", sub: "official Pilot", papers: ["p3"], cond: "If it chooses",
+      does: "Saves pasted text and runs the official Pilot.",
+      input: "SysML text", output: "PASS or FAIL",
+      effect: "Optional." },
+    { id: "pipe", row: "tools", col: 3, owner: "A flow", title: "Run the design", sub: "opens the bottom row", papers: ["p3", "p2"], cond: "If you confirmed",
+      does: "Starts the fixed graph on the bottom row. Needs port 8770 stopped, because the writers are sandboxed OpenCode.",
+      input: "The confirmed brief, word for word", output: "The review and the run id",
+      effect: "This is the dashed “inside a tool” cell on the grid above." },
+    { id: "write", row: "tools", col: 5, kind: "human", owner: "A flow · pauses", title: "Write to memory", sub: "after you approve", papers: ["p3"], cond: "If you name a design",
+      does: "Pauses for approval, then checks the Pilot and the four checks. A miss is not written.",
+      input: "Run id and design A or B", output: "A memory line, or a refusal",
+      effect: "Optional. The agent is not supposed to call it before you decide." },
+    { id: "mem", row: "graph", col: 1, owner: "Code", title: "Memory", sub: "fixed first step", papers: ["p2"],
+      does: "The design graph starts by reading memory. The outer model does not reorder this.",
+      input: "The brief", output: "Related cards",
+      effect: "Graph workflow, inside the one tool." },
+    { id: "req", row: "graph", col: 2, owner: "One model call", title: "Requirements", sub: "numbered", papers: ["p2"],
+      does: "One call writes numbered requirements from the brief and the cards. Missing numbers become questions.",
+      input: "Brief and cards", output: "Requirements",
+      effect: "A fixed step, not a plan the executor can reorder." },
+    { id: "des", row: "graph", col: 3, owner: "Sandboxed OpenCode", title: "Designs A and B", sub: "another ReAct loop", papers: ["p2"],
+      does: "A second OpenCode, in a sandbox, writes each design. It loops on ./validate. The outer model does not write the files.",
+      input: "The requirements", output: "Two packages",
+      effect: "ReAct nested inside the graph." },
+    { id: "chk", row: "graph", col: 5, owner: "Code", title: "Pilot, align, four checks", sub: "then a branch", papers: ["p2"],
+      does: "The official Pilot, then alignment, then POWER, LINK, STORE, and TRACE. Trade-offs run only if a check fails.",
+      input: "The two designs", output: "Pass or fail per check",
+      effect: "The branch is code." },
+    { id: "trade", row: "graph", col: 6, owner: "One model call", title: "Trade-offs", sub: "only if a check fails", papers: ["p2"], cond: "Only if needed",
+      does: "Three options, then the catalog recomputes. A passing design skips this node.",
+      input: "The failed check", output: "Options",
+      effect: "Optional inside the graph." },
+  ],
+  edges: [
+    { from: "in", to: "agent" }, { from: "agent", to: "out", label: "then answers" },
+    { from: "agent", to: "search", kind: "side", route: "v", label: "may call" },
+    { from: "agent", to: "valid", kind: "side", route: "v" },
+    { from: "agent", to: "pipe", kind: "side", route: "v" },
+    { from: "agent", to: "write", kind: "side", route: "v" },
+    { from: "pipe", to: "mem", kind: "feed", route: "v", label: "starts the graph" },
+    { from: "mem", to: "req" }, { from: "req", to: "des" }, { from: "des", to: "chk" },
+    { from: "chk", to: "trade", kind: "loop", label: "only if a check fails" },
+  ],
+};
+
+const DESIGN = {
+  id: "designg", cols: 8, nowTitle: "How this flow runs",
+  tags: { p3: "Only if a check fails" },
+  filters: [["", "All"], ["p3", "Only if a check fails"]],
+  captions: { p3: "<b>Only if a check fails.</b> Trade-offs are the branch. A design that passes all four checks does not take it." },
+  rows: [{ id: "src", label: "What it reads", hint: "memory" }, { id: "main", label: "Every run", hint: "fixed order" }],
+  nodes: [
+    { id: "lib", row: "src", col: 1, kind: "source", owner: "Memory", title: "MaritimeISR and approved designs", sub: "the library",
+      does: "The card library the search step reads. Not the official-example library.",
+      input: "Approved designs and MaritimeISR", output: "Cards",
+      effect: "Projects 5 and 6. The memory chats call this graph. It is not itself a chat." },
+    { id: "search", row: "main", col: 1, owner: "Code", title: "Search memory", sub: "no model",
+      does: "MiniLM + FAISS seeds, then one hop.",
+      input: "The brief", output: "Cards",
+      effect: "Always first." },
+    { id: "req", row: "main", col: 2, owner: "One model call", title: "Requirements", sub: "numbered",
+      does: "One call. Missing numbers stay questions. The call does not invent them.",
+      input: "Brief and cards", output: "Requirements",
+      effect: "A fixed step." },
+    { id: "ab", row: "main", col: 3, owner: "Sandboxed OpenCode", title: "Designs A and B", sub: "./validate loop",
+      does: "Each design is a ReAct loop with the official Pilot as ./validate.",
+      input: "The requirements", output: "Two packages",
+      effect: "Needs port 8770 stopped." },
+    { id: "pilot", row: "main", col: 4, owner: "Official Pilot", title: "Parse", sub: "syntax only",
+      does: "Parses each package. A legal file can still fail a later check.",
+      input: "The packages", output: "PASS or FAIL",
+      effect: "Always." },
+    { id: "align", row: "main", col: 5, owner: "Code, then one call", title: "Align", sub: "names checked by code",
+      does: "A model proposes pairs with MaritimeISR. Code checks the names.",
+      input: "The designs and memory", output: "Pairs",
+      effect: "Always." },
+    { id: "checks", row: "main", col: 6, owner: "Code", title: "Four checks", sub: "power, link, store, trace",
+      does: "Reads the parsed watts and rates. Actual must be within the limit. The model does not grade these.",
+      input: "The parsed model", output: "Four results",
+      effect: "A fail opens the trade-off branch." },
+    { id: "person", row: "main", col: 8, kind: "human", owner: "Person", title: "Step 8", sub: "approve, reject, send back",
+      does: "The run pauses. Approve then meets the gate: Pilot PASS and all four checks PASS.",
+      input: "The review", output: "A decision",
+      effect: "The graph waits here. It does not continue by itself." },
+    { id: "trade", row: "main", col: 7, owner: "One model call", title: "Trade-offs", sub: "only if a check fails", papers: ["p3"], cond: "Only if needed",
+      does: "Three options. Code recomputes from the catalog. The failed watts are not quietly edited into a pass.",
+      input: "The failed check", output: "Options back into the review",
+      effect: "Skipped when every check passes." },
+  ],
+  edges: [
+    { from: "search", to: "req" }, { from: "req", to: "ab" }, { from: "ab", to: "pilot" },
+    { from: "pilot", to: "align" }, { from: "align", to: "checks" }, { from: "checks", to: "person" },
+    { from: "lib", to: "search", kind: "feed", route: "v", label: "library" },
+    { from: "checks", to: "trade", kind: "side", label: "only if a check fails" },
+    { from: "trade", to: "person", kind: "loop" },
+  ],
+};
+
+const PLAN = {
+  id: "planp", cols: 5, nowTitle: "Proposal, not in Langflow",
+  rows: [{ id: "main", label: "Proposed", hint: "not built" }],
+  nodes: [
+    { id: "search", row: "main", col: 1, owner: "Already built", title: "Search memory", sub: "stays first",
+      does: "The design graph’s current first card. This proposal does not replace it.",
+      input: "The brief", output: "Cards", effect: "Exists today." },
+    { id: "plan", row: "main", col: 2, owner: "Would be new", title: "One plan call", sub: "JSON",
+      does: "One model call returns devices, limits, and missing numbers. Code stops if a limit is missing. The plan is shown to the engineer.",
+      input: "Brief and cards", output: "A step list", effect: "Not built. This is the plan-and-execute piece." },
+    { id: "rest", row: "main", col: 3, owner: "Already built", title: "Today’s cards, same order", sub: "requirements through checks",
+      does: "Requirements, two designs, Pilot, alignment, four checks. The plan must not skip the Pilot or the checks, and it must not reorder them.",
+      input: "The plan", output: "The review", effect: "The executor is the graph we already run, not a cheaper model inventing steps." },
+    { id: "person", row: "main", col: 5, kind: "human", owner: "Person", title: "Still step 8", sub: "unchanged",
+      does: "Approve, reject, or send back, as today.",
+      input: "The review", output: "A decision", effect: "Not a new role." },
+  ],
+  edges: [{ from: "search", to: "plan" }, { from: "plan", to: "rest" }, { from: "rest", to: "person" }],
+};
+
+const MULTI = {
+  id: "multip", cols: 4, nowTitle: "Proposal, not in Langflow",
+  rows: [{ id: "main", label: "Proposed", hint: "two roles, one caller" }],
+  nodes: [
+    { id: "outer", row: "main", col: 1, owner: "Already built", title: "Outer agent", sub: "only calls",
+      does: "The memory chat’s outer model. In this proposal it does not write the design and it does not grade it. It calls the writer, then the reviewer, then shows the review.",
+      input: "The confirmed brief", output: "Tool calls", effect: "Exists today as the caller." },
+    { id: "writer", row: "main", col: 2, owner: "Already built", title: "Sandboxed OpenCode", sub: "the only writer",
+      does: "Writes the files with ./validate, as it does now. The reviewer cannot edit those files.",
+      input: "The requirements", output: "Two packages", effect: "Exists today inside the design graph." },
+    { id: "review", row: "main", col: 3, owner: "Would be new", title: "Reviewer call", sub: "no file tool",
+      does: "One call. It sees the four check results and the two package names. It has no file tool and no memory write.",
+      input: "Check results and package names", output: "A short review", effect: "Not built. This is the second role." },
+    { id: "show", row: "main", col: 4, owner: "Already built", title: "Outer agent presents it", sub: "no second conversation",
+      does: "The outer agent shows that review. The two roles do not message each other.",
+      input: "The review", output: "The playground message", effect: "One caller." },
+  ],
+  edges: [{ from: "outer", to: "writer" }, { from: "writer", to: "review" }, { from: "review", to: "show" }],
+};
+
+const ROUTER = {
+  id: "routerp", cols: 6, nowTitle: "Proposal, not in Langflow",
+  tags: { p3: "One of these" },
+  filters: [["", "All"], ["p3", "One of these"]],
+  captions: { p3: "<b>One of these.</b> The router starts one existing chat. A weak label stays on the memory assistant." },
+  rows: [{ id: "main", label: "Proposed", hint: "not built" }],
+  nodes: [
+    { id: "in", row: "main", col: 1, kind: "human", owner: "Person", title: "One message", sub: "no dropdown",
+      does: "You would type once. You would not pick P0 or the sandbox yourself, unless you still open that flow directly.",
+      input: "The message", output: "Text for the classifier", effect: "The chats themselves already exist." },
+    { id: "cls", row: "main", col: 2, owner: "Would be new", title: "One classification call", sub: "a label",
+      does: "Labels the message as write-once, repair, sandbox, Pilot-only, or memory assistant.",
+      input: "The message", output: "One label", effect: "Not built." },
+    { id: "p0", row: "main", col: 3, owner: "Already built", title: "P0 or P1–P3", sub: "one skill", papers: ["p3"], cond: "One label",
+      does: "The direct-model chats in project 1.",
+      input: "The message", output: "That chat’s answer", effect: "Exists today." },
+    { id: "sand", row: "main", col: 4, owner: "Already built", title: "Sandbox or Pilot-only", sub: "one skill", papers: ["p3"], cond: "One label",
+      does: "A project 2 chat. The sandbox ones still need port 8770 stopped.",
+      input: "The message", output: "That chat’s answer", effect: "Exists today." },
+    { id: "mem", row: "main", col: 5, owner: "Already built", title: "Memory assistant", sub: "the fallback", papers: ["p3"], cond: "Weak label stays here",
+      does: "Projects 3 and 4. If the label is weak, the router does not guess. It stays here.",
+      input: "The message", output: "That chat’s answer", effect: "Exists today." },
+  ],
+  edges: [
+    { from: "in", to: "cls" },
+    { from: "cls", to: "p0", kind: "side", label: "one of these" },
+    { from: "cls", to: "sand", kind: "side" },
+    { from: "cls", to: "mem", kind: "main", label: "or stay" },
+  ],
+};
+
+const BOARD = {
+  id: "boardp", cols: 5, nowTitle: "Proposal, not in Langflow",
+  rows: [{ id: "main", label: "Proposed", hint: "one record, no polling" }],
+  nodes: [
+    { id: "rec", row: "main", col: 1, kind: "source", owner: "Already stored", title: "The run record", sub: "the board",
+      does: "The record a design run already writes. In this proposal every card reads it and writes only its own section.",
+      input: "The run id", output: "Brief, requirements, designs, Pilot, checks", effect: "The file exists. The cards do not yet treat it as the only state." },
+    { id: "cards", row: "main", col: 2, owner: "Already built", title: "Design cards", sub: "write one section each",
+      does: "Search writes the cards it found. Requirements writes the numbered list. Designs write A and B. The Pilot and the four checks write their results. A card runs when its inputs are on the record.",
+      input: "Its section of the record", output: "Its own section", effect: "Not built as a board. Today the cards pass a message forward." },
+    { id: "outer", row: "main", col: 4, owner: "Already built", title: "Outer agent reads it", sub: "does not poll",
+      does: "The memory chat reads the same record instead of a long tool message. No extra agent wakes up because a field changed.",
+      input: "The record", output: "The reply", effect: "Not built." },
+  ],
+  edges: [
+    { from: "rec", to: "cards", kind: "feed", label: "read" },
+    { from: "cards", to: "rec", kind: "loop", label: "write one section" },
+    { from: "rec", to: "outer", label: "then the reply" },
+  ],
+};
+
 function boot() {
   makeFlow($("#flow-course"), COURSE);
   makeFlow($("#flow-ours"), OURS);
@@ -455,6 +894,16 @@ function boot() {
   makeFlow($("#flow-validate"), VALIDATE);
   makeFlow($("#flow-write"), WRITE);
   makeFlow($("#flow-pipe"), PIPE);
+  renderArch($("#arch"));
+  makeFlow($("#flow-p03"), P03);
+  makeFlow($("#flow-sand"), SAND);
+  makeFlow($("#flow-pilot"), PILOT);
+  makeFlow($("#flow-mem"), MEM);
+  makeFlow($("#flow-design"), DESIGN);
+  makeFlow($("#flow-plan"), PLAN);
+  makeFlow($("#flow-multi"), MULTI);
+  makeFlow($("#flow-router"), ROUTER);
+  makeFlow($("#flow-board"), BOARD);
   const links = $$("#toc a");
   const byId = Object.fromEntries(links.map((a) => [a.getAttribute("href").slice(1), a]));
   const seen = new Map();

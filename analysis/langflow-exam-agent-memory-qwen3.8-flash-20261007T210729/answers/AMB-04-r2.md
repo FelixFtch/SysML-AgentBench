@@ -1,0 +1,1 @@
+Is the uplink value 8 or 8 MHz — which unit should be used for the uplink check?

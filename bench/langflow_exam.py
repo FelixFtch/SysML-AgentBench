@@ -65,7 +65,10 @@ def _secrets() -> dict:
     return values
 
 
-def _request(method: str, path: str, token: str | None = None, body=None, form: dict | None = None, timeout: int = 120):
+_AUTH: dict = {"token": None}  # the live login; replaced on a 401, since Langflow's access token expires during a run of hours
+
+
+def _request(method: str, path: str, token: str | None = None, body=None, form: dict | None = None, timeout: int = 120, retry: bool = True):
     headers = {"Accept": "application/json"}
     data = None
     if form is not None:
@@ -75,13 +78,31 @@ def _request(method: str, path: str, token: str | None = None, body=None, form: 
         data = json.dumps(body).encode()
         headers["Content-Type"] = "application/json"
     if token:
-        headers["Authorization"] = f"Bearer {token}"
+        headers["Authorization"] = f"Bearer {_AUTH['token'] or token}"
     request = urllib.request.Request(BASE + path, data=data, method=method, headers=headers)
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        raw = response.read()
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            raw = response.read()
+    except urllib.error.HTTPError as exc:
+        # The access token expired in the middle of a run (2026-10-07: thirty cells recorded as "HTTP 401 Token has
+        # expired"); log in again once and repeat the request. The probe in _token() runs before a login is held and
+        # must see its 401 itself.
+        if exc.code == 401 and token and retry and _AUTH["token"] is not None:
+            _login()
+            return _request(method, path, token, body, form, timeout, retry=False)
+        raise
     if raw[:2] == b"\x1f\x8b":
         raw = gzip.decompress(raw)
     return json.loads(raw) if raw else None
+
+
+def _login() -> str:
+    secrets = _secrets()
+    token = _request("POST", "/api/v1/login", form={"username": secrets["LANGFLOW_SUPERUSER"], "password": secrets["LANGFLOW_SUPERUSER_PASSWORD"]})["access_token"]
+    TOKEN_FILE.write_text(token, encoding="utf-8")
+    TOKEN_FILE.chmod(0o600)
+    _AUTH["token"] = token
+    return token
 
 
 def _token() -> str:
@@ -90,19 +111,42 @@ def _token() -> str:
         token = TOKEN_FILE.read_text(encoding="utf-8").strip()
         try:
             _request("GET", "/api/v1/users/whoami", token)
+            _AUTH["token"] = token
             return token
         except urllib.error.HTTPError:
             pass
-    secrets = _secrets()
-    token = _request("POST", "/api/v1/login", form={"username": secrets["LANGFLOW_SUPERUSER"], "password": secrets["LANGFLOW_SUPERUSER_PASSWORD"]})["access_token"]
-    TOKEN_FILE.write_text(token, encoding="utf-8")
-    TOKEN_FILE.chmod(0o600)
-    return token
+    return _login()
 
 
 RUNNER_PROJECT = "RTRC exam runner (admin)"
 # What a private copy of an exam flow needs imported first: the shared tool flows its Run Flow cards point at.
 NEEDS = {NAMES["langflow-agent-pilot-exam"]: ["tool-validate-sysml"], NAMES["langflow-agent-memory-exam"]: ["tool-validate-sysml", "tool-memory-search"]}
+PROVIDER_VARIABLES = ("OPENAI_COMPATIBLE_BASE_URL", "OPENAI_COMPATIBLE_API_KEY")
+# What Langflow's Agent reports when its provider variable is missing: the "OpenAI Compatible" provider allows no key and
+# sends the placeholder EMPTY, so the endpoint refuses and the job ends in seconds with no reply.
+KEY_ERRORS = ("Incorrect API key", "API key is required")
+
+
+def _ensure_provider(token: str) -> None:
+    """The runner's login needs the Qwen provider variables of its own. Langflow keeps them per user, and
+    langflow/flows/move_to_user.py moves them to the people's account; after that the Agent in a private copy ran with
+    an empty key and every cell failed in eight seconds (2026-10-07). Set from .env as setup_assistant.py does."""
+    names = {item["name"] for item in _request("GET", "/api/v1/variables/", token) or []}
+    if set(PROVIDER_VARIABLES) <= names:
+        return
+    from setup_assistant import MODELS, OLLAMA_URL
+    from setup_knowledge import _env, _set_variable
+    env = _env()
+    _set_variable(token, "OPENAI_COMPATIBLE_BASE_URL", env["MVP_LLM_URL"].rsplit("/chat/completions", 1)[0], "Generic")
+    _set_variable(token, "OPENAI_COMPATIBLE_API_KEY", env["MVP_LLM_API_KEY"], "Credential")
+    _set_variable(token, "OLLAMA_BASE_URL", OLLAMA_URL, "Generic")
+    _request("POST", "/api/v1/models/enabled_models", token, MODELS)
+    print("The runner's login had no Qwen provider variables (move_to_user.py moves them to the people's account); set from .env", flush=True)
+
+
+def _key_failure(row: dict) -> bool:
+    text = f"{row.get('error') or ''} {row.get('reason') or ''}"
+    return row.get("status") != "PASS" and any(marker in text for marker in KEY_ERRORS)
 
 
 def _flow(token: str, name: str) -> dict:
@@ -293,6 +337,7 @@ def main() -> None:
     from bench.experiment import load_env
     load_env()
     token = _token()
+    _ensure_provider(token)
     flow = _flow(token, args.flow)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     column = COLUMNS.get(args.flow)
@@ -315,8 +360,20 @@ def main() -> None:
                 task_dir = ROOT / item["path"]
                 try:
                     row = _chat_cell(token, flow, task_dir, repeat, out, args.timeout, column) if column else _cell_flow_cell(token, flow, task_dir, repeat, out, args.timeout)
+                    if _key_failure(row):
+                        # A provider variable set moments ago is not always seen by the very next run; one more try, then stop
+                        # rather than record a column of empty failures. The batch resumes from this cell when run again.
+                        time.sleep(10)
+                        row = _chat_cell(token, flow, task_dir, repeat, out, args.timeout, column) if column else _cell_flow_cell(token, flow, task_dir, repeat, out, args.timeout)
+                        if _key_failure(row):
+                            raise SystemExit(f"{item['id']} r{repeat}: the flow's model ran without an API key; the row is not recorded. "
+                                             f"Check the runner's login has {' and '.join(PROVIDER_VARIABLES)} (Settings → Model Providers) and run again. "
+                                             f"Langflow said: {(row.get('error') or row.get('reason') or '')[:300]}")
                 except urllib.error.HTTPError as exc:
                     body = exc.read()[:400].decode("utf-8", "replace")
+                    if exc.code == 401:
+                        raise SystemExit(f"{item['id']} r{repeat}: Langflow refused the login even after logging in again (HTTP 401 {body}); "
+                                         "the row is not recorded. Run again; the batch resumes from this cell.")
                     row = {"repeat": repeat, "task_id": item["id"], "type": item["type"], "configuration": "P-LANGFLOW" if column else None, "model": MODEL,
                            "flow": args.flow, "status": "FAIL", "sysml_status": None, "engineering_status": "FAIL", "error": f"HTTP {exc.code} {body}", "elapsed_s": None}
                 row.setdefault("cohort_id", column)

@@ -35,7 +35,7 @@ from lfx.graph import Graph  # noqa: E402
 from rtrc.rtrc_cameo import RtrcCameoExport  # noqa: E402
 from rtrc.rtrc_cameo_record import RtrcCameoRecord  # noqa: E402
 from rtrc.rtrc_exam_cell import RtrcExamCell  # noqa: E402
-from rtrc.rtrc_exam_chat import CANDIDATES as CHAT_CANDIDATES, RtrcExamChat  # noqa: E402
+from rtrc.rtrc_chat import CANDIDATES as CHAT_CANDIDATES, RtrcChat  # noqa: E402
 from rtrc.rtrc_exam_step import RtrcExamStep  # noqa: E402
 from rtrc.rtrc_gate import RtrcGateRecord  # noqa: E402
 from rtrc.rtrc_memory import RtrcMemory  # noqa: E402
@@ -716,41 +716,47 @@ def exam_cell_flow(slug: str) -> dict:
                  graph, titles, [("note-exam", text, 40, -20)], None, ["rtrc", "exam"])
 
 
-# ---------- the chat versions of projects 1 and 2: a task text in, the answer out, nothing scored ----------
+# ---------- the chat versions of projects 1 and 2 (decision 036): a person's words, a conversation that continues ----------
 
 CHAT_FLOWS = {
-    "direct-chat-p0": "Direct model · P0 one-shot", "direct-chat-p1": "Direct model · P1 repair from errors",
+    "direct-chat-p0": "Direct model · P0 one answer", "direct-chat-p1": "Direct model · P1 repair from errors",
     "direct-chat-p2": "Direct model · P2 outline first", "direct-chat-p3": "Direct model · P3 retrieval then outline",
     "sandbox-chat-opencode": "OpenCode in the sandbox", "sandbox-chat-claude-code": "Claude Code in the sandbox",
 }
 
 
 def exam_chat_flow(slug: str) -> dict:
-    """Chat Input -> RTRC Exam chat -> Chat Output (decision 035): the candidate answers a task text the way it answers an
-    exam cell; the official Pilot parses a model answer; there is no key, so nothing is scored."""
+    """Chat Input -> RTRC Chat -> Chat Output: the person's message goes to the candidate as written, in the conversation of
+    the Langflow session (the lecture's wiring of Chat Input, without its query rewrite). The official Pilot parses a reply
+    only when it holds a model; there is no key, so nothing is scored."""
     candidate = CHAT_FLOWS[slug]
     assert candidate in CHAT_CANDIDATES
-    chat_in = ChatInput(_id="ChatInput-task")
-    node = RtrcExamChat(_id="RtrcExamChat-candidate")
+    chat_in = ChatInput(_id="ChatInput-person")
+    node = RtrcChat(_id="RtrcChat-candidate")
     node.set(message=chat_in.message_response, candidate=candidate, model=EXAM_MODEL)
-    out = ChatOutput(_id="ChatOutput-answer")
+    out = ChatOutput(_id="ChatOutput-reply")
     out.set(input_value=node.as_message)
     graph = _graph(chat_in, [out])
     direct = slug.startswith("direct")
     approach = slug[-2:].upper()  # P0 … P3 of a direct-chat slug
-    paths = {"P0": "one answer, no repair", "P1": "answer, then the Pilot's complete error list back for repair", "P2": "outline, answer, repair",
-             "P3": "retrieval, outline, answer, repair"}
-    titles = {"ChatInput-task": ("Task text", "A task statement in the exam's wording ('Package name: X' for a model task); paste the given model(s) as fenced sysml blocks for MOD, ALN, QRY and RT tasks."),
-              "RtrcExamChat-candidate": (f"{NAMES[slug].replace(' chat', '')} · {EXAM_MODEL}",
-                                         (f"The same fixed path as the exam cell, on your text: {paths[approach]}. Set the task type; the official Pilot parses model answers.")
-                                         if direct else "The agent in the sandbox with your text as the task, AGENTS.md and ./validate; answer.md comes back. Stop the results page (8770) first."),
-              "ChatOutput-answer": ("Answer (not scored)", "")}
-    text = (f"# {NAMES[slug]}\n\nThe chat version of **{NAMES[slug].replace(' chat', ' exam')}**: the same candidate, the same path, on a task you type instead of a sealed task id. "
-            "There is no answer key here, so nothing is scored; the official Pilot still parses a model answer and the repair loop still runs where the approach has one.\n\n"
-            "- Use it to try a task's wording before adding it to the bank, or to watch one approach on one input.\n"
-            "- Each run is saved under analysis/langflow-console/ as a chat run; it never enters the frozen matrix."
-            + ("" if direct else "\n- The sandboxed agent needs the results page (8770) stopped, as in the exam."))
-    return build(NAMES[slug], f"{NAMES[slug].replace(' chat', '')} on a task text: the answer, the official Pilot's verdict on a model answer, nothing scored.",
+    paths = {"P0": "one answer; a model in it is parsed once and not repaired",
+             "P1": "the answer; a model in it is parsed, and the Pilot's complete error list goes back into this conversation until it passes",
+             "P2": "an outline first when the message asks for a model, then the answer, then the repair loop",
+             "P3": "retrieval from the official examples with your own words, then the outline, the answer and the repair loop"}
+    titles = {"ChatInput-person": ("Person", "Write as you would to a colleague. Earlier messages of this session stay in the conversation."),
+              "RtrcChat-candidate": (f"{NAMES[slug].replace(' chat', '')} · {EXAM_MODEL}",
+                                     (f"Your message, as written, plus the last 30 of this session: {paths[approach]}. The system prompt lets it talk; only a request for a model gets a model.")
+                                     if direct else "The agent in a sandbox kept for this session, with ./validate and rules written for a conversation; its own session continues across messages."),
+              "ChatOutput-reply": ("Reply (not scored)", "")}
+    text = (f"# {NAMES[slug]}\n\nThe chat version of **{NAMES[slug].replace(' chat', ' exam')}**: the same candidate talking to a person. Your words reach it as written, "
+            "and the conversation continues across messages, so \"change the last one\" has something to change. Nothing is scored; the official Pilot parses a reply "
+            "only when it holds a fenced sysml block.\n\n"
+            + ("- What the approach adds happens around your message, not instead of it: P3 retrieves with your own words (no query rewrite), P2 and P3 outline only when you ask for a model, "
+               "P1 to P3 repair from the Pilot's complete error list, P0 does not.\n" if direct else
+               "- The agent has files and ./validate (the official Pilot) and nothing else; it writes a .sysml file only when you ask for a model. It runs while the results page is up: "
+               "a conversation is not scored, so the page's answer keys cannot enter a score.\n")
+            + "- Each turn is saved under analysis/langflow-console/ as a chat run; it never enters the frozen matrix. The exam version next to this flow still sits the sealed tasks through the frozen solver.")
+    return build(NAMES[slug], f"{NAMES[slug].replace(' chat', '')} in a conversation: your words as written, a reply, the official Pilot on a model in it, nothing scored.",
                  graph, titles, [("note-chat", text, 40, -20)], None, ["rtrc", "chat"])
 
 

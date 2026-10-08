@@ -1,0 +1,1 @@
+What is the settled unit for the uplink value 8 (e.g., MHz or another unit)?

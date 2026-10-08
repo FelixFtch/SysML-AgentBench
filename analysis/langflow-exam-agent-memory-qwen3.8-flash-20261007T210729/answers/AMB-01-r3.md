@@ -1,0 +1,1 @@
+What maximum end-to-end latency (in milliseconds or seconds) and what bandwidth (in kbps or Mbps) apply to the vessel-to-shore track-sharing link?

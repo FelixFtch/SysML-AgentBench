@@ -1,0 +1,1 @@
+What is the settled value and unit for the uplink — is it 8 Mbps, 8 MHz, or something else?

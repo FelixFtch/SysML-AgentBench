@@ -1,0 +1,1 @@
+What is the track data rate (with its unit, e.g., Mb/s or GB/day per shore link) that the 30-day retention on the 128 GB shore storage is to be checked against?

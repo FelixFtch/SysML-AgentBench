@@ -13,7 +13,9 @@
 
 1. Clone, make the two Python environments, copy `.env.example` to `.env` and fill in one key ([install page](langflow/01-install.md), steps 1–3).
 2. `python3 bench/exam_board.py` → http://127.0.0.1:8770. The results page: every score of the frozen exam, the local-27B rerun, and every Langflow column, read from files in the repository. No model call.
-3. `python scripts/up.py --import` → http://127.0.0.1:7860. Langflow with the six projects. Open `Direct model chat · P1 repair from errors`, press Playground, ask for a small SysML package.
+3. `python scripts/up.py --import` → http://127.0.0.1:7860. Langflow with the six projects (30 flows). Open `Direct model chat · P1 repair from errors`, press Playground, ask for a small SysML package.
+
+The three papers are steps, not separate apps: paper 2 is memory search, paper 3 is the writing rules and the Pilot repair loop, paper 1 is alignment. They sit in that order on **Design agent flow with a person's decision**. Each approach you run has an exam flow (scored, shown on the results page) and a chat flow (talk, not scored): [the repository README](../README.md#the-flows).
 
 ## What you need
 

@@ -24,6 +24,8 @@ This half of the repository is for people who work in Langflow. Two folders are 
 
 Examining a flow you built and seeing it on the results page is the other half: [`docs/benchmark/`](../docs/benchmark/README.md), in particular [04 · Examine your flow](../docs/benchmark/04-exam-your-flow.md).
 
+Where the three papers went, and the exam/chat pair for each approach, are in the repository README: [The three papers](../README.md#the-three-papers-as-tools-and-as-one-design-flow) and [The flows](../README.md#the-flows). Short form: paper 2 is **Memory search** (step ①), paper 3 is the writing rules and the Pilot repair loop (steps ③ and ④), paper 1 is **Align with memory** (step ⑤), in that order on **Design agent flow with a person's decision**. Every approach you run has an exam flow (scored, a column or cells on the results page) and a chat flow (Playground, not scored).
+
 ## The shortest path
 
 ```bash

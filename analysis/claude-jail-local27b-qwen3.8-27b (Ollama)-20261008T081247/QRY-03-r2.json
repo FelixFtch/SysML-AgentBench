@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 18014,
+  "stop_reason": "end_turn",
+  "session_id": "4f278ebd-b6e1-40e9-8da6-4a7bdb2fddd0",
+  "total_cost_usd": 0.1531765,
+  "usage": {
+    "input_tokens": 20060,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 56203,
+    "output_tokens": 991,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 20060,
+      "outputTokens": 991,
+      "cacheReadInputTokens": 56203,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.1531765,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 5,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Count of `connect` statements with an endpoint on `commandShip`: **3**\n\n- `connect usv.radio.toShore to commandShip.fromUsv;` (model.sysml:70)\n- `connect uav.radio.toShore to commandShip.fromUav;` (model.sysml:74)\n- `connect commandShip.toShore to shore.fromCommand;` (model.sysml:75)\n\nAnswer written to `answer.md` as `{\"connections\": 3}`.\n\n- **Files changed:** `answer.md` (created); no `.sysml` files were modified, so no validation run was required.\n- **Validation status:** N/A (no edits to model files).\n- **Check results:** 3 of 10 connect statements reference `commandShip` as an endpoint.\n- **Open questions:** none.",
+  "ttft_ms": 8671,
+  "type": "result",
+  "duration_ms": 18118,
+  "uuid": "7a395349-ef26-42a7-94e3-e17e66200959",
+  "ttft_stream_ms": 7298,
+  "time_to_request_ms": 39,
+  "first_content_frame_ms": 7298,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

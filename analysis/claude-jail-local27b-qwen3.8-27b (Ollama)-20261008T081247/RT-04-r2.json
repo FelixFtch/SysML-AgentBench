@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 54590,
+  "stop_reason": "end_turn",
+  "session_id": "3269bcdb-222c-42b5-9c47-9deaf4459122",
+  "total_cost_usd": 0.2572095,
+  "usage": {
+    "input_tokens": 21876,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 96209,
+    "output_tokens": 3989,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 21876,
+      "outputTokens": 3989,
+      "cacheReadInputTokens": 96209,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.2572095,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 9,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "The task is complete. Here's the summary per the required final-answer format:\n\n## Files changed\n- **Created** `answer.md` — restatement of the model's requirements in sentences.\n- **Read** (unchanged): `AGENTS.md`, `CLAUDE.md`, `input/model.sysml`, `input/requirements.md`, `validate`.\n- No `.sysml` files were edited.\n\n## Validation status\n- Ran the official validator on the provided model: `./validate RoundTripArchive input/model.sysml`\n- **Status: PASS** — `warning_count: 0`, `diagnostics: []`, exit code 0.\n- No `.sysml` files were modified, so the model is untouched; the validator run was to confirm the read model is valid (as `AGENTS.md` directs reporting every failing check — none exist).\n\n## Check results\n- No failing checks. The single validation run reported zero diagnostics and `status: PASS`.\n\n## What the model actually states (restated in `answer.md`)\n- A SysML v2 package `RoundTripArchive` that privately imports `ScalarValues::*`.\n- A part `shore` with two `Real`-typed attributes, both holding specific values:\n  - `backhaulMbps = 50.0`\n  - `archiveDays = 30.0`\n- A requirement definition `Archive` with no constraint, action, or subject — only a doc: *\"The shore archive keeps tracks for 30 days on a 50 Mbit/s backhaul.\"*\n- I was careful to note the model declares **no units or dimensions**; the unit language (\"Mbit/s\", \"days\") comes solely from the doc text and the attribute *names*, not from any declared unit. The doc's 30 days ↔ `archiveDays = 30.0` and 50 Mbit/s ↔ `backhaulMbps = 50.0` correspond, but the model does not itself bind a unit to either attribute.\n\n## Open questions\nNone — every number in `answer.md` comes directly from the model; nothing was invented or relaxed.",
+  "ttft_ms": 7938,
+  "type": "result",
+  "duration_ms": 56984,
+  "uuid": "75cabb4b-737f-4e8f-93cd-f968918af8d6",
+  "ttft_stream_ms": 7188,
+  "time_to_request_ms": 37,
+  "first_content_frame_ms": 7189,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

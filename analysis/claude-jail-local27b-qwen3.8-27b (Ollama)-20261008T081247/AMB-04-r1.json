@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 77316,
+  "stop_reason": "end_turn",
+  "session_id": "2e92a538-e10d-47a0-9b23-7581d5f56048",
+  "total_cost_usd": 0.354153,
+  "usage": {
+    "input_tokens": 25095,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 163656,
+    "output_tokens": 5874,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 25095,
+      "outputTokens": 5874,
+      "cacheReadInputTokens": 163656,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.354153,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done — per the task's ambiguity rules, I stopped with a question rather than writing any SysML. Wrote `answer.md` in the workspace with the full report.\n\n**Summary of what happened:**\n\n- **Files changed:** only `answer.md` (new). No `.sysml` exists in the workspace (verified with an exhaustive `find` — no model files, no `requirements/`, no `gold/` anywhere in the run directory), and no SysML was authored.\n- **Validation status:** not run — with no model file, the official validator (`./validate <PackageName> <file.sysml> …`) had no input; no PASS/FAIL is claimed.\n- **Check results:** none evaluable — any check keyed to the uplink quantity is indeterminate while the unit conflict stands.\n- **Open question (blocking):** the uplink is given both as unitless **8** and as **8 MHz**; the unit is explicitly \"not settled\". I did not resolve it, since the rules forbid inventing a value on conflict. The answer asks which sentence is authoritative, what quantity \"uplink\" denotes, and for the two original sentences verbatim, since only a summary of the conflict is present in the workspace.\n\nOnce the unit is confirmed, I can write/validate the SysML in a follow-up.",
+  "ttft_ms": 9479,
+  "type": "result",
+  "duration_ms": 77501,
+  "uuid": "0a222aa3-e8a6-4c2f-b54d-15389aad9236",
+  "ttft_stream_ms": 7307,
+  "time_to_request_ms": 35,
+  "first_content_frame_ms": 7307,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

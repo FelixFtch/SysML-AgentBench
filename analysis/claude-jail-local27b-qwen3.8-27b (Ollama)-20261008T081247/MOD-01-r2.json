@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 174404,
+  "stop_reason": "end_turn",
+  "session_id": "0c9d36de-7881-40f2-88c4-e3fb57810ce0",
+  "total_cost_usd": 0.7948320000000002,
+  "usage": {
+    "input_tokens": 39611,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 553404,
+    "output_tokens": 12803,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 39611,
+      "outputTokens": 12803,
+      "cacheReadInputTokens": 553404,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.7948320000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 25,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Final state verified — summary:\n\n**Files changed**\n- `input/baseline/UsvPlain.sysml` — exactly two added lines, all else byte-identical to baseline:\n  - `part irCamera : Camera;` inside `part usv { … }` (AST confirms a `PartUsage` named `irCamera` of type `Camera`, line 16)\n  - `connect usv.irCamera.imagery to usv.processor.imageryIn;` (line 23)\n- `answer.md` — answer written in the workspace.\n- `requirements/` and `gold/` were not touched.\n\n**Preserved as required**\n- `connect usv.eoCamera.imagery to usv.processor.imageryIn;` (camera)\n- `connect usv.ais.tracks to usv.processor.trackIn;` (AIS)\n- `connect usv.processor.uplink to usv.radio.fromProcessor;` (radio)\n- `attribute powerLimitW : Real = 60.0;` — unchanged; no other numbers added.\n\n**Validation status (official, `./validate`)**\n- Baseline pre-check: **PASS**, 0 diagnostics (evidence `validation/20261008T061019716887403/`)\n- Post-edit final run: **PASS** — `\"diagnostics\": []`, `warning_count: 0`, `return_code: 0`; official Pilot kernel 0.62.0 / JDK 21 / library commit `fb97b754` (evidence `validation/20261008T061111225946296/`). One transient invalid line I introduced mid-edit was removed before the accepting run; the PASS corresponds to the final file state.\n\n**Check results**\n1. `irCamera` of `Camera` inside `usv` — present (AST: `PartUsage`, line 16).\n2. `irCamera.imagery → processor.imageryIn` connect — present, no unresolved-reference diagnostics.\n3. Camera/AIS/radio connects — kept verbatim.\n4. `powerLimitW = 60.0` — exact.\n\n**Open questions** — none.",
+  "ttft_ms": 8244,
+  "type": "result",
+  "duration_ms": 181841,
+  "uuid": "a24d3318-c4a7-47fd-89ca-c116b5374ef7",
+  "ttft_stream_ms": 7448,
+  "time_to_request_ms": 37,
+  "first_content_frame_ms": 7448,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

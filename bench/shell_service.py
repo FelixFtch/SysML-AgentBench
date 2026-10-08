@@ -51,7 +51,7 @@ HELD = ROOT / "bench" / "tasks" / "t4_maritime_isr" / "heldout"
 MODELS = ("qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)", "qwen3.8-27b local")
 AGENTS = ("direct", "claude-code", "opencode")
 LOCAL_MODELS = {"qwen3.8-27b (Ollama)", "qwen3.8-27b local"}  # served by Ollama on this machine; direct or OpenCode (decision 032)
-LOCAL_REFUSED = "The local 3-bit model runs with Qwen direct or OpenCode; Claude Code still uses the cloud Qwen."
+LOCAL_REFUSED = "The local 3-bit model runs with Qwen direct or OpenCode; a Claude Code exam still uses the cloud Qwen."
 VARIANT_ADAPT = ("Design A: adapt the similar existing project. Start from its model: keep its structure, part names and port names "
                  "where they fit the brief; change only what the requirements need; add what is missing; leave out what the brief does not need. "
                  "Every number must come from the requirements, and a stated limit is never changed.")
@@ -876,17 +876,19 @@ def chat_turn(body: dict) -> dict:
         result = chat_turns.direct_turn(session, text, approach, model, rounds=None if rounds in (None, "") else int(rounds),
                                         history_limit=int(body.get("history") or chat_turns.HISTORY_LIMIT))
     elif candidate in chat_turns.AGENTS:
-        if model in LOCAL_MODELS and candidate == "claude-code":
-            raise StepError(LOCAL_REFUSED)
-        result = chat_turns.sandbox_turn(session, text, candidate, model, timeout=int(body.get("timeout") or 900))
+        result = chat_turns.sandbox_turn(session, text, candidate, model, timeout=int(body.get("timeout") or 900),
+                                          max_turns=int(body.get("max_turns") or 60))
     else:
         raise StepError("candidate must be direct-P0 … direct-P3, opencode or claude-code")
     CONSOLE_DIR.mkdir(parents=True, exist_ok=True)
     saved = CONSOLE_DIR / f"{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}-chat-{candidate}-{model}.json"
     saved.write_text(json.dumps({**result, "text": text}, ensure_ascii=False, indent=2), encoding="utf-8")
     syntax = result.get("sysml_status")
-    lines = [f"{candidate} · {model} · turn {result['turn']} · {result['seconds']} s"
-             + (f" · official syntax {syntax}" if syntax else " · no model in this reply") + " (a conversation: nothing scored)"]
+    if candidate in chat_turns.AGENTS:
+        tail = " · the agent runs ./validate in its sandbox" + (f"; files: {', '.join(result['files'])}" if result.get("files") else "")
+    else:
+        tail = f" · official syntax {syntax}" if syntax else " · no model in this reply"
+    lines = [f"{candidate} · {model} · turn {result['turn']} · {result['seconds']} s" + tail + " (a conversation: nothing scored)"]
     lines += [f"  {step['title']}: {step['state']} · {str(step['detail'])[:160]}" for step in result["steps"]]
     return {"summary": "\n".join(lines), "data": result}
 

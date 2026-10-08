@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 24728,
+  "stop_reason": "end_turn",
+  "session_id": "c3123cae-9935-4d75-b5f1-e4299adb847c",
+  "total_cost_usd": 0.19814450000000003,
+  "usage": {
+    "input_tokens": 21689,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 96199,
+    "output_tokens": 1664,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 21689,
+      "outputTokens": 1664,
+      "cacheReadInputTokens": 96199,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.19814450000000003,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 8,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done.\n\n## Summary\n\n**Change:** Added `connect vessel.radio.toShore to shore.fromVessel;` to `input/baseline/ShoreHop.sysml`, keeping the existing `connect vessel.processor.uplink to vessel.radio.fromProcessor;` intact. No other elements changed, no numeric limits invented, package name stays `ShoreHop`.\n\n**Validation:** `./validate ShoreHop input/baseline/ShoreHop.sysml` → **PASS**, return code 0, zero diagnostics/warnings (official-pilot-xtext-emf adapter, SysML kernel 0.62.0).\n\n**Files changed:** `input/baseline/ShoreHop.sysml` (one line added), `answer.md` (created with the full report per the task instructions).\n\n**Open questions:** none.",
+  "ttft_ms": 8918,
+  "type": "result",
+  "duration_ms": 27805,
+  "uuid": "a252b2ea-a92e-43d6-a678-6b82a4395f20",
+  "ttft_stream_ms": 7261,
+  "time_to_request_ms": 35,
+  "first_content_frame_ms": 7261,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

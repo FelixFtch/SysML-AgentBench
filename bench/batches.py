@@ -48,6 +48,22 @@ LANGFLOW_COHORTS = {
                      "glob": "langflow-exam-agent-memory-qwen3.8-flash-*", "flow": "Langflow Agent with memory exam", "project": "4 · Langflow Agent with memory"},
 }
 ALL_COHORTS = {**COHORTS, **LANGFLOW_COHORTS}
+# The same matrix run on the local 3-bit Qwen3.8-27B. Not part of the frozen score. A cohort with no folder yet
+# is an empty column ("not run yet") on results page 1.3 when that page is switched to the local matrix.
+LOCAL_MATRIX = {
+    "local": {"label": "Direct · local Qwen3.8-27B", "short": "local 27B", "kind": "direct", "model": "qwen3.8-27b (Ollama)",
+              "glob": "heldout-local27b-*"},
+    "local-opencode": {"label": "OpenCode · local Qwen3.8-27B", "short": "OpenCode", "kind": "agent", "model": "qwen3.8-27b (Ollama)",
+                       "glob": "opencode-jail-local27b-*", "flow": "OpenCode in the sandbox", "project": "2 · Coding agents without memory"},
+    "local-claude": {"label": "Claude Code · local Qwen3.8-27B", "short": "Claude Code", "kind": "agent", "model": "qwen3.8-27b (Ollama)",
+                     "glob": "claude-jail-local27b-*", "flow": "Claude Code in the sandbox", "project": "2 · Coding agents without memory"},
+    "local-agent-pilot": {"label": "Langflow Agent, Pilot only · local Qwen3.8-27B", "short": "Langflow Agent, Pilot only", "kind": "agent", "model": "qwen3.8-27b (Ollama)",
+                          "glob": "langflow-exam-agent-pilot-local27b-*", "flow": "Langflow Agent, Pilot only exam", "project": "2 · Coding agents without memory"},
+    "local-opencode-memory": {"label": "OpenCode with memory · local Qwen3.8-27B", "short": "OpenCode with memory", "kind": "agent", "model": "qwen3.8-27b (Ollama)",
+                              "glob": "langflow-exam-opencode-memory-local27b-*", "flow": "OpenCode with memory exam", "project": "3 · OpenCode with memory"},
+    "local-agent-memory": {"label": "Langflow Agent with memory · local Qwen3.8-27B", "short": "Langflow Agent with memory", "kind": "agent", "model": "qwen3.8-27b (Ollama)",
+                           "glob": "langflow-exam-agent-memory-local27b-*", "flow": "Langflow Agent with memory exam", "project": "4 · Langflow Agent with memory"},
+}
 AGENT_COHORTS = {cohort for cohort, spec in ALL_COHORTS.items() if spec["kind"] == "agent"}
 
 DISCARDED = {
@@ -142,6 +158,30 @@ def _direct_folders(model: str, start: str) -> dict[tuple[str, str], list[str]]:
         if solve.is_file() and json.loads(solve.read_text(encoding="utf-8")).get("provider_model") == model:
             groups[(match.group(2), match.group(3))].append(folder.name)
     return {key: sorted(value) for key, value in groups.items()}
+
+
+def local_batch_dir(cohort: str) -> Path | None:
+    """The newest local-27B folder of one matrix column, or None when that column has not started."""
+    found = sorted(path for path in ANALYSIS.glob(LOCAL_MATRIX[cohort]["glob"]) if (path / "results.jsonl").is_file())
+    return found[-1] if found else None
+
+
+def local_rows(cohort: str) -> list[dict]:
+    """Score rows of one local-27B column. A half-written last line is skipped so the page can be read while the run appends."""
+    folder = local_batch_dir(cohort)
+    if not folder:
+        return []
+    spec = LOCAL_MATRIX[cohort]
+    out = []
+    for line in (folder / "results.jsonl").read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        out.append({**row, "cohort_id": cohort, "cohort": spec["label"], "model": spec["model"], "batch": folder.name})
+    return out
 
 
 def rows(cohort: str) -> list[dict]:

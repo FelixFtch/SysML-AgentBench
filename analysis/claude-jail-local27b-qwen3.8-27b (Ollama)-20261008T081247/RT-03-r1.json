@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 59112,
+  "stop_reason": "end_turn",
+  "session_id": "61aa1d0d-36de-41be-89a3-4fb6e54c7949",
+  "total_cost_usd": 0.29704149999999996,
+  "usage": {
+    "input_tokens": 23783,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 142753,
+    "output_tokens": 4270,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 23783,
+      "outputTokens": 4270,
+      "cacheReadInputTokens": 142753,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.29704149999999996,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 13,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the task rules:\n\n**Files changed**\n- `answer.md` (created) — restates the model's requirements in sentences.\n- No `.sysml` files were modified; the model is left exactly as given.\n\n**Validation status**\n- `./validate RoundTripRadar input/model.sysml` → official status **PASS**, `diagnostics: []` (0 warnings, 0 errors). No failing checks to report. (Model files were never edited, so the pre-task validation reflects the final state.)\n- Cross-checked the validator's parsed model dump: it contains exactly what was restated — package `RoundTripRadar`, one `requirement def RadarShare` with `doc` text *\"The UAV radar shares tracks with the command ship.\"*\n\n**Restated requirements (in `answer.md`)**\n1. **`RadarShare`**: The UAV radar shares tracks with the command ship.\n\n**Open questions**\n- None required. The model intentionally contains no subject/ID/constraint text, rates, units, or budgets — so nothing beyond that single sentence exists to restate, and nothing was added or inferred.",
+  "ttft_ms": 7458,
+  "type": "result",
+  "duration_ms": 61438,
+  "uuid": "023a96e4-5e1d-4be3-8411-69b8cf82dab9",
+  "ttft_stream_ms": 7237,
+  "time_to_request_ms": 35,
+  "first_content_frame_ms": 7237,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

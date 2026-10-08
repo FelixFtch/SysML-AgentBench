@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 50584,
+  "stop_reason": "end_turn",
+  "session_id": "1c763118-c71c-4c16-b6aa-fd0200a9e615",
+  "total_cost_usd": 0.2541465,
+  "usage": {
+    "input_tokens": 22047,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 96273,
+    "output_tokens": 3831,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 22047,
+      "outputTokens": 3831,
+      "cacheReadInputTokens": 96273,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.2541465,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 9,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. The task was a restatement — read `input/model.sysml` and restate its requirements in sentences, adding no external facts.\n\n## Summary\n\n**Requirements restated** (from `requirement def Fusion`'s doc, each grounded in a concrete model element):\n1. **The fusion latency is 2 seconds** — reflected by `commandShip.fusionLatencyS : Real = 2.0`.\n2. **The command ship accepts two uplinks** — reflected by `commandShip` declaring exactly two ports, `fromUsv` and `fromUav`.\n\nI kept the structural facts (package `RoundTripFusion`, private import of `ScalarValues`, the port list, the attribute type/value) separate from the requirements, and noted that `Fusion` itself is a doc-only requirement with no formal constraints attached.\n\n**Per AGENTS.md:**\n- **Files changed:** `answer.md` (created). No model files touched — this was a read/restate task.\n- **Validation:** Ran the official validator on the input, `./validate RoundTripFusion input/model.sysml` → **PASS**, zero diagnostics/warnings (Pilot 0.62 kernel). No check was failing, so no limits, rates, or budgets needed to be reported verbatim.\n- **Open questions:** none — both documented requirements are backed by explicit model values.\n\nWritten to `answer.md`.",
+  "ttft_ms": 8369,
+  "type": "result",
+  "duration_ms": 52900,
+  "uuid": "a1922f1a-831e-4650-b4d0-153efc6b37b9",
+  "ttft_stream_ms": 7260,
+  "time_to_request_ms": 38,
+  "first_content_frame_ms": 7260,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

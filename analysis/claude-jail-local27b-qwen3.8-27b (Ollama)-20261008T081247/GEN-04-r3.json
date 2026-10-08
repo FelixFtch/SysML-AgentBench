@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 349870,
+  "stop_reason": "end_turn",
+  "session_id": "1b46cbcc-e24b-4b72-8ae6-19dab1a2dc18",
+  "total_cost_usd": 1.6400325,
+  "usage": {
+    "input_tokens": 62806,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1596805,
+    "output_tokens": 21104,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 62806,
+      "outputTokens": 21104,
+      "cacheReadInputTokens": 1596805,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 1.6400325,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 48,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Final report:\n\n**Files changed**\n- `ShoreArchive.sysml` — created with the full `ShoreArchive` package:\n  - `port def LinkPort;` and `part def Processor;` (item 1)\n  - `part shore` with `port fromCommand : LinkPort;` and nested `part archive : Processor;` (item 2)\n  - `attribute backhaulMbps : Real = 50.0;` and `attribute archiveDays : Real = 30.0;` inside `shore` (item 3)\n  - `requirement def ShoreArchiveRetention` with the kernel `doc` statement whose `/* */` body says *\"The shore archive keeps relayed tracks for 30 days.\"* (item 4)\n  - `private import ScalarValues::*;` to resolve `Real` (documented pattern, e.g. `toolchain/smoke-models/valid.sysml`)\n- `answer.md` — answer report written into the workspace\n- `validation/` — auto-created validator evidence (not hand-edited)\n\n**Validation status**: `./validate ShoreArchive ShoreArchive.sysml` → **PASS**, return code 0, **0 diagnostics** (no errors, no warnings), evidence in `validation/20261008T072431936958137/`.\n\n**Check results**: the exported official model delta (41 entries) confirms every required element and value — `PortDefinition LinkPort`, `PartDefinition Processor`, `PartUsage shore` containing `PortUsage fromCommand` (type `LinkPort`) and `PartUsage archive` (type `Processor`), `FeatureValue` bindings `backhaulMbps = 50.0` and `archiveDays = 30.0`, and the `Documentation` body on `ShoreArchiveRetention` verbatim. No stated limit, rate, or budget was altered.\n\n**Graham notes** (why this exact spelling): in this pilot kernel (`SysML.xtext` in the 0.62.0 JAR) there is no `usage` token — `part X : T;` is the Part usage, `port X : T;` the Port usage, and `part def` / `port def` are the only \"definition\" spellings. A \"doc comment\" is the `doc` statement (as used by the standard library's own files); bare `/* */` at statement level is a syntax error there. These drove two intermediate FAIL runs (kept as evidence), both now superseded by the clean PASS.\n\n**Open questions**: none — all four items specified every needed value.",
+  "ttft_ms": 10171,
+  "type": "result",
+  "duration_ms": 358232,
+  "uuid": "1e65d0ff-49fe-4b5e-8814-3c707dd68e30",
+  "ttft_stream_ms": 7361,
+  "time_to_request_ms": 37,
+  "first_content_frame_ms": 7361,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

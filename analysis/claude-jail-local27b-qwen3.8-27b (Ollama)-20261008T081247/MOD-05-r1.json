@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 86319,
+  "stop_reason": "end_turn",
+  "session_id": "3a26035c-14d7-4f30-9bde-252cd1808f2a",
+  "total_cost_usd": 0.477356,
+  "usage": {
+    "input_tokens": 30160,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 329562,
+    "output_tokens": 6471,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 30160,
+      "outputTokens": 6471,
+      "cacheReadInputTokens": 329562,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.477356,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 18,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary:\n\n**Files changed**\n- `PowerBudget.sysml` (workspace root — a copy of the untouched baseline in `input/baseline/`): added one line inside `part usv`, `part irCamera { attribute drawW : Real = 12.0; }`, matching the baseline's inline style. `powerLimitW = 60.0`, `eoCamera.drawW = 41.0`, `computer.drawW = 25.0` kept exactly; no other elements touched.\n- `answer.md` — the write-up, per AGENTS.md.\n\n**Validation status:** PASS — `./validate PowerBudget PowerBudget.sysml`, exit 0, **zero diagnostics** (no errors, no warnings). I also inspected the official exported model delta and confirmed the parsed literals: 60.0, 41.0, 25.0, and the new 12.0.\n\n**Check results:** all language/static checks pass; nothing was changed to force a pass. One engineering fact noted (not a validator check): draw now sums to 41 + 25 + 12 = **78.0 W vs the 60.0 W limit**, 18.0 W over. Per the task, I did not change the 60.0 — that inconsistency is left in place and flagged in answer.md.\n\n**Open questions:** none blocking; the over-budget state is expected to trip a downstream engineering gate.",
+  "ttft_ms": 8077,
+  "type": "result",
+  "duration_ms": 89207,
+  "uuid": "fb206ce7-43af-485f-8c8e-3465e46978fd",
+  "ttft_stream_ms": 7279,
+  "time_to_request_ms": 35,
+  "first_content_frame_ms": 7279,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

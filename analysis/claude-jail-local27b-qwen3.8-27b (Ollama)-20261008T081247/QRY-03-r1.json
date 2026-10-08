@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 50975,
+  "stop_reason": "end_turn",
+  "session_id": "a82a6f69-6d22-40f7-ab66-53e6022060b3",
+  "total_cost_usd": 0.339028,
+  "usage": {
+    "input_tokens": 25755,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 218756,
+    "output_tokens": 4035,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 25755,
+      "outputTokens": 4035,
+      "cacheReadInputTokens": 218756,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.339028,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done.\n\n**Answer: `{\"connections\": 3}`**, written to `answer.md`.\n\n**How it was determined**\n\nThe model (`input/model.sysml`) contains 10 `connect` statements (lines 66–75). Three of them have an endpoint on `commandShip`:\n\n| Line | Statement | commandShip endpoint |\n|------|-----------|----------------------|\n| 70 | `connect usv.radio.toShore to commandShip.fromUsv;` | `fromUsv` |\n| 74 | `connect uav.radio.toShore to commandShip.fromUav;` | `fromUav` |\n| 75 | `connect commandShip.toShore to shore.fromCommand;` | `toShore` |\n\n**Validation & checks**\n- Ran `./validate MaritimeISR input/model.sysml` → **PASS**, `diagnostics: []`, `warning_count: 0`, return code 0.\n- Cross-checked against the official AST dump: 10 connection groups total in the model, consistent with the 3 `commandShip` port endpoints.\n- No model files were modified (QRY-03 is a query task). Files under `requirements/`/`gold/` untouched.\n\nFinal summary: files changed = `answer.md` (new) only; validation = PASS; open questions = none.",
+  "ttft_ms": 8410,
+  "type": "result",
+  "duration_ms": 56438,
+  "uuid": "c3b5a630-f73f-4e8e-a19e-83f0ad51c808",
+  "ttft_stream_ms": 7266,
+  "time_to_request_ms": 35,
+  "first_content_frame_ms": 7266,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

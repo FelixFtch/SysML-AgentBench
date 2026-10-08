@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 51308,
+  "stop_reason": "end_turn",
+  "session_id": "44008186-78f6-4b03-a757-ef88cf48629c",
+  "total_cost_usd": 0.32010750000000004,
+  "usage": {
+    "input_tokens": 24843,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 194035,
+    "output_tokens": 3955,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 24843,
+      "outputTokens": 3955,
+      "cacheReadInputTokens": 194035,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.32010750000000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 11,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary:\n\n- **Files changed:** `answer.md` (created). No model files were edited — this was a read-only query task.\n- **Validation status:** `./validate MaritimeISR input/model.sysml` → **PASS**, 0 warnings, 0 diagnostics (official kernel 0.62.0, run `20261008T044714254852941`).\n- **Check results:** The parsed official model confirms `MaritimeISR::FixedWingUav` has exactly 6 owned members: 4 `PartUsage`s (`eoCamera`, `searchRadar`, `processor`, `radio`) and 2 `AttributeUsage`s (`powerLimitW`, `downlinkMbps`), matching lines 40–47 of `input/model.sysml`.\n- **Answer** (in `answer.md`):\n  ```json\n  {\"parts\": [\"MaritimeISR::FixedWingUav::eoCamera\", \"MaritimeISR::FixedWingUav::searchRadar\", \"MaritimeISR::FixedWingUav::processor\", \"MaritimeISR::FixedWingUav::radio\"]}\n  ```\n- **Open questions:** None.",
+  "ttft_ms": 8576,
+  "type": "result",
+  "duration_ms": 56876,
+  "uuid": "a4b59d31-70f5-433e-b146-db73c3e38eb9",
+  "ttft_stream_ms": 7265,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7265,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

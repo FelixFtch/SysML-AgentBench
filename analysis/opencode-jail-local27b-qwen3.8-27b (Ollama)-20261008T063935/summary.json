@@ -1,0 +1,12 @@
+{
+  "cohort": "opencode",
+  "model": "qwen3.8-27b (Ollama)",
+  "version": "1.18.27",
+  "jailed": true,
+  "timeout_s": 600,
+  "repeats": 3,
+  "tasks": "all",
+  "workers": 1,
+  "started": "20261008T063935",
+  "note": "local 3-bit Qwen3.8-27B via Ollama; same tasks, sandbox and scorer as the flash batch"
+}

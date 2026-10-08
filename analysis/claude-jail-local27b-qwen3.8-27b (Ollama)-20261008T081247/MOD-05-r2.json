@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 33392,
+  "stop_reason": "end_turn",
+  "session_id": "0efe4cb6-0292-4265-8e24-985d6204e14e",
+  "total_cost_usd": 0.22618199999999997,
+  "usage": {
+    "input_tokens": 22990,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 99414,
+    "output_tokens": 2461,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 22990,
+      "outputTokens": 2461,
+      "cacheReadInputTokens": 99414,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.22618199999999997,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 10,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the task's reporting rules:\n\n**Files changed**\n- `input/baseline/PowerBudget.sysml` — added `part irCamera { attribute drawW : Real = 12.0; }` inside `usv` (after `computer`). Nothing else changed; `powerLimitW = 60.0`, `eoCamera.drawW = 41.0`, `computer.drawW = 25.0` all kept as-is, and I did not change the 60 to make the sum fit.\n- `answer.md` — written with the full report.\n\n**Validation status**\n`PASS` — official validator (SysML v2 Pilot 0.62.0), zero diagnostics, zero warnings, return code 0:\n```\n./validate PowerBudget input/baseline/PowerBudget.sysml\n```\n\n**Check results**\nNo failing checks. All four stated values hold in the model.\n\n**Open questions / observation**\nThe total draw is now 41 + 25 + 12 = **78 W, exceeding the 60 W `powerLimitW`**. I deliberately left the limit at 60.0 as instructed. Note the official validator's scope explicitly excludes engineering-budget verification, so this overage produces no diagnostic — it's flagged here as a modeling inconsistency to surface, not something I fixed. If the budget must actually be met, that's a requirement change to be proposed/instructed, not something I applied.",
+  "ttft_ms": 8660,
+  "type": "result",
+  "duration_ms": 35880,
+  "uuid": "a10c57d0-998c-446b-86ab-14a5bd601cf5",
+  "ttft_stream_ms": 7254,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7254,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

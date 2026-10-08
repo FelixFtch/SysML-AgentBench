@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 273077,
+  "stop_reason": "end_turn",
+  "session_id": "47498c95-63bc-442c-b001-96e862351919",
+  "total_cost_usd": 1.3851435,
+  "usage": {
+    "input_tokens": 50409,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 1320497,
+    "output_tokens": 18914,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 50409,
+      "outputTokens": 18914,
+      "cacheReadInputTokens": 1320497,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 1.3851435,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 48,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. **Validation: PASS, 0 diagnostics.**\n\n## Files changed\n- **`ShoreArchive.sysml`** (created, 358 bytes) — the model:\n  - `port def LinkPort;` and `part def Processor;` at package scope\n  - `part shore` containing `port fromCommand : LinkPort;`, `part archive : Processor;`, `attribute backhaulMbps : Real = 50.0;`, `attribute archiveDays : Real = 30.0;`\n  - `requirement def ShoreArchiveRetention;` with doc comment \"The shore archive keeps relayed tracks for 30 days.\"\n  - `private import ScalarValues::*;` so `Real` resolves (the model FAILS linking without it — the smoke models establish this is required for `Real`/`Integer` features).\n- **`answer.md`** — full write-up of the model, how it maps to each of the 4 requirements, the doc-comment syntax finding, and validation evidence.\n\n## Validation status\n- `./validate ShoreArchive ShoreArchive.sysml` → **PASS**, `return_code` 0, **0 diagnostics** (0 warnings).\n- Official model export confirmed every required element resolved with the right type and typing: `LinkPort`/`Processor` as definitions, `fromCommand:LinkPort` and `archive:Processor` on `shore`, both attributes typed `ScalarValues::Real` with `FeatureValue`s of `50.0` and `30.0`, and `RequirementDefinition ShoreArchive::ShoreArchiveRetention`.\n\n## Check results\n- Requirements 1–4 all satisfied as stated; **no stated limit, rate, or budget was altered** to pass anything.\n- No files under `requirements/` or `gold/` exist in the workspace, so none were touched.\n\n## Notes / open questions\n- One non-obvious finding worth recording: this official pilot-0.62 Xtext parser **rejects the ` /doc/ … /doc/ ` doc-comment syntax at every position** (always yields `no viable alternative at input '/*'` / stray-`/` syntax errors — I probed it at element, member, and package level in throwaway files outside the workspace). The standard `/** … */` Javadoc-style doc comment is the only doc-comment form it accepts, and it exports correctly as a `Comment` on the element carrying the required text, so that form is used. No ambiguity required inventing a number.",
+  "ttft_ms": 8248,
+  "type": "result",
+  "duration_ms": 319483,
+  "uuid": "94e44429-9007-44b6-b4fc-4855b6c3298f",
+  "ttft_stream_ms": 7389,
+  "time_to_request_ms": 37,
+  "first_content_frame_ms": 7389,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

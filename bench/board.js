@@ -21,7 +21,7 @@ async function api(url, body) {
 }
 
 const S = { facts: null, tasks: [], cells: [], cell: null, cellLive: false, record: null, memory: [], catalog: null, budgets: null,
-  choice: null, edited: false, mod: null, modTask: "MOD-05", mods: {}, mxModel: "flash", runStage: "", cellStage: "", modStage: "", appJob: null };
+  choice: null, edited: false, mod: null, modTask: "MOD-05", mods: {}, mxSet: "flash", mxModel: "flash", runStage: "", cellStage: "", modStage: "", appJob: null };
 const FLOW = {};
 const TYPE_NAME = { GEN: "Generate a new model", MOD: "Modify an existing model", ALN: "Align two models (paper 1)", QRY: "Query a model", AMB: "Ambiguous: ask, don't guess", RT: "Round trip: model back to text" };
 const TYPE_SHORT = { GEN: "generate", MOD: "modify", ALN: "align", QRY: "query", AMB: "ambiguous", RT: "round trip" };
@@ -751,7 +751,7 @@ function renderGlossary() {
   const textTasks = count(["QRY", "AMB", "RT"]);
   const cards = TYPE_ORDER.map((t) => {
     const g = TYPE_GUIDE[t];
-    const bt = BT(f.cohorts[S.mxModel].by_type, t);
+    const bt = BT(matrixDirect().by_type, t);
     return `<article class="gl-type ${g.pilot ? "model" : "text"}"><header><b>${t}</b><i>${esc(TYPE_SHORT[t])}</i><span>${count([t])} tasks · ${bt.n ? `${bt.pass}/${bt.n} pass` : "not run yet"}</span></header>
       <h5>${esc(TYPE_NAME[t])}</h5>
       <dl><dt>Gets</dt><dd>${esc(g.gets)}</dd><dt>Answers with</dt><dd>${esc(g.gives)}</dd><dt>Passes when</dt><dd>${esc(g.judge)}</dd></dl>
@@ -761,8 +761,12 @@ function renderGlossary() {
     ["GEN-03", "task 3 of type GEN; each type has 3–5 tasks"],
     ["P0 … P3", "four approaches with the same model: one-shot · repair loop (up to 20) · outline first + repair · retrieval + outline + repair"],
     ["1 2 3", "repeat number; every task × approach ran three times"],
-    ["OC · CL", "OpenCode and Claude Code on qwen3.8-flash, in the sandbox, three runs per task"],
-    ["Langflow columns", "the agent flows of Langflow projects 2, 3 and 4 on qwen3.8-flash (Pilot only; OpenCode with memory; Langflow Agent with memory), three runs per task, run by bench/langflow_exam.py, scored by the frozen scorer, not part of the frozen score; grey until run"],
+    ["OC · CL", S.mxSet === "local"
+      ? "OpenCode and Claude Code on the local Qwen3.8-27B, in the sandbox, three runs per task; grey until that run writes the cell"
+      : "OpenCode and Claude Code on qwen3.8-flash, in the sandbox, three runs per task"],
+    ["Langflow columns", S.mxSet === "local"
+      ? "the same three Langflow exam columns on the local Qwen3.8-27B; grey until that run exists. Not part of the frozen score"
+      : "the agent flows of Langflow projects 2, 3 and 4 on qwen3.8-flash (Pilot only; OpenCode with memory; Langflow Agent with memory), three runs per task, run by bench/langflow_exam.py, scored by the frozen scorer, not part of the frozen score; grey until run"],
     ["↻n", "a cell whose official parse needed n repairs"],
     ["11/12", "row end: passes out of 12 for the direct model shown (4 approaches × 3 repeats); column foot: that column's pass rate"],
   ];
@@ -776,37 +780,58 @@ function renderGlossary() {
 const LANGFLOW_COLS = [["agent-pilot", "Langflow Agent, Pilot only"], ["opencode-memory", "OpenCode with memory"], ["agent-memory", "Langflow Agent with memory"]];
 const AGENT_IDS = new Set(["opencode", "claude", ...LANGFLOW_COLS.map(([id]) => id)]);
 
+function matrixDirect() {
+  if (S.mxSet === "local") return (S.facts.local_cohorts || {}).local || { short: "local 27B", label: "Direct · local Qwen3.8-27B", by_type: {} };
+  return S.facts.cohorts[S.mxModel];
+}
+
+function matrixAgent(id) {
+  if (S.mxSet === "local") return (S.facts.local_cohorts || {})[`local-${id}`] || {};
+  if (id === "opencode" || id === "claude") return S.facts.cohorts[id] || {};
+  return (S.facts.langflow_cohorts || {})[id] || {};
+}
+
+function isAgentCohort(id) {
+  return AGENT_IDS.has(id) || (String(id).startsWith("local-") && id !== "local");
+}
+
 function renderMatrix() {
   renderGlossary();
-  const model = S.mxModel;
+  const local = S.mxSet === "local";
+  const mode = $("#mx-mode");
+  if (mode) mode.hidden = local;
+  const directCohort = local ? "local" : S.mxModel;
+  const modelName = local ? "the local Qwen3.8-27B" : "qwen3.8-flash";
   const direct = {};
   const agents = {};
   for (const c of S.cells) {
-    if (c.cohort_id === model) direct[`${c.task_id}|${c.configuration}|${c.repeat}`] = c;
-    if (AGENT_IDS.has(c.cohort_id)) agents[`${c.cohort_id}|${c.task_id}|${c.repeat}`] = c;
+    if (c.cohort_id === directCohort) direct[`${c.task_id}|${c.configuration}|${c.repeat}`] = c;
+    if (local ? String(c.cohort_id).startsWith("local-") : AGENT_IDS.has(c.cohort_id)) agents[`${c.cohort_id}|${c.task_id}|${c.repeat}`] = c;
   }
   const cols = [];
   for (const cfg of ["P0", "P1", "P2", "P3"]) for (const r of [1, 2, 3]) cols.push({ cfg, r, direct: true, get: (t) => direct[`${t}|${cfg}|${r}`] });
-  for (const [cid, tag] of [["opencode", "OC"], ["claude", "CL"], ...LANGFLOW_COLS]) for (const r of [1, 2, 3]) cols.push({ cfg: tag, r, get: (t) => agents[`${cid}|${t}|${r}`] });
+  for (const [cid, tag] of [["opencode", "OC"], ["claude", "CL"], ...LANGFLOW_COLS]) for (const r of [1, 2, 3]) cols.push({ cfg: tag, r, id: cid, get: (t) => agents[`${local ? `local-${cid}` : cid}|${t}|${r}`] });
   const lastOfGroup = (i) => cols[i].r === 3 && i < cols.length - 1;
   const tasks = [...S.tasks].sort((a, b) => TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type) || a.id.localeCompare(b.id));
   $("#mx-legend").innerHTML = [["#c9ecd7", "pass"], ["#f5c3bf", "fail"], ["#edf1f4", "not run yet"]].map(([c, t]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
-  const label = S.facts.cohorts[model].label;
-  const LC = S.facts.langflow_cohorts || {};
-  const langflowHead = LANGFLOW_COLS.map(([id, name]) => {
-    const c = LC[id] || {};
-    const tip = c.n ? `${name} on qwen3.8-flash through Langflow: ${c.pass}/${c.n} pass · ${num(c.usage?.input)} in / ${num(c.usage?.output)} out tokens · ${money(c.usd)} · ${c.seconds_total} s in all`
-      : `${name} on qwen3.8-flash through Langflow: not run yet (python3 bench/langflow_exam.py --flow "${c.flow || ""}")`;
-    return `<th class="gap"></th><th colspan="3" class="lf" title="${esc(tip)}">${esc(name)}${c.n ? "" : `<small>not run yet</small>`}</th>`;
-  }).join("");
-  const head1 = `<tr><th></th>${["P0", "P1", "P2", "P3"].map((p) => `<th colspan="3">${CONFIG_NAME[p]}</th><th class="gap"></th>`).join("")}<th colspan="3" title="OpenCode on qwen3.8-flash">OpenCode</th><th class="gap"></th><th colspan="3" title="Claude Code on qwen3.8-flash">Claude Code</th>${langflowHead}<th></th></tr>`;
+  const shown = matrixDirect();
+  const label = shown.label;
+  const agentHead = (id, name, cls, leadGap) => {
+    const c = matrixAgent(id);
+    const tip = c.n ? `${name} on ${modelName}: ${c.pass}/${c.n} pass${c.usage ? ` · ${num(c.usage.input)} in / ${num(c.usage.output)} out tokens` : ""}${c.usd ? ` · ${money(c.usd)}` : ""}${c.seconds_total != null ? ` · ${c.seconds_total} s in all` : ""}`
+      : `${name} on ${modelName}: not run yet`;
+    return `${leadGap ? `<th class="gap"></th>` : ""}<th colspan="3"${cls ? ` class="${cls}"` : ""} title="${esc(tip)}">${esc(name)}${c.n ? "" : `<small>not run yet</small>`}</th>`;
+  };
+  const head1 = `<tr><th></th>${["P0", "P1", "P2", "P3"].map((p) => `<th colspan="3">${CONFIG_NAME[p]}</th><th class="gap"></th>`).join("")}${agentHead("opencode", "OpenCode", "", false)}${agentHead("claude", "Claude Code", "", true)}${LANGFLOW_COLS.map(([id, name]) => agentHead(id, name, "lf", true)).join("")}<th></th></tr>`;
   const head2 = `<tr><th class="mx-model">${esc(label)}</th>${cols.map((col, i) => `<th>${col.r}</th>${lastOfGroup(i) ? `<th class="gap"></th>` : ""}`).join("")}<th>Pass</th></tr>`;
   const span = cols.length + cols.filter((_, i) => lastOfGroup(i)).length + 2;
   let body = "";
   for (const type of TYPE_ORDER) {
     const group = tasks.filter((t) => t.type === type);
-    const bt = BT(S.facts.cohorts[model].by_type, type);
-    body += `<tr class="grp"><th colspan="${span}"><b>${type}</b> = ${esc(TYPE_NAME[type])} <span class="grp-io">answer: ${esc(TYPE_GUIDE[type].gives.toLowerCase())}</span> · ${esc(S.facts.cohorts[model].short)} ${bt.pass}/${bt.n} (${pct(bt.pass, bt.n)})</th></tr>`;
+    const bt = BT(shown.by_type, type);
+    const expect = group.length * 12;
+    const soFar = bt.n ? `${esc(shown.short)} ${bt.pass}/${bt.n} (${pct(bt.pass, bt.n)})${bt.n < expect ? ` · ${expect} when this repeat set is complete` : ""}` : `${esc(shown.short)} not scored yet`;
+    body += `<tr class="grp"><th colspan="${span}"><b>${type}</b> = ${esc(TYPE_NAME[type])} <span class="grp-io">answer: ${esc(TYPE_GUIDE[type].gives.toLowerCase())}</span> · ${soFar}</th></tr>`;
     for (const t of group) {
       let passed = 0;
       let total = 0;
@@ -880,7 +905,7 @@ function benchStages(d, live) {
   const list = [{ id: "issue", title: "Issue task", state: st.issue || "", sub: "task statement only, no answer key" }];
   if (d.configuration === "P3") list.push({ id: "corpus", title: "Retrieve notes", state: st.corpus || "", sub: `${(d.retrieved || []).length} cards (MiniLM + FAISS)`, paper: "p2" });
   if (d.configuration === "P2" || d.configuration === "P3") list.push({ id: "outline", title: "Outline", state: st.outline || "", sub: d.outline ? `${d.outline.length} characters` : "" });
-  const agent = AGENT_IDS.has(d.cohort_id);
+  const agent = isAgentCohort(d.cohort_id);
   list.push({ id: "write", title: "Write the answer", state: st.write || "", sub: agent ? `${d.tokens ? `${num(d.tokens)} tokens` : "usage not recorded"} · ${d.validator_runs || 0} run(s) of ./validate` : d.tokens ? `${num(d.tokens)} tokens · ${(d.calls || []).length} calls` : d.cohort, paper: "p3" });
   if (d.type === "GEN" || d.type === "MOD" || d.type === "ALN" || at.length) {
     list.push({ id: "syntax", title: "Official syntax", state: st.syntax || "", sub: at.length ? `${at.length} parse(s) · last ${at[at.length - 1].status}` : stepDetail(d, "Official syntax"), paper: "ours" });
@@ -921,7 +946,7 @@ function cellDetailHTML(d, id) {
     case "outline":
       return io("Model", "Outline", "Task statement (P3: plus 3 notes)", "Outline JSON, no SysML") + `<pre class="code light">${esc(d.outline || "(no outline)")}</pre>`;
     case "write":
-      return io("Model · agent under test", "Write the answer", d.cohort_id === "opencode" || d.cohort_id === "claude" ? "Task input, AGENTS.md and ./validate in a sandbox without the answer keys" : AGENT_IDS.has(d.cohort_id) ? "The task statement through a Langflow flow: the exam prompt and the official Pilot as a tool (the memory columns also search the memory)" : `Task statement + rules${d.outline ? " + outline" : ""}`, d.type === "GEN" || d.type === "MOD" ? "A SysML package" : d.type === "ALN" ? "An alignment package + a JSON report" : "Text or JSON")
+      return io("Model · agent under test", "Write the answer", d.cohort_id === "opencode" || d.cohort_id === "claude" || d.cohort_id === "local-opencode" || d.cohort_id === "local-claude" ? "Task input, AGENTS.md and ./validate in a sandbox without the answer keys" : isAgentCohort(d.cohort_id) ? "The task statement through a Langflow flow: the exam prompt and the official Pilot as a tool (the memory columns also search the memory)" : `Task statement + rules${d.outline ? " + outline" : ""}`, d.type === "GEN" || d.type === "MOD" ? "A SysML package" : d.type === "ALN" ? "An alignment package + a JSON report" : "Text or JSON")
         + `<p class="hint">${esc(d.cohort)} · ${esc(d.configuration || "")}${d.tokens ? ` · ${num(d.tokens)} tokens` : ""}${(d.calls || []).length ? ` · calls ${esc((d.calls || []).join(", "))}` : ""}${d.validator_runs ? ` · ${d.validator_runs} run(s) of ./validate` : ""}. The final answer is at the bottom right${at.length > 1 ? "; every attempt is under \"Official syntax\"" : ""}.</p>`;
     case "syntax":
       return io("Official tool", "Official syntax", "SysML in the answer", "PASS / FAIL + error text") + attemptsHTML(at, "this version and its complete error list are added to the same conversation: fix it, keep the task's numbers")
@@ -2056,6 +2081,12 @@ document.addEventListener("click", (e) => {
     reviewMapping(rv.dataset.review, rv.dataset.decision);
     return;
   }
+  const set = e.target.closest("#mx-set [data-set]");
+  if (set) {
+    S.mxSet = set.dataset.set;
+    $$("#mx-set button").forEach((b) => b.classList.toggle("on", b === set));
+    renderMatrix();
+  }
   const mode = e.target.closest("#mx-mode [data-model]");
   if (mode) {
     S.mxModel = mode.dataset.model;
@@ -2063,6 +2094,21 @@ document.addEventListener("click", (e) => {
     renderMatrix();
   }
 });
+
+async function refreshMatrix() {
+  if (document.hidden || S.mxSet !== "local") return;
+  const [facts, cells] = await Promise.all([api("/api/facts"), api("/api/cells")]);
+  const signature = (facts.local_cohorts || {}).local;
+  const mark = signature ? `${signature.n}:${signature.pass}` : "0";
+  if (mark === refreshMatrix.mark && cells.length === S.cells.length) return;
+  refreshMatrix.mark = mark;
+  const wrap = $("#matrix");
+  const left = wrap ? wrap.scrollLeft : 0;
+  S.facts = facts;
+  S.cells = cells;
+  renderMatrix();
+  if (wrap) wrap.scrollLeft = left;
+}
 
 async function boot() {
   FLOW.bench = makeFlow($("#flow-bench"), BENCH, { nowTitle: "The selected cell", now: benchNow });
@@ -2077,6 +2123,7 @@ async function boot() {
   renderPapers();
   renderScores();
   renderMatrix();
+  setInterval(() => { refreshMatrix().catch(() => {}); }, 15000);
   renderTrace();
   setupConsole();
   await setupDesignSpace();

@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 41620,
+  "stop_reason": "end_turn",
+  "session_id": "a6d8e848-f094-4eb1-813c-43a3667a7b4e",
+  "total_cost_usd": 0.22355950000000002,
+  "usage": {
+    "input_tokens": 21380,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 76269,
+    "output_tokens": 3141,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 21380,
+      "outputTokens": 3141,
+      "cacheReadInputTokens": 76269,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.22355950000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. The answer is written.\n\n## Summary\n\n**Task:** Read `input/model.sysml` and restate its requirements in sentences, adding no facts not in the model, following AGENTS.md.\n\n**The model** (`input/model.sysml`):\n- `package RoundTripArchive` (with `private import ScalarValues::*`)\n- `part shore` — attributes `backhaulMbps : Real = 50.0` and `archiveDays : Real = 30.0`\n- `requirement def Archive` — whose only body is a `doc` comment: *\"The shore archive keeps tracks for 30 days on a 50 Mbit/s backhaul.\"* No condition text.\n\n**What I wrote** — `answer.md` restates the single requirement (`Archive`) verbatim-equivalent, and notes the two `shore` attribute values (50.0, 30.0) as supporting structure matching the two figures in the statement. I deliberately did not invent units beyond what the model shows (`Mbit/s` is in the doc; the attribute is named `backhaulMbps` and typed `Real`), and did not add any fact not present (e.g., I did not claim the attributes are *used by* or *satisfied by* the requirement, since the model contains no `satisfy`/traceability linkage between them).\n\n**Validation status:** PASS\n- Command: `./validate RoundTripArchive input/model.sysml`\n- Diagnostics: none (0 warnings, 0 errors)\n- Toolchain: official SysML-v2 Pilot Implementation, kernel 0.62.0 (2026-08), Java 21, `sysml.library`\n- Note: validator scope explicitly excludes engineering budgets and full unit/dimension verification — so `MBps`/`Real` semantics were not independently checked beyond parsing/linking.\n\n**Open questions:** None blocking. The `Archive` requirement def contains no condition text (only a `doc`), so the restatement reports the doc as the statement of the requirement; if an explicit condition was intended, that is a property of the source model, not something I can infer.",
+  "ttft_ms": 8441,
+  "type": "result",
+  "duration_ms": 44028,
+  "uuid": "40a25c80-9341-49c1-80b2-559dc6b1cc83",
+  "ttft_stream_ms": 7258,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7258,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

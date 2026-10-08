@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 40417,
+  "stop_reason": "end_turn",
+  "session_id": "79e0b22d-716b-4813-9aff-d01bded122f1",
+  "total_cost_usd": 0.263776,
+  "usage": {
+    "input_tokens": 24239,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 142412,
+    "output_tokens": 2855,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 24239,
+      "outputTokens": 2855,
+      "cacheReadInputTokens": 142412,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.263776,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. MOD-03 complete:\n\n**Files changed**\n- `input/baseline/ShoreHop.sysml` — added exactly one line, `connect vessel.radio.toShore to shore.fromVessel;`, after the existing `connect vessel.processor.uplink to vessel.radio.fromProcessor;`. No other element was touched; no numeric limits invented.\n- `answer.md` — answer written in the workspace per AGENTS.md.\n\n**Validation** (official `./validate ShoreHop input/baseline/ShoreHop.sysml`, Pilot 0.62 / 2026-08 kernel, official xtext-emf adapter)\n- Baseline before edit: **PASS**, 0 diagnostics\n- After edit: **PASS**, 0 diagnostics, 0 warnings (AST element count 69 → 88, consistent with the added connection)\n\n**Check results:** all checks passed — no failing checks to report.\n\n**Open questions:** none.",
+  "ttft_ms": 10026,
+  "type": "result",
+  "duration_ms": 46163,
+  "uuid": "e1c9f8d0-21e6-4e19-a27c-d91231179b37",
+  "ttft_stream_ms": 8492,
+  "time_to_request_ms": 42,
+  "first_content_frame_ms": 8492,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

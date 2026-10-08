@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 71562,
+  "stop_reason": "end_turn",
+  "session_id": "f20d433a-2ca0-4a6e-bb28-7db56849e1b7",
+  "total_cost_usd": 0.34979499999999997,
+  "usage": {
+    "input_tokens": 23202,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 183020,
+    "output_tokens": 5691,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 23202,
+      "outputTokens": 5691,
+      "cacheReadInputTokens": 183020,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.34979499999999997,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 14,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. This was a stop-and-ask case, so the answer is captured in `answer.md` with no model edits.\n\n**Files changed**\n- `answer.md` (created) — workspace previously contained no `.sysml` files, and the requirements say not to write any.\n\n**Validation status**\n- Not run — `./validate` needs a package and `.sysml` input, none exist. I did not invent a package to run it against.\n\n**Check results**\n- *128 GB storage covers 30-day track retention*: **UNDETERMINABLE** — the track data rate is missing, so the storage number can be neither verified nor falsified. No stated value was altered.\n\n**Open questions (asked, not assumed)**\n1. What is the aggregate track data rate (or per-track size × production rate)? Retention then holds iff R ≤ ~49.4 kB/s (128 × 10⁹ B / 30 d) or ≤ ~53.0 kB/s if 128 GiB was meant.\n2. Does \"128 GB\" mean decimal or binary gigabytes, and what usable-fraction after FS overhead should be assumed?\n3. Which `.sysml` file/package was this check supposed to target — none is present in the workspace.",
+  "ttft_ms": 9764,
+  "type": "result",
+  "duration_ms": 71797,
+  "uuid": "89f8a7c9-9aae-4d5c-bd16-05b043131b02",
+  "ttft_stream_ms": 7219,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7219,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

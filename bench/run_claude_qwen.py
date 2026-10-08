@@ -52,8 +52,12 @@ def run_claude(task_dir: Path, *, model: str, max_turns: int, timeout: int, labe
     workspace.mkdir(parents=True)
     prepare_workspace(task_dir, workspace)
     prompt = (workspace / "input" / "requirements.md").read_text(encoding="utf-8") + PROMPT_SUFFIX
+    from agents.llm_local import LOCAL_MODELS
+    # Cloud names stay on the CCR provider "qwen". The local 27B is the provider "ollama" added for the chat
+    # check; this exam runner uses the same route. The Langflow exam endpoints still refuse the local model.
+    ccr_model = f"ollama,{LOCAL_MODELS[model]}" if model in LOCAL_MODELS else f"qwen,{model}"
     command = ["ccr", "default-claude-code", "--", "-p", "--output-format", "json", "--max-turns", str(max_turns),
-               "--allowedTools", *TOOLS, "--model", f"qwen,{model}", prompt]
+               "--allowedTools", *TOOLS, "--model", ccr_model, prompt]
     home = fake_home(work.name)
     try:
         completed = subprocess.run(wrap(command, workspace, home), cwd=workspace, text=True, capture_output=True, timeout=timeout)

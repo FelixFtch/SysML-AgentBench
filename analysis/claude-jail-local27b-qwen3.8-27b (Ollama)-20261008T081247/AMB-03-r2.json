@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 87188,
+  "stop_reason": "end_turn",
+  "session_id": "06744ca2-9eb0-4b9f-8a2d-c6a0392ae188",
+  "total_cost_usd": 0.36700400000000005,
+  "usage": {
+    "input_tokens": 24225,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 159858,
+    "output_tokens": 6638,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 24225,
+      "outputTokens": 6638,
+      "cacheReadInputTokens": 159858,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.36700400000000005,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 12,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done — answer written to `answer.md`. Summary per the final-answer format:\n\n**Files changed:** None. No `.sysml` model exists in the workspace (verified by scan — only `CLAUDE.md`, `AGENTS.md`, `validate`, and `input/requirements.md`), and the task input explicitly forbids writing SysML while a required value is missing: *\"If a number or unit needed for a check is missing or in conflict, ask. Do not invent a value and do not write SysML.\"* (CLAUDE.md rule 4 concurs.)\n\n**Validation status:** Not run — the official validator (`./validate <PackageName> <file.sysml>`) takes at least one `.sysml` file as input, and none exists to submit.\n\n**Check results:**\n- *Shore storage suffices for 30 days of retained tracks* — **not checkable.** Sufficiency is `data_rate × 30 d ≤ 128 GB`, but no data rate is given, so the 30-day retention and 128 GB storage figures can't be reconciled. No number was invented or back-solved, and no stated limit/budget was altered.\n\n**Open question (the one asked, not decided):** What is the track data rate to be retained on the shore side, and in what units (e.g., GB/day or Gb/s, binary vs. SI)? That single value completes the check; once supplied I'll write the model and run the validator.",
+  "ttft_ms": 11854,
+  "type": "result",
+  "duration_ms": 87351,
+  "uuid": "1ba3e1ba-9b9f-45dd-a3bd-288147e720fa",
+  "ttft_stream_ms": 7198,
+  "time_to_request_ms": 39,
+  "first_content_frame_ms": 7198,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

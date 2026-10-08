@@ -53,7 +53,7 @@ class RtrcChat(Component):
         MessageInput(name="message", display_name="Message", info="Whatever the person writes. A question gets an answer; a request for a model gets a model."),
         DropdownInput(name="candidate", display_name="Candidate", options=list(CANDIDATES), value=list(CANDIDATES)[1]),
         DropdownInput(name="model", display_name="Qwen model", options=MODELS, value=MODELS[0],
-                      info="qwen3.8-flash is the model of the frozen exam; qwen3.8-27b (Ollama) is the 3-bit model on this machine (direct or OpenCode)."),
+                      info="qwen3.8-flash is the model of the frozen exam; qwen3.8-27b (Ollama) is the 3-bit model on this machine (direct, OpenCode, or Claude Code through its router)."),
         IntInput(name="rounds", display_name="Repair rounds (P1 to P3)", value=20, advanced=True,
                  info="How many times the official Pilot's error list goes back to the model in this conversation. P0 never repairs."),
         IntInput(name="history", display_name="Messages kept", value=30, advanced=True,

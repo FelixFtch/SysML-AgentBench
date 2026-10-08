@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 64583,
+  "stop_reason": "end_turn",
+  "session_id": "b78737eb-d144-491b-8d0e-73a0077392b9",
+  "total_cost_usd": 0.29421349999999996,
+  "usage": {
+    "input_tokens": 22079,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 139037,
+    "output_tokens": 4572,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 22079,
+      "outputTokens": 4572,
+      "cacheReadInputTokens": 139037,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.29421349999999996,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 10,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. The model contains a single requirement definition and its restatement is written.\n\n## Final answer\n\n**Files changed:**\n- `answer.md` — created; restates the model's requirement in sentences. No `.sysml` files were modified (the task required only reading and restating, so `input/model.sysml` is untouched).\n\n**Restatement (in `answer.md`):** The model's package `RoundTripShare` declares one requirement definition, `Share`, documented as: *\"The unmanned surface vessel sends camera imagery to the shore.\"* No other requirement content exists in the model.\n\n**Validation status:** `PASS` — `./validate RoundTripShare input/model.sysml` on the SysML v2 Pilot 0.62.0 kernel returned `\"status\": \"PASS\"`, return code 0.\n\n**Check results:** No checks failed — `diagnostics: []`, warning count 0 (report: `validation/20261008T075219744902603/`). No stated limits, rates, or budgets were present in the model, and none were invented.\n\n**Open questions:** None.",
+  "ttft_ms": 7371,
+  "type": "result",
+  "duration_ms": 66845,
+  "uuid": "856ccdae-ec56-465f-a3a3-1058559814ed",
+  "ttft_stream_ms": 7241,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7241,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

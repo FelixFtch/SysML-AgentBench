@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 47498,
+  "stop_reason": "end_turn",
+  "session_id": "c2df920b-1f3d-481c-9485-c12ec1514ccb",
+  "total_cost_usd": 0.23251699999999997,
+  "usage": {
+    "input_tokens": 20480,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 94434,
+    "output_tokens": 3316,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 20480,
+      "outputTokens": 3316,
+      "cacheReadInputTokens": 94434,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.23251699999999997,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Per the requirements, this task hits the \"missing value → ask\" stop condition, so I asked rather than modeled.\n\n**Files changed:** `answer.md` (created). No SysML written — there are no `.sysml` files in the workspace to begin with, and both the requirements text and CLAUDE.md rule 4 direct me not to invent values or write SysML when required numbers are missing.\n\n**Validation status:** not run — nothing to pass to `./validate` (and no model exists yet).\n\n**Check results:** none performed. The sole requirement, \"Tracks must be shared from the vessel to the shore in real time,\" gives no latency value and no bandwidth value, so no quantitative check can be expressed.\n\n**Open questions (written to answer.md):**\n1. **Latency limit** — what maximum delay applies to track sharing, and in what unit?\n2. **Bandwidth** — is there a bandwidth/throughput number (limit or requirement) and in what unit?\n3. If bandwidth is meant to be **derived**, I'd also need: maximum number of concurrently shared tracks, track update rate, and bytes per track report — none are provided.\n4. Confirmation to proceed with writing and validating the SysML once the values above are supplied.\n\nI won't change a stated limit, rate, or budget to make a check pass (AGENTS.md rule 2) — if any value turns out to be unsatisfiable as stated, I'll propose the relaxation and stop rather than apply it.",
+  "ttft_ms": 11045,
+  "type": "result",
+  "duration_ms": 47647,
+  "uuid": "953f7a5e-a5f9-4b4b-9c5a-6bedec43535b",
+  "ttft_stream_ms": 7265,
+  "time_to_request_ms": 35,
+  "first_content_frame_ms": 7265,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

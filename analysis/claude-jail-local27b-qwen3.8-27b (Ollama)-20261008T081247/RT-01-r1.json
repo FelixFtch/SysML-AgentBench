@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 33118,
+  "stop_reason": "end_turn",
+  "session_id": "3cb3b7b9-bbe8-40ce-97ed-e7f665067f53",
+  "total_cost_usd": 0.20765250000000002,
+  "usage": {
+    "input_tokens": 21879,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 77565,
+    "output_tokens": 2379,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 21879,
+      "outputTokens": 2379,
+      "cacheReadInputTokens": 77565,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.20765250000000002,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 10,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Final report:\n\n- **Files changed**: `answer.md` (created, in the workspace root). `input/model.sysml` was left unmodified.\n- **Validation status**: `./validate RoundTripShare input/model.sysml` → **PASS** — official SysML v2 Pilot (kernel 0.62.0), 0 diagnostics.\n- **Check results**: The model contains exactly one requirement element — `requirement def Share` in package `RoundTripShare` — whose entire specification is a documentation comment: *\"The unmanned surface vessel sends camera imagery to the shore.\"* No acceptance criteria, limits, rates, or budgets are stated. The restatement in `answer.md` records only that single requirement and notes the absence of further constraints; no facts were added.\n- **Open questions**: None.",
+  "ttft_ms": 11539,
+  "type": "result",
+  "duration_ms": 35220,
+  "uuid": "3c99fd6b-70eb-4b64-98c7-c6ff3136405a",
+  "ttft_stream_ms": 7237,
+  "time_to_request_ms": 37,
+  "first_content_frame_ms": 7237,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

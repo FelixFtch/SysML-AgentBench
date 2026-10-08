@@ -50,6 +50,11 @@ DB = ROOT / ".venv-langflow" / "lib" / "python3.12" / "site-packages" / "langflo
 HELD = ROOT / "bench" / "tasks" / "t4_maritime_isr" / "heldout"
 TOKEN_FILE = ROOT / ".langflow" / "exam-token"
 MODEL = "qwen3.8-flash"
+# The local 3-bit Qwen3.8-27B (Ollama on this machine) as the model of the same three flows: --model "qwen3.8-27b (Ollama)".
+# The flow files keep qwen3.8-flash; the run sends a tweak that sets the model node, so no flow changes. The batch folder is
+# named langflow-exam-<column>-local27b-<stamp>, which bench/batches.py LOCAL_MATRIX reads for the local view of page 1.3.
+LOCAL_MODEL = "qwen3.8-27b (Ollama)"
+LOCAL_FOLDER_TAG = "local27b"
 # Chat flows that are columns of page 1.3: flow name -> (column id, folder prefix)
 COLUMNS = {NAMES["langflow-agent-pilot-exam"]: "agent-pilot", NAMES["opencode-memory-exam"]: "opencode-memory", NAMES["langflow-agent-memory-exam"]: "agent-memory"}
 CELL_FLOWS = {NAMES[s]: s for s in ("direct-exam-p0", "direct-exam-p1", "direct-exam-p2", "direct-exam-p3", "sandbox-exam-opencode", "sandbox-exam-claude-code")}
@@ -130,18 +135,39 @@ KEY_ERRORS = ("Incorrect API key", "API key is required")
 def _ensure_provider(token: str) -> None:
     """The runner's login needs the Qwen provider variables of its own. Langflow keeps them per user, and
     langflow/flows/move_to_user.py moves them to the people's account; after that the Agent in a private copy ran with
-    an empty key and every cell failed in eight seconds (2026-10-07). Set from .env as setup_assistant.py does."""
+    an empty key and every cell failed in eight seconds (2026-10-07). Set from .env as setup_assistant.py does.
+    The Ollama address (the local model's provider) is checked the same way."""
     names = {item["name"] for item in _request("GET", "/api/v1/variables/", token) or []}
-    if set(PROVIDER_VARIABLES) <= names:
+    if set(PROVIDER_VARIABLES) <= names and "OLLAMA_BASE_URL" in names:
         return
     from setup_assistant import MODELS, OLLAMA_URL
     from setup_knowledge import _env, _set_variable
     env = _env()
-    _set_variable(token, "OPENAI_COMPATIBLE_BASE_URL", env["MVP_LLM_URL"].rsplit("/chat/completions", 1)[0], "Generic")
-    _set_variable(token, "OPENAI_COMPATIBLE_API_KEY", env["MVP_LLM_API_KEY"], "Credential")
-    _set_variable(token, "OLLAMA_BASE_URL", OLLAMA_URL, "Generic")
+    if not set(PROVIDER_VARIABLES) <= names:
+        _set_variable(token, "OPENAI_COMPATIBLE_BASE_URL", env["MVP_LLM_URL"].rsplit("/chat/completions", 1)[0], "Generic")
+        _set_variable(token, "OPENAI_COMPATIBLE_API_KEY", env["MVP_LLM_API_KEY"], "Credential")
+    if "OLLAMA_BASE_URL" not in names:
+        _set_variable(token, "OLLAMA_BASE_URL", OLLAMA_URL, "Generic")
     _request("POST", "/api/v1/models/enabled_models", token, MODELS)
-    print("The runner's login had no Qwen provider variables (move_to_user.py moves them to the people's account); set from .env", flush=True)
+    print("The runner's login lacked provider variables (move_to_user.py moves them to the people's account); set from .env", flush=True)
+
+
+def _model_tweaks(flow: dict, model: str) -> dict:
+    """The tweak that puts `model` on the flow's model node. The flow files are preset to qwen3.8-flash; for the local model
+    the Langflow Agent gets the Ollama provider and tag (as the local chat variant of build_flows.py has them), and the
+    OpenCode exam node gets the model name its dropdown lists. Cloud flash needs no tweak."""
+    if model == MODEL:
+        return {}
+    from agents.llm_local import LOCAL_MODELS
+    ids = {node["id"] for node in flow["data"]["nodes"]}
+    tweaks: dict = {}
+    if "Agent-rtrc" in ids:
+        tweaks["Agent-rtrc"] = {"model": [{"name": LOCAL_MODELS[model], "provider": "Ollama", "metadata": {"model_type": "llm", "tool_calling": True}}]}
+    if "RtrcOpenCode-assistant" in ids:
+        tweaks["RtrcOpenCode-assistant"] = {"model": model}
+    if not tweaks:
+        raise SystemExit(f"{flow['name']}: no model node to point at {model}")
+    return tweaks
 
 
 def _key_failure(row: dict) -> bool:
@@ -250,14 +276,18 @@ def _rel(path: Path) -> str:
     return str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path)
 
 
-def _chat_cell(token: str, flow: dict, task_dir: Path, repeat: int, out: Path, timeout: int, column: str) -> dict:
+def _chat_cell(token: str, flow: dict, task_dir: Path, repeat: int, out: Path, timeout: int, column: str, model: str = MODEL) -> dict:
     """One task through a chat flow: the message is the statement the direct candidates get; the reply is scored here."""
     from agents.solve import _task
     from bench.experiment import validate_and_grade
     case, prompt = _task(task_dir)
     session = f"exam-{column}-{case['id']}-r{repeat}-{datetime.now(timezone.utc).strftime('%H%M%S')}"
     started = time.time()
-    job = _request("POST", "/api/v2/workflows", token, {"flow_id": flow["id"], "input_value": prompt, "mode": "background", "session_id": session}, timeout=60)
+    body = {"flow_id": flow["id"], "input_value": prompt, "mode": "background", "session_id": session}
+    tweaks = _model_tweaks(flow, model)
+    if tweaks:
+        body["tweaks"] = tweaks
+    job = _request("POST", "/api/v2/workflows", token, body, timeout=60)
     final = _wait(token, job["job_id"], timeout)
     elapsed = round(time.time() - started, 1)
     stored = _stored_message(session, flow["id"])
@@ -268,7 +298,7 @@ def _chat_cell(token: str, flow: dict, task_dir: Path, repeat: int, out: Path, t
     answer_file = out / "answers" / f"{case['id']}-r{repeat}.md"
     answer_file.parent.mkdir(parents=True, exist_ok=True)
     answer_file.write_text(text, encoding="utf-8")
-    row = {"repeat": repeat, "task_id": case["id"], "type": case["type"], "configuration": "P-LANGFLOW", "model": MODEL, "flow": flow["name"],
+    row = {"repeat": repeat, "task_id": case["id"], "type": case["type"], "configuration": "P-LANGFLOW", "model": model, "flow": flow["name"],
            "job_id": job["job_id"], "job_status": final.get("status"), "session": session, "elapsed_s": elapsed, "tool_calls": tools, "usage": usage,
            "answer_file": _rel(answer_file)}
     if final.get("status") != "completed" or not text:
@@ -328,9 +358,13 @@ def main() -> None:
     parser.add_argument("--tasks", default="all", help="all, or a comma-separated list of task ids")
     parser.add_argument("--timeout", type=int, default=1800, help="seconds to wait for one run")
     parser.add_argument("--out", default=None, help="the batch folder (default: a new one under analysis/)")
+    parser.add_argument("--model", default=MODEL, choices=[MODEL, LOCAL_MODEL],
+                        help=f"{MODEL} (the model of the frozen exam) or {LOCAL_MODEL} (the 3-bit model on this machine; the column's local run)")
     args = parser.parse_args()
     if args.flow not in COLUMNS and args.flow not in CELL_FLOWS:
         raise SystemExit(f"--flow must be one of {list(COLUMNS) + list(CELL_FLOWS)}")
+    if args.model != MODEL and args.flow not in COLUMNS:
+        raise SystemExit(f"--model {args.model} is for the three column flows {list(COLUMNS)}; the cell flows take their model from the cell node")
     sandboxed = "sandbox" in CELL_FLOWS.get(args.flow, "") or args.flow == NAMES["opencode-memory-exam"]
     if sandboxed and _page_running():
         raise SystemExit("The results page (8770) is running and serves answer keys; stop it before an OpenCode or sandboxed run")
@@ -341,14 +375,18 @@ def main() -> None:
     flow = _flow(token, args.flow)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     column = COLUMNS.get(args.flow)
-    out = Path(args.out) if args.out else ROOT / "analysis" / (f"langflow-exam-{column}-{MODEL}-{stamp}" if column else f"langflow-rerun-{CELL_FLOWS[args.flow]}-{stamp}")
+    model = args.model
+    model_tag = LOCAL_FOLDER_TAG if model == LOCAL_MODEL else model
+    out = Path(args.out) if args.out else ROOT / "analysis" / (f"langflow-exam-{column}-{model_tag}-{stamp}" if column else f"langflow-rerun-{CELL_FLOWS[args.flow]}-{stamp}")
     out.mkdir(parents=True, exist_ok=True)
     tasks = _tasks(args.tasks)
     results = out / "results.jsonl"
     done = {(row["task_id"], row["repeat"]) for row in (json.loads(line) for line in results.read_text(encoding="utf-8").splitlines() if line.strip())} if results.is_file() else set()
-    summary = {"flow": args.flow, "flow_id": flow["id"], "column": column, "model": MODEL, "started": stamp, "repeats": args.repeats,
+    summary = {"flow": args.flow, "flow_id": flow["id"], "column": column, "model": model, "started": stamp, "repeats": args.repeats,
                "tasks": [item["id"] for item in tasks], "scored_by": "bench.experiment.validate_and_grade (frozen scorer)" if column else "the shell service's exam cell",
-               "note": "Not part of the frozen score (bench/FREEZE.md); a Langflow exam column of decision 035." if column else "A rerun of a frozen column through Langflow; shown nowhere."}
+               "model_tweaks": _model_tweaks(flow, model) if column else {},
+               "note": ("Not part of the frozen score (bench/FREEZE.md); a Langflow exam column of decision 035." if column else "A rerun of a frozen column through Langflow; shown nowhere.")
+                       + (" The local 3-bit Qwen3.8-27B via Ollama, set on the model node by a run-time tweak; the flow file keeps qwen3.8-flash." if model == LOCAL_MODEL else "")}
     (out / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
     shown = str(out.relative_to(ROOT)) if out.is_relative_to(ROOT) else str(out)
     print(f"{args.flow}: {len(tasks)} task(s) × {args.repeats} → {shown}", flush=True)
@@ -359,12 +397,12 @@ def main() -> None:
                     continue
                 task_dir = ROOT / item["path"]
                 try:
-                    row = _chat_cell(token, flow, task_dir, repeat, out, args.timeout, column) if column else _cell_flow_cell(token, flow, task_dir, repeat, out, args.timeout)
+                    row = _chat_cell(token, flow, task_dir, repeat, out, args.timeout, column, model) if column else _cell_flow_cell(token, flow, task_dir, repeat, out, args.timeout)
                     if _key_failure(row):
                         # A provider variable set moments ago is not always seen by the very next run; one more try, then stop
                         # rather than record a column of empty failures. The batch resumes from this cell when run again.
                         time.sleep(10)
-                        row = _chat_cell(token, flow, task_dir, repeat, out, args.timeout, column) if column else _cell_flow_cell(token, flow, task_dir, repeat, out, args.timeout)
+                        row = _chat_cell(token, flow, task_dir, repeat, out, args.timeout, column, model) if column else _cell_flow_cell(token, flow, task_dir, repeat, out, args.timeout)
                         if _key_failure(row):
                             raise SystemExit(f"{item['id']} r{repeat}: the flow's model ran without an API key; the row is not recorded. "
                                              f"Check the runner's login has {' and '.join(PROVIDER_VARIABLES)} (Settings → Model Providers) and run again. "
@@ -374,7 +412,7 @@ def main() -> None:
                     if exc.code == 401:
                         raise SystemExit(f"{item['id']} r{repeat}: Langflow refused the login even after logging in again (HTTP 401 {body}); "
                                          "the row is not recorded. Run again; the batch resumes from this cell.")
-                    row = {"repeat": repeat, "task_id": item["id"], "type": item["type"], "configuration": "P-LANGFLOW" if column else None, "model": MODEL,
+                    row = {"repeat": repeat, "task_id": item["id"], "type": item["type"], "configuration": "P-LANGFLOW" if column else None, "model": model,
                            "flow": args.flow, "status": "FAIL", "sysml_status": None, "engineering_status": "FAIL", "error": f"HTTP {exc.code} {body}", "elapsed_s": None}
                 row.setdefault("cohort_id", column)
                 handle.write(json.dumps(row, ensure_ascii=False) + "\n")

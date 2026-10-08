@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 26727,
+  "stop_reason": "end_turn",
+  "session_id": "832926bf-4b30-4812-9ec0-7af1618fab68",
+  "total_cost_usd": 0.1919605,
+  "usage": {
+    "input_tokens": 22185,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 77771,
+    "output_tokens": 1686,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 22185,
+      "outputTokens": 1686,
+      "cacheReadInputTokens": 77771,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.1919605,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Final report:\n\n**Answer** (from `part def UnmannedSurfaceVessel`, `input/model.sysml:36-38`):\n\n```json\n{\"powerLimitW\": 60.0, \"uplinkMbps\": 8.0, \"storageGB\": 128.0}\n```\n\n- **Files changed:** `answer.md` (created) — no model files touched, since this was a read-only query.\n- **Validation status:** official validator `./validate MaritimeISR input/model.sysml` → **PASS**, `\"diagnostics\": []`, 0 warnings.\n- **Check results:** all three requested attributes are declared with explicit literal values in the model; `uplinkMbps = 8.0` is distinctly the USV's attribute (the UAV part defines a separate `downlinkMbps = 20.0`).\n- **Open questions:** none.",
+  "ttft_ms": 8698,
+  "type": "result",
+  "duration_ms": 31922,
+  "uuid": "047960e3-fad6-4df4-b0e9-6925e559b8a2",
+  "ttft_stream_ms": 7329,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7330,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

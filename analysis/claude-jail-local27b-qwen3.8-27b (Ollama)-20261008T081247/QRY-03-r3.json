@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 103903,
+  "stop_reason": "end_turn",
+  "session_id": "fcaf2713-c7b6-4d29-8d0f-7d69ffa9bf28",
+  "total_cost_usd": 0.5705365000000001,
+  "usage": {
+    "input_tokens": 34114,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 389783,
+    "output_tokens": 8203,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 34114,
+      "outputTokens": 8203,
+      "cacheReadInputTokens": 389783,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.5705365000000001,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 20,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. **`{\"connections\": 3}`** written to `answer.md`.\n\n**Files changed:** `answer.md` (created) — no model files were edited.\n\n**Validation status:** `./validate MaritimeISR input/model.sysml` → **PASS**, 0 diagnostics, 0 warnings (official pilot kernel 0.62.0, 2026-08 release).\n\n**Counting:**\n- Model has 10 `connect` statements total (confirmed both in source, lines 66–75, and in the validator's AST: exactly 10 `ConnectionUsage` elements — no hidden/omitted connections exist).\n- 3 of them have a `commandShip` endpoint:\n\n| Line | Statement |\n|---|---|\n| 70 | `connect usv.radio.toShore to commandShip.fromUsv;` |\n| 74 | `connect uav.radio.toShore to commandShip.fromUav;` |\n| 75 | `connect commandShip.toShore to shore.fromCommand;` |\n\nThis also matches the `TrackSharing` requirement's description: USV and UAV links into the command ship, then command ship to shore.\n\n**Open questions:** None.",
+  "ttft_ms": 9178,
+  "type": "result",
+  "duration_ms": 230234,
+  "uuid": "8c5e7f7a-2bad-4747-851b-f3321f86f8f9",
+  "ttft_stream_ms": 7306,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7306,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

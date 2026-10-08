@@ -203,6 +203,25 @@ CELLS = _cells()
 BY_ID = {row["id"]: row for row in CELLS}
 
 
+def _local_cells() -> list[dict]:
+    """Local-27B rows read from disk on each request, so a refresh shows cells the running batch has just written."""
+    from bench.batches import LOCAL_MATRIX, local_rows
+    cells = []
+    for cohort in LOCAL_MATRIX:
+        for row in local_rows(cohort):
+            row["id"] = f"{cohort}:{row.get('repeat')}:{row['task_id']}:{row.get('configuration')}"
+            cells.append(row)
+    return cells
+
+
+def _cell_usd(model: str | None, usage: dict) -> float | None:
+    from bench.board_facts import _usd
+    try:
+        return round(_usd(model or "qwen3.8-flash", usage), 6)
+    except KeyError:
+        return None
+
+
 def _attempt(path: Path, number: int, previous: str | None) -> dict:
     validation = path / "sysml" / "validation.json"
     data = json.loads(validation.read_text(encoding="utf-8")) if validation.is_file() else {}
@@ -298,7 +317,7 @@ def _detail(row: dict) -> dict:
         "attempts": _attempts(row),
         "tokens": usage["input"] + usage["output"],
         "usage": {"input": usage["input"], "cached": usage["cached"], "output": usage["output"]},
-        "usd": round(_usd(row.get("model") or "qwen3.8-flash", usage), 6),
+            "usd": _cell_usd(row.get("model"), usage),
         "calls": [call.get("step") for call in calls],
         "validator_runs": _validator_runs(row.get("workspace")),
         "steps": _flow(row, answer),
@@ -694,12 +713,12 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, json.dumps(_tasks(), ensure_ascii=False).encode(), "application/json; charset=utf-8")
             return
         if parsed.path == "/api/cells":
-            body = json.dumps([_public(row) for row in CELLS], ensure_ascii=False).encode()
+            body = json.dumps([_public(row) for row in [*CELLS, *_local_cells()]], ensure_ascii=False).encode()
             self._send(200, body, "application/json; charset=utf-8")
             return
         if parsed.path == "/api/cell":
             cell_id = parse_qs(parsed.query).get("id", [""])[0]
-            row = BY_ID.get(cell_id)
+            row = BY_ID.get(cell_id) or next((item for item in _local_cells() if item["id"] == cell_id), None)
             if not row:
                 self._send(404, b"{}", "application/json")
                 return

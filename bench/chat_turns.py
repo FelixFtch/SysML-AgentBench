@@ -19,7 +19,9 @@ is the user turn, word for word. What the approach adds happens around that turn
 Sandboxed coding agents (OpenCode, Claude Code): one sandbox per Langflow session, kept under mvp/chat-sandbox/,
 with ./validate (the official Pilot) and rules written for an assistant, not for an exam. The agent's own session
 continues across messages (OpenCode --session, Claude Code --resume), so "change the last one" has something to
-change. The results page (8770) does not block these chats: nothing here is scored, so the page's answer keys
+change. Claude Code chat on the local 27B uses the CCR provider named ollama (Ollama's OpenAI-compatible endpoint);
+cloud model names still go to the provider qwen. The exam routes still refuse Claude Code on the local model.
+The results page (8770) does not block these chats: nothing here is scored, so the page's answer keys
 cannot leak into a score (user decision of 2026-10-08). The exam path still refuses while the page runs.
 """
 from __future__ import annotations
@@ -317,8 +319,6 @@ def sandbox_turn(session: str, text: str, agent: str, model: str, *, timeout: in
     text = text.strip()
     if not text:
         raise ValueError("Write a message")
-    if agent == "claude-code" and model in LOCAL_MODELS:
-        raise ValueError("The local 3-bit model runs with OpenCode; Claude Code still uses the cloud Qwen.")
     work = _sandbox_dir(agent, session)
     state_file = work / "session.json"
     state = json.loads(state_file.read_text(encoding="utf-8")) if state_file.is_file() else {"session": session, "agent": agent, "turns": 0, "agent_session": None}
@@ -334,8 +334,11 @@ def sandbox_turn(session: str, text: str, agent: str, model: str, *, timeout: in
             argv += ["--session", state["agent_session"]] if state.get("agent_session") else ["--title", f"Chat {session}"]
             argv.append(text)
         else:
+            # Local Qwen is the CCR provider "ollama" (Ollama on this machine). Cloud names stay "qwen,<model>".
+            # The exam routes still refuse Claude Code on the local model; only this chat path uses it.
+            ccr_model = f"ollama,{LOCAL_MODELS[model]}" if model in LOCAL_MODELS else f"qwen,{model}"
             argv = ["ccr", "default-claude-code", "--", "-p", "--output-format", "json", "--max-turns", str(max_turns),
-                    "--allowedTools", *CLAUDE_TOOLS, "--model", f"qwen,{model}"]
+                    "--allowedTools", *CLAUDE_TOOLS, "--model", ccr_model]
             argv += ["--resume", state["agent_session"]] if state.get("agent_session") else []
             argv.append(text)
         started = time.monotonic()
@@ -385,9 +388,11 @@ def sandbox_turn(session: str, text: str, agent: str, model: str, *, timeout: in
     state["model"] = model
     state_file.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
     files = sorted(p.name for p in workspace.glob("*.sysml"))
+    # Claude Code's json output reports its number of agent turns, not the tool calls themselves.
+    work_done = f"{tools[0]['target']}" if agent == "claude-code" and tools else f"{len(tools)} tool call(s)"
     steps = [{"title": "Message", "state": "pass", "detail": f"Turn {turn} of this conversation; the text went to the agent as written, in its own session."},
              {"title": "Agent", "state": "pass" if answer and returncode in (0, None) else "fail",
-              "detail": f"{len(tools)} tool call(s), {usage.get('input', 0)} in / {usage.get('output', 0)} out tokens, {seconds} s" + (f"; files in the workspace: {', '.join(files)}" if files else "")},
+              "detail": f"{work_done}, {usage.get('input', 0)} in / {usage.get('output', 0)} out tokens, {seconds} s" + (f"; files in the workspace: {', '.join(files)}" if files else "")},
              {"title": "Check against key", "state": "skip", "detail": "A conversation has no answer key; nothing is scored."}]
     return {"candidate": agent, "model": model, "session": session, "turn": turn, "agent_session": state.get("agent_session"),
             "answer": answer, "tool_calls": tools, "usage": usage, "seconds": seconds, "returncode": returncode,

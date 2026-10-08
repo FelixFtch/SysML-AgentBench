@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 52874,
+  "stop_reason": "end_turn",
+  "session_id": "ba81c05b-c25b-4b3e-88e0-e0b1dc5366a4",
+  "total_cost_usd": 0.2593065,
+  "usage": {
+    "input_tokens": 22033,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 96233,
+    "output_tokens": 4041,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 22033,
+      "outputTokens": 4041,
+      "cacheReadInputTokens": 96233,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.2593065,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 9,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary per the task rules:\n\n**Files changed:** `answer.md` (created) — restates the model's requirements; no `.sysml` files were modified (this task required no edits).\n\n**Validation status:** `./validate RoundTripPower input/model.sysml` → **PASS**, 0 diagnostics, 0 warnings, return code 0 (official SysML v2 Pilot 0.62).\n\n**Check results:** No failing checks, none to report.\n\n**Restated requirement (the only one in the model):** *KeepPower* — \"The unmanned surface vessel power limit is 60 W.\" Context elements noted without adding facts: part `usv` with `powerLimitW : Real = 60.0`, and a private import of `ScalarValues::*`; the requirement def has no subject, acceptance expression, or applying requirement instance in the model.\n\n**Open question:** The doc text says \"60 W\", but the `powerLimitW` attribute is declared as a plain `Real` with no unit in the model; the model itself doesn't state the attribute's unit, so I recorded the gap without assuming one.",
+  "ttft_ms": 7924,
+  "type": "result",
+  "duration_ms": 55330,
+  "uuid": "f75e173c-d34e-4dbf-a840-59242b1eaf9b",
+  "ttft_stream_ms": 7191,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7192,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

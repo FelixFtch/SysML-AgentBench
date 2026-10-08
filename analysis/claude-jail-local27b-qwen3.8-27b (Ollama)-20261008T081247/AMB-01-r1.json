@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 75869,
+  "stop_reason": "end_turn",
+  "session_id": "a1fa8f5e-0e7d-490b-af7a-3a6785448c35",
+  "total_cost_usd": 0.32009550000000003,
+  "usage": {
+    "input_tokens": 23503,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 119811,
+    "output_tokens": 5707,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 23503,
+      "outputTokens": 5707,
+      "cacheReadInputTokens": 119811,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.32009550000000003,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 11,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done — answer recorded in `answer.md`. Summary per the rules:\n\n**Files changed:** none (plus `answer.md`, this report).\n\n**Validation status:** not run — there is no `.sysml` file in the workspace to validate and no declared package to target (`./validate` needs `<PackageName> <file.sysml>`; the only files present are `AGENTS.md`, `CLAUDE.md`, `input/requirements.md`, and the `validate` script).\n\n**Check results:** none executed.\n\n**Why I stopped instead of writing SysML:** the requirements state vessel→shore track sharing in \"real time\" but explicitly give **no latency and no bandwidth** (AGENTS.md). \"Real time\" is neither a number nor a unit, so any constraint I'd add would be an invented value — which CLAUDE.md rule 4 and the task note both prohibit.\n\n**Open questions (values + units required):**\n1. Latency bound for vessel→share: value and unit (ms/s)? hard ≤ bound or mean?\n2. Bandwidth for the track stream: value and unit (bps/kbps/Mbps)? cap the link must not exceed, or floor it must meet?\n3. Exact form of the check these numbers feed (latency ∧ bandwidth constraint on the same requirement?).\n4. If the bandwidth check depends on data volume: track update rate, track count, per-track size — with units.\n5. The `<PackageName>` the validator expects.\n\nI will not relax or substitute any number to force a passing check. Send the values and I'll write the model and run `./validate`, reporting the official status and every diagnostic verbatim.",
+  "ttft_ms": 12596,
+  "type": "result",
+  "duration_ms": 76009,
+  "uuid": "eb6a8d90-b5d5-4ce5-8ab9-a76eb9d65f10",
+  "ttft_stream_ms": 7185,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7185,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

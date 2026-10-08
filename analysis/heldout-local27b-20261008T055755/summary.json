@@ -1,0 +1,20 @@
+{
+  "cohort": "direct",
+  "model": "qwen3.8-27b (Ollama)",
+  "configs": [
+    "P0",
+    "P1",
+    "P2",
+    "P3"
+  ],
+  "repeats": 3,
+  "started": "20261008T055755",
+  "tasks": 27,
+  "note": "local 3-bit Qwen3.8-27B via Ollama; same solver and scorer as the flash batch",
+  "cells": 324,
+  "counts": {
+    "FAIL": 128,
+    "PASS": 196
+  },
+  "finished": "20261008T063935"
+}

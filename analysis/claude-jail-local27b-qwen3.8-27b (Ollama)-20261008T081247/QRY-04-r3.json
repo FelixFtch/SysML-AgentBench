@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 57510,
+  "stop_reason": "end_turn",
+  "session_id": "dc8923ee-c2d8-477d-b028-5775fe0db789",
+  "total_cost_usd": 0.33968950000000003,
+  "usage": {
+    "input_tokens": 25657,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 197159,
+    "output_tokens": 4513,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 25657,
+      "outputTokens": 4513,
+      "cacheReadInputTokens": 197159,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.33968950000000003,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 13,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Wrote the answer to `answer.md`.\n\n**Answer** (parts nested in `part def FixedWingUav`):\n\n```json\n{\"parts\": [\"MaritimeISR::FixedWingUav::eoCamera\", \"MaritimeISR::FixedWingUav::searchRadar\", \"MaritimeISR::FixedWingUav::processor\", \"MaritimeISR::FixedWingUav::radio\"]}\n```\n\n**Files changed:** none — this is a read-only query; no model edits were made.\n\n**Validation status:** PASS — `./validate MaritimeISR input/model.sysml` returned `\"status\": \"PASS\"`, `\"diagnostics\": []`.\n\n**Check results:**\n- Source check (`input/model.sysml:40-47`): the definition declares four part usages (`eoCamera`, `searchRadar`, `processor`, `radio`) and two attribute usages (`powerLimitW`, `downlinkMbps`).\n- Parsed-model cross-check (validator's `ast-elements.json`): the direct members of `MaritimeISR::FixedWingUav` are exactly those four `PartUsage` elements plus the two `AttributeUsage` elements — attributes are not part usages, so they're excluded.\n- Excluded the top-level package usages `usv`, `uav`, `commandShip`, `shore` — these instantiate the part definitions; they are not nested inside `FixedWingUav`.\n\n**Open questions:** none.",
+  "ttft_ms": 8895,
+  "type": "result",
+  "duration_ms": 63032,
+  "uuid": "fe1a90b0-007e-425a-b4e3-bf087882040a",
+  "ttft_stream_ms": 7260,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7260,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

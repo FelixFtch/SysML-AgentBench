@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 124325,
+  "stop_reason": "end_turn",
+  "session_id": "0ae45438-9b84-47b3-abe7-83b6a7d8f104",
+  "total_cost_usd": 0.6449955,
+  "usage": {
+    "input_tokens": 29537,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 500421,
+    "output_tokens": 9884,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 29537,
+      "outputTokens": 9884,
+      "cacheReadInputTokens": 500421,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.6449955,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 27,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary:\n\n**Files changed**\n- `FusionNode.sysml` (new) — the complete model for the required elements\n- `answer.md` (new) — the answer with requirements coverage, validation status, check results, and open questions\n\n**Model** (all five required items, nothing more):\n```sysml\npackage FusionNode {\n    private import ScalarValues::*;\n    port def LinkPort;\n    part def Processor {\n        port trackIn : LinkPort;\n    }\n    part commandShip {\n        port fromUsv : LinkPort;\n        port fromUav : LinkPort;\n        part fusion : Processor;\n        attribute fusionLatencyS : Real = 2.0;\n    }\n}\n```\n`private import ScalarValues::*;` is there to make `Real` type resolvable (verified against the pinned 2026-08 standard library, where `Real` is a kernel type in `ScalarValues`). The only numeric literal is the required 2.0.\n\n**Validation**: `./validate FusionNode FusionNode.sysml` → **PASS**, 0 errors, 0 warnings. The official model export confirms all expected elements: `PortDefinition LinkPort`; `PartDefinition Processor` with `PortUsage trackIn : LinkPort`; `PartUsage commandShip` containing `PortUsage fromUsv/fromUav : LinkPort`, nested `PartUsage fusion : Processor`, and `AttributeUsage fusionLatencyS : Real` with feature value 2.0.\n\n**Open questions**: none — every stated value was implemented as given and no limit or budget was altered.",
+  "ttft_ms": 8744,
+  "type": "result",
+  "duration_ms": 127420,
+  "uuid": "66e3adb6-9e8f-4995-9670-af5b319df2a3",
+  "ttft_stream_ms": 7385,
+  "time_to_request_ms": 38,
+  "first_content_frame_ms": 7385,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

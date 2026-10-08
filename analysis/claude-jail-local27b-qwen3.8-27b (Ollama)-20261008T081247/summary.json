@@ -1,0 +1,20 @@
+{
+  "cohort": "claude",
+  "model": "qwen3.8-27b (Ollama)",
+  "jailed": true,
+  "tools": [
+    "Bash",
+    "Read",
+    "Write",
+    "Edit",
+    "Glob",
+    "Grep"
+  ],
+  "max_turns": 60,
+  "timeout_s": 900,
+  "repeats": 3,
+  "tasks": "all",
+  "workers": 1,
+  "started": "20261008T081247",
+  "note": "local 3-bit Qwen3.8-27B via Ollama; same tasks, sandbox and scorer as the flash batch"
+}

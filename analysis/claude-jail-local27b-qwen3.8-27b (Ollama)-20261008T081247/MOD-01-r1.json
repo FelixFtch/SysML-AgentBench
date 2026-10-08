@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 59114,
+  "stop_reason": "end_turn",
+  "session_id": "c6991abc-9606-4fae-932e-7427986a0cd9",
+  "total_cost_usd": 0.34777849999999993,
+  "usage": {
+    "input_tokens": 24964,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 239217,
+    "output_tokens": 4134,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 24964,
+      "outputTokens": 4134,
+      "cacheReadInputTokens": 239217,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.34777849999999993,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 14,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done.\n\n**Files changed**\n- `input/baseline/UsvPlain.sysml` — two additive edits only:\n  1. `part irCamera : Camera;` added inside `usv` (between `eoCamera` and `ais`)\n  2. `connect usv.irCamera.imagery to usv.processor.imageryIn;` added after the existing EO camera connection\n- `answer.md` — created with the answer\n\nExisting camera/AIS/radio connections and `powerLimitW = 60.0` are untouched; no new numbers introduced.\n\n**Validation** (`./validate UsvPlain input/baseline/UsvPlain.sysml`)\n- Baseline pre-edit: **PASS**, diagnostics `[]`\n- Post-edit: **PASS**, diagnostics `[]` — no errors, no warnings\n\n**Check results:** all checks pass; no failing checks to report.\n\n**Open questions:** none.",
+  "ttft_ms": 8679,
+  "type": "result",
+  "duration_ms": 69682,
+  "uuid": "b39e54aa-43ac-48d7-8a3a-f9e08f708591",
+  "ttft_stream_ms": 7634,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7634,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

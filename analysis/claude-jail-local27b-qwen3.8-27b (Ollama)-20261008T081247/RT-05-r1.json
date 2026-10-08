@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 70947,
+  "stop_reason": "end_turn",
+  "session_id": "552e997f-0839-480d-9843-d3c53bf8eafb",
+  "total_cost_usd": 0.3058465,
+  "usage": {
+    "input_tokens": 22180,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 97143,
+    "output_tokens": 5855,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 22180,
+      "outputTokens": 5855,
+      "cacheReadInputTokens": 97143,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.3058465,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 7,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Here is what I did and found.\n\n## What the task asked\nRead the given SysML model (`input/model.sysml`) and restate its requirements in sentences, adding no facts absent from the model. Deliverable: `answer.md`.\n\n## Model I read\n```sysml\npackage RoundTripFusion {\n    private import ScalarValues::*;\n    part commandShip {\n        port fromUsv;\n        port fromUav;\n        attribute fusionLatencyS : Real = 2.0;\n    }\n    requirement def Fusion {\n        doc /* Fusion latency is 2 seconds and the command ship accepts two uplinks. */\n    }\n}\n```\n\nThe only requirement-bearing element is the `Fusion` requirement definition, whose documentation text is the sole source of stated requirements. Restated in sentences, it says:\n\n1. **The fusion latency is 2 seconds.**\n2. **The command ship accepts two uplinks.**\n\nThese are corroborated by the `commandShip` part: the attribute `fusionLatencyS : Real = 2.0` carries the latency value, and the two ports `fromUsv` / `fromUav` are the two uplinks. No other requirements, limits, or budget figures appear anywhere in the model.\n\n## Files changed\n- **Created:** `answer.md` — the restated requirements (prose deliverable). No `.sysml` files were touched.\n\n## Validation status\n- I made **no edits** to any `.sysml` file, so there was nothing to re-validate.\n- I did run the official validator against the model as-given to record its status:\n  - `./validate RoundTripFusion input/model.sysml` → **status: `PASS`**, **0 diagnostics** (0 warnings), toolchain `kernel 0.62.0`, official SysML Pilot adapter.\n\n## Open questions\n- None. The task is a read-and-restate; the single requirement (`Fusion`) is unambiguous, and no values were missing or invented.",
+  "ttft_ms": 8240,
+  "type": "result",
+  "duration_ms": 73430,
+  "uuid": "503856d5-f5ad-4c18-aea6-baed49c39c83",
+  "ttft_stream_ms": 7199,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7199,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

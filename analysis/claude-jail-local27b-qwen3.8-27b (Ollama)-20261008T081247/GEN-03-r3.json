@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 194602,
+  "stop_reason": "end_turn",
+  "session_id": "77338ad4-0f8b-4d4c-819c-e48211162bac",
+  "total_cost_usd": 0.7758929999999999,
+  "usage": {
+    "input_tokens": 35466,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 512276,
+    "output_tokens": 13697,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 35466,
+      "outputTokens": 13697,
+      "cacheReadInputTokens": 512276,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.7758929999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 24,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Final answer:\n\n## Files changed\n- **`FusionNode.sysml`** (created) — the deliverable model:\n  ```sysml\n  package FusionNode {\n\n      private import ScalarValues::*;\n\n      port def LinkPort;\n\n      part def Processor {\n          port trackIn : LinkPort;\n      }\n\n      part commandShip {\n          port fromUsv : LinkPort;\n          port fromUav : LinkPort;\n          part fusion : Processor;\n          attribute fusionLatencyS : Real = 2.0;\n      }\n\n  }\n  ```\n- **`answer.md`** (created) — answer with model, traceability, verbatim check history, and validation evidence.\n\nNo other files touched; `requirements/`/`gold/` untouched. Only number in the model is the required `2.0`.\n\n## Validation status\n`./validate FusionNode FusionNode.sysml` → **PASS**, return_code 0, **0 diagnostics (0 errors, 0 warnings)**, toolchain: SysML v2 Pilot 0.62.0 (2026-08) + SysML-v2-Release @ `fb97b75`, library 94 files. Evidence in `validation/` (latest: `model.json`, `validation.json`, logs).\n\n## Check results (history)\nTwo failing iterations, all diagnostics reported verbatim in `answer.md`:\n1. First draft failed with `no viable alternative at input 'fusionLatencyS'` (I'd used `attr` — not a keyword in this grammar; `attribute` is correct), `Couldn't resolve reference to Type 'Real'`, and `A usage must be typed by definitions.`\n2. After fixing keywords, a bare `import ScalarValues::Real;` failed: `mismatched input 'import' expecting '}'` (plus 2 more syntax errors and 1 spuriously-firing attribute-type check).\n\nFix applied: `private import ScalarValues::*;` (`Real` is defined in the kernel library package `ScalarValues`), the same idiom as the toolchain's official passing smoke model `smoke-models/valid.sysml` — hence the formal `attribute` keyword and datatype-typed usage both check out. No stated limit, rate, or budget was altered to pass anything.\n\n## Open questions\nNone — all five listed items are present, `fusionLatencyS : Real = 2.0` is the sole number, and the official validator reports PASS.",
+  "ttft_ms": 11879,
+  "type": "result",
+  "duration_ms": 204014,
+  "uuid": "be56377a-0f3d-4d38-ba1a-2c936ab111d6",
+  "ttft_stream_ms": 9028,
+  "time_to_request_ms": 37,
+  "first_content_frame_ms": 9028,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

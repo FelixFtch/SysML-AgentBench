@@ -371,7 +371,30 @@ def facts() -> dict:
                 "no number was invented, every value the task said to keep is unchanged, and every engineering check comes out as the key "
                 "expects. Whether the design meets its budget is a separate design verdict (decision 019).",
         "langflow_cohorts": _langflow_cohorts(),
+        "local_cohorts": _local_cohorts(),
     }
+    return out
+
+
+def _local_cohorts() -> dict:
+    """The local 3-bit Qwen3.8-27B matrix, one entry per column. A column that has not started has n 0. No API price:
+    the model runs on this machine."""
+    from bench.batches import LOCAL_MATRIX, local_batch_dir, local_rows
+    out = {}
+    for cohort, spec in LOCAL_MATRIX.items():
+        cells = local_rows(cohort)
+        by_type = {kind: {"n": 0, "pass": 0} for kind in TYPES}
+        for row in cells:
+            slot = by_type.setdefault(row.get("type") or "?", {"n": 0, "pass": 0})
+            slot["n"] += 1
+            slot["pass"] += row.get("status") == "PASS"
+        folder = local_batch_dir(cohort)
+        out[cohort] = {"label": spec["label"], "short": spec["short"], "kind": spec["kind"], "model": spec["model"],
+                       "batch": folder.name if folder else None, "n": len(cells), "expected": EXPECTED[spec["kind"]],
+                       "pass": sum(row.get("status") == "PASS" for row in cells),
+                       "fail": sum(row.get("status") != "PASS" for row in cells),
+                       "by_type": by_type, "usage": _sum_usage([usage_of_row(row) for row in cells]), "usd": 0,
+                       "flow": spec.get("flow") or "", "project": spec.get("project") or ""}
     return out
 
 

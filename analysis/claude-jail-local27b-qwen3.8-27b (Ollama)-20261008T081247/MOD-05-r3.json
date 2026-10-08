@@ -1,0 +1,85 @@
+{
+  "duration_api_ms": 53743,
+  "stop_reason": "end_turn",
+  "session_id": "94ed9bd4-36cb-4632-bb5a-2542d2af3469",
+  "total_cost_usd": 0.38324449999999993,
+  "usage": {
+    "input_tokens": 27451,
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 307179,
+    "output_tokens": 3696,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "",
+    "iterations": [],
+    "speed": "standard"
+  },
+  "modelUsage": {
+    "ollama,qwen3.8-27b-q3:64k": {
+      "inputTokens": 27451,
+      "outputTokens": 3696,
+      "cacheReadInputTokens": 307179,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.38324449999999993,
+      "contextWindow": 200000,
+      "maxOutputTokens": 32000,
+      "thinkingTokens": 0,
+      "canonicalModel": "ollama,qwen3.8-27b-q3:64k",
+      "provider": "firstParty",
+      "costBasis": "unknown"
+    }
+  },
+  "permission_denials": [],
+  "terminal_reason": "completed",
+  "fast_mode_state": "off",
+  "fast_mode_disabled_reason": "sdk_opt_in_required",
+  "subagent_stats": {
+    "spawned": 0,
+    "requested": {
+      "background": 0,
+      "foreground": 0,
+      "unset": 0
+    },
+    "started_in_background": 0,
+    "max_depth": 0,
+    "spawned_by_subagents": 0,
+    "completed": 0,
+    "failed": 0,
+    "killed": {
+      "parent": 0,
+      "user": 0,
+      "system": 0
+    },
+    "refused": {
+      "depth_limit": 0,
+      "concurrency_limit": 0,
+      "budget": 0
+    },
+    "by_type": {}
+  },
+  "is_error": false,
+  "num_turns": 17,
+  "subtype": "success",
+  "api_error_status": null,
+  "result": "Done. Summary:\n\n## Files changed\n- **`baseline/PowerBudget.sysml`** — the only model change. Diff against the original baseline is exactly one line:\n  ```\n  +        part irCamera { attribute drawW : Real = 12.0; }\n  ```\n  Everything else is byte-identical: `powerLimitW = 60.0`, `eoCamera.drawW = 41.0`, `computer.drawW = 25.0` (60 was not changed to make the sum fit).\n- **`answer.md`** — created with the full answer (files changed, validation status, check results, open questions).\n\n## Validation\n- `./validate PowerBudget baseline/PowerBudget.sysml` → **PASS**\n- Checks: `\"diagnostics\": []`, `warning_count: 0`, `return_code: 0` — no errors, no warnings, reported verbatim in `answer.md`.\n- The exported official model delta (`model.json`) confirms all four features exist with the required values (41.0, 25.0, 12.0, 60.0 each appearing exactly once as a literal value).\n\n## Failing checks\nNone.\n\n## Open questions\nNone for the task as stated. One deliberate observation recorded in `answer.md`, not a validation failure: total draw is 78.0 W against a 60.0 W limit. This is expected — the task explicitly forbade changing 60 — and the validator's scope excludes engineering budget checks, so it doesn't (and shouldn't) flag this. If the over-budget state is a problem, that's a requirement relaxation for the owner to decide, which I would only apply on explicit instruction.",
+  "ttft_ms": 7918,
+  "type": "result",
+  "duration_ms": 59080,
+  "uuid": "bd6cceab-d872-42d1-b047-b91b707e28e4",
+  "ttft_stream_ms": 7216,
+  "time_to_request_ms": 36,
+  "first_content_frame_ms": 7216,
+  "queued_turn_count": 0,
+  "result_index": 0
+}

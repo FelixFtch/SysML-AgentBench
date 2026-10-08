@@ -1,0 +1,1 @@
+What is the track data rate (e.g., GB/day or MB/s) needed to check whether 128 GB of storage can hold 30 days of tracks?

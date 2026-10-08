@@ -1,0 +1,1 @@
+Is the uplink value 8 (unitless) or 8 MHz — please confirm the settled unit before I can proceed.

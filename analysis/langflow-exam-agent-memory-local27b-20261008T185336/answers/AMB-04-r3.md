@@ -1,0 +1,1 @@
+Is the uplink value 8 MHz (i.e., the unitless "8" is missing the MHz unit), or is the unit something other than MHz? Please confirm the unit before I can run the check.

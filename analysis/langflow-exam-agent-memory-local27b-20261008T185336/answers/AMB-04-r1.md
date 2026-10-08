@@ -1,0 +1,1 @@
+What is the uplink value's unit — is the uplink 8 MHz (frequency in MHz), or is 8 a unitless quantity? Please state the unit to use for the uplink check.

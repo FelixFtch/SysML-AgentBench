@@ -1,0 +1,1 @@
+Is the uplink value 8 with no unit, or 8 MHz — please settle the unit before I write the model.

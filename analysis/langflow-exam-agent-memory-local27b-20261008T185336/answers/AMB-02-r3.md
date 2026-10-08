@@ -1,0 +1,1 @@
+What is the maximum allowed vessel power use (and in what unit, e.g., W or kW) that I should use for the check, since no watt limit is given?

@@ -1,0 +1,1 @@
+What is the average data rate (e.g., GB/day or Mbps) of the shore track data, so the 128 GB storage versus 30 days of retention can be checked?

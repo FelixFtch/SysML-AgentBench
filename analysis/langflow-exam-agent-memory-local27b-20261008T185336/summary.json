@@ -1,0 +1,63 @@
+{
+  "flow": "Langflow Agent with memory exam",
+  "flow_id": "e9641df2-fe1a-4579-a007-c48f43bb8f05",
+  "column": "agent-memory",
+  "model": "qwen3.8-27b (Ollama)",
+  "model_tag": "local27b",
+  "login": "superuser",
+  "started": "20261008T185336",
+  "repeats": 3,
+  "tasks": [
+    "GEN-01",
+    "GEN-02",
+    "GEN-03",
+    "GEN-04",
+    "GEN-05",
+    "MOD-01",
+    "MOD-02",
+    "MOD-03",
+    "MOD-04",
+    "MOD-05",
+    "QRY-01",
+    "QRY-02",
+    "QRY-03",
+    "QRY-04",
+    "QRY-05",
+    "AMB-01",
+    "AMB-02",
+    "AMB-03",
+    "AMB-04",
+    "RT-01",
+    "RT-02",
+    "RT-03",
+    "RT-04",
+    "RT-05",
+    "ALN-01",
+    "ALN-02",
+    "ALN-03"
+  ],
+  "scored_by": "bench.experiment.validate_and_grade (frozen scorer)",
+  "model_tweaks": {
+    "Agent-rtrc": {
+      "model": [
+        {
+          "name": "qwen3.8-27b-q3:64k",
+          "provider": "Ollama",
+          "metadata": {
+            "model_type": "llm",
+            "tool_calling": true
+          }
+        }
+      ]
+    }
+  },
+  "note": "Not part of the frozen score (bench/FREEZE.md); a Langflow exam column of decision 035. The model was set on the model node by a run-time tweak; the flow file is unchanged.",
+  "finished": "20261008T194227",
+  "n": 81,
+  "pass": 80,
+  "seconds_total": 2816.4,
+  "tokens": {
+    "input": 806638,
+    "output": 244807
+  }
+}

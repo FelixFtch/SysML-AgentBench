@@ -1,0 +1,1 @@
+What is the data rate (or per-track size and track interval) needed to check the 128 GB / 30-day storage figure?

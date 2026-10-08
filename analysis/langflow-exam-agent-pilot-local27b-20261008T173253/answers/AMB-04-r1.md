@@ -1,0 +1,1 @@
+Is the uplink value 8 (dimensionless) or 8 MHz — please confirm which unit is intended before I write the model.

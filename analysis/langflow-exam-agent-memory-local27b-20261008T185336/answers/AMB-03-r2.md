@@ -1,0 +1,1 @@
+What is the track data rate (e.g., GB per day) at which the shore site stores tracks? It is needed to check whether 128 GB of storage covers 30 days of retention, and no value for it was given.

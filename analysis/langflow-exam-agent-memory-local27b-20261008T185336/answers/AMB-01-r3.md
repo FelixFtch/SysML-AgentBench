@@ -1,0 +1,1 @@
+What are the required maximum end-to-end latency and the minimum available bandwidth for the real-time vessel-to-shore track sharing requirement (values with units)?

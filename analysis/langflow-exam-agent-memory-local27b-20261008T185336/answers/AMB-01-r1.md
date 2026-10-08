@@ -1,0 +1,1 @@
+What is the maximum end-to-end latency (with unit) for sharing tracks from the vessel to the shore in real time, and what is the available link bandwidth (with unit)?

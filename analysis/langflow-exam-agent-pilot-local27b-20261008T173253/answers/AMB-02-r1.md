@@ -1,0 +1,1 @@
+What watt limit (numeric value and unit) applies to the vessel power use check, since none is given?

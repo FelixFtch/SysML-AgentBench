@@ -1,0 +1,1 @@
+What maximum total vessel power draw (in watts) should the "as low as possible" requirement be checked against? No watt limit is given in the task, so I need the specific power limit value to make the requirement checkable.

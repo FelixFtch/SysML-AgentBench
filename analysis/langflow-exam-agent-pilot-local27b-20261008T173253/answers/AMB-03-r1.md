@@ -1,0 +1,1 @@
+What is the track data rate (value and unit, e.g., MB/s) for the shore track feed, so the 128 GB storage can be checked against 30 days of retention?

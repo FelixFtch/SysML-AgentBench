@@ -1,0 +1,1 @@
+What maximum end-to-end latency (value and unit) and what minimum bandwidth (value and unit) must vessel-to-shore track sharing satisfy for "real time" to be checkable?

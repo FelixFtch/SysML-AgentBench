@@ -1,0 +1,1 @@
+What latency bound (and, if applicable, what bandwidth) must the vessel-to-shore track sharing satisfy for "real time"?

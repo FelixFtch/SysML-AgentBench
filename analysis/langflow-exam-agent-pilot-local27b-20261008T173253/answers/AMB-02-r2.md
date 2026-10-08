@@ -1,0 +1,1 @@
+What is the maximum allowable vessel power use (numeric value and unit) required for the check, since "as low as possible" with no watt limit is not verifiable?

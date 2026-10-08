@@ -1,0 +1,1 @@
+What maximum end-to-end latency (value and unit) defines "real time" for vessel-to-shore track sharing, and what is the required bandwidth (value and unit) for the track stream?

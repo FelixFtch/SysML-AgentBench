@@ -1,0 +1,1 @@
+What is the maximum allowable vessel power use (in watts) that the "as low as possible" requirement must be checked against?

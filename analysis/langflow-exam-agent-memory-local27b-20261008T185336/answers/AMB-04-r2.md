@@ -1,0 +1,1 @@
+Is the uplink value 8 (dimensionless) or 8 MHz — which unit is settled for the uplink check?

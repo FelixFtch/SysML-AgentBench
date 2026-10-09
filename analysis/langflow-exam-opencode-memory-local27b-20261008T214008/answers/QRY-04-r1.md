@@ -1,0 +1,1 @@
+{"parts": ["FixedWingUav::eoCamera", "FixedWingUav::searchRadar", "FixedWingUav::processor", "FixedWingUav::radio"]}

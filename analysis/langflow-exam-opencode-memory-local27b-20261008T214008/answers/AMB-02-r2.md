@@ -1,0 +1,3 @@
+The task states "No watt limit is given" and asks for the vessel power use to be "as low as possible." I found an approved design (DesignA) that uses a 60 W limit, but since the task does not provide a specific watt limit for this task and explicitly states to ask if a number is missing, I must ask for the value before proceeding.
+
+What is the maximum allowed total power draw (in watts) for the vessel?

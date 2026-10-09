@@ -1,0 +1,1 @@
+What is the maximum vessel power draw (in watts) that must not be exceeded?

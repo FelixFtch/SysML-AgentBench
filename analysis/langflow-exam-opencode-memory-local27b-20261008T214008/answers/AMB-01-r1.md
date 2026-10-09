@@ -1,0 +1,1 @@
+What maximum end-to-end latency (with its time unit) is required for the real-time vessel-to-shore track sharing?

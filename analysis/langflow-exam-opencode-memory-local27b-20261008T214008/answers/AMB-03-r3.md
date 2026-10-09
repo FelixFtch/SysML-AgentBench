@@ -1,0 +1,1 @@
+No data rate is stated, so the storage requirement (128 GB) cannot be reconciled against the 30-day track-retention period. What data rate (or equivalent total track volume) should be used for the storage check?

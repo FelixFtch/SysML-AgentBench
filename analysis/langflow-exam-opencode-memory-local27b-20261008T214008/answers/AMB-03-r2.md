@@ -1,0 +1,1 @@
+To check whether the shore track retention is supported by the storage, I need the recording data rate (for example, tracks per second or the average data rate in GB/day). What value should I use?

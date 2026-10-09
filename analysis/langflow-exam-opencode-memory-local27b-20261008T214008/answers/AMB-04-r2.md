@@ -1,0 +1,1 @@
+The uplink value is in conflict: one statement says 8 (unitless) and another says 8 MHz. Which unit is correct for the uplink — MHz, or is it unitless?

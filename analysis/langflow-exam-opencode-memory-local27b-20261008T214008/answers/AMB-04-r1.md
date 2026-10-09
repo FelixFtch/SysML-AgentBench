@@ -1,0 +1,1 @@
+The uplink value is conflicting in the brief — one sentence says 8, another says 8 MHz. What is the intended unit (and value) for the uplink?

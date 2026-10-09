@@ -1,0 +1,1 @@
+Which number do you want for the real-time check: a maximum end-to-end latency (and its unit, e.g. ms), or a required minimum bandwidth (e.g. Mbps) for vessel-to-shore track updates?

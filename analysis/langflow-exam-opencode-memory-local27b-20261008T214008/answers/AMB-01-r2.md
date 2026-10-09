@@ -1,0 +1,1 @@
+What latency and bandwidth values are required for the real-time sharing of tracks from the vessel to the shore?

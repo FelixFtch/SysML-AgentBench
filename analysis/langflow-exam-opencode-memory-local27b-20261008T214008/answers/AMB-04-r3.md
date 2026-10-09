@@ -1,0 +1,1 @@
+The uplink value is given as both "8" (no unit) and "8 MHz" (with unit), and no existing model or approved design settles the unit. What is the correct unit for the uplink: MHz or something else (for example, a dimensionless ratio)?

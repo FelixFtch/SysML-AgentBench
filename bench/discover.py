@@ -4,16 +4,19 @@
 The model writes requirements, SysML and mapping proposals. The official Pilot parses every design and
 the alignment package. The "checks" step is arithmetic on parsed literals (power sum, link rate, storage)
 plus a trace count. It is not a physics simulation. A number in the requirements that is not written in
-the brief blocks approval. Only a design whose four checks all pass can be approved into memory, and an
+the brief blocks approval, and so does an open question about a value the brief does not give (decision 038).
+Only a design whose gated checks all pass (power, link, storage, trace, and no number outside the brief) can be approved into memory, and an
 approved design becomes searchable by the next run's retrieval.
 """
 from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import shutil
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -28,7 +31,8 @@ from bench.experiment import load_env  # noqa: E402
 NUMBER = re.compile(r"(?<![\w.])(\d+(?:\.\d+)?)(?!\w|\.\d)")
 MARITIME_FILE = ROOT / "scenario" / "maritime-isr" / "MaritimeISR.sysml"
 MEMORY = ROOT / "analysis" / "memory" / "approved.jsonl"
-GATED_CHECKS = ("POWER", "LINK", "STORE", "TRACE")
+# Approval needs every one of these to PASS (decision 038 added SOURCE: no design number outside the brief).
+GATED_CHECKS = ("POWER", "LINK", "STORE", "TRACE", "SOURCE")
 STOPWORDS = {"and", "the", "for", "with", "over", "one", "from", "that", "this", "are", "per", "its", "into",
              "not", "all", "any", "add", "via", "has", "have", "each", "both", "only", "than", "then"}
 
@@ -248,9 +252,12 @@ def write_requirements(brief: str) -> dict:
         {"role": "system", "content": (
             "You turn a short mission brief into numbered system requirements for a SysML v2 model. "
             "Reply with one JSON object: {\"requirements\": [{\"id\": \"R1\", \"text\": \"...\", "
-            "\"quantity\": {\"name\": \"powerLimitW\", \"value\": 60, \"unit\": \"W\"} | null}], "
-            "\"questions\": [\"...\"]}. Use only numbers that appear in the brief. "
-            "If a number needed for a check is missing, put a question in questions and leave quantity null. "
+            "\"quantity\": {\"name\": \"powerLimitW\", \"value\": <the number from the brief>, \"unit\": \"W\"} | null}], "
+            "\"missing_values\": [{\"quantity\": \"<attribute name>\", \"question\": \"...\"}], \"questions\": [\"...\"]}. "
+            "Use only numbers that appear in the brief. "
+            "If the brief does not state a number that a check needs (a power limit, a device's draw, the recording rate, the "
+            "storage, the retention hours, the upload or uplink rate), list that quantity in missing_values with the question "
+            "to ask, and leave the requirement's quantity null; never fill it in. Other remarks go in questions. "
             "Quantity names must be SysML attribute names: powerLimitW, drawW, uplinkMbps, uploadMbps, dataRateMbps, storageGB, retentionHours. "
             "dataRateMbps is the local recording rate; uploadMbps is the rate actually sent to shore; uplinkMbps is the link capacity. "
             "At most 9 requirements."
@@ -262,6 +269,11 @@ def write_requirements(brief: str) -> dict:
     if not isinstance(requirements, list):
         raise ValueError("The model returned no list of requirements")
     questions = parsed.get("questions") if isinstance(parsed, dict) else []
+    missing_values = parsed.get("missing_values") if isinstance(parsed, dict) else []
+    if not isinstance(missing_values, list):
+        missing_values = []
+    missing_values = [{"quantity": str(item.get("quantity") or ""), "question": str(item.get("question") or "")} if isinstance(item, dict)
+                      else {"quantity": str(item), "question": ""} for item in missing_values]
     allowed = numbers_in(brief)
     unsourced = []
     for item in requirements:
@@ -274,7 +286,23 @@ def write_requirements(brief: str) -> dict:
         if extra:
             unsourced.append({"id": item.get("id"), "numbers": extra})
     return {"requirements": requirements, "questions": questions if isinstance(questions, list) else [],
-            "unsourced": unsourced, "model": reply.get("model"), "usage": reply.get("usage")}
+            "missing_values": missing_values, "unsourced": unsourced, "model": reply.get("model"), "usage": reply.get("usage")}
+
+
+UNSPECIFIED = re.compile(r"\b(to be (confirmed|defined|determined|specified)|shall be (confirmed|defined|determined|specified)|"
+                         r"unspecified|not (yet )?specified|TBD|TBC)\b", re.I)
+
+
+def open_values(requirements: dict) -> list[str]:
+    """The quantities the brief does not give, as the requirements step reported them: the explicit `missing_values`
+    list (decision 038), plus any requirement without a value whose text says the value is unspecified (records written
+    before the explicit list existed). Conflicts and remarks in `questions` are not open values; the checks judge those."""
+    out = [item.get("quantity") or item.get("question") or "a value" for item in requirements.get("missing_values") or [] if isinstance(item, dict)]
+    for item in requirements.get("requirements") or []:
+        quantity = item.get("quantity") or {}
+        if quantity.get("value") is None and UNSPECIFIED.search(item.get("text") or ""):
+            out.append(item.get("text", "")[:80])
+    return out
 
 
 DESIGN_RULES = SYSML_RULES + (
@@ -359,10 +387,26 @@ def parsed_numbers(run_dir: Path) -> tuple[dict, list, list]:
     return numbers, connections, names
 
 
-def simulate(numbers: dict, connections: list, requirements: list[dict]) -> list[dict]:
+def simulate(numbers: dict, connections: list, requirements: list[dict], brief: str | None = None) -> list[dict]:
     def tail(suffix: str) -> dict:
         return {name: value for name, value in numbers.items() if name.endswith("::" + suffix)}
     checks = []
+    # SOURCE (decision 038): every literal number in the officially parsed design must be a number the brief states
+    # (or a requirement value that itself came from the brief). A design that fills a value the brief left open
+    # invents it. The comparison is on the number alone, as the requirements' source check is.
+    if brief is not None:
+        allowed = numbers_in(brief)
+        for item in requirements:
+            quantity = item.get("quantity") or {}
+            if quantity.get("value") is not None and not item.get("unsourced_numbers"):
+                allowed.add(f"{float(quantity['value']):g}")
+        foreign = sorted(f"{name.rsplit('::', 1)[-1]} = {value:g}" for name, value in numbers.items() if f"{value:g}" not in allowed)
+        checks.append({"id": "SOURCE", "label": "Every design number is in the brief", "formula": "each parsed literal appears in the brief or in a sourced requirement",
+                       "status": "PASS" if not foreign else "FAIL", "actual": len(numbers) - len(foreign), "limit": len(numbers), "unit": "numbers",
+                       "detail": "no number of unknown origin" if not foreign else "not in the brief: " + ", ".join(foreign[:6])})
+    else:
+        checks.append({"id": "SOURCE", "label": "Every design number is in the brief", "status": "UNKNOWN",
+                       "detail": "The brief was not given to the checker."})
     limits, draws = tail("powerLimitW"), tail("drawW")
     if limits and draws:
         limit = next(iter(limits.values()))
@@ -405,8 +449,46 @@ def simulate(numbers: dict, connections: list, requirements: list[dict]) -> list
     with_quantity = sum(1 for item in requirements if (item.get("quantity") or {}).get("name"))
     checks.append({"id": "TRACE", "label": "Numbered requirements in the model", "formula": "each requirement's attribute name and value appear in the official parse",
                    "status": "PASS" if covered == with_quantity else "FAIL", "actual": covered, "limit": with_quantity, "unit": "reqs"})
+    checks += mission_checks(numbers, requirements)
     checks.append({"id": "CONNECT", "label": "Connections", "status": "INFO", "actual": len(connections), "unit": "links"})
     return checks
+
+
+def mission_checks(numbers: dict, requirements: list[dict]) -> list[dict]:
+    """Activity (9) of the brief, inside the flow: the requirements simulated against each other (consistency), the design's
+    own numbers simulated minute by minute over the mission against the requirements (alignment, with the first violation
+    time), and the quantities the simulation needed that no requirement states (completeness). bench/simulate_design.py
+    holds the equations and the OpenModelica cross-check; this is the same code, so the page, the Langflow pipeline and the
+    CLI report agree. Not gated: approval still rests on the four static checks above (GATED_CHECKS)."""
+    import tempfile
+    from bench.simulate_design import consistency, design_values, integrate, modelica_crosscheck, requirement_values
+    req_values = requirement_values(requirements)
+    rows = []
+    agreed = consistency(req_values)
+    rows.append({"id": "REQS", "label": "Requirements consistent with each other", "formula": "the requirement values alone, over the mission",
+                 "status": agreed["status"] if agreed["status"] != "PARTIAL" else "UNKNOWN",
+                 "detail": ("the stated requirements can all hold at once" if agreed["status"] == "PASS"
+                            else ("no mission duration or quantities to simulate" if agreed["status"] == "PARTIAL"
+                                  else "the requirements contradict each other: " + ", ".join(agreed["conflicts"])))})
+    sim = integrate(design_values(numbers))
+    statuses = [check["status"] for check in sim["checks"]]
+    status = "FAIL" if "FAIL" in statuses else ("UNKNOWN" if "UNKNOWN" in statuses or not sim.get("final") else "PASS")
+    parts = []
+    if sim.get("final"):
+        final = sim["final"]
+        parts.append(f"{sim['mission_hours']:g} h simulated minute by minute: {final['recorded_gb']} GB recorded, {final['backlog_gb']} GB undelivered, {final['energy_wh']} Wh")
+        first = [f"{c['id']} at hour {c['first_violation_h']:g}" for c in sim["checks"] if c.get("first_violation_h") is not None]
+        if first:
+            parts.append("first violation: " + ", ".join(first))
+        with tempfile.TemporaryDirectory() as folder:
+            cross = modelica_crosscheck(design_values(numbers), Path(folder))
+        parts.append("OpenModelica " + ("agrees" if cross.get("status") == "AGREE" else cross.get("status", "").lower() or "not run"))
+    else:
+        parts.append("the model does not state the quantities a mission simulation needs")
+    parts.append("not stated by any requirement: link outage, energy store, where undelivered data is kept")
+    rows.append({"id": "MISSION", "label": "Design over the mission", "formula": "power, recording and upload integrated over the mission; a cross-check in OpenModelica",
+                 "status": status, "detail": "; ".join(parts)})
+    return rows
 
 
 DEFINITION_TYPES = {"PartDefinition", "PortDefinition", "AttributeDefinition", "InterfaceDefinition", "ItemDefinition",
@@ -594,8 +676,13 @@ def read_back(source: str) -> dict:
 
 def approval_block(record: dict, design: dict) -> str:
     """Empty string when the design may be approved into memory, otherwise the reason it may not."""
-    if (record.get("requirements") or {}).get("unsourced"):
+    requirements = record.get("requirements") or {}
+    if requirements.get("unsourced"):
         return "The requirements contain numbers that are not in the brief; it cannot go into memory."
+    if open_values(requirements):
+        # Decision 038: a value the brief does not give. The flow asked instead of guessing; the person answers and runs
+        # again. Until then no design may be approved.
+        return "The brief leaves a value open and the requirements ask for it; it cannot go into memory."
     if design.get("sysml_status") != "PASS":
         return "The official parse did not pass; it cannot go into memory."
     status = {check["id"]: check for check in design.get("checks") or []}
@@ -604,6 +691,27 @@ def approval_block(record: dict, design: dict) -> str:
         if check.get("status") != "PASS":
             return f"The {key} check did not pass ({check.get('status', 'missing')}); it cannot go into memory."
     return ""
+
+
+def gate_for(record: dict) -> dict:
+    """The approval gate of a run record, from the record alone: who may be approved and why not. Used at the end of a
+    run and by anything that re-reads a saved record (re-scoring after a rule change)."""
+    requirements = record.get("requirements") or {}
+    designs = record.get("designs") or []
+    eligible = [design["key"] for design in designs if not approval_block(record, design)]
+    if requirements.get("unsourced"):
+        return {"answer": "needs-person", "eligible": [],
+                "effect": "The requirements contain numbers that are not in the brief. Nothing can go into memory until a person supplies them."}
+    missing = open_values(requirements)
+    if missing:
+        return {"answer": "needs-person", "eligible": [],
+                "effect": f"The brief leaves a value open and the requirements ask for it ({'; '.join(missing[:3])}). Nothing can go into memory until a person answers."}
+    if eligible:
+        return {"answer": "awaiting-person", "eligible": eligible,
+                "effect": f"{'Designs' if len(eligible) > 1 else 'Design'} {', '.join(eligible)} {'pass' if len(eligible) > 1 else 'passes'} every check "
+                          "and may be approved into memory by a person. The script does not choose."}
+    return {"answer": "awaiting-person", "eligible": [],
+            "effect": "Both designs fail a check, so neither can go into memory. Pick a trade-off, go back to the design space, and give it to the agent again."}
 
 
 def keep_source(run_id: str, key: str, run_dir: Path) -> Path:
@@ -705,15 +813,30 @@ VARIANT_B = ("Design B: same attribute names and the same numbers, but a differe
              "through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A.")
 
 
-def run(brief: str, progress) -> dict:
+def run(brief: str, progress, *, agent: str = "direct", model: str | None = None, flow: str | None = None,
+        record_dir: Path | None = None, latest: bool = True) -> dict:
+    """One pass of the design flow. The design writer (step ③) is `agent`: "direct" (the model writes, this module),
+    "opencode" or "claude-code" (a sandboxed coding agent with ./validate), or "langflow" (a Langflow chat flow named by
+    `flow`, with its own Pilot tool). The three agent writers run through bench.shell_service._write, the same code the
+    Langflow Design pipeline uses, so a benchmark that calls run() measures the same writers the tool offers. `model` is
+    the writer's model; the direct writer and the repair loop read MVP_LLM_MODEL as before when it is None.
+    The record goes to analysis/discover-<stamp>.json and discover-latest.json, the page's list of runs; a benchmark
+    passes `record_dir` (its own folder) and `latest=False` so hundreds of scored runs do not become the page's history."""
     from agents.llm import USAGE_LOG, usage_summary
     load_env()
+    if model:
+        os.environ["MVP_LLM_MODEL"] = model
     calls: list[dict] = []
     USAGE_LOG.set(calls)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     folder = ROOT / "mvp" / "exam-inbox" / f"discover-{stamp}"
+    while folder.exists():
+        time.sleep(1)
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+        folder = ROOT / "mvp" / "exam-inbox" / f"discover-{stamp}"
     folder.mkdir(parents=True)
-    record = {"id": stamp, "brief": brief, "synthetic": True}
+    record = {"id": stamp, "brief": brief, "synthetic": True,
+              "writer": {"agent": agent, "model": model or os.environ.get("MVP_LLM_MODEL"), "flow": flow if agent == "langflow" else None}}
     progress("brief", "pass", "Brief recorded. This is everything the agent receives.")
 
     progress("retrieve", "run", "Search memory for elements matching the brief's words, then take one hop of neighbours.")
@@ -736,12 +859,18 @@ def run(brief: str, progress) -> dict:
     designs = []
     for key, variant in (("A", VARIANT_A), ("B", VARIANT_B)):
         progress("design", "run", f"The model writes design {key}. The prompt holds the rules, the attribute contract and the retrieved elements.")
-        written = write_design(brief, req["requirements"], f"Design{key}", variant, record["retrieval"].get("cards"))
+        if agent == "direct":
+            written = write_design(brief, req["requirements"], f"Design{key}", variant, record["retrieval"].get("cards"))
+        else:
+            from bench.shell_service import _write
+            session = {"id": stamp, "folder": str(folder), "agent": agent, "model": model or os.environ.get("MVP_LLM_MODEL", ""),
+                       "flow": flow, "record": record}
+            written = _write(session, key, variant, None)
         design = _validate_design(key, written, folder, progress)
         if design["sysml_status"] == "PASS":
             numbers, connections, names = parsed_numbers(Path(design["run_dir"]))
             design.update({"numbers": numbers, "connections": connections, "elements": names,
-                           "checks": simulate(numbers, connections, [dict(item) for item in req["requirements"]])})
+                           "checks": simulate(numbers, connections, [dict(item) for item in req["requirements"]], brief)})
         else:
             design["checks"] = [{"id": "SYNTAX", "label": "Official syntax", "status": "FAIL", "detail": "The parse failed, so nothing was computed."}]
         designs.append(design)
@@ -796,22 +925,17 @@ def run(brief: str, progress) -> dict:
             design["read_back_numbers"] = {value: value in numbers_in(design["read_back"]) for value in sorted(brief_numbers, key=float)}
     progress("readback", "pass", "Read-back done; code checked every number from the brief.")
 
-    eligible = [design["key"] for design in designs if not approval_block(record, design)]
-    if req["unsourced"]:
-        gate = {"answer": "needs-person", "eligible": [], "effect": "The requirements contain numbers that are not in the brief. Nothing can go into memory until a person supplies them."}
-    elif eligible:
-        gate = {"answer": "awaiting-person", "eligible": eligible,
-                "effect": f"{'Designs' if len(eligible) > 1 else 'Design'} {', '.join(eligible)} {'pass' if len(eligible) > 1 else 'passes'} all four checks "
-                          "and may be approved into memory by a person. The script does not choose."}
-    else:
-        gate = {"answer": "awaiting-person", "eligible": [],
-                "effect": "Both designs fail a check, so neither can go into memory. Pick a trade-off, go back to the design space, and give it to the agent again."}
+    gate = gate_for(record)
+    eligible = gate["eligible"]
     record["gate"] = gate
     record["usage"] = usage_summary(calls)
     progress("gate", "pass" if eligible else "fail", gate["effect"])
-    out = ROOT / "analysis" / f"discover-{stamp}.json"
+    target = Path(record_dir) if record_dir else ROOT / "analysis"
+    target.mkdir(parents=True, exist_ok=True)
+    out = target / f"discover-{stamp}.json"
     text = json.dumps(record, ensure_ascii=False, indent=2)
     out.write_text(text, encoding="utf-8")
-    (ROOT / "analysis" / "discover-latest.json").write_text(text, encoding="utf-8")
-    record["file"] = out.name
+    if latest:
+        (ROOT / "analysis" / "discover-latest.json").write_text(text, encoding="utf-8")
+    record["file"] = str(out.relative_to(ROOT)) if out.is_relative_to(ROOT) else str(out)
     return record

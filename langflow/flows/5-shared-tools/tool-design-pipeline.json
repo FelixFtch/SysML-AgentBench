@@ -1,6 +1,6 @@
 {
   "name": "Design pipeline",
-  "description": "Run the verified RTRC design pipeline on a confirmed brief: memory search, numbered requirements, designs A and B written by OpenCode in a sandbox with the official SysML v2 Pilot, the Pilot's verdict, alignment with the memory, the power / upload / storage / trace checks, trade-offs when a check fails, diagram and Cameo export. Returns the review text with the run id. Takes 2 to 10 minutes; the results page (port 8770) must be stopped.",
+  "description": "Run the verified RTRC design pipeline on a confirmed brief: memory search, numbered requirements, designs A and B written by OpenCode in a sandbox with the official SysML v2 Pilot, the Pilot's verdict, alignment with the memory, the power / upload / storage / trace checks, trade-offs when a check fails, diagram and Cameo export. Returns the review text with the run id. Takes 2 to 10 minutes; the results page (port 8770) may stay open.",
   "endpoint_name": "tool-design-pipeline",
   "is_component": false,
   "tags": [
@@ -5114,7 +5114,7 @@
           "id": "note-tool",
           "type": "note",
           "node": {
-            "description": "# Design pipeline (a tool of the memory assistants)\n\nThe design pipeline the **Langflow Agent with memory chat · qwen3.8-max** and its local twin run when the engineer has confirmed a brief: the design agent flow without the person's step. It ends at the review text; the decision is made in the chat (write to memory pauses for the person's approval, record decision saves it).\n\n- Same nodes and the same shell service as the agent flow, so a run here and a run on the results page give the same retrieval, prompts, Pilot results and checks. The record appears on page 2.3.\n- Designs are written by OpenCode in the bubblewrap sandbox on the local Qwen3.8-27B, with `./validate` in hand (decision 032): the Pilot's errors come back as a tool result and the file is edited.\n- Stop the results page (8770) before a run. Edit this flow and the assistant runs the edited version.",
+            "description": "# Design pipeline (a tool of the memory assistants)\n\nThe design pipeline the **Langflow Agent with memory chat · qwen3.8-max** and its local twin run when the engineer has confirmed a brief: the design agent flow without the person's step. It ends at the review text; the decision is made in the chat (write to memory pauses for the person's approval, record decision saves it).\n\n- Same nodes and the same shell service as the agent flow, so a run here and a run on the results page give the same retrieval, prompts, Pilot results and checks. The record appears on page 2.3.\n- Designs are written by OpenCode in the bubblewrap sandbox on the local Qwen3.8-27B, with `./validate` in hand (decision 032): the Pilot's errors come back as a tool result and the file is edited.\n- The results page (8770) may stay open during a run: the sandbox cannot reach it. Edit this flow and the assistant runs the edited version.",
             "display_name": "",
             "documentation": "",
             "template": {

@@ -1,0 +1,476 @@
+diff --git a/docs/langflow/04-flows.md b/docs/langflow/04-flows.md
+index 7bf680e..ed144ff 100644
+--- a/docs/langflow/04-flows.md
++++ b/docs/langflow/04-flows.md
+@@ -110,6 +110,24 @@ Folder: [`langflow/flows/5-shared-tools/`](../../langflow/flows/5-shared-tools/)
+ - Stop the results page (8770) before a run. Edit this flow and the assistant runs the edited version.
+ 
+ 
++### Classify requirements
++
++`tool flow (run by projects 3 and 4)` · file [`5-shared-tools/tool-classify-requirement.json`](../../langflow/flows/5-shared-tools/tool-classify-requirement.json) · 3 cards · Judge whether sentences are software requirement statements: each sentence goes to the Kev decision service as one yes/no question, in batches of 40, and comes back requirement or not with the probability. Millisecond-level; a clear error when the Kev service (127.0.0.1:8009) is not running.
++
++![Classify requirements](../../langflow/flows/5-shared-tools/tool-classify-requirement.svg)
++
++| Card | Component | What it does |
++|---|---|---|
++| Sentences (the tool's argument) | `ChatInput` | The sentences to judge, one per line; a JSON list or pasted running text work too. |
++| Kev requirement classifier | `RtrcKevClassify` | The Kev decision service (a laptop-scale Jev clone served on 127.0.0.1:8009, scripts/kev_up.sh) judges each sentence with one yes/no question, in batches of 40 — the wording of the jev-arena pilot. Milliseconds per batch… |
++| Verdicts (the tool's result) | `ChatOutput` | Display a chat message in the Playground. |
++
++**On the canvas:** The Kev requirement classifier as a flow: the sentences arrive from the engineer's assistant (a Run Flow card of the Kev flows of project 7), each becomes one yes/no question for the Kev decision service, and the verdicts come back one per sentence with the probabilities. A tool of the chat and exam Kev flows; it reads and writes nothing else.
++
++- Kev is a decision model, not a chat model: one forward pass over the sentences, milliseconds per batch of 40 (the chunk size of the jev-arena pilot, whose question wording this card reuses).
++- When the Kev service is not running on 127.0.0.1:8009, the card fails at once with the command that starts it (`scripts/kev_up.sh`); it does not hang and does not retry.
++
++
+ ## 1 · Direct model, approaches P0 to P3
+ 
+ The exam's fixed paths, one flow per approach: P0 writes once; P1 repairs from the official Pilot's complete error list; P2 outlines first; P3 retrieves examples (paper 2) before the outline. The model has no tools. Exam: a sealed task id in, scored against its key. Chat: a conversation; your words reach the model as written, the approach's steps run around them, and a model in the reply is parsed by the official Pilot; nothing scored.
+@@ -740,3 +758,103 @@ Folder: [`langflow/flows/6-other/`](../../langflow/flows/6-other/)
+ 
+ **On the canvas:** RTRC works in Cameo. This flow exports a run's officially parsed designs and records whether they open cleanly in Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement, the interoperability evidence the brief asks for. Cameo has no headless command, so a person opens the file.
+ 
++
++## 7 · Kev tools
++
++The two memory assistants with the Kev requirement classifier mounted as one more tool. The Kev service (a laptop-scale Jev clone, tools/jev-arena/kev) judges on 127.0.0.1:8009 whether a sentence is a requirement statement, in milliseconds (scripts/kev_up.sh starts it). Langflow's Agent runs the Classify requirements flow as a Run Flow card; the OpenCode harness gets kev_classify_requirement from the kev MCP server (tools/kev_mcp.py, 8793). Chat and exam versions of each; every other part is the same as the flow it was copied from.
++
++Folder: [`langflow/flows/7-kev-tools/`](../../langflow/flows/7-kev-tools/)
++
++
++### OpenCode with memory + Kev exam
++
++`exam` · file [`7-kev-tools/opencode-memory-kev-exam.json`](../../langflow/flows/7-kev-tools/opencode-memory-kev-exam.json) · 3 cards · The OpenCode-with-memory assistant with the Kev requirement classifier on one exam task: answer only, memory search, the official Pilot and kev_classify_requirement as tools.
++
++![OpenCode with memory + Kev exam](../../langflow/flows/7-kev-tools/opencode-memory-kev-exam.svg)
++
++| Card | Component | What it does |
++|---|---|---|
++| Task statement (one exam task) | `ChatInput` | The task text as the exam gives it; bench/langflow_exam.py sends the 27 sealed tasks here, three times each. |
++| OpenCode with memory + Kev · exam · qwen3.8-flash | `RtrcOpenCodeKevAssistant` | A fresh OpenCode session per task on the Kev exam workspace (~/.rtrc-assistant-kev-exam): the exam prompt with the frozen SysML rules, memory search and the official Pilot as the RTRC tools, and the Kev requirement class… |
++| Answer (scored outside, by the frozen scorer) | `ChatOutput` | Display a chat message in the Playground. |
++
++**On the canvas:** The Kev variant of the OpenCode-with-memory exam flow: the same harness, prompt and frozen rules as **OpenCode with memory exam**, on qwen3.8-flash, with one more tool — kev_classify_requirement, the Kev decision service judging whether a sentence is a requirement statement (yes or no with a probability, milliseconds), served on 127.0.0.1:8009 (`scripts/kev_up.sh`) and mounted through the kev MCP server (tools/kev_mcp.py, 8793). Each message is one task and starts a fresh OpenCode session in the workspace ~/.rtrc-assistant-kev-exam, apart from the exam flow without Kev.
++
++- Run the whole exam with `python3 bench/langflow_exam.py --flow "OpenCode with memory + Kev exam"`.
++- One task by hand: paste its statement in the Playground; nothing is scored there.
++
++
++### OpenCode with memory + Kev chat
++
++`chat` · file [`7-kev-tools/opencode-memory-kev-chat.json`](../../langflow/flows/7-kev-tools/opencode-memory-kev-chat.json) · 3 cards · Ask, discuss, confirm requirements, run the verified design pipeline, decide — and ask whether sentences are requirements. OpenCode on the local Qwen3.8-27B over the RTRC MCP tools and the Kev requirement classifier.
++
++![OpenCode with memory + Kev chat](../../langflow/flows/7-kev-tools/opencode-memory-kev-chat.svg)
++
++| Card | Component | What it does |
++|---|---|---|
++| Engineer | `ChatInput` | Ask, describe a need, confirm a brief, decide — or ask whether sentences are requirements. |
++| OpenCode with memory + Kev · chat · local Qwen3.8-27B | `RtrcOpenCodeKevAssistant` | OpenCode is the harness: the model decides which RTRC tool to call and when; the tools decide nothing by themselves. Each chat session continues one OpenCode session. The kev MCP server adds the Kev requirement classifie… |
++| Answer | `ChatOutput` | Display a chat message in the Playground. |
++
++**On the canvas:** The Kev variant of the design assistant: the same OpenCode harness on the local 3-bit Qwen3.8-27B as **OpenCode with memory chat**, with one more tool — kev_classify_requirement, the Kev decision service judging whether a sentence is a requirement statement (one verdict per sentence with the probability, milliseconds). Ask it "is this a requirement?" and it calls the classifier.
++
++- The classifier runs on 127.0.0.1:8009 (`scripts/kev_up.sh`); the kev MCP server that mounts it (tools/kev_mcp.py) listens on 8793. The workspace is ~/.rtrc-assistant-kev, apart from the assistant without Kev.
++- Everything else is the chat flow's: the RTRC MCP tools (127.0.0.1:8782), the local model, the run_design pipeline, the memory gate. Its exam version sits next to it in this project.
++
++
++### Langflow Agent with memory + Kev exam
++
++`exam` · file [`7-kev-tools/langflow-agent-memory-kev-exam.json`](../../langflow/flows/7-kev-tools/langflow-agent-memory-kev-exam.json) · 6 cards · Langflow's Agent on one exam task: the exam prompt, qwen3.8-flash, memory search and the official Pilot as its only tools. The Kev variant (project 7): the flow "Classify requirements" is mounted as one more tool; the Kev service runs on 127.0.0.1:8009.
++
++![Langflow Agent with memory + Kev exam](../../langflow/flows/7-kev-tools/langflow-agent-memory-kev-exam.svg)
++
++| Card | Component | What it does |
++|---|---|---|
++| Task statement (one exam task) | `ChatInput` | The task text as the exam gives it; bench/langflow_exam.py sends the 27 sealed tasks here, three times each. |
++| Tool · official Pilot on pasted SysML (a flow) · Paper 3 | `RunFlow` | Runs the flow "Validate SysML with the official Pilot": the pasted text saved as a file → the official SysML v2 Pilot → PASS or FAIL with the diagnostics. |
++| Tool · search memory (a flow) · Paper 2 | `RunFlow` | Runs the flow "Memory search": the memory library → MiniLM + FAISS seeds → one hop of neighbours → cards. Open it to see each step. |
++| Langflow Agent with memory + Kev exam · Langflow Agent · qwen3.8-flash | `Agent` | Langflow's own Agent component: the model decides which card to call and when; the cards decide nothing by themselves. Model: Qwen's cloud endpoint. Token usage is stored on each answer (time and money per task). |
++| Tool · classify requirement sentences (a flow) · Kev | `RunFlow` | Runs the flow "Classify requirements": each sentence goes to the Kev decision service (127.0.0.1:8009) as one yes/no question in batches of 40 → one verdict per sentence, requirement or not, with the probability. Millise… |
++| Answer (scored outside, by the frozen scorer) | `ChatOutput` |  |
++
++**On the canvas:** Langflow's Agent sitting the 27-task exam with memory (decision 035): the exam prompt (tools/assistant/rtrc-assistant-exam.md plus the frozen rules of agents/solve.py), qwen3.8-flash (the model of the frozen exam), and two tools as flows: **Validate SysML with the official Pilot** and **Memory search** (paper 2 retrieval over MaritimeISR and the approved designs). No design pipeline, no write to memory, no knowledge-base card.
++
++- The same prompt and the same two tools as **OpenCode with memory exam**, so the two columns on results page 1.3 compare the harnesses, not the tools.
++- Run the whole exam with `python3 bench/langflow_exam.py --flow "Langflow Agent with memory + Kev exam"`: 27 tasks × 3 repeats, a fresh session per task, scored by the frozen scorer; time and tokens (the Agent's usage field) recorded per task. The answer keys never enter the prompt.
++- One task by hand: paste its statement in the Playground; nothing is scored there.
++
++**The Kev variant (project 7):** the same exam flow with one more tool, the flow **Classify requirements** — the Kev decision service (127.0.0.1:8009, `scripts/kev_up.sh`) judging whether a sentence is a requirement statement, one verdict per sentence with the probability, milliseconds. Everything else, the prompt and the frozen rules included, is the base flow's.
++
++
++### Langflow Agent with memory + Kev chat · qwen3.8-max
++
++`chat` · file [`7-kev-tools/langflow-agent-memory-kev-chat.json`](../../langflow/flows/7-kev-tools/langflow-agent-memory-kev-chat.json) · 14 cards · The assistant with its parts on the canvas: Langflow's Agent (qwen3.8-max), one card per RTRC tool, the memory knowledge base, the design pipeline as a flow run as a tool; write to memory pauses for approval. The Kev variant (project 7): the flow "Classify requirements" is mounted as one more tool; the Kev service runs on 127.0.0.1:8009.
++
++![Langflow Agent with memory + Kev chat · qwen3.8-max](../../langflow/flows/7-kev-tools/langflow-agent-memory-kev-chat.svg)
++
++| Card | Component | What it does |
++|---|---|---|
++| Engineer | `ChatInput` | Ask, describe a need, confirm a brief, or decide. |
++| Tool · search memory (a flow) · Paper 2 | `RunFlow` | Runs the flow "Memory search": the memory library → MiniLM + FAISS seeds → one hop of neighbours → cards. Open it to see each step. |
++| Tool · write to memory (a flow) · approval card · Paper 2 | `RunFlow` | Pauses for your approval, then runs the flow "Write to memory": the gate (Pilot PASS, four checks PASS) → the write → the record → the knowledge base refreshed with the new cards. |
++| Tool · status of a run | `MCPTools` | What a saved run produced (analysis/discover-<run>.json): path, requirements, each design's Pilot result and checks, the decision. |
++| Memory as knowledge base · Paper 2 | `Knowledge` | Langflow's semantic search over the same cards (Qwen embeddings, filled by the knowledge-base fill flow and by the write-to-memory flow). |
++| Tool · run the design pipeline (a flow) · Papers 2, 3, 1 | `RunFlow` | Runs the flow "Design pipeline": ① memory → ② requirements → ③ designs by OpenCode in the sandbox (its rules, template and examples shown as cards) → ④ official Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review. Ope… |
++| Tool · list projects | `MCPTools` | What is in the memory: MaritimeISR and every approved design, with card counts. Reads analysis/memory/approved.jsonl. |
++| Tool · record a decision | `MCPTools` | Saves Reject or Send back with the engineer's reason on the run's record (page 2.3). |
++| Tool · classify requirement sentences (a flow) · Kev | `RunFlow` | Runs the flow "Classify requirements": each sentence goes to the Kev decision service (127.0.0.1:8009) as one yes/no question in batches of 40 → one verdict per sentence, requirement or not, with the probability. Millise… |
++| Langflow Agent with memory + Kev chat · qwen3.8-max · Langflow Agent · qwen3.8-max | `Agent` | Langflow's own Agent component: the model decides which card to call and when; the cards decide nothing by themselves. Model: Qwen's cloud endpoint. |
++| Tool · official Pilot on pasted SysML (a flow) · Paper 3 | `RunFlow` | Runs the flow "Validate SysML with the official Pilot": the pasted text saved as a file → the official SysML v2 Pilot → PASS or FAIL with the diagnostics. |
++| Tool · read a project | `MCPTools` | The SysML v2 text of MaritimeISR or of an approved design, from the file itself. |
++| Tool · export for Cameo | `MCPTools` | Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when RTRC provides the license). |
++| Answer | `ChatOutput` |  |
++
++**On the canvas:** The same assistant as **OpenCode with memory chat**, with its parts on the canvas: Langflow's own Agent in the middle, one card per RTRC tool around it, the memory as a knowledge base, and four tools that are flows of their own (project 5).
++
++- Talk to it like a colleague: ask what exists, describe a need, answer its questions about missing numbers, confirm the brief it proposes, decide on the result. Model: Qwen's cloud endpoint.
++- Flows run as tools, open them to see each step: **Memory search** (library → MiniLM + FAISS seeds → one hop → cards, paper 2); **Design pipeline** (① memory → ② requirements → ③ designs by OpenCode in the sandbox, with the rules, template and examples it was given shown as cards → ④ Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; stop the results page 8770 first); **Validate SysML with the official Pilot** (file → official Pilot, paper 3); **Write to memory** (gate → write → record → knowledge base refreshed). Edit a flow and this assistant runs the edited version.
++- **Tool · write to memory** pauses for your approval (its Actions row): the AGENTS.md gate as a card. Every answer shows the tools it called when you expand it in the Playground.
++- It never invents numbers and never moves a stated limit; verdicts come from the official Pilot and the checks. Records appear on page 2.3.
++
++**The Kev variant (project 7):** the same assistant with one more tool, the flow **Classify requirements** — the Kev decision service (127.0.0.1:8009, `scripts/kev_up.sh`) judging whether a sentence is a requirement statement, one verdict per sentence with the probability, milliseconds. Ask it 'is this a requirement?' and it calls the classifier.
++
+diff --git a/docs/langflow/05-cards.md b/docs/langflow/05-cards.md
+index f61158f..6a05fa5 100644
+--- a/docs/langflow/05-cards.md
++++ b/docs/langflow/05-cards.md
+@@ -145,6 +145,30 @@ Calls the shell service at: `/gate/decision`.
+ **From the file:** RTRC Gate record: one node per Human Input branch of a stop-and-ask gate (AGENTS.md: a stated limit may only change
+ with a person's approval). Stores the choice in analysis/langflow-gates.jsonl.
+ 
++## RTRC Kev classify
++
++`RtrcKevClassify` · file [`rtrc/rtrc_kev.py`](../../langflow/components/rtrc/rtrc_kev.py)
++
++Judge whether sentences are software requirement statements with the Kev decision service: one yes/no question per sentence, in batches of 40, milliseconds per batch.
++
++| Input | Type | What it is |
++|---|---|---|
++| **Sentences** | Message | From the sub-flow's Chat Input: the sentences to judge, one per line (a JSON list or pasted running text work too). |
++
++| Output | Method |
++|---|---|
++| **Message** | `as_message` |
++| **Data** | `as_data` |
++
++**From the file:** RTRC Kev classify: the requirement-sentence judge of the Kev flows (project 7).
++
++One card, stateless: the sentences from the sub-flow's Chat Input go to the Kev decision service (the laptop-scale
++Jev clone of tools/jev-arena/kev, 127.0.0.1:8009, POST /v1/systemone) as one noul question per sentence, in batches of
++40 — the same wording the jev-arena pilot used — and the card returns one verdict per sentence: requirement yes or no
++with the probability. Kev is a decision model, not a chat model: milliseconds per batch, one attempt, no retries; when
++the service is not running the card raises a clear error that says how to start it, so a flow fails fast instead of
++hanging or retrying in a loop.
++
+ ## RTRC Memory (paper 2)
+ 
+ `RtrcMemory` · file [`rtrc/rtrc_memory.py`](../../langflow/components/rtrc/rtrc_memory.py)
+@@ -233,6 +257,36 @@ maps to one OpenCode session, so the conversation continues across messages.
+ Exam mode (decision 035): the exam workspace, qwen3.8-flash, the exam prompt, memory search and the official Pilot as
+ the only tools, and a fresh OpenCode session for every message, so one task cannot see another.
+ 
++## RTRC OpenCode assistant · Kev
++
++`RtrcOpenCodeKevAssistant` · file [`rtrc/rtrc_opencode_kev.py`](../../langflow/components/rtrc/rtrc_opencode_kev.py)
++
++One turn of the RTRC design assistant with the Kev requirement classifier: OpenCode with the RTRC tools (memory, the verified design pipeline, the official Pilot, the memory gate, decisions, Cameo export) and kev_classify_requirement; or, in exam mode, one exam answer.
++
++| Input | Type | What it is |
++|---|---|---|
++| **Engineer's message** | Message | Ask what exists, describe a need, confirm the brief it proposes, decide on a run, or ask whether sentences are requirements. In exam mode: one task statement. |
++| **Mode** (advanced) | Dropdown |  Options: Chat: one OpenCode session per Langflow session, all nine tools and the Kev requirement classifier, Exam: a fresh session per message, answer only, memory search, the official Pilot and the Kev requirement classifier as the tools. |
++| **Model** (advanced) | Dropdown | Pick one of the names our runs used, or type any name: a cloud name goes to the endpoint of .env (or to OpenCode's own provider when OPENCODE_MODEL is set), '<tag> (Ollama)' to a model you pulled into Ollama. The exam flows used qwen3.8-flash. Options: qwen3.8-27b (Ollama), qwen3.8-max, qwen3.8-flash. Any value may be typed. |
++
++| Output | Method |
++|---|---|
++| **Answer** | `turn` |
++
++**From the file:** RTRC OpenCode assistant, Kev variant: the conversational design assistant of project 7 with the Kev requirement
++classifier mounted. One turn per chat message, or one exam answer.
++
++The same harness as RtrcOpenCodeAssistant (OpenCode, the exam's pinned binary, with the RTRC MCP tools of
++tools/assistant_mcp.py on 127.0.0.1:8782 and its file and shell tools off), with one difference: the `kev` MCP server
++(tools/kev_mcp.py, 127.0.0.1:8793) is mounted too, so the assistant can call kev_classify_requirement. The workspace
++is prepared by tools/assistant/kev_workspace.py in its own homes (~/.rtrc-assistant-kev, ~/.rtrc-assistant-kev-exam),
++apart from project 3's, so nothing changes for the two flows without Kev.
++
++Chat mode: the local Qwen3.8-27B served by Ollama (or a cloud Qwen), all nine RTRC tools plus the Kev classifier, and
++each Langflow chat session maps to one OpenCode session, so the conversation continues across messages. Exam mode:
++the exam workspace, qwen3.8-flash, the exam prompt, memory search and the official Pilot as the only RTRC tools plus
++the Kev classifier, and a fresh OpenCode session for every message.
++
+ ## RTRC Record the decision
+ 
+ `RtrcRecord` · file [`rtrc/rtrc_record.py`](../../langflow/components/rtrc/rtrc_record.py)
+diff --git a/langflow/flows/README.md b/langflow/flows/README.md
+index 4446c00..54349b6 100644
+--- a/langflow/flows/README.md
++++ b/langflow/flows/README.md
+@@ -23,6 +23,7 @@ Flows the memory assistants run as tools: memory search (paper 2), the official
+ | Validate SysML with the official Pilot | [`5-shared-tools/tool-validate-sysml.json`](5-shared-tools/tool-validate-sysml.json) | tool (run by projects 3 and 4) |
+ | Write to memory | [`5-shared-tools/tool-write-to-memory.json`](5-shared-tools/tool-write-to-memory.json) | tool (run by projects 3 and 4) |
+ | Design pipeline | [`5-shared-tools/tool-design-pipeline.json`](5-shared-tools/tool-design-pipeline.json) | tool (run by projects 3 and 4) |
++| Classify requirements | [`5-shared-tools/tool-classify-requirement.json`](5-shared-tools/tool-classify-requirement.json) | tool (run by projects 3 and 4) |
+ 
+ ## `1-direct-model/` · 1 · Direct model, approaches P0 to P3
+ 
+@@ -84,3 +85,14 @@ The design agent flow with the person's decision at ⑧ (cloud Qwen, and the loc
+ | Exam results tables | [`6-other/other-exam-results.json`](6-other/other-exam-results.json) | exam |
+ | MOD change chain | [`6-other/other-mod-change-chain.json`](6-other/other-mod-change-chain.json) | other |
+ | Cameo check | [`6-other/other-cameo-check.json`](6-other/other-cameo-check.json) | other |
++
++## `7-kev-tools/` · 7 · Kev tools
++
++The two memory assistants with the Kev requirement classifier mounted as one more tool. The Kev service (a laptop-scale Jev clone, tools/jev-arena/kev) judges on 127.0.0.1:8009 whether a sentence is a requirement statement, in milliseconds (scripts/kev_up.sh starts it). Langflow's Agent runs the Classify requirements flow as a Run Flow card; the OpenCode harness gets kev_classify_requirement from the kev MCP server (tools/kev_mcp.py, 8793). Chat and exam versions of each; every other part is the same as the flow it was copied from.
++
++| Flow name in Langflow | File | Kind |
++|---|---|---|
++| OpenCode with memory + Kev exam | [`7-kev-tools/opencode-memory-kev-exam.json`](7-kev-tools/opencode-memory-kev-exam.json) | exam |
++| OpenCode with memory + Kev chat | [`7-kev-tools/opencode-memory-kev-chat.json`](7-kev-tools/opencode-memory-kev-chat.json) | chat |
++| Langflow Agent with memory + Kev exam | [`7-kev-tools/langflow-agent-memory-kev-exam.json`](7-kev-tools/langflow-agent-memory-kev-exam.json) | exam |
++| Langflow Agent with memory + Kev chat · qwen3.8-max | [`7-kev-tools/langflow-agent-memory-kev-chat.json`](7-kev-tools/langflow-agent-memory-kev-chat.json) | chat |
+diff --git a/langflow/flows/catalog.py b/langflow/flows/catalog.py
+index 76568a6..0f83a76 100644
+--- a/langflow/flows/catalog.py
++++ b/langflow/flows/catalog.py
+@@ -1,4 +1,4 @@
+-"""The RTRC flows and the six Langflow projects they live in (decision 035). One place for the names.
++"""The RTRC flows and the Langflow projects they live in (decision 035; project 7 adds the Kev tools). One place for the names.
+ 
+ Each project holds one candidate's exam version and chat version side by side, so the same canvas can sit the
+ 27-task exam (one task in, one answer out, scored outside) or talk to a person:
+@@ -10,6 +10,8 @@ Each project holds one candidate's exam version and chat version side by side, s
+ 5. Shared tool flows: memory search, validate, write to memory, the design pipeline; run as tools by 3 and 4.
+ 6. Other: the design agent flow with a person's decision, the knowledge-base fill, the results tables, the MOD
+    change chain, the Cameo check.
++7. Kev tools: the two memory assistants of projects 3 and 4 with the Kev requirement classifier (a decision service on
++   127.0.0.1:8009) mounted as one more tool; the shared tool flow they run sits in project 5.
+ 
+ A slug is the flow file name (langflow/flows/<project folder>/<slug>.json; flow_file(slug) gives the path) and the
+ flow's endpoint name; the name is what Langflow shows. Run Flow names a tool "<flow name with spaces as dashes>_tool",
+@@ -33,6 +35,7 @@ FOLDERS: dict[str, str] = {
+     "4 · Langflow Agent with memory": "4-langflow-agent-with-memory",
+     "5 · Shared tool flows": "5-shared-tools",
+     "6 · Other": "6-other",
++    "7 · Kev tools": "7-kev-tools",
+ }
+ 
+ PROJECTS: list[tuple[str, str, list[tuple[str, str]]]] = [
+@@ -41,7 +44,8 @@ PROJECTS: list[tuple[str, str, list[tuple[str, str]]]] = [
+      [("tool-memory-search", "Memory search"),
+       ("tool-validate-sysml", "Validate SysML with the official Pilot"),
+       ("tool-write-to-memory", "Write to memory"),
+-      ("tool-design-pipeline", "Design pipeline")]),
++      ("tool-design-pipeline", "Design pipeline"),
++      ("tool-classify-requirement", "Classify requirements")]),
+     ("1 · Direct model, approaches P0 to P3",
+      "The exam's fixed paths, one flow per approach: P0 writes once; P1 repairs from the official Pilot's complete error list; P2 outlines first; P3 retrieves examples (paper 2) before the outline. The model has no tools. Exam: a sealed task id in, scored against its key. Chat: a conversation; your words reach the model as written, the approach's steps run around them, and a model in the reply is parsed by the official Pilot; nothing scored.",
+      [("direct-exam-p0", "Direct model exam · P0 one-shot"),
+@@ -78,6 +82,12 @@ PROJECTS: list[tuple[str, str, list[tuple[str, str]]]] = [
+       ("other-exam-results", "Exam results tables"),
+       ("other-mod-change-chain", "MOD change chain"),
+       ("other-cameo-check", "Cameo check")]),
++    ("7 · Kev tools",
++     "The two memory assistants with the Kev requirement classifier mounted as one more tool. The Kev service (a laptop-scale Jev clone, tools/jev-arena/kev) judges on 127.0.0.1:8009 whether a sentence is a requirement statement, in milliseconds (scripts/kev_up.sh starts it). Langflow's Agent runs the Classify requirements flow as a Run Flow card; the OpenCode harness gets kev_classify_requirement from the kev MCP server (tools/kev_mcp.py, 8793). Chat and exam versions of each; every other part is the same as the flow it was copied from.",
++     [("opencode-memory-kev-exam", "OpenCode with memory + Kev exam"),
++      ("opencode-memory-kev-chat", "OpenCode with memory + Kev chat"),
++      ("langflow-agent-memory-kev-exam", "Langflow Agent with memory + Kev exam"),
++      ("langflow-agent-memory-kev-chat", "Langflow Agent with memory + Kev chat · qwen3.8-max")]),
+ ]
+ 
+ NAMES: dict[str, str] = {slug: name for _, _, flows in PROJECTS for slug, name in flows}
+diff --git a/langflow/scripts/build_flows.py b/langflow/scripts/build_flows.py
+index 0489301..133f35e 100644
+--- a/langflow/scripts/build_flows.py
++++ b/langflow/scripts/build_flows.py
+@@ -39,10 +39,12 @@ from rtrc.rtrc_exam_cell import RtrcExamCell  # noqa: E402
+ from rtrc.rtrc_chat import CANDIDATES as CHAT_CANDIDATES, RtrcChat  # noqa: E402
+ from rtrc.rtrc_exam_step import RtrcExamStep  # noqa: E402
+ from rtrc.rtrc_gate import RtrcGateRecord  # noqa: E402
++from rtrc.rtrc_kev import RtrcKevClassify  # noqa: E402
+ from rtrc.rtrc_memory import RtrcMemory  # noqa: E402
+ from rtrc.rtrc_mod import RtrcModChange  # noqa: E402
+ from rtrc.rtrc_mod_step import RtrcModStep  # noqa: E402
+ from rtrc.rtrc_opencode import RtrcOpenCodeAssistant  # noqa: E402
++from rtrc.rtrc_opencode_kev import RtrcOpenCodeKevAssistant  # noqa: E402
+ from rtrc.rtrc_record import RtrcRecord  # noqa: E402
+ from rtrc.rtrc_results import RtrcResults  # noqa: E402
+ from rtrc.rtrc_start import RtrcStart  # noqa: E402
+@@ -81,6 +83,11 @@ TOOL_FLOWS = {
+     "validate": ("tool-validate-sysml", NAMES["tool-validate-sysml"], tool_name(NAMES["tool-validate-sysml"]), "ChatInput-sysml",
+                  "Tool · official Pilot on pasted SysML (a flow) · Paper 3",
+                  f"Runs the flow \"{NAMES['tool-validate-sysml']}\": the pasted text saved as a file → the official SysML v2 Pilot → PASS or FAIL with the diagnostics."),
++    "classify": ("tool-classify-requirement", NAMES["tool-classify-requirement"], tool_name(NAMES["tool-classify-requirement"]),
++                 "ChatInput-sentences", "Tool · classify requirement sentences (a flow) · Kev",
++                 f"Runs the flow \"{NAMES['tool-classify-requirement']}\": each sentence goes to the Kev decision service (127.0.0.1:8009) as one "
++                 "yes/no question in batches of 40 → one verdict per sentence, requirement or not, with the probability. Milliseconds; "
++                 "when the service is down the tool says so instead of hanging."),
+ }
+ SEARCH_TOOL, VALIDATE_TOOL, WRITE_TOOL = TOOL_FLOWS["search"][2], TOOL_FLOWS["validate"][2], TOOL_FLOWS["write"][2]
+ TOOL_OUTPUT = {"allows_loop": False, "cache": True, "display_name": "Toolset", "group_outputs": False, "hidden": None, "loop_types": None,
+@@ -120,6 +127,18 @@ _SEARCH_TOOL_TEXT = (f" {SEARCH_TOOL}, flow_tweak_data = {{\"ChatInput-query~inp
+                      "maritime model and of approved designs; use it for names when the task refers to the existing model.")
+ PILOT_CHAT_PROMPT = f"""You are a SysML v2 assistant for a synthetic maritime ISR exercise; the numbers are not an RTX specification. You have one tool, the official SysML v2 Pilot: {_VALIDATE_TOOL_TEXT} You have no memory of existing projects and no design pipeline; say so when asked for them. Never invent a number and never change a stated limit. Answer in the language the person writes in."""
+ 
++# ---------- the Kev variants (project 7): the same assistants with the Kev requirement classifier as one more tool ----------
++# The Kev service (a laptop-scale Jev clone, tools/jev-arena/kev, scripts/kev_up.sh) judges sentences in milliseconds.
++KEV_TOOL = TOOL_FLOWS["classify"][2]
++KEV_ARG = f"ChatInput-sentences~input_value"
++KEV_CHAT_PROMPT_LINE = (f"\n\nKev requirement classifier. One more tool that is a flow: {KEV_TOOL}, flow_tweak_data = {{\"{KEV_ARG}\": <the sentences to "
++                        "judge, one per line>}}: each sentence goes to the Kev decision service as one yes/no question and comes back requirement or "
++                        "not, with a probability, in milliseconds (batches of 40). Use it whenever the engineer asks whether a sentence or a line is "
++                        "a requirement; report its verdicts as the tool's, with the probabilities.")
++KEV_EXAM_PROMPT_LINE = (f"\n\nOne more tool: {KEV_TOOL}, flow_tweak_data = {{\"{KEV_ARG}\": <the sentences to judge, one per line>}}, judges whether "
++                        "sentences are software requirement statements (yes or no with a probability each, milliseconds); use it when the task asks "
++                        "which sentences are requirements.")
++
+ 
+ def exam_prompt_for(kind: str) -> str:
+     """The exam prompt of a Langflow-Agent exam flow (tools/assistant/rtrc-assistant-exam.md with the frozen rules)."""
+@@ -515,6 +534,133 @@ def tool_flow(kind: str) -> dict:
+     return _as_tool(build(name, description, graph, titles, notes, None, ["rtrc", "tool", kind]), chat_id)
+ 
+ 
++# ---------- the Kev variants (project 7), built on the flows above and left otherwise the same ----------
++
++def kev_tool_flow() -> dict:
++    """The shared tool flow the Kev assistants run through Run Flow: Chat Input → the Kev classify card → Chat Output."""
++    slug, name, _, chat_id, _, _ = TOOL_FLOWS["classify"]
++    chat_in = ChatInput(_id=chat_id)
++    kev = RtrcKevClassify(_id="RtrcKev-classify")
++    kev.set(text=chat_in.message_response)
++    out = ChatOutput(_id="ChatOutput-verdicts")
++    out.set(input_value=kev.as_message)
++    graph = _graph(chat_in, [out])
++    titles = {chat_id: ("Sentences (the tool's argument)", "The sentences to judge, one per line; a JSON list or pasted running text work too."),
++              "RtrcKev-classify": ("Kev requirement classifier",
++                                   "The Kev decision service (a laptop-scale Jev clone served on 127.0.0.1:8009, scripts/kev_up.sh) judges each sentence "
++                                   "with one yes/no question, in batches of 40 — the wording of the jev-arena pilot. Milliseconds per batch, one attempt; "
++                                   "a clear error when the service is down."),
++              "ChatOutput-verdicts": ("Verdicts (the tool's result)", "")}
++    notes = [("note-classify",
++              f"# {name}\n\nThe Kev requirement classifier as a flow: the sentences arrive from the engineer's assistant (a Run Flow card of the Kev "
++              "flows of project 7), each becomes one yes/no question for the Kev decision service, and the verdicts come back one per sentence with "
++              "the probabilities. A tool of the chat and exam Kev flows; it reads and writes nothing else.\n\n"
++              "- Kev is a decision model, not a chat model: one forward pass over the sentences, milliseconds per batch of 40 (the chunk size of the "
++              "jev-arena pilot, whose question wording this card reuses).\n"
++              "- When the Kev service is not running on 127.0.0.1:8009, the card fails at once with the command that starts it "
++              "(`scripts/kev_up.sh`); it does not hang and does not retry.", 40, -20)]
++    description = ("Judge whether sentences are software requirement statements: each sentence goes to the Kev decision service as one yes/no "
++                   "question, in batches of 40, and comes back requirement or not with the probability. Millisecond-level; a clear error when the "
++                   "Kev service (127.0.0.1:8009) is not running.")
++    return _as_tool(build(name, description, graph, titles, notes, None, ["rtrc", "tool", "classify"]), chat_id)
++
++
++def unfolded_kev_flow(slug: str) -> dict:
++    """The Kev variants of the unfolded assistant (project 7): the chat assistant on qwen3.8-max (base
++    langflow-agent-memory-chat-max) or the exam version (base langflow-agent-memory-exam), with the Classify
++    requirements flow mounted as one more Run Flow card and named in the prompt. Everything else is the base flow's."""
++    base_slug = "langflow-agent-memory-exam" if slug.endswith("exam") else "langflow-agent-memory-chat-max"
++    flow = unfolded_flow(base_slug)
++    base_name, name = NAMES[base_slug], NAMES[slug]
++    exam = base_slug.endswith("exam")
++    _, flow_name, _, _, title, info = TOOL_FLOWS["classify"]
++    agent = next(node for node in flow["data"]["nodes"] if node["id"] == "Agent-rtrc")
++    # One more Run Flow card in the first free slot of the same card grid, wired to the Agent's Tools port like the others.
++    used = sum(1 for node in flow["data"]["nodes"] if node["id"].startswith(("RunFlow-", "MCPTools-", "Knowledge-")))
++    x, y = 40 + (used % 3) * 420, 820 + (used // 3) * 340
++    card = _frontend_node(RunFlowComponent(_id="RunFlow-classify"), "RunFlow-classify", x, y, title, info,
++                          {"flow_name_selected": flow_name, "flow_id_selected": None, "cache_flow": False}, tool_mode=True)
++    flow["data"]["nodes"].append(card)
++    agent_template = agent["data"]["node"]["template"]
++    tools_handle = {"fieldName": "tools", "id": "Agent-rtrc", "inputTypes": agent_template["tools"]["input_types"], "type": agent_template["tools"]["type"]}
++    flow["data"]["edges"].append(_edge("RunFlow-classify", "Agent-rtrc",
++                                       {"dataType": card["data"]["type"], "id": "RunFlow-classify", "name": "component_as_tool", "output_types": ["Tool"]},
++                                       tools_handle))
++    agent_template["system_prompt"]["value"] += KEV_EXAM_PROMPT_LINE if exam else KEV_CHAT_PROMPT_LINE
++    agent["data"]["node"]["display_name"] = agent["data"]["node"]["display_name"].replace(base_name, name)
++    note = next(node for node in flow["data"]["nodes"] if node["id"] == "note-unfolded")
++    note["data"]["node"]["description"] = (note["data"]["node"]["description"].replace(base_name, name)
++                                           + ("\n\n**The Kev variant (project 7):** the same exam flow with one more tool, the flow "
++                                              f"**{NAMES['tool-classify-requirement']}** — the Kev decision service (127.0.0.1:8009, `scripts/kev_up.sh`) "
++                                              "judging whether a sentence is a requirement statement, one verdict per sentence with the probability, "
++                                              "milliseconds. Everything else, the prompt and the frozen rules included, is the base flow's."
++                                              if exam else
++                                              "\n\n**The Kev variant (project 7):** the same assistant with one more tool, the flow "
++                                              f"**{NAMES['tool-classify-requirement']}** — the Kev decision service (127.0.0.1:8009, `scripts/kev_up.sh`) "
++                                              "judging whether a sentence is a requirement statement, one verdict per sentence with the probability, "
++                                              "milliseconds. Ask it 'is this a requirement?' and it calls the classifier."))
++    flow["name"] = name
++    flow["description"] = flow["description"].replace(base_name, name) + (
++        f" The Kev variant (project 7): the flow \"{flow_name}\" is mounted as one more tool; the Kev service runs on 127.0.0.1:8009.")
++    flow["endpoint_name"] = slug
++    flow["tags"] = (flow.get("tags") or []) + ["kev"]
++    return flow
++
++
++def assistant_kev_flow(exam: bool = False) -> dict:
++    """Chat Input → the Kev OpenCode assistant → Chat Output: OpenCode over the RTRC MCP tools plus the kev MCP server
++    (kev_classify_requirement), in its own workspace (project 7). Chat: the local Qwen3.8-27B, all nine RTRC tools and
++    the Kev classifier. Exam: qwen3.8-flash, the exam prompt, memory search, the official Pilot and the Kev classifier."""
++    from rtrc.rtrc_opencode_kev import MODELS as KEV_MODELS, MODES as KEV_MODES
++    chat_in = ChatInput(_id="ChatInput-ask")
++    assistant = RtrcOpenCodeKevAssistant(_id="RtrcOpenCode-kev")
++    assistant.set(message=chat_in.message_response, mode=KEV_MODES[1] if exam else KEV_MODES[0],
++                  model=EXAM_MODEL if exam else KEV_MODELS[0])
++    chat_out = ChatOutput(_id="ChatOutput-answer")
++    chat_out.set(input_value=assistant.turn)
++    graph = _graph(chat_in, [chat_out])
++    if exam:
++        titles = {
++            "ChatInput-ask": ("Task statement (one exam task)", "The task text as the exam gives it; bench/langflow_exam.py sends the 27 sealed tasks here, three times each."),
++            "RtrcOpenCode-kev": (f"OpenCode with memory + Kev · exam · {EXAM_MODEL}",
++                                 "A fresh OpenCode session per task on the Kev exam workspace (~/.rtrc-assistant-kev-exam): the exam prompt with the frozen SysML rules, "
++                                 "memory search and the official Pilot as the RTRC tools, and the Kev requirement classifier (kev_classify_requirement) from the kev "
++                                 "MCP server. No design run, no write to memory. Time and tokens are recorded per task."),
++            "ChatOutput-answer": ("Answer (scored outside, by the frozen scorer)", ""),
++        }
++        notes = [("note-assistant-kev-exam",
++                  f"# {NAMES['opencode-memory-kev-exam']}\n\nThe Kev variant of the OpenCode-with-memory exam flow: the same harness, prompt and frozen "
++                  f"rules as **{NAMES['opencode-memory-exam']}**, on {EXAM_MODEL}, with one more tool — kev_classify_requirement, the Kev decision "
++                  "service judging whether a sentence is a requirement statement (yes or no with a probability, milliseconds), served on 127.0.0.1:8009 "
++                  "(`scripts/kev_up.sh`) and mounted through the kev MCP server (tools/kev_mcp.py, 8793). Each message is one task and starts a fresh "
++                  "OpenCode session in the workspace ~/.rtrc-assistant-kev-exam, apart from the exam flow without Kev.\n\n"
++                  f"- Run the whole exam with `python3 bench/langflow_exam.py --flow \"" + NAMES["opencode-memory-kev-exam"] + "\"`.\n"
++                  "- One task by hand: paste its statement in the Playground; nothing is scored there.", 40, -20)]
++        return build(NAMES["opencode-memory-kev-exam"],
++                     f"The OpenCode-with-memory assistant with the Kev requirement classifier on one exam task: answer only, memory search, the official Pilot and kev_classify_requirement as tools.",
++                     graph, titles, notes, None, ["rtrc", "assistant", "exam", "kev"])
++    titles = {
++        "ChatInput-ask": ("Engineer", "Ask, describe a need, confirm a brief, decide — or ask whether sentences are requirements."),
++        "RtrcOpenCode-kev": ("OpenCode with memory + Kev · chat · local Qwen3.8-27B",
++                             "OpenCode is the harness: the model decides which RTRC tool to call and when; the tools decide nothing by themselves. "
++                             "Each chat session continues one OpenCode session. The kev MCP server adds the Kev requirement classifier."),
++        "ChatOutput-answer": ("Answer", ""),
++    }
++    notes = [("note-assistant-kev",
++              f"# {NAMES['opencode-memory-kev-chat']}\n\nThe Kev variant of the design assistant: the same OpenCode harness on the local 3-bit "
++              f"Qwen3.8-27B as **{NAMES['opencode-memory-chat']}**, with one more tool — kev_classify_requirement, the Kev decision service judging "
++              "whether a sentence is a requirement statement (one verdict per sentence with the probability, milliseconds). Ask it \"is this a "
++              "requirement?\" and it calls the classifier.\n\n"
++              "- The classifier runs on 127.0.0.1:8009 (`scripts/kev_up.sh`); the kev MCP server that mounts it (tools/kev_mcp.py) listens on 8793. "
++              "The workspace is ~/.rtrc-assistant-kev, apart from the assistant without Kev.\n"
++              "- Everything else is the chat flow's: the RTRC MCP tools (127.0.0.1:8782), the local model, the run_design pipeline, the memory gate. "
++              "Its exam version sits next to it in this project.", 40, -20)]
++    return build(NAMES["opencode-memory-kev-chat"],
++                 "Ask, discuss, confirm requirements, run the verified design pipeline, decide — and ask whether sentences are requirements. "
++                 "OpenCode on the local Qwen3.8-27B over the RTRC MCP tools and the Kev requirement classifier.",
++                 graph, titles, notes, None, ["rtrc", "assistant", "local", "kev"])
++
++
+ # ---------- the main agent flow (F4) ----------
+ 
+ def main_flow(local: bool = False, as_tool: bool = False) -> dict:
+@@ -864,6 +1010,11 @@ FLOWS = {
+     "langflow-agent-memory-exam": lambda: unfolded_flow("langflow-agent-memory-exam"),
+     "langflow-agent-memory-chat-max": lambda: unfolded_flow("langflow-agent-memory-chat-max"),
+     "langflow-agent-memory-chat-local": lambda: unfolded_flow("langflow-agent-memory-chat-local"),
++    # 7 · Kev tools (built on the flows above; the shared tool flow sits in project 5)
++    "tool-classify-requirement": kev_tool_flow,
++    "opencode-memory-kev-exam": lambda: assistant_kev_flow(exam=True), "opencode-memory-kev-chat": lambda: assistant_kev_flow(exam=False),
++    "langflow-agent-memory-kev-exam": lambda: unfolded_kev_flow("langflow-agent-memory-kev-exam"),
++    "langflow-agent-memory-kev-chat": lambda: unfolded_kev_flow("langflow-agent-memory-kev-chat"),
+     # 6 · other
+     "other-design-agent-flow": main_flow, "other-design-agent-flow-local": lambda: main_flow(local=True),
+     "other-memory-knowledge-base": memory_flow, "other-exam-results": results_flow, "other-mod-change-chain": mod_flow,

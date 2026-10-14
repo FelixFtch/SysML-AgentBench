@@ -264,7 +264,8 @@ def _wait(token: str, job_id: str, limit: int) -> dict:
             except urllib.error.HTTPError as exc:
                 job = {"status": status, "errors": [{"error": f"status route HTTP {exc.code}"}] + ([{"error": str(error)[:600]}] if error else [])}
             job.setdefault("status", status)
-            if error and not job.get("errors"):
+            # The error column is the string "null" when the job has no error. That string is not a failure.
+            if error and str(error).strip().lower() not in {"null", "none"} and not job.get("errors"):
                 job["errors"] = [{"error": str(error)[:600]}]
             return job
     return {"status": "timeout"}

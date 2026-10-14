@@ -384,8 +384,102 @@ def facts() -> dict:
         "langflow_cohorts": _langflow_cohorts(),
         "local_cohorts": _local_cohorts(),
         "exam_columns": _exam_columns(),
+        "extra_benches": _extra_benches(),
     }
     return out
+
+
+def _extra_benches() -> dict:
+    """The two measurements shown under the exam matrix: the whole design flow (six writers, one model) and PURE
+    passages turned into SysML v2. Read from the finished folders only."""
+    writers = [
+        ("Direct writer", "direct-qwen3.8-flash-20261011T033330"),
+        ("OpenCode", "opencode-qwen3.8-flash-20261011T033331"),
+        ("Claude Code", "claude-code-qwen3.8-flash-20261011T033331"),
+        ("Langflow Agent, Pilot only", "langflow-qwen3.8-flash-20261012T025146"),
+        ("OpenCode with memory", "langflow-qwen3.8-flash-20261012T025148"),
+        ("Langflow Agent with memory", "langflow-qwen3.8-flash-20261012T025150"),
+    ]
+    flow = []
+    for label, folder in writers:
+        summary = ANALYSIS / "part2-bench-writers" / folder / "summary.json"
+        if not summary.is_file():
+            continue
+        meta = json.loads(summary.read_text(encoding="utf-8"))
+        totals = meta.get("totals") or {}
+        by_kind = meta.get("matrix_by_kind") or {}
+        kinds = {kind: {"pass": (by_kind.get(kind) or {}).get("task_pass"), "scored": (by_kind.get(kind) or {}).get("scored")}
+                 for kind in ("FEASIBLE", "INFEASIBLE-POWER", "INFEASIBLE-LINK", "MISSING-VALUE", "PREVIEW")}
+        points = {}
+        for key in ("item1", "item2", "item3", "item4", "item5", "readback_all_true"):
+            hit = sum((block.get(key) or 0) for block in by_kind.values())
+            den = sum((block.get("scored") or 0) for block in by_kind.values())
+            points[key] = {"pass": hit, "scored": den}
+        flow.append({"label": label, "pass": totals.get("task_pass"), "scored": totals.get("scored"),
+                     "runs": meta.get("task_runs"), "model": (meta.get("config") or {}).get("model_arg", "qwen3.8-flash"),
+                     "kinds": kinds, "points": points})
+    pure_rows = []
+    for folder in sorted(ANALYSIS.glob("side-pure-*-20261010T*")):
+        summary = folder / "summary.json"
+        if not summary.is_file():
+            continue
+        meta = json.loads(summary.read_text(encoding="utf-8"))
+        if meta.get("protocol") != "sysml-v2":
+            continue
+        totals = meta.get("totals") or {}
+        if (totals.get("rows") or 0) < 400:
+            continue
+        column = {"direct": "direct", "direct-p0": "P0", "direct-p1": "P1", "direct-p2": "P2", "direct-p3": "P3",
+                  "opencode": "opencode", "claude": "claude"}.get(meta.get("candidate"))
+        if meta.get("flow") == "Langflow Agent, Pilot only chat":
+            column = "agent-pilot"
+        elif meta.get("flow") == "OpenCode with memory chat":
+            column = "opencode-memory"
+        elif meta.get("candidate") == "langflow":
+            column = "agent-memory"
+        label = meta.get("flow") or meta.get("candidate")
+        pure_rows.append({"column": column, "label": label, "pass": totals.get("pass"), "rows": totals.get("rows"),
+                          "pilot_pass": totals.get("pilot_pass"), "covered": totals.get("requirements_covered"),
+                          "requirements": totals.get("requirements_total")})
+    flow_column = {"Direct writer": "direct", "OpenCode": "opencode", "Claude Code": "claude",
+                   "Langflow Agent, Pilot only": "agent-pilot", "OpenCode with memory": "opencode-memory",
+                   "Langflow Agent with memory": "agent-memory"}
+    for item in flow:
+        item["column"] = flow_column.get(item["label"])
+    return {"flow": flow, "pure": pure_rows, "syseng": _syseng_full()}
+
+
+def _syseng_full() -> list[dict]:
+    """The full SysEngBench file (1,144 questions × 3), one cell per column. The newest complete folder of each column."""
+    best: dict[str, dict] = {}
+    for folder in ANALYSIS.glob("side-sysengbench-*-qwen3.8-flash-*"):
+        summary = folder / "summary.json"
+        results = folder / "results.jsonl"
+        if not summary.is_file() or not results.is_file():
+            continue
+        meta = json.loads(summary.read_text(encoding="utf-8"))
+        if meta.get("subset") != "all":
+            continue
+        rows = [json.loads(line) for line in results.read_text(encoding="utf-8").splitlines() if line.strip()]
+        scored = [row for row in rows if not row.get("error") and row.get("n")]
+        n = sum(row.get("n") or 0 for row in scored)
+        if n < 3000:
+            continue
+        column = {"direct": "direct", "direct-p0": "P0", "direct-p1": "P1", "direct-p2": "P2", "direct-p3": "P3",
+                  "opencode": "opencode", "claude": "claude"}.get(meta.get("candidate"))
+        if meta.get("flow") == "Langflow Agent, Pilot only chat":
+            column = "agent-pilot"
+        elif meta.get("flow") == "OpenCode with memory chat":
+            column = "opencode-memory"
+        elif meta.get("candidate") == "langflow":
+            column = "agent-memory"
+        if not column:
+            continue
+        correct = sum(row.get("correct") or 0 for row in scored)
+        previous = best.get(column)
+        if previous is None or n > previous["n"]:
+            best[column] = {"column": column, "correct": correct, "n": n}
+    return list(best.values())
 
 
 def _exam_columns() -> list[dict]:

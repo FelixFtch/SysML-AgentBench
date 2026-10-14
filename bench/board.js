@@ -80,7 +80,7 @@ const TX = [
   [/\(没有检索结果\)/g, "(no retrieval results)"],
   [/模型输出里没有 SysML 包。/g, "The model output contains no SysML package."],
   [/需求里出现了简报没有的数字。不能入库，等人补数。/g, "The requirements contain numbers that are not in the brief. Nothing can go into memory until a person supplies them."],
-  [/设计 (.+?) 四项核算全过，可以由人批准入库。脚本不替人选。/g, (m, k) => { const keys = k.split("、"); return `${keys.length > 1 ? "Designs" : "Design"} ${keys.join(", ")} ${keys.length > 1 ? "pass" : "passes"} all four checks and may be approved into memory by a person. The script does not choose.`; }],
+  [/设计 (.+?) 四项核算全过，可以由人批准入库。脚本不替人选。/g, (m, k) => { const keys = k.split("、"); return `${keys.length > 1 ? "Designs" : "Design"} ${keys.join(", ")} ${keys.length > 1 ? "pass" : "passes"} every gated check and may be approved into memory by a person. The script does not choose.`; }],
   [/两套设计都有核算失败项，不能入库。可以选一个权衡方案，回到设计空间再交给 agent。/g, "Both designs fail a check, so neither can go into memory. Pick a trade-off, go back to the design space, and give it to the agent again."],
   [/映射只是提议。代码核对两边名字，官方 Pilot 再解析对齐包。两份源模型都不改。采用与否由人定。/g, "Mappings are proposals. Code checks both names exist, then the official Pilot parses the alignment package. Neither source model is edited. A person decides whether to adopt them."],
   [/检索里没有 MaritimeISR 的元素，跳过对齐。/g, "Retrieval found no MaritimeISR elements; alignment skipped."],
@@ -403,9 +403,9 @@ const APP = {
     { id: "align", row: "main", col: 5, owner: "Model proposes · code checks", title: "④ Align", sub: "mappings → alignment package through the Pilot", papers: ["p1"],
       does: "The model pairs design A's element names with retrieved MaritimeISR element names; code checks both names exist; code classifies each pair from the two parses and writes a separate alignment package of alias (definitions and features) and allocation (usages) statements, parsed by the official Pilot together with both source files; a person accepts or rejects each pair in 2.3. Neither source model is edited.", input: "Design A element names + MaritimeISR element names", output: "Mapping table + alignment package + Pilot result + per-pair review" },
     { id: "check", row: "main", col: 6, owner: "Code · model", title: "⑤ Budget checks · read-back", sub: "power · upload · storage · trace", papers: ["p3"],
-      does: "Code checks four things with officially parsed numbers: total power ≤ limit, upload ≤ uplink capacity, recording ≤ storage, every numbered requirement is in the model. Then the model restates its own model in sentences (Paper 3's query use) and code checks every brief number is read back.", input: "Officially parsed numbers + requirements", output: "Four checks + read-back text" },
-    { id: "human", row: "main", col: 7, kind: "human", owner: "Person", title: "⑥ Person decides · memory", sub: "approval needs all four checks",
-      does: "A design can be approved only if all four checks pass and no requirement carries a number of unknown origin. The script never chooses. Once approved, its official parse joins memory.", input: "Checks, read-back, alignment", output: "Approve / reject; approved designs join memory" },
+      does: "Code checks five things with officially parsed numbers: total power ≤ limit, upload ≤ uplink capacity, recording ≤ storage, every numbered requirement is in the model, every design number is in the brief; and it runs the mission timeline (REQS, MISSION). Then the model restates its own model in sentences (Paper 3's query use) and code checks every brief number is read back.", input: "Officially parsed numbers + requirements", output: "Four checks + read-back text" },
+    { id: "human", row: "main", col: 7, kind: "human", owner: "Person", title: "⑥ Person decides · memory", sub: "approval needs every gated check",
+      does: "A design can be approved only if every gated check pass and no requirement carries a number of unknown origin. The script never chooses. Once approved, its official parse joins memory.", input: "Checks, read-back, alignment", output: "Approve / reject; approved designs join memory" },
     { id: "source", row: "side", col: 3, kind: "guard", owner: "Code", title: "Number source check", sub: "every number must be in the brief",
       does: "Every number in the requirements must appear in the brief. If one does not, the run cannot go into memory until a person supplies it.", input: "Requirements + brief", output: "Numbers of unknown origin" },
     { id: "repair", row: "side", col: 4, kind: "loop", owner: "Model", title: "Repair from errors", sub: "error text sent back, numbers kept", papers: ["p3"],
@@ -513,7 +513,7 @@ const OPS = [
   { n: "②", title: "Exam matrix", where: "1.3 → 1.4", href: "#s13", can: "Click any cell to see every step from issuing the task to scoring, every version the repair loop produced and the complete error list each one received.", effect: "Reads the archive.", tags: [["local", "local · instant"]] },
   { n: "③", title: "Exam console", where: "1.5", href: "#s15", can: "Re-run a sealed task, or write a new task with its own answer key.", effect: "Real calls to the model and the official Pilot; writes a new record.", tags: [["model", "calls a model"], ["", "20 s – 2 min"]] },
   { n: "④", title: "Design space", where: "2.2", href: "#s22", can: "Swap parts, change parameters, edit the brief, then give it to the agent.", effect: "Budgets recompute in the browser; the agent then runs the six stages of 2.1.", tags: [["local", "instant recompute"], ["model", "agent about 1–2 min"]] },
-  { n: "⑤", title: "Person decides", where: "2.3", href: "#s23", can: "Send a trade-off back to 2.2; approve a design that passes all four checks into memory.", effect: "Approval writes to memory; the next ① Retrieve finds it.", tags: [["write", "writes to memory"]] },
+  { n: "⑤", title: "Person decides", where: "2.3", href: "#s23", can: "Send a trade-off back to 2.2; approve a design that passes every gated check into memory.", effect: "Approval writes to memory; the next ① Retrieve finds it.", tags: [["write", "writes to memory"]] },
   { n: "⑥", title: "MOD change", where: "2.4", href: "#s24", can: "Pick one of MOD-01 to MOD-05, see its latest change record, or have the model make the change again.", effect: "Two model calls and the official Pilot. Task and design verdicts are shown separately.", tags: [["model", "about 1 min"]] },
 ];
 
@@ -552,7 +552,7 @@ function renderSources() {
     { color: "#1c7ed6", title: "Existing model MaritimeISR", size: `${k.maritime.cards} cards`, small: `${k.maritime.elements} elements · ${k.maritime.links} edges`, path: k.maritime.file,
       how: "The official Pilot parses it to JSON; code turns each element into a card: type, full name, value or connection ends, documentation text.", prompt: "Retrieved cards become the \"examples\" part of the design prompt; the source file is not imported or edited.", use: [["2.1 ① Retrieve", "app", "retrieve"], ["2.1 ④ Alignment target", "app", "align"]] },
     { color: "#2b8a3e", title: "Approved designs", size: `${S.memory.length} designs`, small: S.memory.length ? S.memory.map((m) => `${m.run_id}·${m.design}`).join(", ") : "none approved yet", path: k.memory.file,
-      how: "Only designs that pass all four checks, carry no number of unknown origin, and that a person approved.", prompt: "Retrieved together with the MaritimeISR cards, tagged \"approved\" in the prompt.", use: [["2.1 ⑥ Into memory", "app", "human"], ["2.1 ① Retrieve", "app", "retrieve"]] },
+      how: "Only designs that pass every gated check, carry no number of unknown origin, and that a person approved.", prompt: "Retrieved together with the MaritimeISR cards, tagged \"approved\" in the prompt.", use: [["2.1 ⑥ Into memory", "app", "human"], ["2.1 ① Retrieve", "app", "retrieve"]] },
     { color: "#a996e0", title: "Synthetic parts catalog", size: `${k.catalog.options} parts`, small: `${k.catalog.slots} slots · ${k.catalog.params} parameters (incl. the fixed 60 W)`, path: "bench/discover.py · CATALOG",
       how: "Not a bill of materials and not RTX data.", prompt: "Only in the trade-off prompt; the model's numbers are not trusted, code recomputes from the catalog.", use: [["2.1 Parts catalog", "app", "catalog"], ["2.1 Trade-offs", "app", "tradeoff"]] },
     { color: "#7d8b96", title: "Official SysML v2 standard library", size: `${k.maritime.library_files} files`, small: "ships with Pilot 0.62", path: "vendor/ (not modified)",
@@ -768,9 +768,74 @@ function renderGlossary() {
     ["↻n", "a cell whose official parse needed n repairs"],
     ["11/12", "row end: passes out of 12 for the direct model shown (4 approaches × 3 repeats); column foot: that column's pass rate"],
   ];
+  const extra = S.facts.extra_benches || { flow: [], pure: [] };
+  const pct = (pass, n) => (n ? `${Math.round(1000 * pass / n) / 10}%` : "—");
+  const flowLine = extra.flow.map((row) => `${esc(row.label)} ${row.pass}/${row.scored}`).join(" · ");
+  const pureTop = (extra.pure[0] && extra.pure[1]) ? `${esc(extra.pure[0].label)} ${extra.pure[0].pass}/${extra.pure[0].rows}, ${esc(extra.pure[1].label)} ${extra.pure[1].pass}/${extra.pure[1].rows}` : "";
+  const more = `<div class="gl-types" style="margin-top:12px">
+      <article class="gl-type model"><header><b>PART2</b><i>design flow</i><span>100 briefs · six writers</span></header>
+        <h5>Score the whole design tool end to end</h5>
+        <dl><dt>Gets</dt><dd>A task brief generated from the flow's own parts catalogue. Whether that combination is feasible, over the power limit, over the link, or a preview upload is computed by code before the run.</dd>
+        <dt>Answers with</dt><dd>The complete run: numbered requirements, two SysML v2 designs written from scratch, official validation with repair, an alignment package, budget and mission-timeline checks, and a gate decision.</dd>
+        <dt>Passes when</dt><dd>Requirements cover every brief number and invent none; both designs parse; the checks match the computed outcome; the gate asks when a value is missing, blocks an infeasible design, and never changes a stated limit; the numbers read back.</dd></dl>
+        <footer>Official syntax check: yes · ${esc(flowLine)}</footer></article>
+      <article class="gl-type model"><header><b>PURE</b><i>real documents</i><span>175 passages · 3 repeats</span></header>
+        <h5>Requirements into SysML v2, on real text</h5>
+        <dl><dt>Gets</dt><dd>A passage of a real public requirements document (PURE). Six of the documents mark their requirements; those marks are the key. PURE has no SysML model of its own.</dd>
+        <dt>Answers with</dt><dd>One SysML v2 package. Every requirement is one requirement def whose doc comment carries that requirement's text.</dd>
+        <dt>Passes when</dt><dd>The official Pilot parses it; every marked requirement appears inside a requirement def; no explanatory paragraph does; there is no extra requirement def; no number appears that the passage does not contain.</dd></dl>
+        <footer>Official syntax check: yes · ${esc(pureTop)}</footer></article>
+    </div>
+    <p class="gl-note"><b>Part 2, the six scored points.</b> Coverage: the brief says 12 Mbps, a requirement written as 18 fails. Parse: <code>part definition</code> is rejected, the keyword is <code>part def</code>; the direct writer resubmitted the same file until the repair cap, writers with a validator fixed it. Checks: 41 + 12 + 25 = 78 W against 60 W, so POWER must read FAIL. Gate: “the power limit is still to be confirmed” must be asked, not filled in; all six writers filled in 60 and the gate caught them. Limits: raising 60 to 80 so the check turns green is a fail. Read-back: after the Pilot parses a design, the model sees only that file and restates it in sentences; every number from the brief must appear in that text. It is reported beside the verdict and does not change the task pass. A design that never parsed has nothing to restate, so this row fails with it.</p>
+    <p class="gl-note"><b>Part 2, the kinds in the table.</b> Feasible: 28 + 7 + 14 = 49 W and a 6 Mbps upload on an 8 Mbps link, a design may be approved. Over power: 78 W, POWER must fail and no design is eligible. Over link: 18 Mbps on an 8 Mbps link. Missing value: one number is left out of the brief and must be asked for. Preview: recording 18 Mbps, upload 6 Mbps, the upload requirement is 6, not 18. This round writes every design from scratch; adapting an approved design is a separate branch and is not in these scores. All six writers used qwen3.8-flash on the same 100 briefs.</p>`;
   $("#mx-guide").innerHTML = `<div class="gl-types">${cards}</div>
     <p class="gl-note"><b>Why "not applicable" shows up so often.</b> Only GEN, MOD and ALN answers are SysML, so only those ${modelTasks} tasks (${modelTasks * 12} cells per direct model) go through the official Pilot. QRY, AMB and RT answers are JSON or text (${textTasks} tasks, ${textTasks * 12} cells); they are compared with the answer key directly. Only MOD-05 has a power budget, so a design verdict exists for its cells alone.</p>
-    <div class="gl-codes">${codes.map(([k, v]) => `<span><b>${esc(k)}</b>${esc(v)}</span>`).join("")}</div>`;
+    ${more}
+    <div class="gl-codes">${codes.map(([k, v]) => `<span><b>${esc(k)}</b>${esc(v)}</span>`).join("")}</div>
+    ${scoreTables(extra)}`;
+}
+
+function scoreTables(extra) {
+  const cols = [["direct", "Direct"], ["opencode", "OpenCode"], ["claude", "Claude Code"],
+    ["agent-pilot", "Pilot only"], ["opencode-memory", "OpenCode + memory"], ["agent-memory", "Agent + memory"]];
+  const by = (list) => Object.fromEntries((list || []).filter((row) => row.column).map((row) => [row.column, row]));
+  const flow = by(extra.flow);
+  const pure = by(extra.pure);
+  const syseng = by(extra.syseng);
+  const pct = (pass, n) => (n ? `${Math.round(1000 * pass / n) / 10}%` : "—");
+  const heat = (pass, n) => {
+    if (!n) return "";
+    const rate = pass / n;
+    const bg = rate >= 0.8 ? "#c9ecd7" : rate >= 0.5 ? "#f3e1aa" : "#f5c3bf";
+    return ` style="background:${bg};text-align:center"`;
+  };
+  const cell = (pass, n, title) => `<td${heat(pass, n)} title="${esc(title || "")}">${n ? `${esc(pct(pass, n))}<br><span class="hint">${pass}/${n}</span>` : "—"}</td>`;
+  const head = `<tr><th></th>${cols.map(([, name]) => `<th>${esc(name)}</th>`).join("")}</tr>`;
+  const kindRows = [["FEASIBLE", "Feasible · 49 W, a design may be approved"], ["INFEASIBLE-POWER", "Over power · 78 W, POWER must fail"],
+    ["INFEASIBLE-LINK", "Over link · 18 Mbps on an 8 Mbps link"], ["MISSING-VALUE", "Missing value · must ask, not invent"],
+    ["PREVIEW", "Preview · upload is 6 Mbps, not the 18 Mbps recording rate"]];
+  const pointRows = [["item1", "1 · Coverage · 12 Mbps written as 18 fails"], ["item2", "2 · Both designs parse · part def, not part definition"],
+    ["item3", "3 · Checks match · 78 W must read FAIL"], ["item4", "4 · Gate · an open power limit must be asked"],
+    ["item5", "5 · Limits kept · raising 60 to 80 is a fail"], ["readback_all_true", "6 · Read-back · restate the parsed model; every brief number must appear"]];
+  const flowBody = [`<tr><th class="rowh">Task pass</th>${cols.map(([id]) => { const row = flow[id]; return cell(row && row.pass, row && row.scored, row && row.label); }).join("")}</tr>`,
+    ...kindRows.map(([key, label]) => `<tr><th class="rowh">${esc(label)}</th>${cols.map(([id]) => { const k = flow[id] && flow[id].kinds && flow[id].kinds[key]; return cell(k && k.pass, k && k.scored); }).join("")}</tr>`),
+    ...pointRows.map(([key, label]) => `<tr><th class="rowh">${esc(label)}</th>${cols.map(([id]) => { const k = flow[id] && flow[id].points && flow[id].points[key]; return cell(k && k.pass, k && k.scored); }).join("")}</tr>`)].join("");
+  const pureBody = [["pilot_pass", "rows", "Official Pilot parses the package"],
+    ["covered", "requirements", "Marked requirements found inside a requirement def"]].map(([passKey, nKey, label]) =>
+    `<tr><th class="rowh">${esc(label)}</th>${cols.map(([id]) => { const row = pure[id]; return cell(row && row[passKey], row && row[nKey]); }).join("")}</tr>`).join("");
+  const sysengBody = `<tr><th class="rowh">Correct answers · 1,144 questions × 3</th>${cols.map(([id]) => { const row = syseng[id]; return cell(row && row.correct, row && row.n); }).join("")}</tr>`;
+  return `<div class="mx-wrap" style="margin-top:14px">
+    <p class="gl-note"><b>Why P0–P3 are not in this comparison.</b> P0 one-shot, P1 repair, P2 outline and P3 retrieval are four prompts on the 27-task exam above. They are not writers of the design step: that step already sends the Pilot's errors back and repairs, and it does not outline first or retrieve before writing. Direct is the one model writer of the step. The six columns below are the lines that exist for Part 2, PURE and SysEngBench together. P0–P3 were also run on PURE and SysEngBench; those four columns are left out so the three tables line up.</p>
+    <p class="subhead">Part 2 · the whole design flow, qwen3.8-flash, same 100 briefs</p>
+    <table class="mx score"><thead>${head}</thead><tbody>${flowBody}</tbody></table>
+    <p class="hint">Direct is 100 runs. The other five writers are 100 briefs × 3. Pilot only stopped at 298. A correct infeasible brief is a task pass with a design fail. Read-back is reported beside the verdict: after a design parses, the model sees only that SysML file and restates it in sentences; code then checks that every number from the brief appears in those sentences. It does not change the task pass. Adapting an approved design is not in this round.</p>
+    <p class="subhead">PURE · real documents into SysML v2, 175 passages × 3</p>
+    <table class="mx score"><thead>${head}</thead><tbody>${pureBody}</tbody></table>
+    <p class="hint">Two checks only. The official Pilot parses the package, and each marked requirement is found inside a requirement def. A passage-level pass, which failed the whole passage for one wrong requirement, is not shown. The earlier protocol, which asked the model to copy sentences, is not this table. Claude Code has 517 rows and Pilot only 523; the rest have 525.</p>
+    <p class="subhead">SysEngBench · the public multiple-choice file, all 1,144 questions × 3</p>
+    <table class="mx score"><thead>${head}</thead><tbody>${sysengBody}</tbody></table>
+    <p class="hint">Four options, scored by the published answer. Everyone lands high, so this file does not separate the lines the way the maritime exam and PURE do.</p>
+  </div>`;
 }
 
 /* The Langflow exam columns (decision 035): the agent flows of Langflow projects 2, 3 and 4 on qwen3.8-flash, run by
@@ -2064,7 +2129,7 @@ function renderCaps() {
     { title: "② Generate design concepts", done: r ? `Every run writes two designs: ${r.designs.map((d) => `${d.key} official validation ${d.sysml_status}`).join(", ")}; aligned with MaritimeISR, alignment package official Pilot ${r.alignment?.package?.sysml_status || "not generated"}.` : "No run yet.",
       proof: `2.3: "② Write design", "③ Official validation", "④ Align". Exam GEN tasks: ${typeLine4("GEN")}; ALN tasks: ${typeLine4("ALN")}.`,
       todo: "The two designs differ because the prompt says so (literal / restructured); there is no automatic search of the design space yet." },
-    { title: "③ Consistency checks (static budgets)", done: r ? `All four checks read only officially parsed numbers. ${fails.length ? `Latest run failed ${fails.join(", ")}; the agent proposed trade-offs and code recomputed them from the catalog.` : "The latest run passed all four."}` : "No run yet.",
+    { title: "③ Consistency checks (static budgets)", done: r ? `All gated checks read only officially parsed numbers. ${fails.length ? `Latest run failed ${fails.join(", ")}; the agent proposed trade-offs and code recomputed them from the catalog.` : "The latest run passed all four."}` : "No run yet.",
       proof: `2.3: "⑤ Budget checks" and "Trade-offs"; MOD-05 in the exam, answers that report the overrun honestly (design verdict FAIL, task verdict PASS): ${Object.entries(f.reliability.mod05_by_cohort || {}).map(([k, x]) => `${C[k].short} ${x.honest}/${x.n}`).join(", ")}; none raised the limit.`,
       todo: "These are static budget sums, not time-domain simulation: no queueing, link-outage durations or temperature." },
   ];

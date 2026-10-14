@@ -8,7 +8,7 @@ page's retrieval (MiniLM + FAISS, seeds plus one hop). run_design runs the verif
 RTRC shell service (bench/shell_service.py): requirements, two designs (by default written by OpenCode in the
 sandbox with ./validate in hand, decision 032; or by the model directly), the official SysML v2 Pilot repair
 loop, alignment, the four checks, trade-offs, diagram and Cameo export; its record appears on results page 2.3.
-Writing a design into memory goes through the same gate as the page: all four checks must pass.
+Writing a design into memory goes through the same gate as the page: every gated check must pass.
 No answer key is reachable from here; nothing under gold/ is read.
 """
 from __future__ import annotations
@@ -39,7 +39,7 @@ server = MCPServer(
         "Tools of the RTRC SysML v2 design assistant. search_memory and list_projects read the memory "
         "(MaritimeISR plus approved designs). run_design runs the verified design pipeline on a brief whose "
         "numbers all come from the engineer; it takes several minutes. validate_sysml_text parses SysML v2 "
-        "with the official Pilot. write_to_memory needs the engineer's approval and all four checks passed."
+        "with the official Pilot. write_to_memory needs the engineer's approval and every gated check passed."
     ),
 )
 
@@ -135,21 +135,27 @@ def read_project(name: str) -> str:
     "the passing designs for Cameo. Takes 2 to 10 minutes. model: qwen3.8-max (default), qwen3.8-flash or "
     "'qwen3.8-27b (Ollama)' for the local 3-bit model on this machine. agent: 'opencode' (default) has OpenCode write "
     "each design in the sandbox with the official Pilot as a tool, editing until it parses; 'direct' has the model "
-    "write it in one answer with the error-list repair loop. OpenCode needs the results page (port 8770) stopped; if "
-    "the tool refuses for that reason, tell the engineer to stop the page and try again, or offer agent 'direct'. "
+    "write it in one answer with the error-list repair loop. OpenCode's sandbox cannot reach the results page (port "
+    "8770), so the page may stay open; only on a machine without slirp4netns does the tool refuse while the page runs: "
+    "then tell the engineer to stop the page and try again, or offer agent 'direct'. "
     "start_from: 'auto' adapts a similar project when the memory has one and starts new otherwise; 'new' always "
     "writes both designs from scratch; 'similar' insists on adapting and fails when nothing similar exists. Use what "
     "the engineer asked for."))
-def run_design(brief: str, model: str = "qwen3.8-max", agent: str = "opencode", start_from: str = "auto") -> str:
+def run_design(brief: str, model: str = "qwen3.8-max", agent: str = "opencode", start_from: str = "auto", flow: str = "") -> str:
+    """Run the design flow. agent: direct (the model writes), opencode (sandboxed coding agent), or langflow (a Langflow
+    chat flow writes the designs; `flow` names it, default the Pilot-only chat)."""
     if model not in MODELS:
         raise ValueError(f"model must be one of {MODELS}")
-    if agent not in {"opencode", "direct"}:
-        raise ValueError("agent must be opencode or direct")
+    if agent not in {"opencode", "direct", "langflow"}:
+        raise ValueError("agent must be opencode, direct or langflow")
     if start_from not in {"auto", "new", "similar"}:
         raise ValueError("start_from must be auto, new or similar")
     if len((brief or "").strip()) < 20:
         raise ValueError("The brief must be a full description with the engineer's numbers")
-    started = _shell("/run/start", {"brief": brief, "agent": agent, "model": model})
+    start_body = {"brief": brief, "agent": agent, "model": model}
+    if agent == "langflow" and flow:
+        start_body["flow"] = flow
+    started = _shell("/run/start", start_body)
     run = started["run"]
     retrieve = _shell("/run/retrieve", {"run": run})
     _shell("/run/requirements", {"run": run})
@@ -172,7 +178,7 @@ def run_design(brief: str, model: str = "qwen3.8-max", agent: str = "opencode", 
                   "started_from": "the similar project " + similar["name"] if adapt and similar else "scratch",
                   "similar_project": similar, "review": review["summary"], "checks": checks["summary"], "tradeoffs": tradeoffs,
                   "diagrams": (review.get("data") or {}).get("diagrams"), "cameo_exports": (review.get("data") or {}).get("cameo_exports"),
-                  "next": "Explain the review to the engineer. If a design passed all four checks and the engineer approves it, "
+                  "next": "Explain the review to the engineer. If a design passed every gated check and the engineer approves it, "
                           "call write_to_memory; otherwise call record_decision with Reject or Send back."})
 
 
@@ -213,7 +219,7 @@ def validate_sysml_text(sysml: str, package: str) -> str:
 
 @server.tool(description=(
     "Write an approved design into the memory so the next search can find it. design is 'A' or 'B'. Call it only "
-    "after the engineer explicitly approved that design; the service refuses a design that did not pass all four checks."))
+    "after the engineer explicitly approved that design; the service refuses a design that did not pass every gated check."))
 def write_to_memory(run_id: str, design: str = "A") -> str:
     run, key = _run_id(run_id), (design or "A").strip().upper()
     if key not in {"A", "B"}:

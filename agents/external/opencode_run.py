@@ -6,8 +6,8 @@ sessions are not visible (decision 026). The prompt suffix is the same one Claud
 The model comes from MVP_LLM_MODEL. The cloud Qwen models go to the Qwen endpoint of .env; the local model names of
 agents/llm_local.py go to Ollama on this machine (127.0.0.1:11434, no key, thinking off) through the same
 OpenAI-compatible provider package (decision 032). OPENCODE_MODEL in .env ("provider/model") hands the model to
-OpenCode's own provider list and login instead (provider_config). The sandbox shares the network, so Ollama is
-reachable from it.
+OpenCode's own provider list and login instead (provider_config). Ollama is forwarded into the sandbox's own network
+at the same address (agents/external/netns.py).
 """
 from __future__ import annotations
 

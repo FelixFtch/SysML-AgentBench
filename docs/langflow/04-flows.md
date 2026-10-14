@@ -79,7 +79,7 @@ Folder: [`langflow/flows/5-shared-tools/`](../../langflow/flows/5-shared-tools/)
 
 ### Design pipeline
 
-`tool flow (run by projects 3 and 4)` · file [`5-shared-tools/tool-design-pipeline.json`](../../langflow/flows/5-shared-tools/tool-design-pipeline.json) · 17 cards · Run the verified RTRC design pipeline on a confirmed brief: memory search, numbered requirements, designs A and B written by OpenCode in a sandbox with the official SysML v2 Pilot, the Pilot's verdict, alignment with the memory, the power / upload / storage / trace checks, trade-offs when a check fails, diagram and Cameo export. Returns the review text with the run id. Takes 2 to 10 minutes; the results page (port 8770) must be stopped.
+`tool flow (run by projects 3 and 4)` · file [`5-shared-tools/tool-design-pipeline.json`](../../langflow/flows/5-shared-tools/tool-design-pipeline.json) · 17 cards · Run the verified RTRC design pipeline on a confirmed brief: memory search, numbered requirements, designs A and B written by OpenCode in a sandbox with the official SysML v2 Pilot, the Pilot's verdict, alignment with the memory, the power / upload / storage / trace checks, trade-offs when a check fails, diagram and Cameo export. Returns the review text with the run id. Takes 2 to 10 minutes; the results page (port 8770) may stay open.
 
 ![Design pipeline](../../langflow/flows/5-shared-tools/tool-design-pipeline.svg)
 
@@ -107,7 +107,7 @@ Folder: [`langflow/flows/5-shared-tools/`](../../langflow/flows/5-shared-tools/)
 
 - Same nodes and the same shell service as the agent flow, so a run here and a run on the results page give the same retrieval, prompts, Pilot results and checks. The record appears on page 2.3.
 - Designs are written by OpenCode in the bubblewrap sandbox on the local Qwen3.8-27B, with `./validate` in hand (decision 032): the Pilot's errors come back as a tool result and the file is edited.
-- Stop the results page (8770) before a run. Edit this flow and the assistant runs the edited version.
+- The results page (8770) may stay open during a run: the sandbox cannot reach it. Edit this flow and the assistant runs the edited version.
 
 
 ## 1 · Direct model, approaches P0 to P3
@@ -324,7 +324,7 @@ Folder: [`langflow/flows/2-coding-agents/`](../../langflow/flows/2-coding-agents
 - One task: type its id (GEN-01 … RT-05) in the cell node and run; the steps light up with the record and the verdict against the sealed key (missing items only, never the key). Such a run is saved under analysis/langflow-console/ and is not added to the frozen score.
 - The whole exam: `python3 bench/langflow_exam.py --flow "OpenCode in the sandbox exam"` runs the 27 tasks three times through this flow and saves a rerun batch next to the frozen one; the frozen matrix of results page 1.3 does not change.
 - Replay: set the mode to *Replay a graded cell* and a cell id such as `flash:1:GEN-03:P1` or `opencode:1:MOD-05:P-CODE`.
-- Stop the results page (8770) before a live run: sandboxed agents and the page's answer keys do not run together.
+- The results page (8770) may stay open during a live run: the sandbox has its own network and cannot reach the page's answer keys.
 
 
 ### Claude Code in the sandbox exam
@@ -349,7 +349,7 @@ Folder: [`langflow/flows/2-coding-agents/`](../../langflow/flows/2-coding-agents
 - One task: type its id (GEN-01 … RT-05) in the cell node and run; the steps light up with the record and the verdict against the sealed key (missing items only, never the key). Such a run is saved under analysis/langflow-console/ and is not added to the frozen score.
 - The whole exam: `python3 bench/langflow_exam.py --flow "Claude Code in the sandbox exam"` runs the 27 tasks three times through this flow and saves a rerun batch next to the frozen one; the frozen matrix of results page 1.3 does not change.
 - Replay: set the mode to *Replay a graded cell* and a cell id such as `flash:1:GEN-03:P1` or `opencode:1:MOD-05:P-CODE`.
-- Stop the results page (8770) before a live run: sandboxed agents and the page's answer keys do not run together.
+- The results page (8770) may stay open during a live run: the sandbox has its own network and cannot reach the page's answer keys.
 
 
 ### Langflow Agent, Pilot only exam
@@ -463,7 +463,7 @@ Folder: [`langflow/flows/3-opencode-with-memory/`](../../langflow/flows/3-openco
 **On the canvas:** Talk to it like a colleague: ask what exists in the memory, describe a need in your own words, answer its questions about missing numbers, confirm the brief it proposes, and decide on the result.
 
 - The harness is OpenCode (the exam's pinned binary) on the 3-bit Qwen3.8-27B served by Ollama on this machine; its tools are the RTRC MCP server (`tools/assistant_mcp.py`, 127.0.0.1:8782): memory search, the verified design pipeline, the official Pilot, the memory gate, decisions, Cameo export. Its own file and shell tools are off. Nothing leaves this computer.
-- `run_design` is the same verified pipeline as the design agent flow and the results page (2 to 10 minutes); inside it a second, sandboxed OpenCode writes the designs with `./validate` in hand, so the results page (8770) must be stopped first. Its record appears on page 2.3.
+- `run_design` is the same verified pipeline as the design agent flow and the results page (2 to 10 minutes); inside it a second, sandboxed OpenCode writes the designs with `./validate` in hand, in a sandbox that cannot reach the results page (8770), so the page may stay open. Its record appears on page 2.3.
 - It never invents numbers, never moves a stated limit, and writes to memory only after you approve a design that passed all four checks.
 - The same assistant in the terminal: `scripts/assistant.sh`. Its exam version sits next to it in this project.
 
@@ -521,7 +521,7 @@ Folder: [`langflow/flows/4-langflow-agent-with-memory/`](../../langflow/flows/4-
 **On the canvas:** The same assistant as **OpenCode with memory chat**, with its parts on the canvas: Langflow's own Agent in the middle, one card per RTRC tool around it, the memory as a knowledge base, and four tools that are flows of their own (project 5).
 
 - Talk to it like a colleague: ask what exists, describe a need, answer its questions about missing numbers, confirm the brief it proposes, decide on the result. Model: Qwen's cloud endpoint.
-- Flows run as tools, open them to see each step: **Memory search** (library → MiniLM + FAISS seeds → one hop → cards, paper 2); **Design pipeline** (① memory → ② requirements → ③ designs by OpenCode in the sandbox, with the rules, template and examples it was given shown as cards → ④ Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; stop the results page 8770 first); **Validate SysML with the official Pilot** (file → official Pilot, paper 3); **Write to memory** (gate → write → record → knowledge base refreshed). Edit a flow and this assistant runs the edited version.
+- Flows run as tools, open them to see each step: **Memory search** (library → MiniLM + FAISS seeds → one hop → cards, paper 2); **Design pipeline** (① memory → ② requirements → ③ designs by OpenCode in the sandbox, with the rules, template and examples it was given shown as cards → ④ Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; the results page 8770 may stay open); **Validate SysML with the official Pilot** (file → official Pilot, paper 3); **Write to memory** (gate → write → record → knowledge base refreshed). Edit a flow and this assistant runs the edited version.
 - **Tool · write to memory** pauses for your approval (its Actions row): the AGENTS.md gate as a card. Every answer shows the tools it called when you expand it in the Playground.
 - It never invents numbers and never moves a stated limit; verdicts come from the official Pilot and the checks. Records appear on page 2.3.
 
@@ -551,7 +551,7 @@ Folder: [`langflow/flows/4-langflow-agent-with-memory/`](../../langflow/flows/4-
 **On the canvas:** The same assistant as **OpenCode with memory chat**, with its parts on the canvas: Langflow's own Agent in the middle, one card per RTRC tool around it, the memory as a knowledge base, and four tools that are flows of their own (project 5).
 
 - Talk to it like a colleague: ask what exists, describe a need, answer its questions about missing numbers, confirm the brief it proposes, decide on the result. Model: the 3-bit model on this machine (scripts/qwen38.sh --serve).
-- Flows run as tools, open them to see each step: **Memory search** (library → MiniLM + FAISS seeds → one hop → cards, paper 2); **Design pipeline** (① memory → ② requirements → ③ designs by OpenCode in the sandbox, with the rules, template and examples it was given shown as cards → ④ Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; stop the results page 8770 first); **Validate SysML with the official Pilot** (file → official Pilot, paper 3); **Write to memory** (gate → write → record → knowledge base refreshed). Edit a flow and this assistant runs the edited version.
+- Flows run as tools, open them to see each step: **Memory search** (library → MiniLM + FAISS seeds → one hop → cards, paper 2); **Design pipeline** (① memory → ② requirements → ③ designs by OpenCode in the sandbox, with the rules, template and examples it was given shown as cards → ④ Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; the results page 8770 may stay open); **Validate SysML with the official Pilot** (file → official Pilot, paper 3); **Write to memory** (gate → write → record → knowledge base refreshed). Edit a flow and this assistant runs the edited version.
 - **Tool · write to memory** pauses for your approval (its Actions row): the AGENTS.md gate as a card. Every answer shows the tools it called when you expand it in the Playground.
 - It never invents numbers and never moves a stated limit; verdicts come from the official Pilot and the checks. Records appear on page 2.3.
 
@@ -658,7 +658,7 @@ Folder: [`langflow/flows/6-other/`](../../langflow/flows/6-other/)
 
 - Same nodes, same shell service, same checks as **Design agent flow with a person's decision**; only the Agent node's presets differ (OpenCode, qwen3.8-27b (Ollama)).
 - Direct writing with the 27B got stuck on `part usage vessel` for 20 identical repairs (run 20261007T014335); OpenCode gets the Pilot's errors as a tool result and edits the file (decision 032).
-- Stop the results page (8770) before a run: sandboxed agents and the page's answer keys do not run together.
+- The results page (8770) may stay open: the sandbox has its own network and cannot reach the page's answer keys.
 - Click a node after a run to read what it did; replay a saved run with *Replay a saved run* = `latest` or a run id.
 
 

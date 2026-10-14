@@ -70,6 +70,16 @@ It starts what is not running (the shell service on 8781, the MCP server on 8782
 
 First start takes a minute or two (Langflow builds its component index). Ctrl-C stops Langflow; the services keep running.
 
+To leave the machine for other work, and to bring this stack back:
+
+```bash
+python scripts/up.py --down     # stop Langflow, the shell, MCP, the results page, and Ollama (frees the GPU)
+python scripts/up.py --bg       # start them again in the background, then return
+python scripts/up.py --status   # 7860 Langflow, 8781 shell, 8782 MCP, 11434 Ollama, 8770 results page
+```
+
+`--bg` does not re-import the flows. Use `--import` only after a fresh clone or after the flow files changed.
+
 ## Step 8 · Log in
 
 Open http://127.0.0.1:7860. User `rtrc`; the password is in `.langflow/secrets.env` (created in step 7, never printed, never committed). On your own computer this account is all you need. If you make a second account for yourself, run `langflow/scripts/move_to_user.py <username>` once so the projects, keys and knowledge base belong to it.

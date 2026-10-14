@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RTRC · The brief, and what we built</title>
+<link rel="stylesheet" href="/board.css">
+<style>
+  .map { font-size: 13.5px; border-collapse: separate; border-spacing: 0; }
+  .map th { position: sticky; top: 0; background: #f4f8fa; color: var(--navy); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding: 10px 14px; border-bottom: 2px solid var(--navy); z-index: 1; }
+  .map td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .map td.ask { width: 42%; background: #f7fafc; color: var(--ink); font-weight: 650; }
+  .map td.did { color: var(--ink-2); }
+  .map tr.grp td { background: var(--navy); color: #fff; font-weight: 800; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; padding: 8px 14px; }
+  .map tr:hover td.ask, .map tr:hover td.did { background: #f3fbfb; }
+  .map tr.grp:hover td { background: var(--navy); }
+  .st { display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; border-radius: 999px; padding: 1px 8px; margin: 0 6px 4px 0; vertical-align: 1px; }
+  .st.done { background: var(--pass-bg); color: var(--pass); }
+  .st.run { background: var(--warn-bg); color: var(--warn); }
+  .st.line { background: #e8eef6; color: #3d5a80; }
+  .did p { margin: 0 0 6px; }
+  .did p:last-child { margin: 0; }
+</style>
+</head>
+<body>
+<header class="masthead">
+  <div class="mast-inner">
+    <div>
+      <p class="kicker">RTRC 2706 · Agentic AI for Systems Engineering · for the sponsors</p>
+      <h1>The brief, in plain words, and what we built</h1>
+      <p class="lead">Left column: each requirement from the RTRC senior-design brief, rewritten in ordinary language. Right column: the piece of the project that answers it. Scores come from the official SysML v2 Pilot 0.62 and from answer keys written in advance. Every maritime number is synthetic and is not an RTX specification. Same visual language as the exam matrix.</p>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><span>Direct · qwen3.8-max</span><b>313/324</b><small>strongest scored pipeline</small></div>
+      <div class="kpi"><span>Direct · qwen3.8-flash</span><b>270/324</b><small>same 27 tasks, cheaper model</small></div>
+      <div class="kpi"><span>Agents · flash</span><b>78/81</b><small>OpenCode and Claude Code, each</small></div>
+      <div class="kpi"><span>Best local 27B column</span><b>80/81</b><small>Langflow Agent with memory</small></div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="toc" aria-label="Contents">
+    <h5>This page</h5>
+    <a href="#job"><b>1</b>The job</a>
+    <a href="#ten"><b>2</b>Ten activities</a>
+    <a href="#caps"><b>3</b>Capabilities marked</a>
+    <a href="#pkg"><b>4</b>Required software</a>
+    <a href="#rules"><b>5</b>Project rules</a>
+    <h5>The exam</h5>
+    <a href="/#s13"><b>1.3</b>Exam matrix</a>
+    <a href="/"><b>↩</b>Results page</a>
+  </nav>
+
+  <main class="main">
+    <header class="part-head">
+      <span class="part-num">1</span>
+      <div>
+        <h2>What you asked us to learn</h2>
+        <p>The brief asks for three answers: whether an agent can do early concept work, which setup works, and whether a requirement can become a SysML v2 model. The exam is the evidence. The design flow is the tool.</p>
+      </div>
+    </header>
+
+    <section class="card" id="learn">
+      <div class="sec-head"><span class="sec-num">1.0</span><div><h3>Three answers, already measured</h3><p class="sec-lead">Frozen exam, tag freeze-2026-10-06-r2. A cell passes only when the official parse passes and the written key passes. No model is the judge.</p></div></div>
+      <div class="answers">
+        <article>
+          <div class="q">Can an agent do this reliably?</div>
+          <b>Yes, on this bank, with a limit.</b>
+          <p>Direct qwen3.8-max passes 313 of 324 cells. Two off-the-shelf agents on the cheaper flash model pass 78 of 81 each, once they can call the official validator themselves. The local 3-bit 27B is lower on the direct pipeline (196/324) and close to the ceiling when the Langflow agent stops at 20 model calls (80/81).</p>
+        </article>
+        <article>
+          <div class="q">Which workflow works?</div>
+          <b>The repair loop, then the model.</b>
+          <p>Four direct setups were compared: write once, repair from the Pilot's full error list, outline first, retrieve then outline. On this bank a stronger model gains more than an extra step. The repair loop is the step worth keeping. Outline and retrieval are optional until a larger bank shows an effect.</p>
+        </article>
+        <article>
+          <div class="q">Requirement to SysML v2?</div>
+          <b>Yes. A person still accepts the design.</b>
+          <p>Generate, modify, align, query, ask-when-a-number-is-missing, and restate a model as text: 27 sealed tasks on one synthetic maritime ISR scenario. The design flow does the same chain from a blank brief and stops for a person before anything is stored.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card" id="job">
+      <div class="sec-head"><span class="sec-num">1</span><div><h3>The job in the brief</h3><p class="sec-lead">Background and statement of need, one row per requirement.</p></div></div>
+      <table class="map">
+        <thead><tr><th>What RTRC asked</th><th>What we built</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="2">Background</td></tr>
+          <tr>
+            <td class="ask">Early architecture work, requirements writing, and concept exploration are still done by hand. They are slow and depend on a few experts. Build a decision-support tool that takes on more of that early work.</td>
+            <td class="did"><span class="st done">Built</span><p>One design flow a person can walk on the canvas. It searches what the project already knows, writes numbered requirements, writes two designs, checks them with the official Pilot, aligns them with the existing model, checks the budgets, and waits for a person to accept or reject. An accepted design is stored and can be found on the next run.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Start with two products: system requirements written automatically, and design concepts that match those requirements.</td>
+            <td class="did"><span class="st done">Built</span><p>From a blank brief the flow writes the requirements first. Any number that was not in the brief is rejected by code. It then writes two designs from the paper-3 rules, template, and examples. Five round-trip exam tasks also restate an existing model as requirement sentences. On the public PURE documents, the same lines turn real requirement passages into SysML v2 requirement packages, checked by the official Pilot and the documents' own requirement marks.</p></td>
+          </tr>
+          <tr class="grp"><td colspan="2">Statement of need</td></tr>
+          <tr>
+            <td class="ask">Show how agentic AI can be used for early concept exploration without pretending it is always right.</td>
+            <td class="did"><span class="st done">Measured</span><p>The report records feasibility, the scores, the limits, and the next measurements. Limits include one synthetic scenario, one model family in the frozen exam, three repeats and no confidence interval, and keys reviewed by one second person. Recommended next steps are in section 11 of the report draft.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Find which workflow or architecture is the effective one.</td>
+            <td class="did"><span class="st done">Compared</span><p>Direct model, four approaches. OpenCode and Claude Code in a sandbox. Three Langflow agents: Pilot only, OpenCode with memory, Agent with memory. Cloud flash, cloud max, and a local 3-bit 27B. The results page is the comparison. On flash the best Langflow columns are 81/81, 81/81, and 79/81. On the local 27B the best column is Agent with memory, 80/81.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Show a requirement being turned into a SysML v2 model.</td>
+            <td class="did"><span class="st done">Scored</span><p>The agent sees the task and not the answer key. The official Pilot 0.62 parses the model. A separate key checks names, connections, mappings, values that must stay, and numbers that must not be invented. Passing the parse is not the same as accepting the design. An over-budget design can parse and still fail the design check.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Benchmark agents that do this translation, and publish the first evidence: feasibility, performance, limits, and what to do next.</td>
+            <td class="did"><span class="st done">Published in the repo</span><p>27 tasks × 4 approaches × 3 repeats for each direct model, plus the agent columns. Frozen in bench/FREEZE.md. The living table is the exam matrix. The written argument is docs/report/D4-draft.md. The process for the next team is docs/knowledge-base/.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Use a maritime ISR mission as the example: more than one platform, more than one kind of sensor, and information shared between them.</td>
+            <td class="did"><span class="st done">Synthetic scenario</span><p>Unmanned surface vessel, UAV, command ship, and shore station. Cameras, an edge computer, a cellular uplink, and local storage. Shared imagery is part of the scene. The reference model is MaritimeISR. None of the numbers are an RTX specification.</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <header class="part-head" id="ten">
+      <span class="part-num">2</span>
+      <div><h2>The ten activities the brief lists</h2><p>The brief says students may do these. They are not ten mandatory deliveries. We did each one. Activity 9 is a check of consistency, completeness, and alignment. It is not a time-domain simulation.</p></div>
+    </header>
+
+    <section class="card">
+      <div class="sec-head"><span class="sec-num">2</span><div><h3>Activity by activity</h3></div></div>
+      <table class="map">
+        <thead><tr><th>What RTRC asked</th><th>What we built</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="ask">1. Study the existing tools, agents, MBSE methods, and the three assigned papers.</td>
+            <td class="did"><span class="st done">Done</span><p>The papers were read and then rebuilt as steps, not left as citations. The notes and the reasons for each design choice are in research/ and docs/decisions/. Paper 2 was also re-run on the authors' own EV model.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">2. Propose a way for a tool to help discover requirements.</td>
+            <td class="did"><span class="st done">Done</span><p>A blank brief goes in. Numbered requirements come out. Code drops any number that was not in the brief. Separate exam tasks restate a model as sentences. The PURE run extracts requirement sentences from public documents.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">3. Design the architecture of an AI decision-support tool.</td>
+            <td class="did"><span class="st done">Done</span><p>Thirty Langflow flows in six projects. Each scored approach has an exam flow and a chat flow. Shared tools are memory search, the Pilot, write-to-memory, and the design pipeline. The pipeline order is search, requirements, two designs, Pilot repair, align, budget checks, a person decides, then store.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">4. Look at trade-offs, constraints, and how the pieces fit together.</td>
+            <td class="did"><span class="st done">Done</span><p>Power, uplink, storage, and traceability are recomputed from the official parse. If a check fails, the model may propose a trade from a synthetic catalog and the code recomputes it. Raising a limit to make a design pass is itself a failure. Token cost is recorded at list price.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">5. Improve the agent workflow, the prompts, or the model setup, and say which change mattered.</td>
+            <td class="did"><span class="st done">Done</span><p>The four direct approaches are the prompt and workflow experiment. The knowledge base page "what helps" says what to keep. On this bank, spend on the model before adding steps. Give a weaker model the validator in a loop.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">6. Test more than one agent or pipeline against benchmark SysML models.</td>
+            <td class="did"><span class="st done">Done</span><span class="st run">Full side sets still running</span><p>The maritime bank is the SysML benchmark: generate, modify, align, query. The brief also names two language benchmarks. Those full runs are in progress on qwen3.8-flash. Direct columns on both sets are already finished. The 100-question SysEngBench draw and the two original PURE excerpts were scored earlier and are in the report.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">7. Make a test method that is fair to an AI systems-engineering tool.</td>
+            <td class="did"><span class="st done">Done</span><p>Task verdict and design verdict are separate. The answer key is sealed and hashed. Agents run in a sandbox because an unsandboxed agent read the answer key. Failures are classified. A second person reviewed the 27 keys.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">8. Build a prototype people can run.</td>
+            <td class="did"><span class="st done">Runs locally</span><p>python scripts/up.py starts Langflow, the shell, the tool server, and Ollama. python3 bench/exam_board.py opens the results page. One command stops the stack and frees the GPU.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">9. Run simulations that check whether requirements are consistent and complete, and whether the design matches the model.</td>
+            <td class="did"><span class="st line">Checked, not a mission simulation</span><p>Consistency, completeness, and alignment are scored by the Pilot, the answer keys, and the static budget sums. Alignment writes links between two models and edits neither source. There is no time-domain simulation and no mission simulation. The report says the budgets are static sums and cannot replace a hardware test.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">10. Leave a process and a knowledge base the next team can use.</td>
+            <td class="did"><span class="st done">Done</span><p>docs/knowledge-base/ is written for the next engineer: the process, how to use the Pilot, what helps a model, how to evaluate an agent, and how to add a task. docs/START-HERE.md is the ten-minute entry. The report ends with the next measurements to run.</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <header class="part-head" id="caps">
+      <span class="part-num">3</span>
+      <div><h2>The boxes checked on the form</h2><p>The form says these topics are suggested, not a complete list. These are the ones marked yes. The unmarked boxes were not taken as requirements.</p></div>
+    </header>
+
+    <section class="card">
+      <div class="sec-head"><span class="sec-num">3</span><div><h3>System capabilities and IASE topics</h3></div></div>
+      <table class="map">
+        <thead><tr><th>What was marked</th><th>What we built</th></tr></thead>
+        <tbody>
+          <tr class="grp"><td colspan="2">System capabilities</td></tr>
+          <tr>
+            <td class="ask">Interoperability. Systems that have to work together.</td>
+            <td class="did"><span class="st done">In the exam and the flow</span><p>The alignment tasks and step ⑤ link a new design to the existing MaritimeISR model. Code writes the alias and allocate package. Neither source model is edited. The scene shares imagery across vessels and a shore station.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Reliability and dependability. The tool should behave the same way when the task is repeated.</td>
+            <td class="did"><span class="st done">Three repeats</span><p>Every sealed cell is run three times. The repair loop resubmits the Pilot's full error list. The same matrix was repeated on flash, on max, and on the local 27B, so a single lucky run is not the result.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Safety. A wrong or invented design must not be accepted quietly.</td>
+            <td class="did"><span class="st done">A person is in the loop</span><p>Invented numbers fail the key. A value that had to stay unchanged fails the key. Anything stored into memory waits for a person. This is a check on the model output. It is not a safety case for a real vessel.</p></td>
+          </tr>
+          <tr class="grp"><td colspan="2">Topics marked for UTC-IASE</td></tr>
+          <tr>
+            <td class="ask">Modeling and simulation.</td>
+            <td class="did"><span class="st line">Model yes, time-domain simulation no</span><p>The models are SysML v2, parsed by the official Pilot. Budgets are recomputed from those numbers. We did not simulate vehicle motion, sensors over time, or a mission.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Requirements and systems engineering.</td>
+            <td class="did"><span class="st done">The whole project</span><p>Requirements in, SysML v2 out, and the reverse. Plus a public requirements corpus and a systems-engineering question bank, below.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Verification or validation of a system.</td>
+            <td class="did"><span class="st done">Three separate verdicts</span><p>Syntax: the official Pilot. Task: the answer key. Design: the budgets. They can disagree on purpose. MOD-05 is a correct model that is over the power budget, and the page shows both verdicts.</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <header class="part-head" id="pkg">
+      <span class="part-num">4</span>
+      <div><h2>The required software package</h2><p>The brief names three papers and two public datasets. The papers are steps in the tool. The datasets are side benchmarks, not part of the 27-task exam score.</p></div>
+    </header>
+
+    <section class="card">
+      <div class="sec-head"><span class="sec-num">4</span><div><h3>Papers and datasets</h3></div></div>
+      <table class="map">
+        <thead><tr><th>What the package names</th><th>Where it went</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="ask">Li, Husung, Wang. LLM-assisted semantic alignment of SysML v2 models. arXiv 2508.16181.</td>
+            <td class="did"><span class="st done">Step ⑤</span><p>The model only proposes pairs. Code checks both names and writes the alias and allocate package. The Pilot parses it together with both sources. A person accepts or rejects at step ⑧. Three sealed alignment tasks measure the same step.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Bader and others. SysML v2 in a graph-retrieval pipeline for an LLM.</td>
+            <td class="did"><span class="st done">Step ① and approach P3</span><p>Memory search is MiniLM plus FAISS over element cards from the official parse: seeds, then one hop. An approved design is written back and becomes searchable. We re-ran the authors' EV example with their code and recorded where our result matches the paper and where their notebook needed a fix.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Longshore, Bell, Madachy. Naval Postgraduate School, SYM-AM-24-138. Rules, a template, examples, and a person correcting the model.</td>
+            <td class="did"><span class="st done">Steps ③ and ④</span><p>The model writes with those rules, the attribute template, and retrieved examples. The human correction in the paper is replaced by the Pilot's complete error list. That is also direct approach P1 and the Validate SysML tool.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Validate the chosen approaches on a natural-language requirements set of the kind at nlreqdataset.isti.cnr.it.</td>
+            <td class="did"><span class="st run">Full run in progress</span><p>That site is the PURE collection, Zenodo 7118517. PURE has no SysML model and no translation key, so the test is our requirements-to-SysML pipeline on its real documents: the six XML documents that mark requirements (1,004 of them) are cut into 175 passages of headings, explanatory text and requirements; every line writes one SysML v2 package per passage, three repeats. The official Pilot parses it; every marked requirement must sit in one requirement def, no explanatory paragraph may, no def beyond the marked ones, no number the passage does not contain. The 79 original PDFs have no requirement marks, so they are kept and not scored. We did not invent keys for them.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Also use an open systems-engineering benchmark. The brief points at rabell/SysEngBench on Hugging Face.</td>
+            <td class="did"><span class="st run">Full file in progress</span><p>The test file has 1,144 multiple-choice questions. We ask all of them, three times, ten per prompt. The answer column is read only when scoring. Direct models and OpenCode have finished. Claude Code and the Langflow chats are still running. An earlier published draw of 100 questions is in the report. Always answering B scores about half of that draw, so the exam that separates the agents is still the maritime bank.</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <header class="part-head" id="rules">
+      <span class="part-num">5</span>
+      <div><h2>The project rules on the form</h2><p>These are constraints, not technical tasks. They are met.</p></div>
+    </header>
+
+    <section class="card">
+      <div class="sec-head"><span class="sec-num">5</span><div><h3>Citizenship, export control, agreements</h3></div></div>
+      <table class="map">
+        <thead><tr><th>What the form says</th><th>What we did</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="ask">U.S. citizenship or a green card is not required.</td>
+            <td class="did"><span class="st done">No such gate</span><p>The repository, the models, and the datasets we used do not ask for citizenship.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">Export-controlled data (EAR / ITAR) will not be used.</td>
+            <td class="did"><span class="st done">Public sources and synthetic numbers</span><p>The maritime scenario is synthetic. The papers are public. PURE and SysEngBench are public datasets with their own licenses, recorded in datasets/SOURCES.md. No sponsor document with a distribution marking is in the repo.</p></td>
+          </tr>
+          <tr>
+            <td class="ask">No NDA or IP agreement is required. No other considerations are listed.</td>
+            <td class="did"><span class="st done">Nothing held back for an NDA</span><p>The exam, the flows, and this page are in the project repository. API keys stay in the local environment and are not committed.</p></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <p class="hint" style="margin-top:8px">Sources for the right-hand column: the frozen exam (bench/FREEZE.md), the report draft (docs/report/D4-draft.md), the knowledge base (docs/knowledge-base/), and the design flow on the results page. Full SysEngBench finished on 10 October 2026. The PURE requirements-to-SysML run started the same day and was still running.</p>
+  </main>
+</div>
+</body>
+</html>

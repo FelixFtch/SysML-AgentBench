@@ -7,8 +7,9 @@ retrieval, prompts, Pilot results and checks, and write the same records.
 
 No answer key is served: exam details are the page's cell detail without the key text. Every request except
 GET /health and GET /diagram needs the header X-RTRC-Token; the token is read from the secrets file and never
-put into the environment, so sandboxed agents started from here cannot see it. Sandboxed agents are refused
-while the results page (127.0.0.1:8770, which serves answer keys) is running.
+put into the environment, so sandboxed agents started from here cannot see it. Sandboxed agents run in their own
+network (agents/external/jail.py), where the results page (127.0.0.1:8770, which serves answer keys) cannot be reached;
+on a machine without slirp4netns the sandbox shares the network and they are refused while the page is running.
 
 Main flow (run = the record id, as on page 2.3): /run/start, /run/retrieve, /run/requirements, /run/design
 (new: A literal, B alternative) or /run/adapt (reuse: A adapts the similar project, B is written new),
@@ -32,6 +33,8 @@ import traceback
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+import urllib.error
+import urllib.request
 from urllib.parse import parse_qs, urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,7 +54,10 @@ HELD = ROOT / "bench" / "tasks" / "t4_maritime_isr" / "heldout"
 # The model names our runs used, offered by the cards' dropdowns. Any other name is accepted as typed: a cloud name goes
 # to the endpoint of .env (or to OpenCode's / Claude Code's own provider, see .env.example), "<tag> (Ollama)" to Ollama.
 MODELS = ("qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)", "qwen3.8-27b local")
-AGENTS = ("direct", "claude-code", "opencode")
+AGENTS = ("direct", "claude-code", "opencode", "langflow")
+# The Langflow chat flows that can write a design (agent "langflow"): the design task goes to the flow as one message,
+# the flow's own tools (the official Pilot, memory search) do the checking, the reply is the design. Default: Pilot only.
+LANGFLOW_WRITERS = ("Langflow Agent, Pilot only chat", "OpenCode with memory chat", "Langflow Agent with memory chat · qwen3.8-max")
 VARIANT_ADAPT = ("Design A: adapt the similar existing project. Start from its model: keep its structure, part names and port names "
                  "where they fit the brief; change only what the requirements need; add what is missing; leave out what the brief does not need. "
                  "Every number must come from the requirements, and a stated limit is never changed.")
@@ -81,6 +87,13 @@ def _page_running() -> bool:
     with socket.socket() as probe:
         probe.settimeout(0.3)
         return probe.connect_ex(("127.0.0.1", PAGE_PORT)) == 0
+
+
+def _page_blocks_sandbox() -> None:
+    from agents.external.jail import network_isolated
+    if _page_running() and not network_isolated():
+        raise StepError("The results page is running and serves answer keys, and this machine's sandbox shares the network "
+                        "(slirp4netns is not installed); stop the page before running a sandboxed agent")
 
 
 # ---------- sessions (one per main-flow run) ----------
@@ -147,12 +160,13 @@ def run_start(body: dict) -> dict:
         model = str(body.get("model") or MODELS[0]).strip()
         if agent not in AGENTS or not model:
             raise StepError(f"Agent must be one of {AGENTS} and the model a name (for example one of {MODELS})")
+        flow = str(body.get("flow") or LANGFLOW_WRITERS[0]).strip() if agent == "langflow" else None
         brief = (body.get("brief") or "").strip() or brief_from(CATALOG["default"])
         if len(brief) < 20:
             raise StepError("Write at least one full sentence for the brief")
-        session.update({"agent": agent, "model": model})
+        session.update({"agent": agent, "model": model, "flow": flow})
         session["record"] = {"id": stamp, "brief": brief, "synthetic": True,
-                             "langflow": {"mode": "live", "agent": agent, "model": model, "started": _now()}}
+                             "langflow": {"mode": "live", "agent": agent, "model": model, "flow": flow, "started": _now()}}
     folder = ROOT / "mvp" / "exam-inbox" / f"discover-{stamp}"
     folder.mkdir(parents=True, exist_ok=True)
     session["folder"] = str(folder)
@@ -231,11 +245,12 @@ def run_requirements(body: dict) -> dict:
 def _agent_design(session: dict, key: str, task_text: str) -> dict:
     """One design written by a sandboxed coding agent on Qwen (agents/external): the scored batches' sandbox,
     AGENTS.md and ./validate; the answer is answer.md, else the final message."""
-    if _page_running():
-        raise StepError("The results page is running and serves answer keys; stop it before running a sandboxed agent")
+    _page_blocks_sandbox()
     folder = Path(session["folder"]) / f"agent-{key}"
     (folder / "input").mkdir(parents=True, exist_ok=True)
     (folder / "input" / "requirements.md").write_text(task_text, encoding="utf-8")
+    if session["agent"] == "langflow":
+        return _langflow_design(session, key, task_text)
     with AGENT_LOCK:
         if session["agent"] == "opencode":
             from agents.external.opencode_run import run_opencode
@@ -254,6 +269,41 @@ def _agent_design(session: dict, key: str, task_text: str) -> dict:
             run = run_claude(folder, model=session["model"], max_turns=60, timeout=900, label="langflow")
             text, workspace = run["text"], str(run["workspace"])
     return {"text": text, "workspace": workspace}
+
+
+def _langflow_design(session: dict, key: str, task_text: str) -> dict:
+    """One design written by a Langflow chat flow (Pilot only, OpenCode with memory, Agent with memory): the task is one
+    message in a fresh session, the model is set at run time by tweak, the flow's own tools do the validating, and the
+    reply is the design. The same v2 workflow path bench/langflow_exam.py and bench/run_side.py use; the flow file is
+    not edited. Nothing in the message names an answer key; there is none."""
+    import bench.langflow_exam as exam
+    flow_name = session.get("flow") or LANGFLOW_WRITERS[0]
+    # The flow's tools (the official Pilot, memory search, the MCP server's tools) all call this shell service. When it is
+    # down the flow still answers, without any tool, and the run would be scored as that flow's work. Refuse instead
+    # (2026-10-11: the service had been down for 14 hours while a benchmark kept running Langflow writers).
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:8781/health", timeout=5) as response:
+            healthy = json.loads(response.read() or b"{}").get("ok") is True
+    except (urllib.error.URLError, OSError, ValueError):
+        healthy = False
+    if not healthy:
+        raise StepError("The RTRC shell service (127.0.0.1:8781) is not answering; the flow's tools would fail. Start it with python scripts/up.py --bg")
+    exam.NEEDS.setdefault(flow_name, ["tool-memory-search", "tool-validate-sysml", "tool-write-to-memory", "tool-design-pipeline"])
+    token = exam._token()
+    exam._ensure_provider(token)
+    flow = exam._flow(token, flow_name)
+    chat_session = f"design-{session['id']}-{key}-{datetime.now(timezone.utc).strftime('%H%M%S')}"
+    message = task_text.replace("in answer.md", "in your reply").replace(" Before answering, check it with ./validate", " Before answering, validate it with your SysML tool")
+    body = {"flow_id": flow["id"], "input_value": message, "mode": "background", "session_id": chat_session,
+            "tweaks": exam._model_tweaks(flow, session["model"])}
+    job = exam._request("POST", "/api/v2/workflows", token, body, timeout=60)
+    final = exam._wait(token, job["job_id"], 1200)
+    stored = exam._stored_message(chat_session, flow["id"])
+    text = (stored.get("text") or "").strip() or ((final.get("output") or {}).get("text") or "")
+    if final.get("status") != "completed" or not text:
+        raise StepError(f"The Langflow flow {flow_name!r} ended {final.get('status')} without a reply")
+    return {"text": text, "workspace": f"langflow session {chat_session} · flow {flow['id']}",
+            "tool_calls": stored.get("tool_calls") or [], "usage": stored.get("usage") or {}}
 
 
 def _write(session: dict, key: str, variant: str, baseline: dict | None) -> dict:
@@ -293,7 +343,8 @@ def _write(session: dict, key: str, variant: str, baseline: dict | None) -> dict
     task_text = (body + instruction + f"\n\nWrite the package Design{key} in a ```sysml block in answer.md. "
                  f"Before answering, check it with ./validate Design{key} <your file>.")
     produced = _agent_design(session, key, task_text)
-    return {"text": produced["text"], "model": f"{session['agent']} on {session['model']}", "usage": None,
+    writer = f"langflow:{session.get('flow')} on {session['model']}" if session["agent"] == "langflow" else f"{session['agent']} on {session['model']}"
+    return {"text": produced["text"], "model": writer, "usage": produced.get("usage"), "tool_calls": produced.get("tool_calls"),
             "messages": messages, "prompt_parts": parts, "agent_workspace": produced["workspace"]}
 
 
@@ -344,7 +395,7 @@ def run_validate(body: dict) -> dict:
             if design["sysml_status"] == "PASS":
                 numbers, connections, names = parsed_numbers(Path(design["run_dir"]))
                 design.update({"numbers": numbers, "connections": connections, "elements": names,
-                               "checks": simulate(numbers, connections, [dict(item) for item in record["requirements"]["requirements"]])})
+                               "checks": simulate(numbers, connections, [dict(item) for item in record["requirements"]["requirements"]], record["brief"])})
             else:
                 design["checks"] = [{"id": "SYNTAX", "label": "Official syntax", "status": "FAIL", "detail": "The parse failed, so nothing was computed."}]
             if written.get("agent_workspace"):
@@ -479,22 +530,14 @@ def _cameo_export(session: dict, design: dict) -> str | None:
 def run_review(body: dict) -> dict:
     """Diagrams, the Cameo export and the approval text; saves the record so page 2.3 shows it and approval works."""
     from agents.llm import usage_summary
-    from bench.discover import approval_block
+    from bench.discover import approval_block, gate_for
     from bench.model_diagram import DiagramError, render
     session = _session(body.get("run"))
     record = session["record"]
     designs = record.get("designs") or []
     record["usage"] = usage_summary(session["calls"])
-    eligible = record["langflow"].get("eligible") or []
-    req = record.get("requirements") or {}
-    if req.get("unsourced"):
-        record["gate"] = {"answer": "needs-person", "eligible": [], "effect": "The requirements contain numbers that are not in the brief. Nothing can go into memory until a person supplies them."}
-    elif eligible:
-        record["gate"] = {"answer": "awaiting-person", "eligible": eligible,
-                          "effect": f"Design{'s' if len(eligible) > 1 else ''} {', '.join(eligible)} pass{'' if len(eligible) > 1 else 'es'} all four checks and may be approved into memory by a person."}
-    else:
-        record["gate"] = {"answer": "awaiting-person", "eligible": [],
-                          "effect": "No design passes all four checks, so none can go into memory. Pick a trade-off and send the brief back."}
+    record["gate"] = gate_for(record)  # the same rule as the page and bench.discover.run (decision 038)
+    record["langflow"]["eligible"] = record["gate"]["eligible"]
     lines = [f"run {session['id']} · review for a person", f"Brief: {record['brief']}", ""]
     for design in designs:
         last = (design.get("attempts") or [{}])[-1]
@@ -807,8 +850,7 @@ def exam_agent_run(body: dict) -> dict:
     task_dir = HELD / task_id
     if not (task_dir / "case.yaml").is_file() or agent not in {"opencode", "claude-code"} or not model:
         raise StepError("Need a sealed task id, agent opencode or claude-code, and a model name")
-    if _page_running():
-        raise StepError("The results page is running and serves answer keys; stop it before running a sandboxed agent")
+    _page_blocks_sandbox()
     started = time.monotonic()
     with AGENT_LOCK:
         if agent == "opencode":
@@ -997,7 +1039,7 @@ def _run_and_key(body: dict) -> tuple[str, str]:
 
 
 def tool_gate(body: dict) -> dict:
-    """Card 1 of write to memory: the gate, read only. The same rule as the page: Pilot PASS and all four checks PASS."""
+    """Card 1 of write to memory: the gate, read only. The same rule as the page: Pilot PASS and every gated check PASS."""
     from bench.discover import approval_block, load_memory
     run, key = _run_and_key(body)
     path = ROOT / "analysis" / f"discover-{run}.json"

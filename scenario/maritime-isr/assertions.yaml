@@ -1,5 +1,7 @@
 # Ground truth for the synthetic maritime ISR reference model.
-# Status: single author, 2026-10-02. A second reviewer has not signed this yet.
+# Status: single author, 2026-10-02. A second reviewer has not signed this file.
+# The 27 held-out keys are separate and were reviewed on 2026-10-06
+# (bench/tasks/t4_maritime_isr/heldout/REVIEW.md). This checklist was not part of that review.
 # Official Pilot run 20261002T231323-aea6edfc: PASS, 50 named elements.
 # Engineering acceptance is UNKNOWN. These numbers are synthetic, not RTX specifications.
 task_id: maritime-isr-baseline

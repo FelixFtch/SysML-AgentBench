@@ -1,6 +1,6 @@
-# D4 report draft: benchmarking AI agents that translate requirements into SysML v2
+# D4 report: benchmarking AI agents that translate requirements into SysML v2
 
-RTRC 2706 · UConn Senior Design · frozen exam through 2026-10-06, later measurements through 2026-10-13. Every maritime number is synthetic and is not an RTX specification. The frozen exam figures are generated from saved runs in `STATUS.md` and `analysis/report/exam-20261006/index.html`. `STATUS.md` itself still describes the side benchmarks as they stood on 2026-10-06; sections 6 to 8 below replace that description. The process and the practical lessons are collected in the knowledge base, `docs/knowledge-base/` (D7).
+RTRC 2706 · UConn Senior Design · frozen exam through 2026-10-06, later measurements through 2026-10-13, acceptance notes 2026-10-14. Every maritime number is synthetic and is not an RTX specification. This is the report. It is not a signed acceptance: no advisor has signed it, and there is no separate PDF. The frozen exam figures are generated from saved runs in `STATUS.md` and `analysis/report/exam-20261006/index.html`. `STATUS.md` itself still describes the side benchmarks as they stood on 2026-10-06; sections 6 to 8 below replace that description. The process and the practical lessons are collected in the knowledge base, `docs/knowledge-base/` (D7).
 
 ## Summary
 
@@ -187,7 +187,7 @@ Everything recorded, including the discarded and superseded runs, graph retrieva
 - Claude Code's cost on the frozen exam is a lower bound: it reports usage only when a run ends. The $2.45 and $3.97 totals stop at 2026-10-06.
 - SysEngBench's published key is concentrated on a few letters, so a high score there is weak evidence. PURE's passage-level pass fails a whole passage for one mistake; coverage and the official parse should be read beside it.
 - In the design-flow benchmark the direct writer is one pass over the 100 briefs, not three, and Pilot only finished 298 of 300. Storage cannot fail in the catalogue used to build those briefs. The missing-value case shows that the writers invent a number and the gate blocks it; it does not show that they ask.
-- `STATUS.md` is generated from the frozen exam and still describes the superseded 100-question and two-excerpt side runs. Sections 6 to 8 of this draft are the later measurements.
+- `STATUS.md` is generated from the frozen exam and still describes the superseded 100-question and two-excerpt side runs. Sections 6 to 8 of this report are the later measurements.
 
 ## 11. Recommended next steps
 
@@ -197,4 +197,17 @@ Everything recorded, including the discarded and superseded runs, graph retrieva
 4. For alignment, let the model propose pairs, let code write the package and let a person accept each pair; do not let a model write the package unchecked.
 5. An off-the-shelf coding agent with the official validator in its loop lifts a cheap model to the strong one's level (flash: 86% at its best direct approach, 96% as an agent), at roughly 15–80× the direct cost of flash and above the cost of calling max directly. Give a fixed, cheap model the validator in a loop; when the budget allows, a stronger model with the repair loop is cheaper and as good. Ask the agent to write its answer file early: three of the four agent timeouts had a model that already passed the validator.
 6. The Part 2 prototype now has a scored set (section 8). What it does not yet have is the adapt-an-approved-design branch, a storage option small enough to fail, and a writer that asks when a number is missing. Those are findings, not open scaffolding.
-7. Still open, and not required to close the brief's question: a human blind review with Cohen's κ, confidence intervals, a frontier model outside the Qwen family, the local 27B on PURE and on the full SysEngBench file, the vendor assistant (Cameo AI) and a second checker (Syside), interface tasks in the UMAA style, and a reproduction on a clean machine. Regenerating `STATUS.md` so it no longer quotes the superseded side-benchmark slice.
+7. Still open, and not required to close the brief's question: a human blind review with Cohen's κ, confidence intervals, a frontier model outside the Qwen family, the local 27B on PURE and on the full SysEngBench file, the vendor assistant (Cameo AI) and a second checker (Syside), interface tasks in the UMAA style, and a reproduction on a clean machine. Regenerating `STATUS.md` so it no longer quotes the superseded side-benchmark slice. Asking RTRC to confirm that Pilot 0.62.0 is the software package they meant (section 12).
+
+## 12. Acceptance against the brief
+
+The brief's required work is the decision-support question: can an agent turn natural-language requirements into SysML v2, on a maritime ISR scenario, with evidence of feasibility, performance, limits and next steps, checked on PURE and SysEngBench. Sections 1 to 8 are that evidence. The ten activities and the capability checkboxes are written as "may" and "suggested, but not required."
+
+Two records that look like the same review are not.
+
+- The 27 held-out answer keys were read by a second reviewer on 2026-10-06 and frozen (`bench/tasks/t4_maritime_isr/heldout/REVIEW.md`, decision 028, tag `freeze-2026-10-06-r2`).
+- `scenario/maritime-isr/` is the reference model those tasks start from. Its checklist, `assertions.yaml`, still has one author. Its engineering acceptance stays UNKNOWN because no domain budget checker was applied to that model on 2026-10-02. That file was not signed in the held-out review, and this report does not sign it.
+
+The brief's "required software package" field does not name a package or a version. It lists three papers and two datasets (PURE / nlreqdataset, SysEngBench). The project pins the official OMG SysML v2 Pilot 0.62.0 (kernel sha256 `5a015ed3f2b3d2da` in `bench/FREEZE.md`) as the only syntax judge. Whether RTRC accepts that pin as the required package is still an open confirmation. It is not recorded here as confirmed.
+
+What this report does not contain, because the work was not done: a human blind review and Cohen's κ, a confidence interval, a non-Qwen frontier model, Cameo AI, a second checker (Syside), UMAA-style interface tasks, a clean-machine reproduction, and the adapt-an-approved-design branch of the design flow. Interoperability here is SysML v2 text plus an alignment package plus a Cameo export file. Reliability here is repeated runs and a frozen toolchain. Safety here is the approval gate, not a hardware safety case. The mission simulation is a constant-rate integral of the design's own numbers, cross-checked with OpenModelica, not a trial at sea.

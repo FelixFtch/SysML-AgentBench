@@ -1,6 +1,6 @@
 # D4 report draft: benchmarking AI agents that translate requirements into SysML v2
 
-RTRC 2706 · UConn Senior Design · data through 2026-10-06. Every maritime number is synthetic and is not an RTX specification. Current figures are generated from saved runs in `STATUS.md` and `analysis/report/exam-20261006/index.html`; this draft explains them. The process and the practical lessons are collected in the knowledge base, `docs/knowledge-base/` (D7).
+RTRC 2706 · UConn Senior Design · frozen exam through 2026-10-06, later measurements through 2026-10-13. Every maritime number is synthetic and is not an RTX specification. The frozen exam figures are generated from saved runs in `STATUS.md` and `analysis/report/exam-20261006/index.html`. `STATUS.md` itself still describes the side benchmarks as they stood on 2026-10-06; sections 6 to 8 below replace that description. The process and the practical lessons are collected in the knowledge base, `docs/knowledge-base/` (D7).
 
 ## Summary
 
@@ -11,7 +11,10 @@ RTRC 2706 · UConn Senior Design · data through 2026-10-06. Every maritime numb
 - **Safety holds.** No candidate changed a value the task said to keep or wrote a model with a number the task did not give, and on the over-budget task (MOD-05, 78 W against a 60 W limit) all 30 answers (24 direct cells, 6 agent runs) report the overrun instead of raising the limit.
 - **The official tool has an order dependence.** The Pilot can pass an alignment package when it is listed before its source models and fail the same files in the other order. The scorer uses one fixed order; the agents' validator now uses the same order, and their alignment runs were rerun.
 - **Scored under freeze revision 2.** After the batches, three keys were fixed and the retrieval cards gained documentation text (decision 028). The saved answers were re-scored with the batches' own scoring code, which changed six cells, all from FAIL to PASS, and every direct P3 cell was rerun.
-- **Cost.** At the China (Beijing) list price, 81 cells cost $0.0087 on flash P0 and $0.12 on max P0 (14×); an agent run on flash costs about $0.006–0.008 on average (81 runs: OpenCode $0.68, Claude Code at least $0.51). Everything scored, including the side benchmarks, cost $2.45; everything recorded, including discarded and superseded runs, about $3.97.
+- **The same exam on the local model, and three Langflow columns.** The frozen matrix rerun on the local 3-bit Qwen3.8-27B passes 196 of 324 direct cells, 60 of 81 as OpenCode and 68 of 81 as Claude Code. Three Langflow chat flows sat the same 27 tasks: on flash, Pilot only 81/81, OpenCode with memory 81/81, Agent with memory 79/81; on the local 27B, 71/81, 64/81 and 80/81. These columns are scored by the frozen scorer and are not part of the frozen total.
+- **External validity does not repeat the exam.** On the full SysEngBench file (1,144 questions × 3) every line lands between 86% and 97%. On PURE, turned into SysML v2 rather than copied as sentences, the official parse is near ceiling and the passage-level pass is about half, because one wrong requirement fails the passage. The maritime exam is what separates the lines.
+- **The design tool can be scored end to end.** On 100 catalogue briefs, writers that call the official validator pass about 83–85% of runs (OpenCode 249/300, OpenCode with memory 255/300, Langflow Agent with memory 251/300, Pilot only 246/298). The direct writer on flash passes 19 of 100, almost entirely because it does not emit legal SysML. Briefs that omit a number are failed by every writer except one run: they fill the gap instead of asking, and the gate blocks the invented number (decision 038).
+- **Cost.** At the China (Beijing) list price, 81 cells cost $0.0087 on flash P0 and $0.12 on max P0 (14×); an agent run on flash costs about $0.006–0.008 on average (81 runs: OpenCode $0.68, Claude Code at least $0.51). The frozen exam plus the side benchmarks as they stood on 2026-10-06 cost $2.45; everything recorded by that date, including discarded and superseded runs, about $3.97. Later PURE, SysEngBench, local-27B and Part 2 runs are not folded into those two totals.
 
 ## 1. What was built
 
@@ -76,6 +79,8 @@ The cost is in the loop: every step re-sends the workspace, mostly as cached inp
 
 One Claude Code run (ALN-03, repeat 2) put its answer in its final message instead of `answer.md`; the runner takes the final output when `answer.md` is missing, for both agents, so it was scored.
 
+**The same 27 tasks, other columns.** These are scored by the frozen scorer and are not inside the 270/324 and 78/81 totals above. On qwen3.8-flash, three Langflow flows sat the exam: Langflow Agent, Pilot only 81/81; OpenCode with memory 81/81; Langflow Agent with memory 79/81 (`analysis/langflow-exam-*-qwen3.8-flash-20261007T*/summary.json`). The same matrix on the local 3-bit Qwen3.8-27B, served by Ollama: direct 196/324, OpenCode 60/81, Claude Code 68/81, and the three Langflow flows 71/81, 64/81 and 80/81 (`README.md`, `analysis/langflow-exam-*-local27b-*/summary.json`). The local direct run is the weak one. The sandboxed agents and the Langflow agent with memory recover most of it.
+
 Two earlier agent batches of the same morning are discarded and kept on disk with the reason: OpenCode, working in a folder inside the repository, read the answer key of the task it was solving in several runs; Claude Code had every Bash and Write call denied, so it never ran the validator. Neither is in any score above.
 
 **Validator order.** In the first sandboxed batch both agents checked their alignment packages with their own file listed before the two source models. In that order the Pilot passes a package that writes a nested usage as `Pkg::part::sub`; in the scorer's order (sources first) the same files fail with `Must be an accessible feature (use dot notation for nesting)`. All 8 alignment answers the agents submitted and the scorer failed had passed the agents' own check this way. Re-validating every graded alignment answer in both orders changed none of the direct answers, the answers of the agents' rerun or the three gold packages (`bench/check_validator_order.py`, `analysis/validator-order-20261006.json`). `./validate` now passes files in the scorer's order and all 18 agent alignment runs were rerun; the first batch's alignment rows are kept and listed as superseded.
@@ -90,14 +95,41 @@ Two earlier agent batches of the same morning are discarded and kept on disk wit
 
 ## 6. Side benchmarks named in the brief (not in the exam score)
 
-| Candidate | SysEngBench, 100 questions × 3 | PURE, 2 excerpts × 3 |
-|---|---|---|
-| Direct flash | 283/300 | 6/6 |
-| Direct max | 291/300 | 6/6 |
-| OpenCode (flash) | 272/300 | 6/6 |
-| Claude Code (flash) | 291/300 | 6/6 |
+The brief names two public collections. Both were first tried on a small slice, and that slice is not the result reported here. On 2026-10-06 a 100-question SysEngBench subset (seed 20261006, always answering B would score 51 of 100) and two PURE excerpts scored 6 of 6 for every candidate (`STATUS.md`). Those folders remain on disk. The measurements below use the full public file and the requirements-to-SysML protocol.
 
-SysEngBench (rabell/SysEngBench, MIT): 100 questions fixed with seed 20261006, 10 per prompt. Answering B every time scores 51 of 100 on this subset because the dataset's key is mostly B and C, so these scores say little about systems engineering judgement. PURE (nlreqdataset, CC BY 4.0): two sealed excerpts; the extracted requirement sentences must equal the key. Both are saturated for these candidates and do not separate them; the maritime exam does.
+**SysEngBench** (rabell/SysEngBench, MIT), all 1,144 questions of `test.csv` × 3 repeats = 3,432 answers, qwen3.8-flash, four options scored against the published key. Always answering B scores 557 of 1,144 on the full file.
+
+| Line | Correct |
+|---|---|
+| Claude Code | 3316/3432 (96.6%) |
+| Langflow Agent with memory | 3305/3432 (96.3%) |
+| Direct P0 | 3288/3432 (95.8%) |
+| Direct | 3287/3432 (95.8%) |
+| Direct P2 | 3286/3432 (95.7%) |
+| Direct P3 | 3277/3432 (95.5%) |
+| Langflow Agent, Pilot only | 3244/3432 (94.5%) |
+| Direct P1 | 3240/3432 (94.4%) |
+| OpenCode | 3217/3432 (93.7%) |
+| OpenCode with memory | 2959/3432 (86.2%) |
+
+The file does not separate the lines the way the maritime exam does. OpenCode with memory is the weak line on this file and on PURE.
+
+**PURE** (Zenodo 7118517, the collection behind nlreqdataset.isti.cnr.it, CC BY 4.0). Six XML documents mark their requirements (1,004 requirements). `bench/build_pure_tasks.py` cuts them into 175 passages of up to 12 units (headings, explanatory text and requirements). The candidate writes one SysML v2 package; a passage passes when the official Pilot parses it, every marked requirement appears inside its own `requirement def`, no explanatory paragraph does, there is no extra requirement def, and no number appears that the passage does not contain. An earlier protocol asked the model to copy the requirement sentences. Most of its failures were the right text cut at a different boundary, and no approach of ours was involved. That protocol is superseded and is not in the table. qwen3.8-flash, three repeats.
+
+| Line | Passage pass | Official Pilot | Marked requirements found |
+|---|---|---|---|
+| OpenCode | 299/525 | 523/525 | 2815/3012 |
+| Claude Code | 297/517 | 510/517 | 2862/2976 |
+| Direct P3 | 283/525 | 520/525 | 2912/3012 |
+| Direct P1 | 268/525 | 514/525 | 2809/2985 |
+| Direct P2 | 267/525 | 522/525 | 2904/3002 |
+| Direct P0 | 259/525 | 523/525 | 2811/3012 |
+| Direct | 254/525 | 525/525 | 2910/3012 |
+| Langflow Agent, Pilot only | 248/523 | 522/523 | 2757/2990 |
+| Langflow Agent with memory | 242/524 | 522/524 | 2737/3003 |
+| OpenCode with memory | 176/525 | 480/525 | 2477/2930 |
+
+Syntax is no longer what separates them. A passage fails when a marked requirement is left out or an explanatory paragraph is written as a requirement. Claude Code finished 517 rows, Pilot only 523 and Agent with memory 524; the others finished 525. The passage-level pass is the strict score. Coverage of the marked requirements stays above 90% except for OpenCode with memory (84.5%).
 
 ## 7. What the pipeline can decide (verification and validation)
 
@@ -106,11 +138,28 @@ SysEngBench (rabell/SysEngBench, MIT): 100 questions fixed with seed 20261006, 1
 - **Design:** budgets are computed from the officially parsed numbers. MOD-05 asks for a 12 W camera while forbidding a change to the 60 W limit, so any correct answer is over budget (41 + 25 + 12 = 78 W). All 12 flash and 12 max cells and all 6 agent runs report it: task PASS, design FAIL. Raising the limit or lowering another draw to fit fails the task (`bench/test_score_pwr01.py`).
 - **Safety and interoperability:** a person approves any requirement change and which design enters memory; no candidate changed a value it was told to keep; alignment declares links between models without editing either source.
 
-It cannot replace a hardware test: the budgets are static sums, not time-domain simulation.
+The exam's design verdict is still that static budget. The design flow now also integrates each design's parsed rates over the mission (60 s steps, duration equal to the stated retention, constant rates) and cross-checks the integral with OpenModelica 1.27.1 (`bench/simulate_design.py`). On the 20 real design runs saved before the scored benchmark, the two integrators agree on every run. Four of the 20 have requirements that contradict each other on power and on the link. Five have a design B with no numeric attributes, so its mission check is unknown. This is a check of the flow's own requirements and designs. It is not a hardware test, and it is not one of the gated checks that decide whether a design may enter memory.
 
-## 8. Part 2 prototype: from a blank brief to an approvable design
+## 8. Part 2: from a blank brief to an approvable design
 
-A brief goes through retrieval over the existing MaritimeISR model and approved designs (paper 2), numbered requirements whose numbers must come from the brief, two designs (paper 3), the official Pilot with repair, alignment with MaritimeISR (paper 1, code writes the package), power, uplink, storage and traceability checks from the parsed numbers, a read-back of the design as sentences, and a person's decision. An approved design joins memory and later runs retrieve it. The latest run proposed 5 alignment pairs, verified all 5 and declared them in a package the Pilot accepts. Two designs are in memory. This part has no scored task set yet.
+A brief goes through retrieval over the existing MaritimeISR model and approved designs (paper 2), numbered requirements whose numbers must come from the brief, two SysML v2 designs (paper 3), the official Pilot with repair, alignment with MaritimeISR (paper 1, the model proposes pairs and code writes the package), power, uplink, storage and traceability checks from the parsed numbers, a source check that every design literal appears in the brief or in a sourced requirement (decision 038), a mission-timeline check (section 7), a read-back of the parsed model as sentences, and a person's decision. An approved design joins memory and later runs retrieve it. Two designs are in memory (20261003T144529-A and 20261003T150116-A). P0, P1, P2 and P3 are exam prompts. They are not writers of this step: the flow always repairs from the Pilot's errors and does not outline first.
+
+The same 100 briefs, drawn from the flow's own parts catalogue and scored by code (`bench/run_part2_bench.py`, scorer v2, decision 038), were run on qwen3.8-flash. A correct infeasible brief is a task pass with a design fail. Direct is 100 runs. The other writers are 100 briefs × 3, except Pilot only, which stopped at 298 when its run budget ended. Adapting an approved design was not in this round.
+
+| Writer | Task pass | Both designs parse | Feasible | Over power | Over link | Missing value | Preview |
+|---|---|---|---|---|---|---|---|
+| OpenCode with memory | 255/300 | 297/300 | 39/39 | 123/129 | 33/33 | 0/39 | 60/60 |
+| Langflow Agent with memory | 251/300 | 298/300 | 39/39 | 122/129 | 31/33 | 0/39 | 59/60 |
+| OpenCode | 249/300 | 299/300 | 39/39 | 120/129 | 31/33 | 0/39 | 59/60 |
+| Langflow Agent, Pilot only | 246/298 | 291/298 | 38/38 | 119/129 | 28/32 | 1/39 | 60/60 |
+| Claude Code | 112/300 | 140/300 | 15/39 | 71/129 | 9/33 | 0/39 | 17/60 |
+| Direct writer | 19/100 | 25/100 | 2/13 | 11/43 | 3/11 | 0/13 | 3/20 |
+
+The direct writer's failures are syntactic: it submits `part definition` and `port definition`, which the Pilot rejects, and then resubmits the same file until the repair cap. Writers that hold `./validate` fix that. The missing-value briefs are the other systematic failure. The correct behaviour is to ask and to leave the design ineligible. Five of the six writers never do this (0 passes); Pilot only does it once in 39. They fill in a number, often the 60 W power limit from memory, and the source check then blocks approval. That is the gate working. It is not a high score.
+
+The catalogue cannot make storage fail. Its smaller drive is 128 GB, and the largest recording it can ask for is 18 Mbps for 8 h, which is 64.8 GB. A 64 GB option was not added in order to manufacture a failure.
+
+One later live run, after this table, is recorded as `20261013T155413`: a fixed-wing UAV brief on the local 27B through OpenCode. Both designs pass the official Pilot and every gated check. The gate is awaiting a person. The script does not choose. Cameo export files are written next to the run; Cameo itself is not in the brief's software list and is not installed here.
 
 ## 9. Cost
 
@@ -131,11 +180,14 @@ Everything recorded, including the discarded and superseded runs, graph retrieva
 ## 10. Limits
 
 - 27 synthetic tasks on one scenario, keys by one author and one reviewer; no human blind review or inter-rater agreement yet.
-- Three repeats per cell and no confidence intervals; only Qwen models; one pinned version of each agent.
+- Three repeats per cell and no confidence intervals; the scored models are Qwen models; one pinned version of each agent. The local 27B was run on the maritime exam and not on PURE or on the full SysEngBench file.
 - The agents and the direct calls get different help (rules in the prompt versus a validator they run themselves), so the comparison is between setups, not between pure abilities.
 - The Pilot's verdict can depend on input order; the scorer fixes the order, but other order effects were not searched for.
 - The keys were revised once after the batches (decision 028); the revision changed six verdicts, all to PASS, and no second human reviewer has checked it.
-- Claude Code's cost is a lower bound: it reports usage only when a run ends.
+- Claude Code's cost on the frozen exam is a lower bound: it reports usage only when a run ends. The $2.45 and $3.97 totals stop at 2026-10-06.
+- SysEngBench's published key is concentrated on a few letters, so a high score there is weak evidence. PURE's passage-level pass fails a whole passage for one mistake; coverage and the official parse should be read beside it.
+- In the design-flow benchmark the direct writer is one pass over the 100 briefs, not three, and Pilot only finished 298 of 300. Storage cannot fail in the catalogue used to build those briefs. The missing-value case shows that the writers invent a number and the gate blocks it; it does not show that they ask.
+- `STATUS.md` is generated from the frozen exam and still describes the superseded 100-question and two-excerpt side runs. Sections 6 to 8 of this draft are the later measurements.
 
 ## 11. Recommended next steps
 
@@ -144,4 +196,5 @@ Everything recorded, including the discarded and superseded runs, graph retrieva
 3. Spend on the model before the workflow: on this bank a stronger model gains far more than any added step. Keep the repair loop (cheap, helps weaker models, no cell needed more than a few repairs); treat the outline and retrieval as optional until a larger bank shows an effect.
 4. For alignment, let the model propose pairs, let code write the package and let a person accept each pair; do not let a model write the package unchecked.
 5. An off-the-shelf coding agent with the official validator in its loop lifts a cheap model to the strong one's level (flash: 86% at its best direct approach, 96% as an agent), at roughly 15–80× the direct cost of flash and above the cost of calling max directly. Give a fixed, cheap model the validator in a loop; when the budget allows, a stronger model with the repair loop is cheaper and as good. Ask the agent to write its answer file early: three of the four agent timeouts had a model that already passed the validator.
-6. Next measurements: a human blind review with Cohen's κ, confidence intervals, a frontier model outside the Qwen family, the vendor assistant (Cameo AI) and a second checker (Syside), tasks that must trigger the approval gate, interface tasks in the UMAA style, a scored task set for the Part 2 prototype, and a reproduction on a clean machine.
+6. The Part 2 prototype now has a scored set (section 8). What it does not yet have is the adapt-an-approved-design branch, a storage option small enough to fail, and a writer that asks when a number is missing. Those are findings, not open scaffolding.
+7. Still open, and not required to close the brief's question: a human blind review with Cohen's κ, confidence intervals, a frontier model outside the Qwen family, the local 27B on PURE and on the full SysEngBench file, the vendor assistant (Cameo AI) and a second checker (Syside), interface tasks in the UMAA style, and a reproduction on a clean machine. Regenerating `STATUS.md` so it no longer quotes the superseded side-benchmark slice.

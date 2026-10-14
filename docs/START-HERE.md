@@ -22,9 +22,11 @@ The three papers are steps, not separate apps: paper 2 is memory search, paper 3
 | | For the chats and the page | For examining a flow | For the two sandboxed coding agents |
 |---|---|---|---|
 | Python 3.12 (Langflow) + Python 3.10+ (benchmark) | yes | yes | yes |
-| An API key or Ollama | yes | yes | yes |
+| Your own `.env` key, or Ollama with the cloud key left empty | yes | yes | yes |
 | Java 21 (the official Pilot) | no | yes, Linux or macOS (Windows: WSL2) | yes |
-| Linux (bubblewrap sandbox) | no | no | yes (Windows: WSL2) |
+| Linux or WSL2, bubblewrap, slirp4netns, the pinned OpenCode binary | no | no | yes |
+
+`python3 bench/exam_board.py` reads scores already in the repository. It does not call a model. `.env` is git-ignored and is not on GitHub.
 
 ## Where things are
 

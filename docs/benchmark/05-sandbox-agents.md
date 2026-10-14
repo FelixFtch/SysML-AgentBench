@@ -1,19 +1,21 @@
 # 5 · The sandboxed coding agents
 
 **You get:** what the OpenCode and Claude Code columns are, why they need Linux, and how to run them.
-**You need:** Linux (or WSL2 on Windows), `bwrap` (`apt install bubblewrap`), the agent installed ([../langflow/01-install.md](../langflow/01-install.md) steps 5–6), Java for the Pilot. 10 minutes to read; a column takes hours to run.
+**You need:** Linux (or WSL2 on Windows), `bwrap` (`apt install bubblewrap`), `slirp4netns` (`apt install slirp4netns`), the agent installed ([../langflow/01-install.md](../langflow/01-install.md) steps 5–6), Java 21 for the official Pilot. 10 minutes to read; a column takes hours to run. Ordinary chat and the results page do not need any of this.
 
 ## What the agent sees
 
 Each run gets a fresh workspace with three things: the task's `input/` (the statement and any given models), a rules file (`AGENTS.md` / `CLAUDE.md`: write the answer into `answer.md`, run `./validate`, never invent a number), and `./validate`, a script that runs the official SysML v2 Pilot on a file. The agent decides what to do; it may write, read and run the validator as often as it likes (OpenCode: no limit inside 900 s; Claude Code: 60 turns). The grader then parses `answer.md` once and scores it. The agent never gets the rules the direct approaches get, and never sees a key.
 
-The workspace is wrapped in **bubblewrap** (`agents/external/jail.py`): the agent process sees the workspace, its own home, the system libraries and the network, and nothing else of this computer. In particular it cannot see the repository, so not `bench/tasks/*/gold/`, not earlier runs, not other tasks. We checked why this matters: a first batch without the jail let the agent read the whole repository, and it read answer keys in several runs, including the key of the task it was solving (GEN-01, GEN-02, GEN-05); that batch is kept but not scored (`DISCARDED` in `bench/batches.py`).
+The workspace is wrapped in **bubblewrap** (`agents/external/jail.py`): the agent process sees the workspace, its own home, the system libraries, and nothing else of this computer. In particular it cannot see the repository, so not `bench/tasks/*/gold/`, not earlier runs, not other tasks. We checked why this matters: a first batch without the jail let the agent read the whole repository, and it read answer keys in several runs, including the key of the task it was solving (GEN-01, GEN-02, GEN-05); that batch is kept but not scored (`DISCARDED` in `bench/batches.py`).
+
+With `slirp4netns` installed, the sandbox also has its own network (`agents/external/netns.py`). It can reach the model API and, through a forwarder, Ollama on this machine and the Claude Code router on port 3456. It cannot open anything else on this machine's loopback, including the results page on port 8770, so the page may stay open. Without `slirp4netns` the sandbox shares the network, and the shell service refuses a sandboxed run while the page is up. The exam runner `bench/langflow_exam.py` still asks for the page to be stopped. Chats that are not scored are not refused either way.
 
 ## Why Linux
 
 bubblewrap is a Linux program (user namespaces). On Windows, WSL2 is Linux and runs everything here. On macOS there is no bubblewrap; the honest options are a Linux machine, or a Linux container that mounts only the workspace (not built yet; `agents/external/jail.py` is the one file a Docker variant would replace). An unjailed run (`run_opencode(..., jailed=False)`) exists for debugging and must never be scored.
 
-The page also keeps itself out of the way: `bench/exam_board.py` serves answer keys over HTTP, and the sandbox shares the network, so the runners and the shell service refuse a sandboxed exam while the page is up. Stop the page, run, start it again. Chats are not refused: a conversation is not scored.
+`python3 bench/exam_board.py` only reads scores already stored in the repository. It does not call a model. Section 1.5 and the design console do call a model; those are separate from opening the page.
 
 ## Run a column
 

@@ -2,7 +2,7 @@
 
 **You get:** Langflow running on your computer with the RTRC cards loaded and the six projects imported.
 **You need:** a terminal, about 25 minutes, 6 GB of disk (Langflow 2 GB, the local model 14 GB more if you want it).
-**Works on:** Windows, macOS, Linux for everything on this page (the chats). Scoring an exam needs the official SysML v2 Pilot on Java, which runs on Linux and macOS; on Windows use WSL2 for that part ([../benchmark/06-task-bank.md](../benchmark/06-task-bank.md#the-toolchain)). The two *sandboxed coding-agent* columns need Linux or WSL2 ([../benchmark/05-sandbox-agents.md](../benchmark/05-sandbox-agents.md)).
+**Works on:** Windows, macOS, Linux for the chats and for the results page. Scoring an exam, and any flow that writes a design through OpenCode or Claude Code, needs the official SysML v2 Pilot on Java 21, which runs on Linux and macOS; on Windows use WSL2 for that part ([../benchmark/06-task-bank.md](../benchmark/06-task-bank.md#the-toolchain)). Those two sandboxed agents also need Linux or WSL2, `bubblewrap` (`bwrap`), `slirp4netns`, and the OpenCode binary pinned in `tools/opencode/VERSION` ([../benchmark/05-sandbox-agents.md](../benchmark/05-sandbox-agents.md)). Ordinary chat and `python3 bench/exam_board.py` need none of that: the page reads scores already stored in the repository and does not call a model.
 
 Three programs, each installed the way its maker says. Nothing here is packaged by us.
 
@@ -32,7 +32,7 @@ Two environments on purpose: Langflow pins many packages; the benchmark side (th
 cp .env.example .env        # Windows: copy .env.example .env
 ```
 
-Open `.env` and fill in the model endpoint and key you have. Every variable is explained in [02-keys-and-models.md](02-keys-and-models.md). `.env` is git-ignored; it never leaves your machine.
+Open `.env` and fill in the model endpoint and key you have. A cloud model needs your own URL and key. If you only use a model you pulled into Ollama, leave the cloud key empty. Every variable is explained in [02-keys-and-models.md](02-keys-and-models.md). `.env` is git-ignored; it never leaves your machine and it is not on GitHub.
 
 ## Step 4 · Ollama (optional, for a local model)
 

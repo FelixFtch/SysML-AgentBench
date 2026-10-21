@@ -306,14 +306,14 @@ def _langflow_design(session: dict, key: str, task_text: str) -> dict:
             "tool_calls": stored.get("tool_calls") or [], "usage": stored.get("usage") or {}}
 
 
-def _write(session: dict, key: str, variant: str, baseline: dict | None) -> dict:
-    from bench.discover import DESIGN_RULES, write_design
-    from agents.llm_local import chat  # dispatches to agents.llm.chat for the cloud models, to Ollama for the local one
+def _design_prompt(session: dict, key: str, variant: str, baseline: dict | None) -> dict:
+    """What step ③ hands every writer of one design: the messages of the direct writer and of the repair loop, the
+    prompt parts shown as read-only cards, and the task text an agent gets (OpenCode, Claude Code, a Langflow flow,
+    or a notebook driving an agent through /run/prompt and /run/written)."""
+    from bench.discover import DESIGN_RULES
     record = session["record"]
     requirements = record["requirements"]["requirements"]
     cards = record["retrieval"].get("cards")
-    if baseline is None and session["agent"] == "direct":
-        return write_design(record["brief"], requirements, f"Design{key}", variant, cards)
     listing = "\n".join(f"{item.get('id')}: {item.get('text')}" for item in requirements)
     contract = "\n".join(f"attribute {q['name']} : Real = {float(q['value']):g};  // {item.get('id')}"
                          for item in requirements for q in [item.get("quantity") or {}] if q.get("name") and q.get("value") is not None) or "(none)"
@@ -337,12 +337,23 @@ def _write(session: dict, key: str, variant: str, baseline: dict | None) -> dict
               {"key": "examples", "label": "Examples · retrieved existing elements", "paper": "p2", "text": "\n".join(cards or []) or "(no retrieval results)"}),
              {"key": "task", "label": "Brief + requirements", "paper": "", "text": f"{record['brief']}\n\n{listing}"},
              {"key": "variant", "label": "What this variant must do", "paper": "", "text": variant}]
+    task_text = (body + instruction + f"\n\nWrite the package Design{key} in a ```sysml block in answer.md. "
+                 f"Before answering, check it with ./validate Design{key} <your file>.")
+    return {"messages": messages, "prompt_parts": parts, "task_text": task_text}
+
+
+def _write(session: dict, key: str, variant: str, baseline: dict | None) -> dict:
+    from bench.discover import write_design
+    from agents.llm_local import chat  # dispatches to agents.llm.chat for the cloud models, to Ollama for the local one
+    record = session["record"]
+    if baseline is None and session["agent"] == "direct":
+        return write_design(record["brief"], record["requirements"]["requirements"], f"Design{key}", variant, record["retrieval"].get("cards"))
+    prompt = _design_prompt(session, key, variant, baseline)
+    messages, parts = prompt["messages"], prompt["prompt_parts"]
     if session["agent"] == "direct":
         reply = chat(messages)
         return {"text": reply["text"], "model": reply.get("model"), "usage": reply.get("usage"), "messages": messages, "prompt_parts": parts}
-    task_text = (body + instruction + f"\n\nWrite the package Design{key} in a ```sysml block in answer.md. "
-                 f"Before answering, check it with ./validate Design{key} <your file>.")
-    produced = _agent_design(session, key, task_text)
+    produced = _agent_design(session, key, prompt["task_text"])
     writer = f"langflow:{session.get('flow')} on {session['model']}" if session["agent"] == "langflow" else f"{session['agent']} on {session['model']}"
     return {"text": produced["text"], "model": writer, "usage": produced.get("usage"), "tool_calls": produced.get("tool_calls"),
             "messages": messages, "prompt_parts": parts, "agent_workspace": produced["workspace"]}
@@ -376,6 +387,68 @@ def _designs(body: dict, adapt: bool) -> dict:
             lines.append(f"  Design {key}: {len(item.get('text', ''))} characters written by {item.get('model')}")
     return {"run": session["id"], "summary": "\n".join(lines),
             "data": {key: {k: v for k, v in item.items() if k != "messages"} for key, item in written.items()}}
+
+
+def run_prompt(body: dict) -> dict:
+    """Step ③ for a writer that runs outside this service, one design at a time (notebooks/agent_walk.py drives the
+    Langflow Agent, Pilot only card this way, one Pilot round per cell). Returns the same prompt _write hands every
+    writer and keeps it on the session, so /run/written records what was asked, not what the caller says was asked.
+    `adapt` picks the branch the canvas router picks (reuse: design A adapts the similar project)."""
+    session = _session(body.get("run"))
+    record = session["record"]
+    if "requirements" not in record or "retrieval" not in record:
+        raise StepError("Run ① Search memory and ② Requirements first")
+    key = str(body.get("key") or "").upper()
+    if key not in {"A", "B"}:
+        raise StepError("key must be A or B")
+    similar = record["langflow"].get("similar_project")
+    adapt = bool(body["adapt"]) if "adapt" in body else bool(similar and record["langflow"].get("path") == "reuse")
+    if adapt and not similar:
+        raise StepError("No similar project was found; the new-design branch applies")
+    if key == "A":
+        variant, baseline = (VARIANT_ADAPT, similar) if adapt else (VARIANT_A, None)
+    else:
+        variant, baseline = VARIANT_B, None
+    prompt = _design_prompt(session, key, variant, baseline)
+    # The task as a tool-using writer reads it: the same two substitutions _langflow_design makes for a Langflow flow.
+    message = prompt["task_text"].replace("in answer.md", "in your reply").replace(" Before answering, check it with ./validate", " Before answering, validate it with your SysML tool")
+    session.setdefault("pending_prompt", {})[key] = {**prompt, "message": message, "adapt": adapt, "asked_at": _now(),
+                                                      "baseline": baseline["name"] if baseline else None}
+    record["langflow"]["branch"] = "reuse" if adapt else "new"
+    _save_session(session)
+    lines = [f"run {session['id']}", f"③ prompt for design {key}: " + (f"adapt {similar['name']}" if adapt and key == "A" else "written new")
+             + f" · {len(message)} characters · {len(prompt['prompt_parts'])} prompt parts"]
+    return {"run": session["id"], "summary": "\n".join(lines),
+            "data": {"key": key, "message": message, "prompt_parts": prompt["prompt_parts"], "adapt": adapt,
+                     "baseline": baseline["name"] if baseline else None}}
+
+
+def run_written(body: dict) -> dict:
+    """Step ③ handed back by the outside writer. The text goes into the session like any writer's text, so ④ (the
+    official Pilot with repair), ⑤, ⑥ and ⑦ run unchanged on it; the prompt recorded is the one /run/prompt gave."""
+    session = _session(body.get("run"))
+    record = session["record"]
+    key = str(body.get("key") or "").upper()
+    pending = (session.get("pending_prompt") or {}).get(key)
+    if key not in {"A", "B"} or not pending:
+        raise StepError(f"Ask /run/prompt for design {key or '?'} first")
+    text = str(body.get("text") or "")
+    if not text.strip():
+        raise StepError("The written design is empty")
+    # A reply without a SysML package is accepted, as a Langflow writer's reply is: ④ then fails the parse and repairs.
+    writer = str(body.get("writer") or "notebook")
+    written = {"text": text, "model": f"{writer} on {body.get('model') or session['model']}", "usage": body.get("usage"),
+               "tool_calls": body.get("tool_calls") or [], "messages": pending["messages"], "prompt_parts": pending["prompt_parts"]}
+    session.setdefault("written", {})[key] = written
+    slot = record["langflow"].setdefault("timings", {}).setdefault("adapt" if pending["adapt"] else "design",
+                                                                   {"started": pending["asked_at"], "seconds": 0, "model_calls": 0})
+    slot["seconds"] = round(float(slot["seconds"]) + float(body.get("seconds") or 0), 1)
+    slot["model_calls"] = int(slot["model_calls"]) + int(body.get("model_calls") or 0)
+    session["pending_prompt"].pop(key, None)
+    _save_session(session)
+    return {"run": session["id"], "summary": f"run {session['id']}\n③ Design {key}: {len(text)} characters written by {written['model']}; "
+                                             f"{len(written['tool_calls'])} Pilot call(s) by the writer; handed to ④",
+            "data": {"key": key, "characters": len(text), "written": sorted(session["written"])}}
 
 
 def run_validate(body: dict) -> dict:
@@ -1157,7 +1230,7 @@ ROUTES = {
     "/tool/validate/save": tool_validate_save, "/tool/validate/pilot": tool_validate_pilot, "/tool/prompt-part": tool_prompt_part,
     "/run/start": run_start, "/run/retrieve": run_retrieve, "/run/requirements": run_requirements,
     "/run/design": lambda body: _designs(body, adapt=False), "/run/adapt": lambda body: _designs(body, adapt=True),
-    "/run/validate": run_validate, "/run/align": run_align, "/run/checks": run_checks, "/run/tradeoffs": run_tradeoffs,
+    "/run/prompt": run_prompt, "/run/written": run_written, "/run/validate": run_validate, "/run/align": run_align, "/run/checks": run_checks, "/run/tradeoffs": run_tradeoffs,
     "/run/review": run_review, "/run/approve": run_approve, "/run/decision": run_decision,
     "/cameo/export": cameo_export, "/cameo/result": cameo_result, "/gate/decision": gate_decision,
     "/memory": memory, "/exam/cells": exam_cells, "/exam/cell": exam_cell, "/exam/run": exam_run,

@@ -198,9 +198,27 @@ def _get(url: str, timeout: int = 5):
         return json.loads(response.read() or b"{}")
 
 
-def check_services() -> bool:
-    """What the agent needs on this machine; a missing piece is named with the command that starts it."""
+def ollama_tag(name: str | None) -> str | None:
+    """An Ollama tag from a notebook setting. 'qwen3:8b' and 'qwen3:8b (Ollama)' are the same tag.
+    None means the caller keeps the card's own model."""
+    from agents.llm_local import local_tag
+    if not name or not str(name).strip():
+        return None
+    name = str(name).strip()
+    return local_tag(name) or name
+
+
+def ollama_name(tag: str) -> str:
+    """The shell's name for an Ollama tag: '<tag> (Ollama)' goes to Ollama, anything else to the cloud endpoint."""
+    from agents.llm_local import LOCAL_SUFFIX
+    return tag if tag.endswith(LOCAL_SUFFIX) else f"{tag}{LOCAL_SUFFIX}"
+
+
+def check_services(model: str | None = None) -> bool:
+    """What the agent needs on this machine; a missing piece is named with the command that starts it.
+    model is an Ollama tag you pulled yourself (for example 'qwen3:8b'); empty keeps the card's model."""
     card = load_card()
+    wanted = ollama_tag(model) or card["model"]
     rows, ok = [], True
 
     def line(name: str, good: bool, detail: str) -> None:
@@ -222,9 +240,9 @@ def check_services() -> bool:
     try:
         tags = [item.get("name") for item in _get(OLLAMA + "/api/tags").get("models", [])]
         loaded = [item.get("name") for item in _get(OLLAMA + "/api/ps").get("models", [])]
-        have = card["model"] in tags
-        line("Ollama and the card's model", have, f"{card['model']} {'installed' if have else 'missing: scripts/qwen38.sh --serve'}"
-                                                   f" · {'in GPU memory now' if card['model'] in loaded else 'loads on the first call'}")
+        have = wanted in tags
+        line("Ollama model", have, f"{wanted} {'installed' if have else 'not pulled: ollama pull ' + wanted}"
+                                    f" · {'in GPU memory now' if wanted in loaded else 'loads on the first call'}")
     except (urllib.error.URLError, OSError, ValueError) as exc:
         line("Ollama", False, f"{OLLAMA} not answering ({exc}); python3 scripts/up.py --bg")
     line("Official Pilot 0.62 (jar)", PILOT_JAR.is_file(), str(PILOT_JAR.relative_to(ROOT)))
@@ -344,9 +362,9 @@ def _call_line(call: dict) -> str:
 class Agent:
     """Langflow's Agent card, one step per call: decide() asks the model, act() runs the tool it named."""
 
-    def __init__(self, *, think: bool | None = None):
+    def __init__(self, *, model: str | None = None, think: bool | None = None):
         self.card = load_card()
-        self.model = self.card["model"]
+        self.model = ollama_tag(model) or self.card["model"]
         self.think = think  # None sends no switch, as Langflow's ChatOllama does; the model then thinks
         self.mcp = MCP()
         self.mcp.open()
@@ -647,7 +665,7 @@ class Pipeline:
 
     def show_plan(self) -> None:
         print(f"\nThis tool is a flow of its own: {self.card['flow_file']}. Its cards run in this order; the next cells run them one by one.")
-        for line in ("RTRC Start (model " + self.preset["model"] + ")",
+        for line in ("RTRC Start (model " + self.agent.model + ")",
                      "① Search memory · Paper 2", "② Requirements", "Router: similar project found?",
                      "③ New design, or ③ Adapt the similar project · the writer of A and B. On the canvas: OpenCode in the sandbox. "
                      "In this notebook: the Langflow Agent, Pilot only card, one Pilot round per cell (pipe.writer)",
@@ -709,7 +727,7 @@ class Pipeline:
         rule("Design pipeline · RTRC Start")
         if self.preset["require_brief"] and not self.brief:
             raise ToolError("No brief reached the pipeline; the card refuses an empty brief and nothing runs.")
-        body = shell("/run/start", {"brief": self.brief, "agent": self.preset["agent"], "model": self.preset["model"], "replay": ""})
+        body = shell("/run/start", {"brief": self.brief, "agent": self.preset["agent"], "model": ollama_name(self.agent.model), "replay": ""})
         self.run = body["run"]
         print()
         show_text(body["summary"])
@@ -1071,10 +1089,9 @@ class Writer:
     is told nothing about the pipeline's later re-check; that check is ④, in its own cell."""
 
     def __init__(self, pipe: "Pipeline", key: str, *, think="inherit"):
-        from agents.llm_local import local_tag
         self.pipe, self.key = pipe, key
         self.card = load_pilot_card()
-        self.model = local_tag(pipe.preset["model"]) or pipe.preset["model"]
+        self.model = pipe.agent.model
         self.think = pipe.agent.think if think == "inherit" else think
         self.stopped_at_cap = False
         tool = self.card["tool"]
@@ -1090,7 +1107,7 @@ class Writer:
         print()
         show_text(body["summary"])
         print(f"\nCard file        {PILOT_CARD_FILE.relative_to(ROOT)} (on the canvas this card runs {self.card['canvas_model']}; "
-              f"the pipeline sets the writer's model at run time, here {self.model})")
+              f"this notebook uses {self.model}, the model set in the first cell)")
         print(f"Model calls      at most {self.card['max_iterations']} for this design (the card's limit)")
         print(f"Its one tool     {tool['name']} → flow “{tool['flow']}” ({tool['flow_file']}): save the text as a file → official Pilot")
         print(f"Branch           {'adapt ' + data['baseline'] if data.get('adapt') and key == 'A' else 'written new'}")
@@ -1251,7 +1268,7 @@ class Writer:
         tool_calls = [{"n": r["n"], "status": r["status"], "sha": r["sha"], "run_id": r["run_id"]} for r in self.rounds]
         try:
             body = shell("/run/written", {"run": self.pipe.run, "key": self.key, "text": text, "writer": writer,
-                                          "model": self.pipe.preset["model"], "tool_calls": tool_calls, "seconds": seconds, "model_calls": self.model_calls})
+                                          "model": ollama_name(self.model), "tool_calls": tool_calls, "seconds": seconds, "model_calls": self.model_calls})
         except ToolError as exc:
             print(f"The pipeline refused the hand-in: {exc}")
             return None

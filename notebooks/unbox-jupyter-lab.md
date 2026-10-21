@@ -42,6 +42,21 @@ Run the cells from the top, in order. Each code cell is one step.
 
 A finished run appears on the results page, section 2.3: http://127.0.0.1:8770/#s23
 
+## Another computer
+
+The notebook is not a program by itself. Cloning only `notebooks/` does not run. The other machine needs this whole repository, its own `.env`, and `python3 scripts/up.py --bg` (shell, MCP server, Ollama, Langflow). The official Pilot is the Java jar under `mvp/toolchain/`; without it the validation cells cannot parse SysML. OpenCode's sandbox (`pipe.design()`) also needs Linux with bubblewrap and slirp4netns. The writer used by the cells in section 3 does not: it is the Langflow agent plus the Pilot.
+
+## Your own Ollama model
+
+In the first code cell, set `MODEL` to an Ollama tag that machine has already pulled. A Qwen tag is the usual choice:
+
+```python
+MODEL = "qwen3:8b"          # ollama pull qwen3:8b
+# MODEL = None              # the card's own model, qwen3.8-27b-q3:64k
+```
+
+`None` keeps `qwen3.8-27b-q3:64k`. Any other tag is sent to Ollama on that machine (`http://127.0.0.1:11434`), for the outer agent, the requirements and alignment steps, and the design writer. `check_services(model=MODEL)` says whether that tag is installed. A cloud name such as `qwen3.8-flash`, without ` (Ollama)` on the end, goes to the endpoint in `.env` instead.
+
 ## A new question
 
 Edit the text inside `agent.say("""...""")`.

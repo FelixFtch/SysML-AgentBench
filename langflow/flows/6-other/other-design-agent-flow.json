@@ -6013,7 +6013,7 @@
           "id": "note-cameo",
           "type": "note",
           "node": {
-            "description": "## Cameo (when provides the license)\n\n⑦ already writes each passing design to `analysis/cameo-exports/<run>/`. Open it in Cameo's SysML v2 edition and record the result with the flow **Cameo check**. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability). Cameo has no headless command, so this is a person's step.",
+            "description": "## Cameo (when a Cameo license is available)\n\n⑦ already writes each passing design to `analysis/cameo-exports/<run>/`. Open it in Cameo's SysML v2 edition and record the result with the flow **Cameo check**. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability). Cameo has no headless command, so this is a person's step.",
             "display_name": "",
             "documentation": "",
             "template": {

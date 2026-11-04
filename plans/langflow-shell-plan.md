@@ -213,7 +213,7 @@ The user reviewed the flow drawn in the canvas "The Langflow agent flow to build
 11. ⑧ Person decides (Human Input; **Paper 1**'s human review): approve, reject or send back.
 12. Write to memory (**Paper 2**: the approved design becomes retrievable cards) and ⑨ record grades and times (verdicts, attempts, seconds, tokens, USD).
 
-**Cameo where it is needed, active once provides the license:**
+**Cameo where it is needed, active once a Cameo license is available:**
 
 - Next to ④, a **Cameo check**: the node exports the .sysml file, a person opens it in Cameo's SysML v2 and records "opens cleanly" or the errors through Human Input; with Teamwork Cloud the node can call its standard SysML v2 API instead. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability).
 - Next to ⑦, **Open in Cameo**: reviews the design as diagrams in its own tool; the Langflow diagram stays the automatic preview.

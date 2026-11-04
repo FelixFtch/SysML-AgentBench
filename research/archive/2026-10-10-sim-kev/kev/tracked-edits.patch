@@ -119,7 +119,7 @@ index 7bf680e..ed144ff 100644
 +| Langflow Agent with memory + Kev chat · qwen3.8-max · Langflow Agent · qwen3.8-max | `Agent` | Langflow's own Agent component: the model decides which card to call and when; the cards decide nothing by themselves. Model: Qwen's cloud endpoint. |
 +| Tool · official Pilot on pasted SysML (a flow) · Paper 3 | `RunFlow` | Runs the flow "Validate SysML with the official Pilot": the pasted text saved as a file → the official SysML v2 Pilot → PASS or FAIL with the diagnostics. |
 +| Tool · read a project | `MCPTools` | The SysML v2 text of MaritimeISR or of an approved design, from the file itself. |
-+| Tool · export for Cameo | `MCPTools` | Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when provides the license). |
++| Tool · export for Cameo | `MCPTools` | Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when a Cameo license is available). |
 +| Answer | `ChatOutput` |  |
 +
 +**On the canvas:** The same assistant as **OpenCode with memory chat**, with its parts on the canvas: Langflow's own Agent in the middle, one card per tool around it, the memory as a knowledge base, and four tools that are flows of their own (project 5).

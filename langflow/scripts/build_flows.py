@@ -7,7 +7,7 @@ components in langflow/components/cards, built in Python the way Langflow's own 
 then adds what the Python graph API does not express: Human Input's branch outputs, readable positions, and canvas
 notes that say who does each step and which paper it applies. Output: langflow/flows/<project folder>/<slug>.json
 (catalog.flow_file); import them with langflow/scripts/import_flows.py. Qwen only for now; the Cameo steps are used
-once provides the license.
+once a Cameo license is available.
 
 The flows and the six projects they belong to are listed in langflow/flows/catalog.py (decision 035): each
 candidate's exam version and chat version side by side, the shared tool flows, and the rest.
@@ -66,7 +66,7 @@ ASSISTANT_TOOLS = [
     ("read_project", "Tool · read a project", "The SysML v2 text of MaritimeISR or of an approved design, from the file itself."),
     ("design_status", "Tool · status of a run", "What a saved run produced (analysis/discover-<run>.json): path, requirements, each design's Pilot result and checks, the decision."),
     ("record_decision", "Tool · record a decision", "Saves Reject or Send back with the engineer's reason on the run's record (page 2.3)."),
-    ("export_cameo", "Tool · export for Cameo", "Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when provides the license)."),
+    ("export_cameo", "Tool · export for Cameo", "Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when a Cameo license is available)."),
 ]
 ASSISTANT_TOOL_NAMES = [name for name, _, _ in ASSISTANT_TOOLS] + ["search_memory", "validate_sysml_text", "write_to_memory", "run_design"]
 # The sub-flows the unfolded assistant runs as tools: (slug, flow name, Run Flow tool name, chat-input node id, card title, card text)
@@ -626,7 +626,7 @@ def main_flow(local: bool = False, as_tool: bool = False) -> dict:
     notes = [
         ("note-main", local_note if local else f"# {NAMES['other-design-agent-flow']} (Part 2)\n\nA requirement becomes an approvable SysML v2 design. Two cases: **new** (nothing similar in memory, start from scratch) or **reuse** (adapt the similar project found in memory).\n\n- Every node calls the code behind the results page through the shell service (`bench/shell_service.py`), so a run here and a run on the page give the same retrieval, prompts, Pilot results and checks.\n- **Qwen only for now** (has not answered which models may be used).\n- Click a node after a run to read what it did: the retrieved cards, every Pilot attempt and its errors, the alignment pairs, the checks.\n- Replay any saved run without model calls: set *Replay a saved run* in the Agent node to `latest` or a run id.", 40, -20),
         ("note-papers", "## Where the three papers are used\n\n- **Paper 2** (Bader et al., GRAG): ① Search memory and Write to memory. Cards from the official parse, MiniLM + FAISS, seeds + one hop.\n- **Paper 3** (Longshore, Bell, Madachy): ③ create / modify with rules + template + examples; ④ the correction loop, with the Pilot's errors instead of a person; ⑥ read-back is its *query* use.\n- **Paper 1** (Li, Husung, Wang): ⑤ the alias / allocate alignment package, and ⑧ the person's review.\n- **Ours**: the Pilot as judge, the checks, trade-offs recomputed by code, the approval gate, the grades and times.", 540, -20),
-        ("note-cameo", f"## Cameo (when provides the license)\n\n⑦ already writes each passing design to `analysis/cameo-exports/<run>/`. Open it in Cameo's SysML v2 edition and record the result with the flow **{NAMES['other-cameo-check']}**. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability). Cameo has no headless command, so this is a person's step.", 1040, -20),
+        ("note-cameo", f"## Cameo (when a Cameo license is available)\n\n⑦ already writes each passing design to `analysis/cameo-exports/<run>/`. Open it in Cameo's SysML v2 edition and record the result with the flow **{NAMES['other-cameo-check']}**. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability). Cameo has no headless command, so this is a person's step.", 1040, -20),
     ]
     if local:
         return build(NAMES["other-design-agent-flow-local"],
@@ -838,10 +838,10 @@ def cameo_flow() -> dict:
     titles |= {"ChatInput-run": ("Run id", "Type a saved run id, for example 20261006T211951."),
                "CardCameoExport-export": ("Export for Cameo (when licensed)", "Writes the run's passing designs as .sysml files for Cameo's SysML v2 edition.")}
     human = {"id": "HumanInput-cameo", "decisions": list(results), "title": "Person opens it in Cameo",
-             "info": "Open the exported file in Cameo's SysML v2 edition and pick the result. Until provides the license: Not checked yet.",
+             "info": "Open the exported file in Cameo's SysML v2 edition and pick the result. Until a Cameo license is available: Not checked yet.",
              "prompt_from": ("CardCameoExport-export", "message"),
              "branches": {label: [(f"CardCameoRecord-{suffix}", "upstream")] for label, suffix in results.items()}}
-    notes = [("note-cameo", f"# {NAMES['other-cameo-check']} (when provides the license)\n\nworks in Cameo. This flow exports a run's officially parsed designs and records whether they open cleanly in Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement, the interoperability evidence the brief asks for. Cameo has no headless command, so a person opens the file.", 40, -20)]
+    notes = [("note-cameo", f"# {NAMES['other-cameo-check']} (when a Cameo license is available)\n\nworks in Cameo. This flow exports a run's officially parsed designs and records whether they open cleanly in Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement, the interoperability evidence the brief asks for. Cameo has no headless command, so a person opens the file.", 40, -20)]
     return build(NAMES["other-cameo-check"], "Export a run's designs for Cameo and record the person's check.", graph, titles, notes, [human], ["", "cameo"])
 
 

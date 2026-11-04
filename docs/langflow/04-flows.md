@@ -515,7 +515,7 @@ Folder: [`langflow/flows/4-langflow-agent-with-memory/`](../../langflow/flows/4-
 | Langflow Agent with memory chat · qwen3.8-max · Langflow Agent · qwen3.8-max | `Agent` | Langflow's own Agent component: the model decides which card to call and when; the cards decide nothing by themselves. Model: Qwen's cloud endpoint. |
 | Tool · official Pilot on pasted SysML (a flow) · Paper 3 | `RunFlow` | Runs the flow "Validate SysML with the official Pilot": the pasted text saved as a file → the official SysML v2 Pilot → PASS or FAIL with the diagnostics. |
 | Tool · read a project | `MCPTools` | The SysML v2 text of MaritimeISR or of an approved design, from the file itself. |
-| Tool · export for Cameo | `MCPTools` | Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when provides the license). |
+| Tool · export for Cameo | `MCPTools` | Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when a Cameo license is available). |
 | Answer | `ChatOutput` |  |
 
 **On the canvas:** The same assistant as **OpenCode with memory chat**, with its parts on the canvas: Langflow's own Agent in the middle, one card per tool around it, the memory as a knowledge base, and four tools that are flows of their own (project 5).
@@ -545,7 +545,7 @@ Folder: [`langflow/flows/4-langflow-agent-with-memory/`](../../langflow/flows/4-
 | Langflow Agent with memory chat · local Qwen3.8-27B · Langflow Agent · local Qwen3.8-27B | `Agent` | Langflow's own Agent component: the model decides which card to call and when; the cards decide nothing by themselves. Model: the 3-bit model on this machine (scripts/qwen38.sh --serve). |
 | Tool · official Pilot on pasted SysML (a flow) · Paper 3 | `RunFlow` | Runs the flow "Validate SysML with the official Pilot": the pasted text saved as a file → the official SysML v2 Pilot → PASS or FAIL with the diagnostics. |
 | Tool · read a project | `MCPTools` | The SysML v2 text of MaritimeISR or of an approved design, from the file itself. |
-| Tool · export for Cameo | `MCPTools` | Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when provides the license). |
+| Tool · export for Cameo | `MCPTools` | Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when a Cameo license is available). |
 | Answer | `ChatOutput` |  |
 
 **On the canvas:** The same assistant as **OpenCode with memory chat**, with its parts on the canvas: Langflow's own Agent in the middle, one card per tool around it, the memory as a knowledge base, and four tools that are flows of their own (project 5).
@@ -730,7 +730,7 @@ Folder: [`langflow/flows/6-other/`](../../langflow/flows/6-other/)
 |---|---|---|
 | Run id | `ChatInput` | Type a saved run id, for example 20261006T211951. |
 | Export for Cameo (when licensed) | `CardCameoExport` | Writes the run's passing designs as .sysml files for Cameo's SysML v2 edition. |
-| Person opens it in Cameo | `HumanInput` | Open the exported file in Cameo's SysML v2 edition and pick the result. Until provides the license: Not checked yet. |
+| Person opens it in Cameo | `HumanInput` | Open the exported file in Cameo's SysML v2 edition and pick the result. Until a Cameo license is available: Not checked yet. |
 | Record: opens cleanly | `CardCameoRecord` | Stored next to the official Pilot's verdict as agreement (interoperability). |
 | Record: errors in cameo | `CardCameoRecord` | Stored next to the official Pilot's verdict as agreement (interoperability). |
 | Record: not checked yet | `CardCameoRecord` | Stored next to the official Pilot's verdict as agreement (interoperability). |

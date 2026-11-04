@@ -2011,7 +2011,7 @@
                 "_input_type": "DurationInput"
               }
             },
-            "description": "Open the exported file in Cameo's SysML v2 edition and pick the result. Until provides the license: Not checked yet.",
+            "description": "Open the exported file in Cameo's SysML v2 edition and pick the result. Until a Cameo license is available: Not checked yet.",
             "icon": "HumanInput",
             "base_classes": [
               "Message"
@@ -2111,7 +2111,7 @@
           "id": "note-cameo",
           "type": "note",
           "node": {
-            "description": "# Cameo check (when provides the license)\n\nworks in Cameo. This flow exports a run's officially parsed designs and records whether they open cleanly in Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement, the interoperability evidence the brief asks for. Cameo has no headless command, so a person opens the file.",
+            "description": "# Cameo check (when a Cameo license is available)\n\nworks in Cameo. This flow exports a run's officially parsed designs and records whether they open cleanly in Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement, the interoperability evidence the brief asks for. Cameo has no headless command, so a person opens the file.",
             "display_name": "",
             "documentation": "",
             "template": {

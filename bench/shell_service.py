@@ -630,7 +630,7 @@ def run_review(body: dict) -> dict:
         if link:
             lines.append(f"  ⑦ diagram: {link}")
         if design.get("cameo_export"):
-            lines.append(f"  Cameo: export ready at {design['cameo_export']} (open it in Cameo's SysML v2 when provides the license)")
+            lines.append(f"  Cameo: export ready at {design['cameo_export']} (open it in Cameo's SysML v2 when a Cameo license is available)")
     alignment = record.get("alignment") or {}
     lines.append(f"Alignment: {alignment.get('verified', 0)}/{alignment.get('proposed', 0)} pairs verified; package {(alignment.get('package') or {}).get('sysml_status', 'not generated')}")
     for index, item in enumerate((record.get("tradeoffs") or {}).get("proposals", []), 1):
@@ -750,7 +750,7 @@ def cameo_export(body: dict) -> dict:
         else:
             lines.append(f"  Design {design['key']}: not exported, the official parse did not pass")
     lines += ["Open each file in Cameo's SysML v2 edition and check that it loads without errors; then pick the result.",
-              "Until provides the license, pick \"Not checked yet\". The official Pilot stays the judge."]
+              "Until a Cameo license is available, pick \"Not checked yet\". The official Pilot stays the judge."]
     return {"run": record["id"], "summary": "\n".join(lines), "data": {"files": files}}
 
 

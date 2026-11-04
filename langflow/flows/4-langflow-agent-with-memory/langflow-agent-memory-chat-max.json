@@ -3620,7 +3620,7 @@
                 "_input_type": "ToolsInput"
               }
             },
-            "description": "Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when provides the license).",
+            "description": "Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when a Cameo license is available).",
             "icon": "Mcp",
             "base_classes": [
               "Table"

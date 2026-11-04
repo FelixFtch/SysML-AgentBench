@@ -91,7 +91,7 @@ Click a node after a run (Inspect output) to read what it did: the retrieved car
 
 ### Cameo
 
-⑦ writes each design that passes the Pilot to `analysis/cameo-exports/<run>/`. When provides the license, open it in Cameo's SysML v2 edition and record the result with **Cameo check** (type the run id); the result is stored on the run's record as agreement. The official Pilot stays the judge, and Cameo has no headless command, so this is a person's step.
+⑦ writes each design that passes the Pilot to `analysis/cameo-exports/<run>/`. When a Cameo license is available, open it in Cameo's SysML v2 edition and record the result with **Cameo check** (type the run id); the result is stored on the run's record as agreement. The official Pilot stays the judge, and Cameo has no headless command, so this is a person's step.
 
 ## Without the editor
 

@@ -64,7 +64,7 @@ def _dot(flow: dict, cards: list[dict]) -> str:
     colour = {"ChatInput": "#dff1ff", "ChatOutput": "#dff1ff", "Agent": "#fff1cc", "RunFlow": "#e6f4e6", "MCPTools": "#e6f4e6", "Knowledge": "#e6f4e6",
               "ConditionalRouter": "#f3e8ff", "HumanInput": "#ffe4e4"}
     for card in cards:
-        fill = colour.get(card["kind"]) or ("#e9f7ef" if card["kind"].startswith("Rtrc") else "#f6f8fa")
+        fill = colour.get(card["kind"]) or ("#e9f7ef" if card["kind"].startswith("Card") else "#f6f8fa")
         title = re.sub(r"\s+", " ", card["title"])[:48]
         lines.append(f'  "{q(card["id"])}" [label="{q(title)}\\n{q(card["kind"])}", fillcolor="{fill}"];')
     ids = {c["id"] for c in cards}
@@ -87,7 +87,7 @@ def _svg(dot_src: str, target: Path, dot_bin: str) -> bool:
 def _kind(slug: str) -> str:
     if "exam" in slug:
         return "exam"
-    if "chat" in slug or slug == "rtrc-assistant-langchain":
+    if "chat" in slug or slug == "design-assistant-langchain":
         return "chat"
     if slug.startswith("tool-"):
         return "tool flow (run by projects 3 and 4)"

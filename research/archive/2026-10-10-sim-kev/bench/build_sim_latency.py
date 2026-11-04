@@ -278,7 +278,7 @@ def model_sysml(p: dict) -> str:
         "uav": "/* UAV sensor data reaches the shore headquarters through the command ship relay, which transmits only on fixed windows. */",
     }[p["platform"]]
     return f"""package LatencyChain {{
-    /* Synthetic maritime ISR SIM task (family sim_latency). Numbers are not RTX specifications. */
+    /* Synthetic maritime ISR SIM task (family sim_latency). Numbers are synthetic. */
     private import SI::*;
     private import ISQ::*;
 
@@ -346,7 +346,7 @@ def requirements_md(task_id: str, p: dict, s: dict) -> str:
     window_times = ", ".join(str(int(p["phase_s"] + k * p["period_s"]))
                              for k in range(min(3, s["messages"][-1]["k"] + 1)))
     threshold = p["threshold_s"]
-    return f"""# {task_id} — synthetic, not an RTX specification
+    return f"""# {task_id} — synthetic
 
 SIM multi-hop link latency and message freshness for {platform} in the maritime
 ISR scenario (the four-node system: unmanned surface vessel, fixed-wing UAV,
@@ -532,8 +532,8 @@ ROW_RE = re.compile(
 def verify_from_disk(folder: Path) -> dict:
     text = (folder / "input" / "requirements.md").read_text(encoding="utf-8")
     first = text.splitlines()[0]
-    if not re.fullmatch(r"# LAT-\d{4} — synthetic, not an RTX specification", first):
-        raise SystemExit(f"{folder.name}: requirements.md first line is not the RTX marker: {first!r}")
+    if not re.fullmatch(r"# LAT-\d{4} — synthetic", first):
+        raise SystemExit(f"{folder.name}: requirements.md first line is not the synthetic marker: {first!r}")
     hops = {}
     for line in text.splitlines():
         match = ROW_RE.match(line)

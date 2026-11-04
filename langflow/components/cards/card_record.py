@@ -1,4 +1,4 @@
-"""RTRC Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves
+"""Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves
 the person's decision with the grades and the times, the record page 2.3 shows."""
 import json
 import os
@@ -16,27 +16,27 @@ DECISIONS = {"Approve design A": "A", "Approve design B": "B", "Reject": None, "
 
 
 def _call(path: str, payload: dict) -> dict:
-    url = os.environ.get("RTRC_SHELL_URL", "http://127.0.0.1:8781") + path
+    url = os.environ.get("SHELL_URL", "http://127.0.0.1:8781") + path
     request = urllib.request.Request(url, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": os.environ.get("RTRC_SHELL_TOKEN", "")})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": os.environ.get("SHELL_TOKEN", "")})
     try:
         with urllib.request.urlopen(request, timeout=600) as response:
             body = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         body = json.loads(exc.read() or b"{}")
     except urllib.error.URLError as exc:
-        raise ValueError(f"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
+        raise ValueError(f"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
     if not body.get("ok"):
-        raise ValueError(body.get("error") or "The RTRC shell service returned an error")
+        raise ValueError(body.get("error") or "The shell service returned an error")
     return body
 
 
-class RtrcRecord(Component):
-    display_name = "RTRC Record the decision"
+class CardRecord(Component):
+    display_name = "Record the decision"
     description = ("⑨ Put one after each Human Input branch. Approve writes the design into memory (paper 2; refused unless all four "
                    "checks passed). Every branch saves the decision with each stage's verdict, attempts, seconds, model calls and cost.")
     icon = "clipboard-list"
-    name = "RtrcRecord"
+    name = "CardRecord"
 
     inputs = [
         MessageInput(name="upstream", display_name="From the person's choice", required=False),

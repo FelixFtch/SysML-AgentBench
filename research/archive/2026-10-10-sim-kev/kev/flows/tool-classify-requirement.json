@@ -4,7 +4,7 @@
   "endpoint_name": "tool-classify-requirement",
   "is_component": false,
   "tags": [
-    "rtrc",
+    "",
     "tool",
     "classify"
   ],
@@ -570,7 +570,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Kev classify: the requirement-sentence judge of the Kev flows (project 7).\n\nOne card, stateless: the sentences from the sub-flow's Chat Input go to the Kev decision service (the laptop-scale\nJev clone of tools/jev-arena/kev, 127.0.0.1:8009, POST /v1/systemone) as one noul question per sentence, in batches of\n40 — the same wording the jev-arena pilot used — and the card returns one verdict per sentence: requirement yes or no\nwith the probability. Kev is a decision model, not a chat model: milliseconds per batch, one attempt, no retries; when\nthe service is not running the card raises a clear error that says how to start it, so a flow fails fast instead of\nhanging or retrying in a loop.\n\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nKEV_URL = os.environ.get(\"KEV_URL\", \"http://127.0.0.1:8009\")\nBATCH = 40  # sentences per request, the chunk size of the jev-arena pilot\nYES = 0.5  # a sentence is a requirement when Kev's probability of yes reaches this\nCRIT_TRUE = \"A testable statement of what the software system shall, must, should, or will do, or a constraint on its quality or environment\"\nCRIT_FALSE = \"Headings, background, explanation, rationale, definitions, plans, or any other non-requirement sentence\"\n\n\ndef _sentences(value) -> list[str]:\n    \"\"\"The tool's argument: a JSON list of sentences, one sentence per line, or pasted running text.\"\"\"\n    if isinstance(value, list):\n        lines = [str(getattr(item, \"text\", item) or \"\").strip() for item in value]\n    else:\n        text = str(getattr(value, \"text\", value) or \"\").strip()\n        if text.startswith(\"[\"):\n            try:\n                parsed = json.loads(text)\n                lines = [str(item).strip() for item in parsed] if isinstance(parsed, list) else text.splitlines()\n            except ValueError:\n                lines = text.splitlines()\n        else:\n            lines = text.splitlines()\n    lines = [line for line in lines if line]\n    if len(lines) == 1:  # one line holding several sentences: split on the sentence ends\n        pieces = [piece.strip() for piece in re.split(r\"(?<=[.!?;])\\s+\", lines[0]) if piece.strip()]\n        if len(pieces) > 1:\n            return pieces\n    return lines\n\n\ndef _judge(sentences: list[str]) -> list[dict]:\n    \"\"\"One verdict per sentence from the Kev service: yes/no on being a requirement statement, with the probability.\"\"\"\n    verdicts: list[dict] = []\n    for start in range(0, len(sentences), BATCH):\n        batch = sentences[start:start + BATCH]\n        state = (\"Excerpt of a software requirements specification document. Each line is one sentence with its identifier in brackets:\\n\"\n                 + \"\\n\".join(f\"[{start + i}] {sentence}\" for i, sentence in enumerate(batch, 1)))\n        questions = {str(start + i): {\"type\": \"noul\",\n                                      \"instructions\": f'Is sentence [{start + i}] a software requirement statement? Sentence [{start + i}]: \"{sentence}\"',\n                                      \"criteria\": {\"true\": CRIT_TRUE, \"false\": CRIT_FALSE}}\n                     for i, sentence in enumerate(batch, 1)}\n        request = urllib.request.Request(KEV_URL + \"/v1/systemone\", data=json.dumps({\"model\": \"kev-latest\", \"state\": state,\n                                                                                     \"questions\": questions}).encode(),\n                                         method=\"POST\", headers={\"Content-Type\": \"application/json\"})\n        try:\n            with urllib.request.urlopen(request, timeout=60) as response:\n                body = json.loads(response.read() or b\"{}\")\n        except urllib.error.HTTPError as exc:\n            raise ValueError(f\"The Kev service at {KEV_URL} refused the request (HTTP {exc.code}): \"\n                             f\"{exc.read()[:300].decode('utf-8', 'replace')}\") from exc\n        except urllib.error.URLError as exc:\n            raise ValueError(f\"The Kev service is not reachable at {KEV_URL} ({exc.reason}); start it with scripts/kev_up.sh\") from exc\n        for number, sentence in enumerate(batch, 1):\n            answer = (body.get(\"answers\") or {}).get(str(start + number)) or {}\n            probability = answer.get(\"noul\")\n            if not isinstance(probability, (int, float)):\n                raise ValueError(f\"The Kev service returned no verdict for sentence {start + number}\")\n            verdicts.append({\"sentence\": sentence, \"requirement\": bool(float(probability) >= YES),\n                             \"probability\": round(float(probability), 4)})\n    return verdicts\n\n\nclass RtrcKevClassify(Component):\n    display_name = \"RTRC Kev classify\"\n    description = (\"Judge whether sentences are software requirement statements with the Kev decision service: one \"\n                   \"yes/no question per sentence, in batches of 40, milliseconds per batch.\")\n    icon = \"wand\"\n    name = \"RtrcKevClassify\"\n\n    inputs = [\n        MessageInput(name=\"text\", display_name=\"Sentences\",\n                     info=\"From the sub-flow's Chat Input: the sentences to judge, one per line (a JSON list or pasted running text work too).\"),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> list[dict]:\n        if getattr(self, \"_cached\", None) is None:\n            sentences = _sentences(self.text)\n            if not sentences:\n                raise ValueError(\"No sentences to judge; give one sentence per line\")\n            verdicts = _judge(sentences)\n            yes = sum(1 for item in verdicts if item[\"requirement\"])\n            self._cached = verdicts\n            self.status = f\"Kev · {len(verdicts)} sentence(s): {yes} requirement, {len(verdicts) - yes} not\"\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=\"\\n\".join(f\"{'yes' if item['requirement'] else 'no'} ({item['probability']:.2f}) — {item['sentence']}\"\n                                      for item in self._result()))\n\n    def as_data(self) -> Data:\n        return Data(data={\"verdicts\": self._result()})\n",
+                "value": "\"\"\"Kev classify: the requirement-sentence judge of the Kev flows (project 7).\n\nOne card, stateless: the sentences from the sub-flow's Chat Input go to the Kev decision service (the laptop-scale\nJev clone of tools/jev-arena/kev, 127.0.0.1:8009, POST /v1/systemone) as one noul question per sentence, in batches of\n40 — the same wording the jev-arena pilot used — and the card returns one verdict per sentence: requirement yes or no\nwith the probability. Kev is a decision model, not a chat model: milliseconds per batch, one attempt, no retries; when\nthe service is not running the card raises a clear error that says how to start it, so a flow fails fast instead of\nhanging or retrying in a loop.\n\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nKEV_URL = os.environ.get(\"KEV_URL\", \"http://127.0.0.1:8009\")\nBATCH = 40  # sentences per request, the chunk size of the jev-arena pilot\nYES = 0.5  # a sentence is a requirement when Kev's probability of yes reaches this\nCRIT_TRUE = \"A testable statement of what the software system shall, must, should, or will do, or a constraint on its quality or environment\"\nCRIT_FALSE = \"Headings, background, explanation, rationale, definitions, plans, or any other non-requirement sentence\"\n\n\ndef _sentences(value) -> list[str]:\n    \"\"\"The tool's argument: a JSON list of sentences, one sentence per line, or pasted running text.\"\"\"\n    if isinstance(value, list):\n        lines = [str(getattr(item, \"text\", item) or \"\").strip() for item in value]\n    else:\n        text = str(getattr(value, \"text\", value) or \"\").strip()\n        if text.startswith(\"[\"):\n            try:\n                parsed = json.loads(text)\n                lines = [str(item).strip() for item in parsed] if isinstance(parsed, list) else text.splitlines()\n            except ValueError:\n                lines = text.splitlines()\n        else:\n            lines = text.splitlines()\n    lines = [line for line in lines if line]\n    if len(lines) == 1:  # one line holding several sentences: split on the sentence ends\n        pieces = [piece.strip() for piece in re.split(r\"(?<=[.!?;])\\s+\", lines[0]) if piece.strip()]\n        if len(pieces) > 1:\n            return pieces\n    return lines\n\n\ndef _judge(sentences: list[str]) -> list[dict]:\n    \"\"\"One verdict per sentence from the Kev service: yes/no on being a requirement statement, with the probability.\"\"\"\n    verdicts: list[dict] = []\n    for start in range(0, len(sentences), BATCH):\n        batch = sentences[start:start + BATCH]\n        state = (\"Excerpt of a software requirements specification document. Each line is one sentence with its identifier in brackets:\\n\"\n                 + \"\\n\".join(f\"[{start + i}] {sentence}\" for i, sentence in enumerate(batch, 1)))\n        questions = {str(start + i): {\"type\": \"noul\",\n                                      \"instructions\": f'Is sentence [{start + i}] a software requirement statement? Sentence [{start + i}]: \"{sentence}\"',\n                                      \"criteria\": {\"true\": CRIT_TRUE, \"false\": CRIT_FALSE}}\n                     for i, sentence in enumerate(batch, 1)}\n        request = urllib.request.Request(KEV_URL + \"/v1/systemone\", data=json.dumps({\"model\": \"kev-latest\", \"state\": state,\n                                                                                     \"questions\": questions}).encode(),\n                                         method=\"POST\", headers={\"Content-Type\": \"application/json\"})\n        try:\n            with urllib.request.urlopen(request, timeout=60) as response:\n                body = json.loads(response.read() or b\"{}\")\n        except urllib.error.HTTPError as exc:\n            raise ValueError(f\"The Kev service at {KEV_URL} refused the request (HTTP {exc.code}): \"\n                             f\"{exc.read()[:300].decode('utf-8', 'replace')}\") from exc\n        except urllib.error.URLError as exc:\n            raise ValueError(f\"The Kev service is not reachable at {KEV_URL} ({exc.reason}); start it with scripts/kev_up.sh\") from exc\n        for number, sentence in enumerate(batch, 1):\n            answer = (body.get(\"answers\") or {}).get(str(start + number)) or {}\n            probability = answer.get(\"noul\")\n            if not isinstance(probability, (int, float)):\n                raise ValueError(f\"The Kev service returned no verdict for sentence {start + number}\")\n            verdicts.append({\"sentence\": sentence, \"requirement\": bool(float(probability) >= YES),\n                             \"probability\": round(float(probability), 4)})\n    return verdicts\n\n\nclass CardKevClassify(Component):\n    display_name = \"Kev classify\"\n    description = (\"Judge whether sentences are software requirement statements with the Kev decision service: one \"\n                   \"yes/no question per sentence, in batches of 40, milliseconds per batch.\")\n    icon = \"wand\"\n    name = \"CardKevClassify\"\n\n    inputs = [\n        MessageInput(name=\"text\", display_name=\"Sentences\",\n                     info=\"From the sub-flow's Chat Input: the sentences to judge, one per line (a JSON list or pasted running text work too).\"),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> list[dict]:\n        if getattr(self, \"_cached\", None) is None:\n            sentences = _sentences(self.text)\n            if not sentences:\n                raise ValueError(\"No sentences to judge; give one sentence per line\")\n            verdicts = _judge(sentences)\n            yes = sum(1 for item in verdicts if item[\"requirement\"])\n            self._cached = verdicts\n            self.status = f\"Kev · {len(verdicts)} sentence(s): {yes} requirement, {len(verdicts) - yes} not\"\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=\"\\n\".join(f\"{'yes' if item['requirement'] else 'no'} ({item['probability']:.2f}) — {item['sentence']}\"\n                                      for item in self._result()))\n\n    def as_data(self) -> Data:\n        return Data(data={\"verdicts\": self._result()})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -711,10 +711,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcKevClassify",
-          "id": "RtrcKev-classify"
+          "type": "CardKevClassify",
+          "id": "CardKev-classify"
         },
-        "id": "RtrcKev-classify",
+        "id": "CardKev-classify",
         "type": "genericNode",
         "position": {
           "x": 510,
@@ -755,7 +755,7 @@
     "edges": [
       {
         "source": "ChatInput-sentences",
-        "target": "RtrcKev-classify",
+        "target": "CardKev-classify",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
@@ -767,7 +767,7 @@
           },
           "targetHandle": {
             "fieldName": "text",
-            "id": "RtrcKev-classify",
+            "id": "CardKev-classify",
             "inputTypes": [
               "Message"
             ],
@@ -775,19 +775,19 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-sentencesœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œRtrcKev-classifyœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-sentences{œdataTypeœ:œChatInputœ,œidœ:œChatInput-sentencesœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcKev-classify{œfieldNameœ:œtextœ,œidœ:œRtrcKev-classifyœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œCardKev-classifyœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-sentences{œdataTypeœ:œChatInputœ,œidœ:œChatInput-sentencesœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardKev-classify{œfieldNameœ:œtextœ,œidœ:œCardKev-classifyœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcKev-classify",
+        "source": "CardKev-classify",
         "target": "ChatOutput-verdicts",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcKevClassify",
-            "id": "RtrcKev-classify",
+            "dataType": "CardKevClassify",
+            "id": "CardKev-classify",
             "name": "message",
             "output_types": [
               "Message"
@@ -806,9 +806,9 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcKevClassifyœ, œidœ: œRtrcKev-classifyœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardKevClassifyœ, œidœ: œCardKev-classifyœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-verdictsœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcKev-classify{œdataTypeœ:œRtrcKevClassifyœ,œidœ:œRtrcKev-classifyœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-verdicts{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-verdictsœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardKev-classify{œdataTypeœ:œCardKevClassifyœ,œidœ:œCardKev-classifyœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-verdicts{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-verdictsœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false

@@ -1,5 +1,5 @@
 package SharingLinkSupplier {
-    doc /* SYNTHETIC FIXTURE. Not RTX or real supplier data. One uplink; replication takes place ashore. */
+    doc /* SYNTHETIC FIXTURE. Synthetic fixture. One uplink; replication takes place ashore. */
     private import ScalarValues::*;
     item def SharedFrame {
         attribute sequenceNumber : Integer;

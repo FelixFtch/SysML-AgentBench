@@ -54,7 +54,7 @@
     ],
     "review": {
       "at": "2026-10-07T06:44:09+00:00",
-      "text": "run 20261007T064005 · review for a person\nBrief: A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. An infrared camera draws 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 256 GB of storage. Imagery is uploaded to shore at 12 Mbps over one 20 Mbps uplink.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T064348-efda1257&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T064005/DesignA.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nDesign B: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T064352-36ab0037&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T064005/DesignB.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nAlignment: 6/6 pairs verified; package PASS\nGate: Designs A, B pass all four checks and may be approved into memory by a person."
+      "text": "run 20261007T064005 · review for a person\nBrief: A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. An infrared camera draws 7 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 256 GB of storage. Imagery is uploaded to shore at 12 Mbps over one 20 Mbps uplink.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T064348-efda1257&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T064005/DesignA.sysml (open it in Cameo's SysML v2 when provides the license)\nDesign B: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T064352-36ab0037&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T064005/DesignB.sysml (open it in Cameo's SysML v2 when provides the license)\nAlignment: 6/6 pairs verified; package PASS\nGate: Designs A, B pass all four checks and may be approved into memory by a person."
     },
     "decision": {
       "action": "Send back",
@@ -416,7 +416,7 @@
       "max_rounds": 20,
       "first_pass_attempt": 1,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T064348-efda1257",
+      "run_dir": "/data/robotics//mvp/runs/20261007T064348-efda1257",
       "model": "opencode on qwen3.8-27b (Ollama)",
       "usage": null,
       "prompt_parts": [
@@ -451,7 +451,7 @@
           "text": "Design A: adapt the similar existing project. Start from its model: keep its structure, part names and port names where they fit the brief; change only what the requirements need; add what is missing; leave out what the brief does not need. Every number must come from the requirements, and a stated limit is never changed."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T064005/DesignA.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261007T064005/DesignA.sysml",
       "numbers": {
         "DesignA::Vessel::edgeComputer::drawW": 14.0,
         "DesignA::Vessel::visibleCamera::drawW": 28.0,
@@ -567,7 +567,7 @@
           "unit": "links"
         }
       ],
-      "agent_workspace": "/data/robotics/RTRC/mvp/agent-runs/20261007T064010-9774-P-CODE-agent-A/workspace",
+      "agent_workspace": "/data/robotics//mvp/agent-runs/20261007T064010-9774-P-CODE-agent-A/workspace",
       "read_back": "The total power consumption of the visible camera, edge computer, and infrared camera shall not exceed the vessel power limit.\nThe visible camera shall draw 28 W.\nThe edge computer shall draw 14 W.\nThe infrared camera shall draw 7 W.\nImagery shall be recorded locally at a data rate of 18 Mbps.\nThe local storage shall have a capacity of 256 GB.\nImagery shall be uploaded to shore at a rate of 12 Mbps.\nThe uplink capacity shall be 20 Mbps.\nThe system shall support a retention time of 8 hours.",
       "read_back_numbers": {
         "7": true,
@@ -602,7 +602,7 @@
       "max_rounds": 20,
       "first_pass_attempt": 1,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T064352-36ab0037",
+      "run_dir": "/data/robotics//mvp/runs/20261007T064352-36ab0037",
       "model": "opencode on qwen3.8-27b (Ollama)",
       "usage": null,
       "prompt_parts": [
@@ -637,7 +637,7 @@
           "text": "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T064005/DesignB.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261007T064005/DesignB.sysml",
       "numbers": {
         "DesignB::Vessel::infraredCamera::drawW": 7.0,
         "DesignB::Vessel::dataRateMbps": 18.0,
@@ -748,7 +748,7 @@
           "unit": "links"
         }
       ],
-      "agent_workspace": "/data/robotics/RTRC/mvp/agent-runs/20261007T064115-deff-P-CODE-agent-B/workspace",
+      "agent_workspace": "/data/robotics//mvp/agent-runs/20261007T064115-deff-P-CODE-agent-B/workspace",
       "read_back": "The total power consumption of the visible camera, edge computer, and infrared camera shall not exceed the vessel power limit.\nThe visible camera shall draw 28 W.\nThe edge computer shall draw 14 W.\nThe infrared camera shall draw 7 W.\nImagery shall be recorded locally at a data rate of 18 Mbps.\nThe local storage shall have a capacity of 256 GB.\nImagery shall be uploaded to shore at a rate of 12 Mbps.\nThe uplink capacity shall be 20 Mbps.\nThe system shall support a retention time of 8 hours.",
       "read_back_numbers": {
         "7": true,

@@ -256,7 +256,7 @@ def sample(rng: random.Random, slot: dict) -> dict:
 
 # --------------------------------------------------------------------- model.sysml
 MODEL_HEAD = """package StorageRetention {
-    /* Synthetic maritime ISR SIM task (family sim_storage). Numbers are not RTX specifications. */
+    /* Synthetic maritime ISR SIM task (family sim_storage). Numbers are synthetic. */
     private import SI::*;
     private import ISQ::*;
     private import ISQInformation::*;
@@ -478,7 +478,7 @@ With S = {S} GB and R = {R} Mbit/s, tier k stores at R/k Mbit/s, so
 {units_b}
 {ask}"""
     return (
-        f"# {task_id} — synthetic, not an RTX specification\n\n"
+        f"# {task_id} — synthetic\n\n"
         f"{meta['header']}\n\n{BACKGROUND}\n\n"
         "This is a closed-form storage question. The file `model.sysml` in this folder "
         "carries the same parameters as a SysML v2 model; the numbers in this document "
@@ -813,7 +813,7 @@ def write_bank(tasks: list[dict]) -> None:
 
 # ------------------------------------------- disk re-parse (independent of writers)
 RX = {
-    "first": re.compile(r"# CMP-\d{4} — synthetic, not an RTX specification"),
+    "first": re.compile(r"# CMP-\d{4} — synthetic"),
     "rate": re.compile(r"rate R: (\d+) Mbit/s"),
     "cap": re.compile(r"capacity S: (\d+(?:\.\d+)?) GB"),
     "target": re.compile(r"retention T: (\d+(?:\.\d+)?) h"),
@@ -826,7 +826,7 @@ def reparse(folder: Path) -> tuple[dict, dict]:
     """Recompute gold from the written requirements.md alone."""
     text = (folder / "input" / "requirements.md").read_text(encoding="utf-8")
     if not RX["first"].match(text):
-        raise SystemExit(f"{folder.name}: first line is not the RTX synthetic marker")
+        raise SystemExit(f"{folder.name}: first line is not the synthetic marker")
     R = int(RX["rate"].search(text).group(1))
     S = Fraction(RX["cap"].search(text).group(1))
     T = Fraction(RX["target"].search(text).group(1))

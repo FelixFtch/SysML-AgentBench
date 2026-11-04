@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_96b1004e549c4114877a2784",
       "tool_input": {
-        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T073549-P-CODE-2-AMB-01/workspace && find /data/robotics/RTRC/mvp/agent-runs/20261006T073549-P-CODE-2-AMB-01 -maxdepth 2 -type f | head -50",
+        "command": "ls -la /data/robotics//mvp/agent-runs/20261006T073549-P-CODE-2-AMB-01/workspace && find /data/robotics//mvp/agent-runs/20261006T073549-P-CODE-2-AMB-01 -maxdepth 2 -type f | head -50",
         "description": "List workspace contents and task files"
       }
     }

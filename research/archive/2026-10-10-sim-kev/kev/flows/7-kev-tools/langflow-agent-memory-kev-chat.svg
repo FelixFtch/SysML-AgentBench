@@ -15,16 +15,16 @@
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-692.05" font-family="Helvetica,sans-Serif" font-size="11.00">Engineer</text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-678.55" font-family="Helvetica,sans-Serif" font-size="11.00">ChatInput</text>
 </g>
-<!-- Agent&#45;rtrc -->
+<!-- Agent&#45; -->
 <g id="node10" class="node">
-<title>Agent&#45;rtrc</title>
+<title>Agent&#45;</title>
 <path fill="#fff1cc" stroke="#9aa4ad" d="M611.25,-371C611.25,-371 332,-371 332,-371 326,-371 320,-365 320,-359 320,-359 320,-347 320,-347 320,-341 326,-335 332,-335 332,-335 611.25,-335 611.25,-335 617.25,-335 623.25,-341 623.25,-347 623.25,-347 623.25,-359 623.25,-359 623.25,-365 617.25,-371 611.25,-371"/>
 <text xml:space="preserve" text-anchor="middle" x="471.62" y="-356.05" font-family="Helvetica,sans-Serif" font-size="11.00">Langflow Agent with memory + Kev chat · qwen3.8&#45;</text>
 <text xml:space="preserve" text-anchor="middle" x="471.62" y="-342.55" font-family="Helvetica,sans-Serif" font-size="11.00">Agent</text>
 </g>
-<!-- ChatInput&#45;ask&#45;&gt;Agent&#45;rtrc -->
+<!-- ChatInput&#45;ask&#45;&gt;Agent&#45; -->
 <g id="edge2" class="edge">
-<title>ChatInput&#45;ask&#45;&gt;Agent&#45;rtrc</title>
+<title>ChatInput&#45;ask&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M173.49,-688.75C203.24,-686.97 246.37,-680.44 277,-659 380.54,-586.52 440.87,-439.16 462,-379.23"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="464.25,-380.22 464.23,-372.8 459.62,-378.61 464.25,-380.22"/>
 </g>
@@ -35,9 +35,9 @@
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-631.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · search memory (a flow) · Paper 2</text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-617.55" font-family="Helvetica,sans-Serif" font-size="11.00">RunFlow</text>
 </g>
-<!-- RunFlow&#45;search&#45;&gt;Agent&#45;rtrc -->
+<!-- RunFlow&#45;search&#45;&gt;Agent&#45; -->
 <g id="edge11" class="edge">
-<title>RunFlow&#45;search&#45;&gt;Agent&#45;rtrc</title>
+<title>RunFlow&#45;search&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M254.13,-609.52C262.13,-606.27 269.85,-602.47 277,-598 366.66,-541.99 432.07,-429.16 458.15,-378.57"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="460.18,-379.98 461.17,-372.63 455.81,-377.76 460.18,-379.98"/>
 </g>
@@ -48,9 +48,9 @@
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-570.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · write to memory (a flow) · approval card </text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-556.55" font-family="Helvetica,sans-Serif" font-size="11.00">RunFlow</text>
 </g>
-<!-- RunFlow&#45;write&#45;&gt;Agent&#45;rtrc -->
+<!-- RunFlow&#45;write&#45;&gt;Agent&#45; -->
 <g id="edge13" class="edge">
-<title>RunFlow&#45;write&#45;&gt;Agent&#45;rtrc</title>
+<title>RunFlow&#45;write&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M249.89,-548.62C259.3,-545.36 268.47,-541.52 277,-537 353.11,-496.66 420.71,-417.99 452.08,-377.85"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="453.89,-379.52 456.23,-372.48 450.01,-376.52 453.89,-379.52"/>
 </g>
@@ -61,22 +61,22 @@
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-509.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · status of a run</text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-495.55" font-family="Helvetica,sans-Serif" font-size="11.00">MCPTools</text>
 </g>
-<!-- MCPTools&#45;design_status&#45;&gt;Agent&#45;rtrc -->
+<!-- MCPTools&#45;design_status&#45;&gt;Agent&#45; -->
 <g id="edge4" class="edge">
-<title>MCPTools&#45;design_status&#45;&gt;Agent&#45;rtrc</title>
+<title>MCPTools&#45;design_status&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M203.54,-496.86C227.18,-492.24 253.84,-485.53 277,-476 339.75,-450.18 404.75,-404.24 441.2,-376.4"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="442.42,-378.56 446.47,-372.35 439.43,-374.67 442.42,-378.56"/>
 </g>
-<!-- Knowledge&#45;rtrc -->
+<!-- Knowledge&#45; -->
 <g id="node5" class="node">
-<title>Knowledge&#45;rtrc</title>
+<title>Knowledge&#45;</title>
 <path fill="#e6f4e6" stroke="#9aa4ad" d="M237.62,-463C237.62,-463 39.38,-463 39.38,-463 33.38,-463 27.38,-457 27.38,-451 27.38,-451 27.38,-439 27.38,-439 27.38,-433 33.38,-427 39.38,-427 39.38,-427 237.62,-427 237.62,-427 243.62,-427 249.62,-433 249.62,-439 249.62,-439 249.62,-451 249.62,-451 249.62,-457 243.62,-463 237.62,-463"/>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-448.05" font-family="Helvetica,sans-Serif" font-size="11.00">Memory as knowledge base · Paper 2</text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-434.55" font-family="Helvetica,sans-Serif" font-size="11.00">Knowledge</text>
 </g>
-<!-- Knowledge&#45;rtrc&#45;&gt;Agent&#45;rtrc -->
+<!-- Knowledge&#45;&#45;&gt;Agent&#45; -->
 <g id="edge3" class="edge">
-<title>Knowledge&#45;rtrc&#45;&gt;Agent&#45;rtrc</title>
+<title>Knowledge&#45;&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M230.03,-426.53C245.75,-422.96 261.9,-419.06 277,-415 321.87,-402.95 371.79,-386.9 409.71,-374.15"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="410.33,-376.52 416.18,-371.96 408.76,-371.88 410.33,-376.52"/>
 </g>
@@ -87,9 +87,9 @@
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-387.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · run the design pipeline (a flow) · Papers</text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-373.55" font-family="Helvetica,sans-Serif" font-size="11.00">RunFlow</text>
 </g>
-<!-- RunFlow&#45;pipeline&#45;&gt;Agent&#45;rtrc -->
+<!-- RunFlow&#45;pipeline&#45;&gt;Agent&#45; -->
 <g id="edge10" class="edge">
-<title>RunFlow&#45;pipeline&#45;&gt;Agent&#45;rtrc</title>
+<title>RunFlow&#45;pipeline&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M272.75,-371.53C285.43,-370.34 298.37,-369.13 311.26,-367.92"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="311.47,-370.36 318.21,-367.27 311.02,-365.48 311.47,-370.36"/>
 </g>
@@ -100,9 +100,9 @@
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-326.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · list projects</text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-312.55" font-family="Helvetica,sans-Serif" font-size="11.00">MCPTools</text>
 </g>
-<!-- MCPTools&#45;list_projects&#45;&gt;Agent&#45;rtrc -->
+<!-- MCPTools&#45;list_projects&#45;&gt;Agent&#45; -->
 <g id="edge6" class="edge">
-<title>MCPTools&#45;list_projects&#45;&gt;Agent&#45;rtrc</title>
+<title>MCPTools&#45;list_projects&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M195.3,-328.06C227.44,-330.97 269.62,-334.79 311.28,-338.56"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="310.9,-340.99 318.09,-339.18 311.34,-336.11 310.9,-340.99"/>
 </g>
@@ -113,9 +113,9 @@
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-265.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · record a decision</text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-251.55" font-family="Helvetica,sans-Serif" font-size="11.00">MCPTools</text>
 </g>
-<!-- MCPTools&#45;record_decision&#45;&gt;Agent&#45;rtrc -->
+<!-- MCPTools&#45;record_decision&#45;&gt;Agent&#45; -->
 <g id="edge8" class="edge">
-<title>MCPTools&#45;record_decision&#45;&gt;Agent&#45;rtrc</title>
+<title>MCPTools&#45;record_decision&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M210.06,-276.79C231.63,-281.61 255.37,-287.22 277,-293 320.96,-304.75 369.91,-319.93 407.59,-332.09"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="406.6,-334.34 414.02,-334.17 408.11,-329.68 406.6,-334.34"/>
 </g>
@@ -126,9 +126,9 @@
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-204.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · classify requirement sentences (a flow) ·</text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-190.55" font-family="Helvetica,sans-Serif" font-size="11.00">RunFlow</text>
 </g>
-<!-- RunFlow&#45;classify&#45;&gt;Agent&#45;rtrc -->
+<!-- RunFlow&#45;classify&#45;&gt;Agent&#45; -->
 <g id="edge9" class="edge">
-<title>RunFlow&#45;classify&#45;&gt;Agent&#45;rtrc</title>
+<title>RunFlow&#45;classify&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M239.87,-219.46C252.57,-223.01 265.23,-227.16 277,-232 339.12,-257.55 403.84,-302.29 440.5,-329.62"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="438.73,-331.36 445.8,-333.6 441.68,-327.44 438.73,-331.36"/>
 </g>
@@ -139,9 +139,9 @@
 <text xml:space="preserve" text-anchor="middle" x="706.12" y="-356.05" font-family="Helvetica,sans-Serif" font-size="11.00">Answer</text>
 <text xml:space="preserve" text-anchor="middle" x="706.12" y="-342.55" font-family="Helvetica,sans-Serif" font-size="11.00">ChatOutput</text>
 </g>
-<!-- Agent&#45;rtrc&#45;&gt;ChatOutput&#45;answer -->
+<!-- Agent&#45;&#45;&gt;ChatOutput&#45;answer -->
 <g id="edge1" class="edge">
-<title>Agent&#45;rtrc&#45;&gt;ChatOutput&#45;answer</title>
+<title>Agent&#45;&#45;&gt;ChatOutput&#45;answer</title>
 <path fill="none" stroke="#6b7680" d="M623.48,-353C635.58,-353 647.13,-353 657.54,-353"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="657.48,-355.45 664.48,-353 657.48,-350.55 657.48,-355.45"/>
 </g>
@@ -152,9 +152,9 @@
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-143.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · official Pilot on pasted SysML (a flow) ·</text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-129.55" font-family="Helvetica,sans-Serif" font-size="11.00">RunFlow</text>
 </g>
-<!-- RunFlow&#45;validate&#45;&gt;Agent&#45;rtrc -->
+<!-- RunFlow&#45;validate&#45;&gt;Agent&#45; -->
 <g id="edge12" class="edge">
-<title>RunFlow&#45;validate&#45;&gt;Agent&#45;rtrc</title>
+<title>RunFlow&#45;validate&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M247.36,-158.42C257.66,-161.91 267.71,-166.07 277,-171 352.5,-211.09 420.14,-288.48 451.74,-328.18"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="449.67,-329.51 455.93,-333.49 453.52,-326.48 449.67,-329.51"/>
 </g>
@@ -165,9 +165,9 @@
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-82.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · read a project</text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-68.55" font-family="Helvetica,sans-Serif" font-size="11.00">MCPTools</text>
 </g>
-<!-- MCPTools&#45;read_project&#45;&gt;Agent&#45;rtrc -->
+<!-- MCPTools&#45;read_project&#45;&gt;Agent&#45; -->
 <g id="edge7" class="edge">
-<title>MCPTools&#45;read_project&#45;&gt;Agent&#45;rtrc</title>
+<title>MCPTools&#45;read_project&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M201.43,-83.97C226.38,-88.18 254.5,-95.9 277,-110 365.72,-165.61 431.22,-276.6 457.71,-327.01"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="455.53,-328.13 460.92,-333.22 459.88,-325.88 455.53,-328.13"/>
 </g>
@@ -178,9 +178,9 @@
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · export for Cameo</text>
 <text xml:space="preserve" text-anchor="middle" x="138.5" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">MCPTools</text>
 </g>
-<!-- MCPTools&#45;export_cameo&#45;&gt;Agent&#45;rtrc -->
+<!-- MCPTools&#45;export_cameo&#45;&gt;Agent&#45; -->
 <g id="edge5" class="edge">
-<title>MCPTools&#45;export_cameo&#45;&gt;Agent&#45;rtrc</title>
+<title>MCPTools&#45;export_cameo&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M211.33,-23.43C233.89,-27.83 257.88,-35.56 277,-49 379.92,-121.35 440.6,-267.55 461.92,-326.99"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="459.52,-327.57 464.16,-333.36 464.14,-325.94 459.52,-327.57"/>
 </g>

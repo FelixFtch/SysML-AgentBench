@@ -1,5 +1,5 @@
-"""RTRC Exam step: shows one step of an exam cell (page 1.1 / 1.4) from the cell record, and passes the record on.
-No service call: the cell record comes from RTRC Exam cell."""
+"""Exam step: shows one step of an exam cell (page 1.1 / 1.4) from the cell record, and passes the record on.
+No service call: the cell record comes from Exam cell."""
 from lfx.custom.custom_component.component import Component
 from lfx.io import DataInput, DropdownInput, Output
 from lfx.schema.data import Data
@@ -13,11 +13,11 @@ def _record(value) -> dict:
     return dict(getattr(value, "data", None) or (value if isinstance(value, dict) else {}))
 
 
-class RtrcExamStep(Component):
-    display_name = "RTRC Exam step"
+class CardExamStep(Component):
+    display_name = "Exam step"
     description = "One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls."
     icon = "list-checks"
-    name = "RtrcExamStep"
+    name = "CardExamStep"
 
     inputs = [
         DataInput(name="cell", display_name="Cell record"),

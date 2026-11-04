@@ -1,15 +1,15 @@
-"""Build the comparison flow "RTRC design assistant (Langflow Agent, qwen3.8-max)": Langflow's own Agent component
+"""Build the comparison flow "design assistant (Langflow Agent, qwen3.8-max)": Langflow's own Agent component
 over our tools, kept next to the OpenCode assistant (decision 032) so the two harnesses can be compared.
 
     LANGFLOW_CONFIG_DIR=.langflow/config .venv-langflow/bin/python langflow/scripts/build_assistant.py
 
 Chat Input -> Agent (qwen3.8-max through the "OpenAI Compatible" provider) -> Chat Output. The Agent's tools are the
-RTRC assistant MCP server (tools/assistant_mcp.py: memory search, read a project, run the verified design pipeline,
-validate SysML, write to memory, record a decision, export for Cameo) and the Langflow knowledge base rtrc_memory
+assistant MCP server (tools/assistant_mcp.py: memory search, read a project, run the verified design pipeline,
+validate SysML, write to memory, record a decision, export for Cameo) and the Langflow knowledge base project_memory
 in Retrieve mode. The Agent decides when to call a tool; the official Pilot and the checks decide the verdicts.
 In this flow run_design is called with agent "direct" (the model writes each design in one answer, with the error-list
 repair loop), as in decision 031; the OpenCode assistant has OpenCode write them.
-Output: langflow/flows/4-langflow-agent-with-memory/rtrc-assistant-langchain.json (catalog.flow_file); import with
+Output: langflow/flows/4-langflow-agent-with-memory/design-assistant-langchain.json (catalog.flow_file); import with
 langflow/scripts/import_flows.py.
 """
 from __future__ import annotations
@@ -26,10 +26,10 @@ from lfx.components.models_and_agents.mcp_component import MCPToolsComponent
 OUT = Path(__file__).resolve().parents[1] / "flows"
 MODEL = "qwen3.8-max"
 PROVIDER = "OpenAI Compatible"
-KNOWLEDGE_BASE = "rtrc_memory"
-MCP_SERVER = {"name": "rtrc-assistant", "config": {"url": "http://127.0.0.1:8782/mcp"}}
+KNOWLEDGE_BASE = "project_memory"
+MCP_SERVER = {"name": "design-assistant", "config": {"url": "http://127.0.0.1:8782/mcp"}}
 
-SYSTEM_PROMPT = """You are the RTRC design assistant for early-stage systems engineering in SysML v2. The scenario is a synthetic maritime ISR exercise; the numbers are not an RTX specification.
+SYSTEM_PROMPT = """You are the design assistant for early-stage systems engineering in SysML v2. The scenario is a synthetic maritime ISR exercise; the numbers are synthetic.
 
 What you do: help an engineer see what already exists in the memory, turn a vague need into numbered requirements, run the verified design pipeline once the engineer confirms the brief, explain the results plainly, and record the engineer's decision.
 
@@ -76,28 +76,28 @@ def _node(component, node_id: str, x: int, y: int, title: str, info: str, values
 
 def build() -> dict:
     chat_in = _node(ChatInput(_id="ChatInput-ask"), "ChatInput-ask", 40, 420, "Engineer", "Ask, describe a need, confirm a brief, or decide.", {})
-    agent = _node(AgentComponent(_id="Agent-rtrc"), "Agent-rtrc", 560, 300, "RTRC design assistant · Langflow Agent · qwen3.8-max",
+    agent = _node(AgentComponent(_id="Agent-"), "Agent-", 560, 300, "design assistant · Langflow Agent · qwen3.8-max",
                   "Langflow's own Agent component (LangChain create_agent on LangGraph): the model decides which tool to call and when; the tools decide nothing by themselves. Comparison with the OpenCode assistant; run_design here uses agent direct.",
                   {"model": [{"name": MODEL, "provider": PROVIDER, "metadata": {"model_type": "llm", "tool_calling": True}}],
                    "system_prompt": SYSTEM_PROMPT, "n_messages": 30, "max_iterations": 20, "add_current_date_tool": False,
                    "handle_parsing_errors": True})
-    mcp = _node(MCPToolsComponent(_id="MCPTools-rtrc"), "MCPTools-rtrc", 40, 820, "RTRC tools (MCP)",
+    mcp = _node(MCPToolsComponent(_id="MCPTools-"), "MCPTools-", 40, 820, "tools (MCP)",
                 "tools/assistant_mcp.py: memory search and projects, the verified design pipeline, the official Pilot, memory write, decisions, Cameo export.",
                 {"mcp_server": MCP_SERVER, "use_cache": False, "tool_execution_timeout": 1200}, tool_mode=True)
-    knowledge = _node(KnowledgeComponent(_id="Knowledge-rtrc"), "Knowledge-rtrc", 40, 1180, "Memory as knowledge base",
+    knowledge = _node(KnowledgeComponent(_id="Knowledge-"), "Knowledge-", 40, 1180, "Memory as knowledge base",
                       "Langflow's semantic search over the same 152 cards (Qwen embeddings).",
                       {"knowledge_base": KNOWLEDGE_BASE, "mode": "Retrieve", "top_k": 8, "include_metadata": True}, tool_mode=True)
     knowledge["data"]["node"]["template"]["knowledge_base"]["options"] = [KNOWLEDGE_BASE]
     chat_out = _node(ChatOutput(_id="ChatOutput-answer"), "ChatOutput-answer", 1080, 420, "Answer", "", {})
 
     agent_template = agent["data"]["node"]["template"]
-    tools_handle = {"fieldName": "tools", "id": "Agent-rtrc", "inputTypes": agent_template["tools"]["input_types"], "type": agent_template["tools"]["type"]}
+    tools_handle = {"fieldName": "tools", "id": "Agent-", "inputTypes": agent_template["tools"]["input_types"], "type": agent_template["tools"]["type"]}
     edges = [
         _edge("ChatInput-ask", {"dataType": "ChatInput", "id": "ChatInput-ask", "name": "message", "output_types": ["Message"]},
-              "Agent-rtrc", {"fieldName": "input_value", "id": "Agent-rtrc", "inputTypes": agent_template["input_value"]["input_types"], "type": agent_template["input_value"]["type"]}),
-        _edge("MCPTools-rtrc", {"dataType": "MCPTools", "id": "MCPTools-rtrc", "name": "component_as_tool", "output_types": ["Tool"]}, "Agent-rtrc", tools_handle),
-        _edge("Knowledge-rtrc", {"dataType": "Knowledge", "id": "Knowledge-rtrc", "name": "component_as_tool", "output_types": ["Tool"]}, "Agent-rtrc", tools_handle),
-        _edge("Agent-rtrc", {"dataType": "Agent", "id": "Agent-rtrc", "name": "response", "output_types": ["Message"]},
+              "Agent-", {"fieldName": "input_value", "id": "Agent-", "inputTypes": agent_template["input_value"]["input_types"], "type": agent_template["input_value"]["type"]}),
+        _edge("MCPTools-", {"dataType": "MCPTools", "id": "MCPTools-", "name": "component_as_tool", "output_types": ["Tool"]}, "Agent-", tools_handle),
+        _edge("Knowledge-", {"dataType": "Knowledge", "id": "Knowledge-", "name": "component_as_tool", "output_types": ["Tool"]}, "Agent-", tools_handle),
+        _edge("Agent-", {"dataType": "Agent", "id": "Agent-", "name": "response", "output_types": ["Message"]},
               "ChatOutput-answer", {"fieldName": "input_value", "id": "ChatOutput-answer",
                                     "inputTypes": chat_out["data"]["node"]["template"]["input_value"]["input_types"], "type": chat_out["data"]["node"]["template"]["input_value"]["type"]}),
     ]
@@ -114,9 +114,9 @@ def build() -> dict:
                          "- Set-up: `langflow/flows/setup_assistant.py` (the Qwen credential and the MCP registration in Langflow), then `move_to_user.py` for the account people log in with.")}}}
     sys.path.insert(0, str(OUT))
     from catalog import NAMES
-    return {"name": NAMES["rtrc-assistant-langchain"],
-            "description": "Comparison: the assistant of decision 031 on Langflow's own Agent component (qwen3.8-max) with the RTRC tools on one MCP card, run_design with agent direct; the OpenCode assistant is the one for use.",
-            "endpoint_name": "rtrc-assistant-langchain", "is_component": False, "tags": ["rtrc", "assistant", "comparison"],
+    return {"name": NAMES["design-assistant-langchain"],
+            "description": "Comparison: the assistant of decision 031 on Langflow's own Agent component (qwen3.8-max) with the tools on one MCP card, run_design with agent direct; the OpenCode assistant is the one for use.",
+            "endpoint_name": "design-assistant-langchain", "is_component": False, "tags": ["", "assistant", "comparison"],
             "data": {"nodes": [note, chat_in, agent, mcp, knowledge, chat_out], "edges": edges, "viewport": {"x": 0, "y": 0, "zoom": 0.7}}}
 
 
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     flow = _stable(build())
     sys.path.insert(0, str(OUT))
     from catalog import flow_file
-    target = flow_file("rtrc-assistant-langchain")
+    target = flow_file("design-assistant-langchain")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(flow, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"{target.name}: {sum(1 for n in flow['data']['nodes'] if n['type'] == 'genericNode')} nodes, {len(flow['data']['edges'])} edges")

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>RTRC · Course chain and the unfolded agent</title>
+<title>· Course chain and the unfolded agent</title>
 <link rel="stylesheet" href="/board.css">
 <style>
   #s4 td:nth-child(3) { box-shadow: inset 3px 0 0 #e0a35f; }
@@ -54,9 +54,9 @@
 <header class="masthead">
   <div class="mast-inner">
     <div>
-      <p class="kicker">RTRC 2706 · Langflow flows · synthetic maritime scenario</p>
+      <p class="kicker">2706 · Langflow flows · synthetic maritime scenario</p>
       <h1>Course chain and the unfolded agent</h1>
-      <p class="lead">Lecture 5 draws one fixed retrieval chain and calls it an agent. The unfolded RTRC assistant is an agent that chooses tools, and four of those tools are fixed chains of the same kind. Click a node. A line that names a run id was measured in this repository. A line that says “Lecture” was read from the slides and the shipped flow file; that flow was not executed here.</p>
+      <p class="lead">Lecture 5 draws one fixed retrieval chain and calls it an agent. The unfolded assistant is an agent that chooses tools, and four of those tools are fixed chains of the same kind. Click a node. A line that names a run id was measured in this repository. A line that says “Lecture” was read from the slides and the shipped flow file; that flow was not executed here.</p>
     </div>
     <div class="kpis">
       <div class="kpi"><span>Course chain</span><b>7</b><small>nodes, every question · Langflow 1.10.1</small></div>
@@ -92,7 +92,7 @@
       <div class="sec-head"><span class="sec-num">0</span><div><h3>Same product, two graphs</h3><p class="sec-lead">Both pictures are Langflow canvases. They do not run the same way, and they were not measured the same way.</p></div></div>
       <div class="answers">
         <article><span class="q">Course · Lecture 5</span><b>One path, every time</b><p>Chat input, query rewrite, knowledge retrieval, a parser, a decision prompt, one model, chat output. The model writes the classification. Nothing is stored.</p></article>
-        <article><span class="q">RTRC · unfolded assistant</span><b>The model picks cards</b><p>A message can call no tool, or several. Memory search, validation, writing, and the design pipeline are separate flows. Those four run their cards in order when called.</p></article>
+        <article><span class="q">· unfolded assistant</span><b>The model picks cards</b><p>A message can call no tool, or several. Memory search, validation, writing, and the design pipeline are separate flows. Those four run their cards in order when called.</p></article>
         <article><span class="q">Evidence on this page</span><b>Two kinds of record</b><p>Green-border notes in the table are runs and tool calls from 2026-10-07. Amber notes are the lecture’s own expected result. The lecture flow was not run on this machine.</p></article>
       </div>
     </section>
@@ -104,7 +104,7 @@
     </section>
 
     <section class="card op" id="s2">
-      <div class="sec-head"><span class="sec-num">2</span><div><h3>RTRC unfolded assistant: an agent, then tools</h3><p class="sec-lead">Langflow 1.12.5. The top row runs for every message. The bottom row runs only when the agent calls that card. Write to memory pauses on an approval card before its chain starts. The day-to-day assistant is still three cards (chat, OpenCode, chat) and calls the same tools without drawing them.</p></div><div class="sec-tools"><span class="op-pill">Click a node</span></div></div>
+      <div class="sec-head"><span class="sec-num">2</span><div><h3>unfolded assistant: an agent, then tools</h3><p class="sec-lead">Langflow 1.12.5. The top row runs for every message. The bottom row runs only when the agent calls that card. Write to memory pauses on an approval card before its chain starts. The day-to-day assistant is still three cards (chat, OpenCode, chat) and calls the same tools without drawing them.</p></div><div class="sec-tools"><span class="op-pill">Click a node</span></div></div>
       <div class="op-guide"><span class="op-badge">Read</span><div><b>You can</b>Click a node. Light “May skip” or “Approval”.</div><div><b>What happens</b>The panel quotes the 2026-10-07 comparison or the tool-flow check. A card the comparison never called says so.</div><div><b>Time</b>Instant. The runs named here already finished.</div></div>
       <div id="flow-ours"></div>
     </section>
@@ -132,10 +132,10 @@
     </section>
 
     <section class="card" id="s4">
-      <div class="sec-head"><span class="sec-num">4</span><div><h3>What each choice did</h3><p class="sec-lead">Left of each row is the lecture’s design and the result it states. Right is the RTRC design and a run or tool call from this repository.</p></div></div>
+      <div class="sec-head"><span class="sec-num">4</span><div><h3>What each choice did</h3><p class="sec-lead">Left of each row is the lecture’s design and the result it states. Right is the design and a run or tool call from this repository.</p></div></div>
       <div class="tbl-scroll">
         <table>
-          <thead><tr><th>Choice</th><th>Course chain</th><th>Lecture’s stated result</th><th>RTRC</th><th>Measured here</th></tr></thead>
+          <thead><tr><th>Choice</th><th>Course chain</th><th>Lecture’s stated result</th><th></th><th>Measured here</th></tr></thead>
           <tbody>
             <tr>
               <td>Who walks the nodes</td>
@@ -189,7 +189,7 @@
           </tbody>
         </table>
       </div>
-      <p class="hint" style="margin-top:10px">Sources: Lecture 5 slides and the flow JSON in the 2026-10-07 meeting zip (not executed here). RTRC runs: analysis/assistant-harness-comparison-20261007.md, docs/decisions/034-unfolded-tools.md, analysis/discover-20261007T064005.json, analysis/discover-20261007T074333.json.</p>
+      <p class="hint" style="margin-top:10px">Sources: Lecture 5 slides and the flow JSON in the 2026-10-07 meeting zip (not executed here). runs: analysis/assistant-harness-comparison-20261007.md, docs/decisions/034-unfolded-tools.md, analysis/discover-20261007T064005.json, analysis/discover-20261007T074333.json.</p>
     </section>
 
     <section class="card" id="s5">

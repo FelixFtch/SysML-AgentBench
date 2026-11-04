@@ -1,10 +1,10 @@
 {
   "name": "Langflow Agent with memory + Kev chat · qwen3.8-max",
-  "description": "The assistant with its parts on the canvas: Langflow's Agent (qwen3.8-max), one card per RTRC tool, the memory knowledge base, the design pipeline as a flow run as a tool; write to memory pauses for approval. The Kev variant (project 7): the flow \"Classify requirements\" is mounted as one more tool; the Kev service runs on 127.0.0.1:8009.",
+  "description": "The assistant with its parts on the canvas: Langflow's Agent (qwen3.8-max), one card per tool, the memory knowledge base, the design pipeline as a flow run as a tool; write to memory pauses for approval. The Kev variant (project 7): the flow \"Classify requirements\" is mounted as one more tool; the Kev service runs on 127.0.0.1:8009.",
   "endpoint_name": "langflow-agent-memory-kev-chat",
   "is_component": false,
   "tags": [
-    "rtrc",
+    "",
     "langflow-agent",
     "assistant",
     "kev"
@@ -37,7 +37,7 @@
             "template": {
               "backgroundColor": "blue"
             },
-            "description": "# Langflow Agent with memory + Kev chat · qwen3.8-max\n\nThe same assistant as **OpenCode with memory chat**, with its parts on the canvas: Langflow's own Agent in the middle, one card per RTRC tool around it, the memory as a knowledge base, and four tools that are flows of their own (project 5).\n\n- Talk to it like a colleague: ask what exists, describe a need, answer its questions about missing numbers, confirm the brief it proposes, decide on the result. Model: Qwen's cloud endpoint.\n- Flows run as tools, open them to see each step: **Memory search** (library → MiniLM + FAISS seeds → one hop → cards, paper 2); **Design pipeline** (① memory → ② requirements → ③ designs by OpenCode in the sandbox, with the rules, template and examples it was given shown as cards → ④ Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; stop the results page 8770 first); **Validate SysML with the official Pilot** (file → official Pilot, paper 3); **Write to memory** (gate → write → record → knowledge base refreshed). Edit a flow and this assistant runs the edited version.\n- **Tool · write to memory** pauses for your approval (its Actions row): the AGENTS.md gate as a card. Every answer shows the tools it called when you expand it in the Playground.\n- It never invents numbers and never moves a stated limit; verdicts come from the official Pilot and the checks. Records appear on page 2.3.\n\n**The Kev variant (project 7):** the same assistant with one more tool, the flow **Classify requirements** — the Kev decision service (127.0.0.1:8009, `scripts/kev_up.sh`) judging whether a sentence is a requirement statement, one verdict per sentence with the probability, milliseconds. Ask it 'is this a requirement?' and it calls the classifier."
+            "description": "# Langflow Agent with memory + Kev chat · qwen3.8-max\n\nThe same assistant as **OpenCode with memory chat**, with its parts on the canvas: Langflow's own Agent in the middle, one card per tool around it, the memory as a knowledge base, and four tools that are flows of their own (project 5).\n\n- Talk to it like a colleague: ask what exists, describe a need, answer its questions about missing numbers, confirm the brief it proposes, decide on the result. Model: Qwen's cloud endpoint.\n- Flows run as tools, open them to see each step: **Memory search** (library → MiniLM + FAISS seeds → one hop → cards, paper 2); **Design pipeline** (① memory → ② requirements → ③ designs by OpenCode in the sandbox, with the rules, template and examples it was given shown as cards → ④ Pilot → ⑤ alignment → ⑥ checks → trade-offs → ⑦ review; stop the results page 8770 first); **Validate SysML with the official Pilot** (file → official Pilot, paper 3); **Write to memory** (gate → write → record → knowledge base refreshed). Edit a flow and this assistant runs the edited version.\n- **Tool · write to memory** pauses for your approval (its Actions row): the AGENTS.md gate as a card. Every answer shows the tools it called when you expand it in the Playground.\n- It never invents numbers and never moves a stated limit; verdicts come from the official Pilot and the checks. Records appear on page 2.3.\n\n**The Kev variant (project 7):** the same assistant with one more tool, the flow **Classify requirements** — the Kev decision service (127.0.0.1:8009, `scripts/kev_up.sh`) judging whether a sentence is a requirement statement, one verdict per sentence with the probability, milliseconds. Ask it 'is this a requirement?' and it calls the classifier."
           }
         }
       },
@@ -316,7 +316,7 @@
         }
       },
       {
-        "id": "Agent-rtrc",
+        "id": "Agent-",
         "type": "genericNode",
         "position": {
           "x": 640,
@@ -869,7 +869,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "system_prompt",
-                "value": "You are the RTRC design assistant for early-stage systems engineering in SysML v2. The scenario is a synthetic maritime ISR exercise; the numbers are not an RTX specification. You work through the `rtrc` tools only; you have no files to edit and no shell.\n\nWhat you do: help an engineer see what already exists in the memory, turn a vague need into numbered requirements, run the verified design pipeline once the engineer confirms the brief, explain the results plainly, and record the engineer's decision.\n\nRules:\n1. Never invent a number. Every power draw, rate, capacity, duration or limit must come from the engineer or from the memory, and you say which. If a number needed for the power, upload, storage or trace checks is missing, ask for it before running a design.\n2. A stated limit (for example a 60 W power limit) is never changed to make a check pass. If a design exceeds it, say so and offer trade-offs from the memory; changing the limit is the engineer's decision, not yours.\n3. Before calling run_design, show the engineer the exact brief you will send (one paragraph with all the numbers and units) and wait for an explicit confirmation.\n4. Verdicts come from tools, not from you: the official SysML v2 Pilot decides syntax, the checks decide the budget. Report them as they are, including failures, with the run id.\n5. Writing into memory needs the engineer's explicit approval of a named design (A or B) that passed all four checks. Otherwise record Reject or Send back with the engineer's reason.\n6. Answer in the language the engineer writes in. Be concrete and brief; quote values with units; do not repeat the whole tool output.\n\nTools. list_projects and read_project read the memory's files. The knowledge-base search is Langflow's semantic search over the same cards. Four tools are flows; each takes one argument and must be called exactly like this:\n- Memory-search_tool, flow_tweak_data = {\"ChatInput-query~input_value\": <a few search words>}: the memory library → MiniLM + FAISS seeds → one hop of neighbours → the matching cards with values and sources.\n- Design-pipeline_tool, flow_tweak_data = {\"ChatInput-brief~input_value\": <the confirmed brief, word for word>} (2 to 10 minutes): memory search, numbered requirements, designs A and B written by OpenCode in a sandbox with the official Pilot as a tool, the Pilot's verdict, alignment with the memory, the power / upload / storage / trace checks, trade-offs when a check fails, diagram and Cameo export; returns the review text with the run id. An empty or misnamed argument is refused. When it returns, compare its \"Brief:\" line with the brief the engineer confirmed; if they differ, say so and do not present the verdicts as the engineer's design. It needs the results page (port 8770) stopped; if it says so, tell the engineer.\n- Validate-SysML-with-the-official-Pilot_tool, flow_tweak_data = {\"ChatInput-sysml~input_value\": <the SysML text the engineer pasted>}: saves it as a file and runs the official Pilot; PASS or FAIL with the diagnostics.\n- Write-to-memory_tool, flow_tweak_data = {\"ChatInput-approval~input_value\": \"<run id> A\" or \"<run id> B\"}: pauses for the person's approval, then checks the gate (Pilot PASS and all four checks PASS), writes the design into the memory, records the approval and refreshes the knowledge base. Call it only after the engineer named the design.\ndesign_status shows a saved run; record_decision (Reject or Send back, with the reason) and export_cameo act on a finished run.\n\nBrief format for the pipeline: the vessel and its devices with power draws in W, the power limit in W, the local recording rate in Mbps, the retention hours, the storage in GB, the upload rate in Mbps and the uplink capacity in Mbps, all from the engineer.\n\nKev requirement classifier. One more tool that is a flow: Classify-requirements_tool, flow_tweak_data = {\"ChatInput-sentences~input_value\": <the sentences to judge, one per line>}}: each sentence goes to the Kev decision service as one yes/no question and comes back requirement or not, with a probability, in milliseconds (batches of 40). Use it whenever the engineer asks whether a sentence or a line is a requirement; report its verdicts as the tool's, with the probabilities.",
+                "value": "You are the design assistant for early-stage systems engineering in SysML v2. The scenario is a synthetic maritime ISR exercise; the numbers are synthetic. You work through the tools only; you have no files to edit and no shell.\n\nWhat you do: help an engineer see what already exists in the memory, turn a vague need into numbered requirements, run the verified design pipeline once the engineer confirms the brief, explain the results plainly, and record the engineer's decision.\n\nRules:\n1. Never invent a number. Every power draw, rate, capacity, duration or limit must come from the engineer or from the memory, and you say which. If a number needed for the power, upload, storage or trace checks is missing, ask for it before running a design.\n2. A stated limit (for example a 60 W power limit) is never changed to make a check pass. If a design exceeds it, say so and offer trade-offs from the memory; changing the limit is the engineer's decision, not yours.\n3. Before calling run_design, show the engineer the exact brief you will send (one paragraph with all the numbers and units) and wait for an explicit confirmation.\n4. Verdicts come from tools, not from you: the official SysML v2 Pilot decides syntax, the checks decide the budget. Report them as they are, including failures, with the run id.\n5. Writing into memory needs the engineer's explicit approval of a named design (A or B) that passed all four checks. Otherwise record Reject or Send back with the engineer's reason.\n6. Answer in the language the engineer writes in. Be concrete and brief; quote values with units; do not repeat the whole tool output.\n\nTools. list_projects and read_project read the memory's files. The knowledge-base search is Langflow's semantic search over the same cards. Four tools are flows; each takes one argument and must be called exactly like this:\n- Memory-search_tool, flow_tweak_data = {\"ChatInput-query~input_value\": <a few search words>}: the memory library → MiniLM + FAISS seeds → one hop of neighbours → the matching cards with values and sources.\n- Design-pipeline_tool, flow_tweak_data = {\"ChatInput-brief~input_value\": <the confirmed brief, word for word>} (2 to 10 minutes): memory search, numbered requirements, designs A and B written by OpenCode in a sandbox with the official Pilot as a tool, the Pilot's verdict, alignment with the memory, the power / upload / storage / trace checks, trade-offs when a check fails, diagram and Cameo export; returns the review text with the run id. An empty or misnamed argument is refused. When it returns, compare its \"Brief:\" line with the brief the engineer confirmed; if they differ, say so and do not present the verdicts as the engineer's design. It needs the results page (port 8770) stopped; if it says so, tell the engineer.\n- Validate-SysML-with-the-official-Pilot_tool, flow_tweak_data = {\"ChatInput-sysml~input_value\": <the SysML text the engineer pasted>}: saves it as a file and runs the official Pilot; PASS or FAIL with the diagnostics.\n- Write-to-memory_tool, flow_tweak_data = {\"ChatInput-approval~input_value\": \"<run id> A\" or \"<run id> B\"}: pauses for the person's approval, then checks the gate (Pilot PASS and all four checks PASS), writes the design into the memory, records the approval and refreshes the knowledge base. Call it only after the engineer named the design.\ndesign_status shows a saved run; record_decision (Reject or Send back, with the reason) and export_cameo act on a finished run.\n\nBrief format for the pipeline: the vessel and its devices with power draws in W, the power limit in W, the local recording rate in Mbps, the retention hours, the storage in GB, the upload rate in Mbps and the uplink capacity in Mbps, all from the engineer.\n\nKev requirement classifier. One more tool that is a flow: Classify-requirements_tool, flow_tweak_data = {\"ChatInput-sentences~input_value\": <the sentences to judge, one per line>}}: each sentence goes to the Kev decision service as one yes/no question and comes back requirement or not, with a probability, in milliseconds (batches of 40). Use it whenever the engineer asks whether a sentence or a line is a requirement; report its verdicts as the tool's, with the probabilities.",
                 "display_name": "Agent Instructions",
                 "advanced": false,
                 "api_editable": false,
@@ -940,7 +940,7 @@
             "tool_mode": false
           },
           "type": "Agent",
-          "id": "Agent-rtrc"
+          "id": "Agent-"
         }
       },
       {
@@ -1989,7 +1989,7 @@
                 "show": true,
                 "name": "mcp_server",
                 "value": {
-                  "name": "rtrc-assistant",
+                  "name": "design-assistant",
                   "config": {
                     "url": "http://127.0.0.1:8782/mcp"
                   }
@@ -2213,7 +2213,7 @@
                   },
                   {
                     "name": "run_design",
-                    "description": "Run the verified RTRC design pipeline on a brief and return its review. Only call it after the engineer has confirmed the brief, and only with numbers the engineer gave (device powers in W, the power limit, recording rate in Mbps, retention hours, storage GB, upload rate and uplink capacity in Mbps). The pipeline searches the memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, parses both with the official SysML v2 Pilot and repairs on its errors, aligns A with the memory, computes the power / upload / storage / trace checks, proposes trade-offs when a check fails, draws the diagram and exports the passing designs for Cameo. Takes 2 to 10 minutes. model: qwen3.8-max (default), qwen3.8-flash or 'qwen3.8-27b (Ollama)' for the local 3-bit model on this machine. agent: 'opencode' (default) has OpenCode write each design in the sandbox with the official Pilot as a tool, editing until it parses; 'direct' has the model write it in one answer with the error-list repair loop. OpenCode needs the results page (port 8770) stopped; if the tool refuses for that reason, tell the engineer to stop the page and try again, or offer agent 'direct'. start_from: 'auto' adapts a similar project when the memory has one and starts new otherwise; 'new' always writes both designs from scratch; 'similar' insists on adapting and fails when nothing similar exists. Use what the engineer asked for.",
+                    "description": "Run the verified design pipeline on a brief and return its review. Only call it after the engineer has confirmed the brief, and only with numbers the engineer gave (device powers in W, the power limit, recording rate in Mbps, retention hours, storage GB, upload rate and uplink capacity in Mbps). The pipeline searches the memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, parses both with the official SysML v2 Pilot and repairs on its errors, aligns A with the memory, computes the power / upload / storage / trace checks, proposes trade-offs when a check fails, draws the diagram and exports the passing designs for Cameo. Takes 2 to 10 minutes. model: qwen3.8-max (default), qwen3.8-flash or 'qwen3.8-27b (Ollama)' for the local 3-bit model on this machine. agent: 'opencode' (default) has OpenCode write each design in the sandbox with the official Pilot as a tool, editing until it parses; 'direct' has the model write it in one answer with the error-list repair loop. OpenCode needs the results page (port 8770) stopped; if the tool refuses for that reason, tell the engineer to stop the page and try again, or offer agent 'direct'. start_from: 'auto' adapts a similar project when the memory has one and starts new otherwise; 'new' always writes both designs from scratch; 'similar' insists on adapting and fails when nothing similar exists. Use what the engineer asked for.",
                     "tags": [
                       "run_design"
                     ],
@@ -2336,7 +2336,7 @@
                 "show": true,
                 "name": "mcp_server",
                 "value": {
-                  "name": "rtrc-assistant",
+                  "name": "design-assistant",
                   "config": {
                     "url": "http://127.0.0.1:8782/mcp"
                   }
@@ -2560,7 +2560,7 @@
                   },
                   {
                     "name": "run_design",
-                    "description": "Run the verified RTRC design pipeline on a brief and return its review. Only call it after the engineer has confirmed the brief, and only with numbers the engineer gave (device powers in W, the power limit, recording rate in Mbps, retention hours, storage GB, upload rate and uplink capacity in Mbps). The pipeline searches the memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, parses both with the official SysML v2 Pilot and repairs on its errors, aligns A with the memory, computes the power / upload / storage / trace checks, proposes trade-offs when a check fails, draws the diagram and exports the passing designs for Cameo. Takes 2 to 10 minutes. model: qwen3.8-max (default), qwen3.8-flash or 'qwen3.8-27b (Ollama)' for the local 3-bit model on this machine. agent: 'opencode' (default) has OpenCode write each design in the sandbox with the official Pilot as a tool, editing until it parses; 'direct' has the model write it in one answer with the error-list repair loop. OpenCode needs the results page (port 8770) stopped; if the tool refuses for that reason, tell the engineer to stop the page and try again, or offer agent 'direct'. start_from: 'auto' adapts a similar project when the memory has one and starts new otherwise; 'new' always writes both designs from scratch; 'similar' insists on adapting and fails when nothing similar exists. Use what the engineer asked for.",
+                    "description": "Run the verified design pipeline on a brief and return its review. Only call it after the engineer has confirmed the brief, and only with numbers the engineer gave (device powers in W, the power limit, recording rate in Mbps, retention hours, storage GB, upload rate and uplink capacity in Mbps). The pipeline searches the memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, parses both with the official SysML v2 Pilot and repairs on its errors, aligns A with the memory, computes the power / upload / storage / trace checks, proposes trade-offs when a check fails, draws the diagram and exports the passing designs for Cameo. Takes 2 to 10 minutes. model: qwen3.8-max (default), qwen3.8-flash or 'qwen3.8-27b (Ollama)' for the local 3-bit model on this machine. agent: 'opencode' (default) has OpenCode write each design in the sandbox with the official Pilot as a tool, editing until it parses; 'direct' has the model write it in one answer with the error-list repair loop. OpenCode needs the results page (port 8770) stopped; if the tool refuses for that reason, tell the engineer to stop the page and try again, or offer agent 'direct'. start_from: 'auto' adapts a similar project when the memory has one and starts new otherwise; 'new' always writes both designs from scratch; 'similar' insists on adapting and fails when nothing similar exists. Use what the engineer asked for.",
                     "tags": [
                       "run_design"
                     ],
@@ -2683,7 +2683,7 @@
                 "show": true,
                 "name": "mcp_server",
                 "value": {
-                  "name": "rtrc-assistant",
+                  "name": "design-assistant",
                   "config": {
                     "url": "http://127.0.0.1:8782/mcp"
                   }
@@ -2907,7 +2907,7 @@
                   },
                   {
                     "name": "run_design",
-                    "description": "Run the verified RTRC design pipeline on a brief and return its review. Only call it after the engineer has confirmed the brief, and only with numbers the engineer gave (device powers in W, the power limit, recording rate in Mbps, retention hours, storage GB, upload rate and uplink capacity in Mbps). The pipeline searches the memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, parses both with the official SysML v2 Pilot and repairs on its errors, aligns A with the memory, computes the power / upload / storage / trace checks, proposes trade-offs when a check fails, draws the diagram and exports the passing designs for Cameo. Takes 2 to 10 minutes. model: qwen3.8-max (default), qwen3.8-flash or 'qwen3.8-27b (Ollama)' for the local 3-bit model on this machine. agent: 'opencode' (default) has OpenCode write each design in the sandbox with the official Pilot as a tool, editing until it parses; 'direct' has the model write it in one answer with the error-list repair loop. OpenCode needs the results page (port 8770) stopped; if the tool refuses for that reason, tell the engineer to stop the page and try again, or offer agent 'direct'. start_from: 'auto' adapts a similar project when the memory has one and starts new otherwise; 'new' always writes both designs from scratch; 'similar' insists on adapting and fails when nothing similar exists. Use what the engineer asked for.",
+                    "description": "Run the verified design pipeline on a brief and return its review. Only call it after the engineer has confirmed the brief, and only with numbers the engineer gave (device powers in W, the power limit, recording rate in Mbps, retention hours, storage GB, upload rate and uplink capacity in Mbps). The pipeline searches the memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, parses both with the official SysML v2 Pilot and repairs on its errors, aligns A with the memory, computes the power / upload / storage / trace checks, proposes trade-offs when a check fails, draws the diagram and exports the passing designs for Cameo. Takes 2 to 10 minutes. model: qwen3.8-max (default), qwen3.8-flash or 'qwen3.8-27b (Ollama)' for the local 3-bit model on this machine. agent: 'opencode' (default) has OpenCode write each design in the sandbox with the official Pilot as a tool, editing until it parses; 'direct' has the model write it in one answer with the error-list repair loop. OpenCode needs the results page (port 8770) stopped; if the tool refuses for that reason, tell the engineer to stop the page and try again, or offer agent 'direct'. start_from: 'auto' adapts a similar project when the memory has one and starts new otherwise; 'new' always writes both designs from scratch; 'similar' insists on adapting and fails when nothing similar exists. Use what the engineer asked for.",
                     "tags": [
                       "run_design"
                     ],
@@ -3030,7 +3030,7 @@
                 "show": true,
                 "name": "mcp_server",
                 "value": {
-                  "name": "rtrc-assistant",
+                  "name": "design-assistant",
                   "config": {
                     "url": "http://127.0.0.1:8782/mcp"
                   }
@@ -3254,7 +3254,7 @@
                   },
                   {
                     "name": "run_design",
-                    "description": "Run the verified RTRC design pipeline on a brief and return its review. Only call it after the engineer has confirmed the brief, and only with numbers the engineer gave (device powers in W, the power limit, recording rate in Mbps, retention hours, storage GB, upload rate and uplink capacity in Mbps). The pipeline searches the memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, parses both with the official SysML v2 Pilot and repairs on its errors, aligns A with the memory, computes the power / upload / storage / trace checks, proposes trade-offs when a check fails, draws the diagram and exports the passing designs for Cameo. Takes 2 to 10 minutes. model: qwen3.8-max (default), qwen3.8-flash or 'qwen3.8-27b (Ollama)' for the local 3-bit model on this machine. agent: 'opencode' (default) has OpenCode write each design in the sandbox with the official Pilot as a tool, editing until it parses; 'direct' has the model write it in one answer with the error-list repair loop. OpenCode needs the results page (port 8770) stopped; if the tool refuses for that reason, tell the engineer to stop the page and try again, or offer agent 'direct'. start_from: 'auto' adapts a similar project when the memory has one and starts new otherwise; 'new' always writes both designs from scratch; 'similar' insists on adapting and fails when nothing similar exists. Use what the engineer asked for.",
+                    "description": "Run the verified design pipeline on a brief and return its review. Only call it after the engineer has confirmed the brief, and only with numbers the engineer gave (device powers in W, the power limit, recording rate in Mbps, retention hours, storage GB, upload rate and uplink capacity in Mbps). The pipeline searches the memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, parses both with the official SysML v2 Pilot and repairs on its errors, aligns A with the memory, computes the power / upload / storage / trace checks, proposes trade-offs when a check fails, draws the diagram and exports the passing designs for Cameo. Takes 2 to 10 minutes. model: qwen3.8-max (default), qwen3.8-flash or 'qwen3.8-27b (Ollama)' for the local 3-bit model on this machine. agent: 'opencode' (default) has OpenCode write each design in the sandbox with the official Pilot as a tool, editing until it parses; 'direct' has the model write it in one answer with the error-list repair loop. OpenCode needs the results page (port 8770) stopped; if the tool refuses for that reason, tell the engineer to stop the page and try again, or offer agent 'direct'. start_from: 'auto' adapts a similar project when the memory has one and starts new otherwise; 'new' always writes both designs from scratch; 'similar' insists on adapting and fails when nothing similar exists. Use what the engineer asked for.",
                     "tags": [
                       "run_design"
                     ],
@@ -3377,7 +3377,7 @@
                 "show": true,
                 "name": "mcp_server",
                 "value": {
-                  "name": "rtrc-assistant",
+                  "name": "design-assistant",
                   "config": {
                     "url": "http://127.0.0.1:8782/mcp"
                   }
@@ -3601,7 +3601,7 @@
                   },
                   {
                     "name": "run_design",
-                    "description": "Run the verified RTRC design pipeline on a brief and return its review. Only call it after the engineer has confirmed the brief, and only with numbers the engineer gave (device powers in W, the power limit, recording rate in Mbps, retention hours, storage GB, upload rate and uplink capacity in Mbps). The pipeline searches the memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, parses both with the official SysML v2 Pilot and repairs on its errors, aligns A with the memory, computes the power / upload / storage / trace checks, proposes trade-offs when a check fails, draws the diagram and exports the passing designs for Cameo. Takes 2 to 10 minutes. model: qwen3.8-max (default), qwen3.8-flash or 'qwen3.8-27b (Ollama)' for the local 3-bit model on this machine. agent: 'opencode' (default) has OpenCode write each design in the sandbox with the official Pilot as a tool, editing until it parses; 'direct' has the model write it in one answer with the error-list repair loop. OpenCode needs the results page (port 8770) stopped; if the tool refuses for that reason, tell the engineer to stop the page and try again, or offer agent 'direct'. start_from: 'auto' adapts a similar project when the memory has one and starts new otherwise; 'new' always writes both designs from scratch; 'similar' insists on adapting and fails when nothing similar exists. Use what the engineer asked for.",
+                    "description": "Run the verified design pipeline on a brief and return its review. Only call it after the engineer has confirmed the brief, and only with numbers the engineer gave (device powers in W, the power limit, recording rate in Mbps, retention hours, storage GB, upload rate and uplink capacity in Mbps). The pipeline searches the memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, parses both with the official SysML v2 Pilot and repairs on its errors, aligns A with the memory, computes the power / upload / storage / trace checks, proposes trade-offs when a check fails, draws the diagram and exports the passing designs for Cameo. Takes 2 to 10 minutes. model: qwen3.8-max (default), qwen3.8-flash or 'qwen3.8-27b (Ollama)' for the local 3-bit model on this machine. agent: 'opencode' (default) has OpenCode write each design in the sandbox with the official Pilot as a tool, editing until it parses; 'direct' has the model write it in one answer with the error-list repair loop. OpenCode needs the results page (port 8770) stopped; if the tool refuses for that reason, tell the engineer to stop the page and try again, or offer agent 'direct'. start_from: 'auto' adapts a similar project when the memory has one and starts new otherwise; 'new' always writes both designs from scratch; 'similar' insists on adapting and fails when nothing similar exists. Use what the engineer asked for.",
                     "tags": [
                       "run_design"
                     ],
@@ -3621,7 +3621,7 @@
                 "_input_type": "ToolsInput"
               }
             },
-            "description": "Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when RTRC provides the license).",
+            "description": "Writes a run's passing designs as .sysml files for Cameo's SysML v2 edition (when provides the license).",
             "icon": "Mcp",
             "base_classes": [
               "Table"
@@ -3666,7 +3666,7 @@
         }
       },
       {
-        "id": "Knowledge-rtrc",
+        "id": "Knowledge-",
         "type": "genericNode",
         "position": {
           "x": 40,
@@ -3889,7 +3889,7 @@
                 "tool_mode": false,
                 "trace_as_metadata": true,
                 "options": [
-                  "rtrc_memory"
+                  "project_memory"
                 ],
                 "options_metadata": [],
                 "combobox": false,
@@ -3997,7 +3997,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "knowledge_base",
-                "value": "rtrc_memory",
+                "value": "project_memory",
                 "display_name": "Knowledge",
                 "advanced": false,
                 "api_editable": false,
@@ -4173,7 +4173,7 @@
             "tool_mode": true
           },
           "type": "Knowledge",
-          "id": "Knowledge-rtrc"
+          "id": "Knowledge-"
         }
       },
       {
@@ -4349,12 +4349,12 @@
     ],
     "edges": [
       {
-        "source": "Agent-rtrc",
+        "source": "Agent-",
         "target": "ChatOutput-answer",
         "data": {
           "sourceHandle": {
             "dataType": "Agent",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "name": "response",
             "output_types": [
               "Message"
@@ -4373,16 +4373,16 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œAgentœ, œidœ: œAgent-rtrcœ, œnameœ: œresponseœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œAgentœ, œidœ: œAgent-œ, œnameœ: œresponseœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-answerœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-Agent-rtrc{œdataTypeœ:œAgentœ,œidœ:œAgent-rtrcœ,œnameœ:œresponseœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-answer{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-answerœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-Agent-{œdataTypeœ:œAgentœ,œidœ:œAgent-œ,œnameœ:œresponseœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-answer{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-answerœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "ChatInput-ask",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
@@ -4394,7 +4394,7 @@
           },
           "targetHandle": {
             "fieldName": "input_value",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Message"
             ],
@@ -4402,19 +4402,19 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-askœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-ask{œdataTypeœ:œChatInputœ,œidœ:œChatInput-askœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-Agent-rtrc{œfieldNameœ:œinput_valueœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œAgent-œ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-ask{œdataTypeœ:œChatInputœ,œidœ:œChatInput-askœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-Agent-{œfieldNameœ:œinput_valueœ,œidœ:œAgent-œ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "Knowledge-rtrc",
-        "target": "Agent-rtrc",
+        "source": "Knowledge-",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "Knowledge",
-            "id": "Knowledge-rtrc",
+            "id": "Knowledge-",
             "name": "component_as_tool",
             "output_types": [
               "Tool"
@@ -4422,23 +4422,23 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œKnowledgeœ, œidœ: œKnowledge-rtrcœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-Knowledge-rtrc{œdataTypeœ:œKnowledgeœ,œidœ:œKnowledge-rtrcœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "sourceHandle": "{œdataTypeœ: œKnowledgeœ, œidœ: œKnowledge-œ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-Knowledge-{œdataTypeœ:œKnowledgeœ,œidœ:œKnowledge-œ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "MCPTools-design_status",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "MCPTools",
@@ -4450,7 +4450,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -4458,15 +4458,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œMCPToolsœ, œidœ: œMCPTools-design_statusœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-MCPTools-design_status{œdataTypeœ:œMCPToolsœ,œidœ:œMCPTools-design_statusœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-MCPTools-design_status{œdataTypeœ:œMCPToolsœ,œidœ:œMCPTools-design_statusœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "MCPTools-export_cameo",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "MCPTools",
@@ -4478,7 +4478,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -4486,15 +4486,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œMCPToolsœ, œidœ: œMCPTools-export_cameoœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-MCPTools-export_cameo{œdataTypeœ:œMCPToolsœ,œidœ:œMCPTools-export_cameoœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-MCPTools-export_cameo{œdataTypeœ:œMCPToolsœ,œidœ:œMCPTools-export_cameoœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "MCPTools-list_projects",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "MCPTools",
@@ -4506,7 +4506,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -4514,15 +4514,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œMCPToolsœ, œidœ: œMCPTools-list_projectsœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-MCPTools-list_projects{œdataTypeœ:œMCPToolsœ,œidœ:œMCPTools-list_projectsœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-MCPTools-list_projects{œdataTypeœ:œMCPToolsœ,œidœ:œMCPTools-list_projectsœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "MCPTools-read_project",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "MCPTools",
@@ -4534,7 +4534,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -4542,15 +4542,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œMCPToolsœ, œidœ: œMCPTools-read_projectœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-MCPTools-read_project{œdataTypeœ:œMCPToolsœ,œidœ:œMCPTools-read_projectœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-MCPTools-read_project{œdataTypeœ:œMCPToolsœ,œidœ:œMCPTools-read_projectœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "MCPTools-record_decision",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "MCPTools",
@@ -4562,7 +4562,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -4570,15 +4570,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œMCPToolsœ, œidœ: œMCPTools-record_decisionœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-MCPTools-record_decision{œdataTypeœ:œMCPToolsœ,œidœ:œMCPTools-record_decisionœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-MCPTools-record_decision{œdataTypeœ:œMCPToolsœ,œidœ:œMCPTools-record_decisionœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "RunFlow-classify",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "RunFlow",
@@ -4590,7 +4590,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -4598,15 +4598,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œRunFlowœ, œidœ: œRunFlow-classifyœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RunFlow-classify{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-classifyœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RunFlow-classify{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-classifyœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "RunFlow-pipeline",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "RunFlow",
@@ -4618,7 +4618,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -4626,15 +4626,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œRunFlowœ, œidœ: œRunFlow-pipelineœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RunFlow-pipeline{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-pipelineœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RunFlow-pipeline{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-pipelineœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "RunFlow-search",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "RunFlow",
@@ -4646,7 +4646,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -4654,15 +4654,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œRunFlowœ, œidœ: œRunFlow-searchœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RunFlow-search{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-searchœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RunFlow-search{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-searchœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "RunFlow-validate",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "RunFlow",
@@ -4674,7 +4674,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -4682,15 +4682,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œRunFlowœ, œidœ: œRunFlow-validateœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RunFlow-validate{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-validateœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RunFlow-validate{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-validateœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "RunFlow-write",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "RunFlow",
@@ -4702,7 +4702,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -4710,8 +4710,8 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œRunFlowœ, œidœ: œRunFlow-writeœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RunFlow-write{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-writeœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RunFlow-write{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-writeœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false

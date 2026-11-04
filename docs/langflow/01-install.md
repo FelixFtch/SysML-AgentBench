@@ -1,6 +1,6 @@
 # 1 · Install
 
-**You get:** Langflow running on your computer with the RTRC cards loaded and the six projects imported.
+**You get:** Langflow running on your computer with the cards loaded and the six projects imported.
 **You need:** a terminal, about 25 minutes, 6 GB of disk (Langflow 2 GB, the local model 14 GB more if you want it).
 **Works on:** Windows, macOS, Linux for the chats and for the results page. Scoring an exam, and any flow that writes a design through OpenCode or Claude Code, needs the official SysML v2 Pilot on Java 21, which runs on Linux and macOS; on Windows use WSL2 for that part ([../benchmark/06-task-bank.md](../benchmark/06-task-bank.md#the-toolchain)). Those two sandboxed agents also need Linux or WSL2, `bubblewrap` (`bwrap`), `slirp4netns`, and the OpenCode binary pinned in `tools/opencode/VERSION` ([../benchmark/05-sandbox-agents.md](../benchmark/05-sandbox-agents.md)). Ordinary chat and `python3 bench/exam_board.py` need none of that: the page reads scores already stored in the repository and does not call a model.
 
@@ -82,11 +82,11 @@ python scripts/up.py --status   # 7860 Langflow, 8781 shell, 8782 MCP, 11434 Oll
 
 ## Step 8 · Log in
 
-Open http://127.0.0.1:7860. User `rtrc`; the password is in `.langflow/secrets.env` (created in step 7, never printed, never committed). On your own computer this account is all you need. If you make a second account for yourself, run `langflow/scripts/move_to_user.py <username>` once so the projects, keys and knowledge base belong to it.
+Open http://127.0.0.1:7860. User ``; the password is in `.langflow/secrets.env` (created in step 7, never printed, never committed). On your own computer this account is all you need. If you make a second account for yourself, run `langflow/scripts/move_to_user.py <username>` once so the projects, keys and knowledge base belong to it.
 
 ## Check
 
-- The left sidebar shows **Rtrc** under components: the cards loaded.
+- The left sidebar shows **cards** under components: the cards loaded.
 - The Projects page shows six projects named `1 · Direct model …` to `6 · Other`: the flows imported.
 - Open `Direct model chat · P1 repair from errors`, press **Playground**, type `hello`: the model answers. If it does not, [07-troubleshooting.md](07-troubleshooting.md).
 

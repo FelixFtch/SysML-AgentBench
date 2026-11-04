@@ -1,6 +1,6 @@
 # Process knowledge base (D7)
 
-The reusable part of SysML-AgentBench: how to run AI-assisted early-stage systems engineering with SysML v2, and how to evaluate it, written for the next team (RTRC engineers or future students). Each page says what to do, why, with evidence from this project's saved runs, and where that evidence is. Numbers change as runs are added; the current ones are in [`STATUS.md`](../../STATUS.md), and the full argument is in the report draft [`docs/report/D4-draft.md`](../report/D4-draft.md). All maritime values are synthetic, not RTX specifications.
+The reusable part of SysML-AgentBench: how to run AI-assisted early-stage systems engineering with SysML v2, and how to evaluate it, written for the next team (engineers or future students). Each page says what to do, why, with evidence from this project's saved runs, and where that evidence is. Numbers change as runs are added; the current ones are in [`STATUS.md`](../../STATUS.md), and the full argument is in the report draft [`docs/report/D4-draft.md`](../report/D4-draft.md). All maritime values are synthetic.
 
 | Page | Read it when you are |
 |---|---|

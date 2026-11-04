@@ -17,7 +17,7 @@ Reading: the mapping stage transfers; the package stage does not survive the rea
 
 ## The ALN task type
 
-Three sealed tasks, `bench/tasks/t4_maritime_isr/heldout/ALN-01..03`, written by `bench/build_aln_tasks.py`. Each gives a specification package and a supplier package (read-only, in `input/baseline/`) and asks for one alignment package of `alias` (definition and feature names) and `allocation` (usages) declarations plus a JSON report with `mappings` and `unmatched`. Synthetic maritime content, not an RTX specification.
+Three sealed tasks, `bench/tasks/t4_maritime_isr/heldout/ALN-01..03`, written by `bench/build_aln_tasks.py`. Each gives a specification package and a supplier package (read-only, in `input/baseline/`) and asks for one alignment package of `alias` (definition and feature names) and `allocation` (usages) declarations plus a JSON report with `mappings` and `unmatched`. Synthetic maritime content.
 
 Answer key (`gold/assertions.yaml`): `must_map` pairs with their construct, `must_not_map` look-alike pairs (heater power vs draw, control-in vs health-out, data rate vs transmit power, a definition aliased to a usage), `must_report_unmatched` elements. Reference packages in `gold/reference/` pass the Pilot and score PASS; `bench/validate_gold.py` checks them with the other gold files.
 

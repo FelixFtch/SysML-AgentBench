@@ -4,7 +4,7 @@
   "endpoint_name": "other-cameo-check",
   "is_component": false,
   "tags": [
-    "rtrc",
+    "",
     "cameo"
   ],
   "data": {
@@ -567,7 +567,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official\nPilot's verdict (interoperability evidence). The Pilot stays the judge.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nRESULTS = [\"Opens cleanly\", \"Errors in Cameo\", \"Not checked yet\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcCameoRecord(Component):\n    display_name = \"RTRC Cameo record\"\n    description = \"Put one after each Human Input branch. Stores the person's Cameo check of a design next to the official Pilot's verdict.\"\n    icon = \"clipboard-list\"\n    name = \"RtrcCameoRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"result\", display_name=\"This branch\", options=RESULTS, value=RESULTS[-1]),\n        DropdownInput(name=\"key\", display_name=\"Design\", options=[\"A\", \"B\"], value=\"A\"),\n        StrInput(name=\"note\", display_name=\"Note (for example the Cameo error)\", value=\"\", required=False),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.result}: not chosen\"\n            return Message(text=\"\")\n        match = RUN.search(text)\n        if not match:\n            raise ValueError(\"No run id in the incoming message\")\n        body = _call(\"/cameo/result\", {\"run\": match.group(1), \"key\": self.key, \"result\": self.result.lower(), \"note\": str(self.note or \"\")})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
+                "value": "\"\"\"Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official\nPilot's verdict (interoperability evidence). The Pilot stays the judge.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nRESULTS = [\"Opens cleanly\", \"Errors in Cameo\", \"Not checked yet\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardCameoRecord(Component):\n    display_name = \"Cameo record\"\n    description = \"Put one after each Human Input branch. Stores the person's Cameo check of a design next to the official Pilot's verdict.\"\n    icon = \"clipboard-list\"\n    name = \"CardCameoRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"result\", display_name=\"This branch\", options=RESULTS, value=RESULTS[-1]),\n        DropdownInput(name=\"key\", display_name=\"Design\", options=[\"A\", \"B\"], value=\"A\"),\n        StrInput(name=\"note\", display_name=\"Note (for example the Cameo error)\", value=\"\", required=False),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.result}: not chosen\"\n            return Message(text=\"\")\n        match = RUN.search(text)\n        if not match:\n            raise ValueError(\"No run id in the incoming message\")\n        body = _call(\"/cameo/result\", {\"run\": match.group(1), \"key\": self.key, \"result\": self.result.lower(), \"note\": str(self.note or \"\")})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -772,10 +772,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcCameoRecord",
-          "id": "RtrcCameoRecord-opens"
+          "type": "CardCameoRecord",
+          "id": "CardCameoRecord-opens"
         },
-        "id": "RtrcCameoRecord-opens",
+        "id": "CardCameoRecord-opens",
         "type": "genericNode",
         "position": {
           "x": 1450,
@@ -794,7 +794,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Cameo export: writes a run's officially parsed designs as .sysml files for Cameo's SysML v2 edition and says\nhow to check them. Cameo has no headless command, so a person opens the file; the result is recorded with RTRC Cameo record.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageTextInput, Output\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"(\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcCameoExport(Component):\n    display_name = \"RTRC Cameo export (when licensed)\"\n    description = \"Exports a run's designs for Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement.\"\n    icon = \"upload\"\n    name = \"RtrcCameoExport\"\n\n    inputs = [MessageTextInput(name=\"run_id\", display_name=\"Run id\", value=\"\", info=\"A run id such as 20261006T211951, or a message that contains it.\")]\n    outputs = [Output(display_name=\"Instructions\", name=\"message\", method=\"export\")]\n\n    def export(self) -> Message:\n        match = RUN.search(str(getattr(self.run_id, \"text\", self.run_id) or \"\"))\n        if not match:\n            raise ValueError(\"Give a run id\")\n        body = _call(\"/cameo/export\", {\"run\": match.group(1)})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
+                "value": "\"\"\"Cameo export: writes a run's officially parsed designs as .sysml files for Cameo's SysML v2 edition and says\nhow to check them. Cameo has no headless command, so a person opens the file; the result is recorded with Cameo record.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageTextInput, Output\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"(\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardCameoExport(Component):\n    display_name = \"Cameo export (when licensed)\"\n    description = \"Exports a run's designs for Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement.\"\n    icon = \"upload\"\n    name = \"CardCameoExport\"\n\n    inputs = [MessageTextInput(name=\"run_id\", display_name=\"Run id\", value=\"\", info=\"A run id such as 20261006T211951, or a message that contains it.\")]\n    outputs = [Output(display_name=\"Instructions\", name=\"message\", method=\"export\")]\n\n    def export(self) -> Message:\n        match = RUN.search(str(getattr(self.run_id, \"text\", self.run_id) or \"\"))\n        if not match:\n            raise ValueError(\"Give a run id\")\n        body = _call(\"/cameo/export\", {\"run\": match.group(1)})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -869,10 +869,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcCameoExport",
-          "id": "RtrcCameoExport-export"
+          "type": "CardCameoExport",
+          "id": "CardCameoExport-export"
         },
-        "id": "RtrcCameoExport-export",
+        "id": "CardCameoExport-export",
         "type": "genericNode",
         "position": {
           "x": 510,
@@ -1163,7 +1163,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official\nPilot's verdict (interoperability evidence). The Pilot stays the judge.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nRESULTS = [\"Opens cleanly\", \"Errors in Cameo\", \"Not checked yet\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcCameoRecord(Component):\n    display_name = \"RTRC Cameo record\"\n    description = \"Put one after each Human Input branch. Stores the person's Cameo check of a design next to the official Pilot's verdict.\"\n    icon = \"clipboard-list\"\n    name = \"RtrcCameoRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"result\", display_name=\"This branch\", options=RESULTS, value=RESULTS[-1]),\n        DropdownInput(name=\"key\", display_name=\"Design\", options=[\"A\", \"B\"], value=\"A\"),\n        StrInput(name=\"note\", display_name=\"Note (for example the Cameo error)\", value=\"\", required=False),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.result}: not chosen\"\n            return Message(text=\"\")\n        match = RUN.search(text)\n        if not match:\n            raise ValueError(\"No run id in the incoming message\")\n        body = _call(\"/cameo/result\", {\"run\": match.group(1), \"key\": self.key, \"result\": self.result.lower(), \"note\": str(self.note or \"\")})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
+                "value": "\"\"\"Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official\nPilot's verdict (interoperability evidence). The Pilot stays the judge.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nRESULTS = [\"Opens cleanly\", \"Errors in Cameo\", \"Not checked yet\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardCameoRecord(Component):\n    display_name = \"Cameo record\"\n    description = \"Put one after each Human Input branch. Stores the person's Cameo check of a design next to the official Pilot's verdict.\"\n    icon = \"clipboard-list\"\n    name = \"CardCameoRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"result\", display_name=\"This branch\", options=RESULTS, value=RESULTS[-1]),\n        DropdownInput(name=\"key\", display_name=\"Design\", options=[\"A\", \"B\"], value=\"A\"),\n        StrInput(name=\"note\", display_name=\"Note (for example the Cameo error)\", value=\"\", required=False),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.result}: not chosen\"\n            return Message(text=\"\")\n        match = RUN.search(text)\n        if not match:\n            raise ValueError(\"No run id in the incoming message\")\n        body = _call(\"/cameo/result\", {\"run\": match.group(1), \"key\": self.key, \"result\": self.result.lower(), \"note\": str(self.note or \"\")})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -1368,10 +1368,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcCameoRecord",
-          "id": "RtrcCameoRecord-errors"
+          "type": "CardCameoRecord",
+          "id": "CardCameoRecord-errors"
         },
-        "id": "RtrcCameoRecord-errors",
+        "id": "CardCameoRecord-errors",
         "type": "genericNode",
         "position": {
           "x": 1450,
@@ -1662,7 +1662,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official\nPilot's verdict (interoperability evidence). The Pilot stays the judge.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nRESULTS = [\"Opens cleanly\", \"Errors in Cameo\", \"Not checked yet\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcCameoRecord(Component):\n    display_name = \"RTRC Cameo record\"\n    description = \"Put one after each Human Input branch. Stores the person's Cameo check of a design next to the official Pilot's verdict.\"\n    icon = \"clipboard-list\"\n    name = \"RtrcCameoRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"result\", display_name=\"This branch\", options=RESULTS, value=RESULTS[-1]),\n        DropdownInput(name=\"key\", display_name=\"Design\", options=[\"A\", \"B\"], value=\"A\"),\n        StrInput(name=\"note\", display_name=\"Note (for example the Cameo error)\", value=\"\", required=False),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.result}: not chosen\"\n            return Message(text=\"\")\n        match = RUN.search(text)\n        if not match:\n            raise ValueError(\"No run id in the incoming message\")\n        body = _call(\"/cameo/result\", {\"run\": match.group(1), \"key\": self.key, \"result\": self.result.lower(), \"note\": str(self.note or \"\")})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
+                "value": "\"\"\"Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official\nPilot's verdict (interoperability evidence). The Pilot stays the judge.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nRESULTS = [\"Opens cleanly\", \"Errors in Cameo\", \"Not checked yet\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardCameoRecord(Component):\n    display_name = \"Cameo record\"\n    description = \"Put one after each Human Input branch. Stores the person's Cameo check of a design next to the official Pilot's verdict.\"\n    icon = \"clipboard-list\"\n    name = \"CardCameoRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"result\", display_name=\"This branch\", options=RESULTS, value=RESULTS[-1]),\n        DropdownInput(name=\"key\", display_name=\"Design\", options=[\"A\", \"B\"], value=\"A\"),\n        StrInput(name=\"note\", display_name=\"Note (for example the Cameo error)\", value=\"\", required=False),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.result}: not chosen\"\n            return Message(text=\"\")\n        match = RUN.search(text)\n        if not match:\n            raise ValueError(\"No run id in the incoming message\")\n        body = _call(\"/cameo/result\", {\"run\": match.group(1), \"key\": self.key, \"result\": self.result.lower(), \"note\": str(self.note or \"\")})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -1867,10 +1867,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcCameoRecord",
-          "id": "RtrcCameoRecord-notchecked"
+          "type": "CardCameoRecord",
+          "id": "CardCameoRecord-notchecked"
         },
-        "id": "RtrcCameoRecord-notchecked",
+        "id": "CardCameoRecord-notchecked",
         "type": "genericNode",
         "position": {
           "x": 1450,
@@ -2011,7 +2011,7 @@
                 "_input_type": "DurationInput"
               }
             },
-            "description": "Open the exported file in Cameo's SysML v2 edition and pick the result. Until RTRC provides the license: Not checked yet.",
+            "description": "Open the exported file in Cameo's SysML v2 edition and pick the result. Until provides the license: Not checked yet.",
             "icon": "HumanInput",
             "base_classes": [
               "Message"
@@ -2111,7 +2111,7 @@
           "id": "note-cameo",
           "type": "note",
           "node": {
-            "description": "# Cameo check (when RTRC provides the license)\n\nRTRC works in Cameo. This flow exports a run's officially parsed designs and records whether they open cleanly in Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement, the interoperability evidence the brief asks for. Cameo has no headless command, so a person opens the file.",
+            "description": "# Cameo check (when provides the license)\n\nworks in Cameo. This flow exports a run's officially parsed designs and records whether they open cleanly in Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement, the interoperability evidence the brief asks for. Cameo has no headless command, so a person opens the file.",
             "display_name": "",
             "documentation": "",
             "template": {
@@ -2124,7 +2124,7 @@
     "edges": [
       {
         "source": "ChatInput-run",
-        "target": "RtrcCameoExport-export",
+        "target": "CardCameoExport-export",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
@@ -2136,7 +2136,7 @@
           },
           "targetHandle": {
             "fieldName": "run_id",
-            "id": "RtrcCameoExport-export",
+            "id": "CardCameoExport-export",
             "inputTypes": [
               "Message"
             ],
@@ -2144,15 +2144,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-runœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œrun_idœ, œidœ: œRtrcCameoExport-exportœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-run{œdataTypeœ:œChatInputœ,œidœ:œChatInput-runœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcCameoExport-export{œfieldNameœ:œrun_idœ,œidœ:œRtrcCameoExport-exportœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œrun_idœ, œidœ: œCardCameoExport-exportœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-run{œdataTypeœ:œChatInputœ,œidœ:œChatInput-runœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardCameoExport-export{œfieldNameœ:œrun_idœ,œidœ:œCardCameoExport-exportœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "HumanInput-cameo",
-        "target": "RtrcCameoRecord-errors",
+        "target": "CardCameoRecord-errors",
         "data": {
           "sourceHandle": {
             "dataType": "HumanInput",
@@ -2164,7 +2164,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcCameoRecord-errors",
+            "id": "CardCameoRecord-errors",
             "inputTypes": [
               "Message"
             ],
@@ -2172,15 +2172,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-cameoœ, œnameœ: œbranch_errors_in_cameoœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcCameoRecord-errorsœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-HumanInput-cameo{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-cameoœ,œnameœ:œbranch_errors_in_cameoœ,œoutput_typesœ:[œMessageœ]}-RtrcCameoRecord-errors{œfieldNameœ:œupstreamœ,œidœ:œRtrcCameoRecord-errorsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardCameoRecord-errorsœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-cameo{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-cameoœ,œnameœ:œbranch_errors_in_cameoœ,œoutput_typesœ:[œMessageœ]}-CardCameoRecord-errors{œfieldNameœ:œupstreamœ,œidœ:œCardCameoRecord-errorsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "HumanInput-cameo",
-        "target": "RtrcCameoRecord-notchecked",
+        "target": "CardCameoRecord-notchecked",
         "data": {
           "sourceHandle": {
             "dataType": "HumanInput",
@@ -2192,7 +2192,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcCameoRecord-notchecked",
+            "id": "CardCameoRecord-notchecked",
             "inputTypes": [
               "Message"
             ],
@@ -2200,15 +2200,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-cameoœ, œnameœ: œbranch_not_checked_yetœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcCameoRecord-notcheckedœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-HumanInput-cameo{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-cameoœ,œnameœ:œbranch_not_checked_yetœ,œoutput_typesœ:[œMessageœ]}-RtrcCameoRecord-notchecked{œfieldNameœ:œupstreamœ,œidœ:œRtrcCameoRecord-notcheckedœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardCameoRecord-notcheckedœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-cameo{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-cameoœ,œnameœ:œbranch_not_checked_yetœ,œoutput_typesœ:[œMessageœ]}-CardCameoRecord-notchecked{œfieldNameœ:œupstreamœ,œidœ:œCardCameoRecord-notcheckedœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "HumanInput-cameo",
-        "target": "RtrcCameoRecord-opens",
+        "target": "CardCameoRecord-opens",
         "data": {
           "sourceHandle": {
             "dataType": "HumanInput",
@@ -2220,7 +2220,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcCameoRecord-opens",
+            "id": "CardCameoRecord-opens",
             "inputTypes": [
               "Message"
             ],
@@ -2228,19 +2228,19 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-cameoœ, œnameœ: œbranch_opens_cleanlyœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcCameoRecord-opensœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-HumanInput-cameo{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-cameoœ,œnameœ:œbranch_opens_cleanlyœ,œoutput_typesœ:[œMessageœ]}-RtrcCameoRecord-opens{œfieldNameœ:œupstreamœ,œidœ:œRtrcCameoRecord-opensœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardCameoRecord-opensœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-cameo{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-cameoœ,œnameœ:œbranch_opens_cleanlyœ,œoutput_typesœ:[œMessageœ]}-CardCameoRecord-opens{œfieldNameœ:œupstreamœ,œidœ:œCardCameoRecord-opensœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcCameoExport-export",
+        "source": "CardCameoExport-export",
         "target": "HumanInput-cameo",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcCameoExport",
-            "id": "RtrcCameoExport-export",
+            "dataType": "CardCameoExport",
+            "id": "CardCameoExport-export",
             "name": "message",
             "output_types": [
               "Message"
@@ -2255,20 +2255,20 @@
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcCameoExportœ, œidœ: œRtrcCameoExport-exportœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardCameoExportœ, œidœ: œCardCameoExport-exportœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œpromptœ, œidœ: œHumanInput-cameoœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcCameoExport-export{œdataTypeœ:œRtrcCameoExportœ,œidœ:œRtrcCameoExport-exportœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-HumanInput-cameo{œfieldNameœ:œpromptœ,œidœ:œHumanInput-cameoœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "id": "reactflow__edge-CardCameoExport-export{œdataTypeœ:œCardCameoExportœ,œidœ:œCardCameoExport-exportœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-HumanInput-cameo{œfieldNameœ:œpromptœ,œidœ:œHumanInput-cameoœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcCameoRecord-errors",
+        "source": "CardCameoRecord-errors",
         "target": "ChatOutput-errors",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcCameoRecord",
-            "id": "RtrcCameoRecord-errors",
+            "dataType": "CardCameoRecord",
+            "id": "CardCameoRecord-errors",
             "name": "message",
             "output_types": [
               "Message"
@@ -2287,20 +2287,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcCameoRecordœ, œidœ: œRtrcCameoRecord-errorsœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardCameoRecordœ, œidœ: œCardCameoRecord-errorsœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-errorsœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcCameoRecord-errors{œdataTypeœ:œRtrcCameoRecordœ,œidœ:œRtrcCameoRecord-errorsœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-errors{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-errorsœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardCameoRecord-errors{œdataTypeœ:œCardCameoRecordœ,œidœ:œCardCameoRecord-errorsœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-errors{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-errorsœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcCameoRecord-notchecked",
+        "source": "CardCameoRecord-notchecked",
         "target": "ChatOutput-notchecked",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcCameoRecord",
-            "id": "RtrcCameoRecord-notchecked",
+            "dataType": "CardCameoRecord",
+            "id": "CardCameoRecord-notchecked",
             "name": "message",
             "output_types": [
               "Message"
@@ -2319,20 +2319,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcCameoRecordœ, œidœ: œRtrcCameoRecord-notcheckedœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardCameoRecordœ, œidœ: œCardCameoRecord-notcheckedœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-notcheckedœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcCameoRecord-notchecked{œdataTypeœ:œRtrcCameoRecordœ,œidœ:œRtrcCameoRecord-notcheckedœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-notchecked{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-notcheckedœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardCameoRecord-notchecked{œdataTypeœ:œCardCameoRecordœ,œidœ:œCardCameoRecord-notcheckedœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-notchecked{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-notcheckedœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcCameoRecord-opens",
+        "source": "CardCameoRecord-opens",
         "target": "ChatOutput-opens",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcCameoRecord",
-            "id": "RtrcCameoRecord-opens",
+            "dataType": "CardCameoRecord",
+            "id": "CardCameoRecord-opens",
             "name": "message",
             "output_types": [
               "Message"
@@ -2351,9 +2351,9 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcCameoRecordœ, œidœ: œRtrcCameoRecord-opensœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardCameoRecordœ, œidœ: œCardCameoRecord-opensœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-opensœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcCameoRecord-opens{œdataTypeœ:œRtrcCameoRecordœ,œidœ:œRtrcCameoRecord-opensœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-opens{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-opensœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardCameoRecord-opens{œdataTypeœ:œCardCameoRecordœ,œidœ:œCardCameoRecord-opensœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-opens{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-opensœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false

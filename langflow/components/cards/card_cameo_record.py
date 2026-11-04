@@ -1,4 +1,4 @@
-"""RTRC Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official
+"""Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official
 Pilot's verdict (interoperability evidence). The Pilot stays the judge."""
 import json
 import os
@@ -15,26 +15,26 @@ RESULTS = ["Opens cleanly", "Errors in Cameo", "Not checked yet"]
 
 
 def _call(path: str, payload: dict) -> dict:
-    url = os.environ.get("RTRC_SHELL_URL", "http://127.0.0.1:8781") + path
+    url = os.environ.get("SHELL_URL", "http://127.0.0.1:8781") + path
     request = urllib.request.Request(url, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": os.environ.get("RTRC_SHELL_TOKEN", "")})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": os.environ.get("SHELL_TOKEN", "")})
     try:
         with urllib.request.urlopen(request, timeout=600) as response:
             body = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         body = json.loads(exc.read() or b"{}")
     except urllib.error.URLError as exc:
-        raise ValueError(f"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
+        raise ValueError(f"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
     if not body.get("ok"):
-        raise ValueError(body.get("error") or "The RTRC shell service returned an error")
+        raise ValueError(body.get("error") or "The shell service returned an error")
     return body
 
 
-class RtrcCameoRecord(Component):
-    display_name = "RTRC Cameo record"
+class CardCameoRecord(Component):
+    display_name = "Cameo record"
     description = "Put one after each Human Input branch. Stores the person's Cameo check of a design next to the official Pilot's verdict."
     icon = "clipboard-list"
-    name = "RtrcCameoRecord"
+    name = "CardCameoRecord"
 
     inputs = [
         MessageInput(name="upstream", display_name="From the person's choice", required=False),

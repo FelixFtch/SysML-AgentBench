@@ -5,7 +5,7 @@ First verification of project 7 (`langflow/flows/7-kev-tools/`) and the shared t
 Langflow (127.0.0.1:7860). Message sent through the Langflow v2 workflow API (background job, as
 `bench/langflow_exam.py` sends exam tasks); replies read back from the message table. Services: Langflow restarted
 once to load the two new cards, Kev decision service on 127.0.0.1:8009 (started with `scripts/kev_up.sh` after the
-instance another agent had left was stopped mid-test), kev MCP server on 127.0.0.1:8793, rtrc MCP on 8782, Ollama on
+instance another agent had left was stopped mid-test), kev MCP server on 127.0.0.1:8793,  MCP on 8782, Ollama on
 11434.
 
 Smoke message (both chat flows): `Classify whether this is a requirement: 'The system shall log all logins.'`
@@ -31,7 +31,7 @@ service-down behaviour the card promises.
 ## 2 · OpenCode with memory + Kev chat (endpoint opencode-memory-kev-chat)
 
 - Job completed in 201 s (local Qwen3.8-27B); the usage sidecar
-  (`~/.rtrc-assistant-kev/usage/kev-smoke-oc-1791649512.json`) records `tool_calls: ["kev_classify_requirement"]`,
+  (`~/.design-assistant-kev/usage/kev-smoke-oc-1791649512.json`) records `tool_calls: ["kev_classify_requirement"]`,
   6926 in / 122 out tokens, 198.2 s — OpenCode really called the kev MCP tool.
 - Reply:
   > Yes — Kev classifies it as a requirement with a probability of 0.87.
@@ -50,10 +50,10 @@ service-down behaviour the card promises.
 
 ## 4 · OpenCode with memory + Kev exam (endpoint opencode-memory-kev-exam)
 
-- Imported (flow id a38f1c28-5f25-4f6b-ab91-b205c7d2cb81); structure complete: Chat Input → RTRC OpenCode assistant ·
+- Imported (flow id a38f1c28-5f25-4f6b-ab91-b205c7d2cb81); structure complete: Chat Input → OpenCode assistant ·
   Kev (exam mode, qwen3.8-flash) → Chat Output. The tool is mounted the way this harness mounts tools: the kev MCP
-  server (8793) in the workspace `~/.rtrc-assistant-kev-exam` (prepared by `tools/assistant/kev_workspace.py`), with
-  `kev_classify_requirement` enabled next to the exam's two rtrc tools; verified in the workspace's opencode.json and
+  server (8793) in the workspace `~/.design-assistant-kev-exam` (prepared by `tools/assistant/kev_workspace.py`), with
+  `kev_classify_requirement` enabled next to the exam's two  tools; verified in the workspace's opencode.json and
   prompt. Live run deferred (a fresh OpenCode session on the local 27B; the chat twin of the same component path is
   evidence above) — run `python3 bench/langflow_exam.py --flow "OpenCode with memory + Kev exam"` for the full exam.
 

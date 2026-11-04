@@ -1,4 +1,4 @@
-# GEN-05 — synthetic, not an RTX specification
+# GEN-05 — synthetic
 
 Package name: FourNode
 

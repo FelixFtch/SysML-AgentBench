@@ -53,7 +53,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_b43b2817a1514fa98425eb9e",
       "tool_input": {
-        "command": "ls /data/robotics/RTRC/mvp/agent-runs/20261006T073639-P-CODE-2-AMB-02/ && ls /data/robotics/RTRC/mvp/ 2>/dev/null | head -30",
+        "command": "ls /data/robotics//mvp/agent-runs/20261006T073639-P-CODE-2-AMB-02/ && ls /data/robotics//mvp/ 2>/dev/null | head -30",
         "description": "Inspect run folder and mvp directory"
       }
     },
@@ -61,7 +61,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_a7f8eff42b6049558510f2af",
       "tool_input": {
-        "command": "ls -R /data/robotics/RTRC/mvp/agent-runs/20261006T073639-P-CODE-2-AMB-02",
+        "command": "ls -R /data/robotics//mvp/agent-runs/20261006T073639-P-CODE-2-AMB-02",
         "description": "List run directory recursively"
       }
     }

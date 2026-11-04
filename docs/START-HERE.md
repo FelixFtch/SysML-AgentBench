@@ -1,6 +1,6 @@
 # Start here
 
-**What this is.** A benchmark of AI agents that turn requirements into SysML v2 models, and a set of Langflow flows that run those agents and let you build your own. 27 sealed tasks on a synthetic maritime scenario, scored only by the official SysML v2 Pilot and answer keys written in advance. Nothing here is an RTX specification.
+**What this is.** A benchmark of AI agents that turn requirements into SysML v2 models, and a set of Langflow flows that run those agents and let you build your own. 27 sealed tasks on a synthetic maritime scenario, scored only by the official SysML v2 Pilot and answer keys written in advance. Nothing here is an  specification.
 
 **Two doors.** Pick the one you came for; each has its own numbered pages.
 
@@ -31,11 +31,11 @@ The three papers are steps, not separate apps: paper 2 is memory search, paper 3
 ## Where things are
 
 ```
-langflow/   flows/ (the flow files, six folders) · components/rtrc/ (the cards) · scripts/ (import, export, build, set-up)
+langflow/   flows/ (the flow files, six folders) · components/cards/ (the cards) · scripts/ (import, export, build, set-up)
 bench/      the tasks (bench/tasks/), the scorers, the exam runners, the results page (exam_board.py), the shell service
 agents/     the direct approaches P0–P3 and the model clients; agents/external/: the sandbox and the coding-agent runners
 mvp/        the pinned official SysML v2 toolchain and the engine that runs it
-tools/      the RTRC tools as an MCP server (assistant_mcp.py) and the OpenCode assistant workspace
+tools/      the tools as an MCP server (assistant_mcp.py) and the OpenCode assistant workspace
 analysis/   every score file the page reads; your exam columns go here too
 docs/       langflow/ and benchmark/ (the two doors), decisions/ (why things are the way they are), knowledge-base/, report/
 ```

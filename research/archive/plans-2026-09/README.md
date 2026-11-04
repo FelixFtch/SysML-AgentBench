@@ -4,7 +4,7 @@ These documents describe the earlier project direction ("legacy-system upgrade w
 
 | File | What it was | Superseded by |
 |---|---|---|
-| `RTX_SysML_v2_MVP_落地计划.md` | Research + landing plan (business fit, hiring evidence, 12-week product plan) | `plans/SysML_AgentBench_完整执行计划.md` v2.0 |
+| `sysml-v2-mvp-plan.md` | Research + landing plan (business fit, hiring evidence, 12-week product plan) | `plans/SysML_AgentBench_完整执行计划.md` v2.0 |
 | `MVP_具体产品与演示规格.md` | Product spec for the "Engineering Change Workbench", marine gateway case | same |
 | `README-legacy-2026-09.md` | Top-level README of the workbench phase | `README.md` |
 

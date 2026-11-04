@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_3104127d47e74b1d804c3cc7",
       "tool_input": {
-        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T071200-P-CODE-2-AMB-02/ && find /data/robotics/RTRC/mvp/agent-runs/20261006T071200-P-CODE-2-AMB-02/ -maxdepth 3 -type f | head -50",
+        "command": "ls -la /data/robotics//mvp/agent-runs/20261006T071200-P-CODE-2-AMB-02/ && find /data/robotics//mvp/agent-runs/20261006T071200-P-CODE-2-AMB-02/ -maxdepth 3 -type f | head -50",
         "description": "Check for any additional task context in the run directory"
       }
     },
@@ -53,7 +53,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_310606841f6b49adaeef3c28",
       "tool_input": {
-        "command": "find /data/robotics/RTRC/mvp/agent-runs/20261006T071200-P-CODE-2-AMB-02/ -maxdepth 3 -type f 2>/dev/null",
+        "command": "find /data/robotics//mvp/agent-runs/20261006T071200-P-CODE-2-AMB-02/ -maxdepth 3 -type f 2>/dev/null",
         "description": "Check for any additional task context files in the run directory"
       }
     }

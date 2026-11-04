@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_c362d6fb849d4ca284c9c931",
       "tool_input": {
-        "command": "ls /data/robotics/RTRC/mvp/agent-runs/20261006T074942-P-CODE-2-GEN-01/workspace; ls /data/robotics/RTRC/mvp 2>/dev/null | head; which sysml-cli sysml v2.sysml 2>/dev/null",
+        "command": "ls /data/robotics//mvp/agent-runs/20261006T074942-P-CODE-2-GEN-01/workspace; ls /data/robotics//mvp 2>/dev/null | head; which sysml-cli sysml v2.sysml 2>/dev/null",
         "description": "Check workspace for a SysML toolchain"
       }
     }

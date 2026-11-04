@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_decc34246d284ebeab35cfcf",
       "tool_input": {
-        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T072436-P-CODE-2-ALN-03/workspace/ && ls /data/robotics/RTRC/mvp/agent-runs/20261006T072436-P-CODE-2-ALN-03/",
+        "command": "ls -la /data/robotics//mvp/agent-runs/20261006T072436-P-CODE-2-ALN-03/workspace/ && ls /data/robotics//mvp/agent-runs/20261006T072436-P-CODE-2-ALN-03/",
         "description": "List benchmark run workspace contents"
       }
     }

@@ -12,7 +12,7 @@ a result.
 | `tasks_staging/` | The 1,000 selected and 1,000 archived SIM items (gitignored, 311 MB) | same |
 | `analysis/` | The SIM runs (`side-sim-*`), the Jev arena pilot and cascade results, the Kev full-PURE run, the one-row file-protocol attempt | Not evidence: see the note on base rates below |
 | `kev/` | The Kev requirement classifier as a Langflow card and MCP server, the four project-7 flows, start/stop scripts, the smoke log, and `tracked-edits.patch` with the edits made to `catalog.py`, `build_flows.py`, the flows README and two docs pages (reverted) | The classifier showed no discriminative power on the task (below) |
-| `jev-arena-reports/` | `PILOT-REPORT.md` and the arena's scripts | The arena itself (40 GB of virtual environments and model weights) was moved outside the repository to `/data/robotics/RTRC-archive/2026-10-10-jev-arena/` |
+| `jev-arena-reports/` | `PILOT-REPORT.md` and the arena's scripts | The arena itself (40 GB of virtual environments and model weights) was moved outside the repository to `/data/robotics/-archive/2026-10-10-jev-arena/` |
 | `time-sim-param-drafts/` | Three SysML drafts of time-domain parameters | drafts |
 
 ## Why the Kev/Jev results are not evidence

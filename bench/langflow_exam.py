@@ -13,7 +13,7 @@ Any flow shaped Chat Input → … → Chat Output can sit the exam: the task st
 (agents.solve._task: requirements plus the given models) is sent as the message, a fresh session per cell, and the reply is
 scored here with bench.experiment.validate_and_grade (the official Pilot once, then the frozen scorer). Time is the wall
 clock of the run; tokens come from the Agent's usage field on the stored message (Langflow Agent) or from the OpenCode
-node's usage file. The repository's six exam-cell flows (RTRC Exam cell → steps) are the other kind: the task id is passed
+node's usage file. The repository's six exam-cell flows (Exam cell → steps) are the other kind: the task id is passed
 as a tweak and the shell service scores the cell as it does for the results-page console.
 
 --model puts a model on the flow's model node for this run only (a tweak; the flow file is unchanged): a cloud name, or
@@ -66,7 +66,7 @@ LOCAL_FOLDER_TAG = "local27b"
 # Chat flows that are columns of page 1.3: flow name -> (column id, folder prefix)
 COLUMNS = {NAMES["langflow-agent-pilot-exam"]: "agent-pilot", NAMES["opencode-memory-exam"]: "opencode-memory", NAMES["langflow-agent-memory-exam"]: "agent-memory"}
 CELL_FLOWS = {NAMES[s]: s for s in ("direct-exam-p0", "direct-exam-p1", "direct-exam-p2", "direct-exam-p3", "sandbox-exam-opencode", "sandbox-exam-claude-code")}
-USAGE_DIR = Path(os.environ.get("RTRC_ASSISTANT_EXAM_HOME", Path.home() / ".rtrc-assistant-exam")) / "usage"
+USAGE_DIR = Path(os.environ.get("ASSISTANT_EXAM_HOME", Path.home() / ".design-assistant-exam")) / "usage"
 
 
 def _secrets() -> dict:
@@ -140,7 +140,7 @@ def _token() -> str:
     return _login()
 
 
-RUNNER_PROJECT = "RTRC exam runner (admin)"
+RUNNER_PROJECT = "exam runner (admin)"
 # What a private copy of an exam flow needs imported first: the shared tool flows its Run Flow cards point at.
 NEEDS = {NAMES["langflow-agent-pilot-exam"]: ["tool-validate-sysml"], NAMES["langflow-agent-memory-exam"]: ["tool-validate-sysml", "tool-memory-search"]}
 PROVIDER_VARIABLES = ("OPENAI_COMPATIBLE_BASE_URL", "OPENAI_COMPATIBLE_API_KEY")
@@ -173,7 +173,7 @@ def _model_tweaks(flow: dict, model: str | None) -> dict:
     """The tweak that puts `model` on the flow's model node, when a model was asked for. No --model: the flow runs as
     saved (whatever provider and model its cards hold), which is how a person examines a flow they set up on the canvas.
     A local name ("<tag> (Ollama)"): the Langflow Agent gets the Ollama provider and tag (as the local chat variant of
-    build_flows.py has them), the OpenCode and RTRC cards get the name. Any other name: the Agent keeps the flow's provider
+    build_flows.py has them), the OpenCode and cards get the name. Any other name: the Agent keeps the flow's provider
     (our files: "OpenAI Compatible", the endpoint of the Global Variables) with that model name; the cards get the name."""
     if not model:
         return {}
@@ -183,11 +183,11 @@ def _model_tweaks(flow: dict, model: str | None) -> dict:
     for node in flow["data"]["nodes"]:
         node_id, kind = node["id"], node.get("data", {}).get("type")
         template = node.get("data", {}).get("node", {}).get("template", {})
-        if kind == "Agent" or node_id == "Agent-rtrc":
+        if kind == "Agent" or node_id == "Agent-":
             current = (template.get("model") or {}).get("value") or []
             provider = "Ollama" if tag else ((current[0].get("provider") if current and isinstance(current[0], dict) else None) or "OpenAI Compatible")
             tweaks[node_id] = {"model": [{"name": tag or model, "provider": provider, "metadata": {"model_type": "llm", "tool_calling": True}}]}
-        elif "model" in template and kind in {"RtrcOpenCodeAssistant", "RtrcChat", "RtrcExamCell", "RtrcStart"}:
+        elif "model" in template and kind in {"CardOpenCodeAssistant", "CardChat", "CardExamCell", "CardStart"}:
             tweaks[node_id] = {"model": model}
     if not tweaks:
         raise SystemExit(f"{flow['name']}: no model node to point at {model!r}; run without --model to examine the flow as saved")
@@ -344,8 +344,8 @@ def _cell_flow_cell(token: str, flow: dict, task_dir: Path, repeat: int, out: Pa
     started = time.time()
     # A tweak on the cell node replaces its values, so every preset of the flow file is sent with the task id (a tweak of the
     # task id alone ran the component's defaults).
-    cell = next(node for node in flow["data"]["nodes"] if node["id"] == "RtrcExamCell-cell")["data"]["node"]["template"]
-    tweaks = {"RtrcExamCell-cell": {**{key: cell[key]["value"] for key in ("mode", "cell", "approach", "agent", "model")}, "task_id": task_dir.name}}
+    cell = next(node for node in flow["data"]["nodes"] if node["id"] == "CardExamCell-cell")["data"]["node"]["template"]
+    tweaks = {"CardExamCell-cell": {**{key: cell[key]["value"] for key in ("mode", "cell", "approach", "agent", "model")}, "task_id": task_dir.name}}
     job = _request("POST", "/api/v2/workflows", token, {"flow_id": flow["id"], "input_value": "", "mode": "background", "tweaks": tweaks,
                                                         "session_id": f"rerun-{task_dir.name}-r{repeat}-{datetime.now(timezone.utc).strftime('%H%M%S')}"}, timeout=60)
     final = _wait(token, job["job_id"], timeout)

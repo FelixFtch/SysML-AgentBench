@@ -4,7 +4,7 @@
   "endpoint_name": "other-memory-knowledge-base",
   "is_component": false,
   "tags": [
-    "rtrc",
+    "",
     "memory"
   ],
   "data": {
@@ -98,7 +98,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Memory: F0, the library the agent searches (paper 2): MaritimeISR plus every approved design, as cards\nbuilt from the official Pilot parse. The DataFrame output can be ingested into a Langflow knowledge base for browsing.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=1800) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcMemory(Component):\n    display_name = \"RTRC Memory (paper 2)\"\n    description = \"F0: MaritimeISR and every approved design as element cards from the official parse, with their links.\"\n    icon = \"database\"\n    name = \"RtrcMemory\"\n\n    inputs = [\n        MessageInput(name=\"after\", display_name=\"After (optional)\", required=False, advanced=True,\n                     info=\"Connect the card that changes the memory (the write card of the write-to-memory tool) so the \"\n                          \"library is read after the write; F0 leaves it empty.\"),\n    ]\n    outputs = [\n        Output(display_name=\"Summary\", name=\"summary\", method=\"as_message\"),\n        Output(display_name=\"Cards\", name=\"cards\", method=\"as_dataframe\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            self._cached = _call(\"/memory\", {})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_dataframe(self) -> DataFrame:\n        rows = self._result()[\"data\"][\"rows\"]\n        return DataFrame(data=[{key: row[key] for key in (\"id\", \"type\", \"name\", \"source\", \"links\", \"documentation\", \"text\")} for row in rows])\n\n    def as_data(self) -> Data:\n        return Data(data={\"sources\": self._result()[\"data\"][\"sources\"]})\n",
+                "value": "\"\"\"Memory: F0, the library the agent searches (paper 2): MaritimeISR plus every approved design, as cards\nbuilt from the official Pilot parse. The DataFrame output can be ingested into a Langflow knowledge base for browsing.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=1800) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardMemory(Component):\n    display_name = \"Memory (paper 2)\"\n    description = \"F0: MaritimeISR and every approved design as element cards from the official parse, with their links.\"\n    icon = \"database\"\n    name = \"CardMemory\"\n\n    inputs = [\n        MessageInput(name=\"after\", display_name=\"After (optional)\", required=False, advanced=True,\n                     info=\"Connect the card that changes the memory (the write card of the write-to-memory tool) so the \"\n                          \"library is read after the write; F0 leaves it empty.\"),\n    ]\n    outputs = [\n        Output(display_name=\"Summary\", name=\"summary\", method=\"as_message\"),\n        Output(display_name=\"Cards\", name=\"cards\", method=\"as_dataframe\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            self._cached = _call(\"/memory\", {})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_dataframe(self) -> DataFrame:\n        rows = self._result()[\"data\"][\"rows\"]\n        return DataFrame(data=[{key: row[key] for key in (\"id\", \"type\", \"name\", \"source\", \"links\", \"documentation\", \"text\")} for row in rows])\n\n    def as_data(self) -> Data:\n        return Data(data={\"sources\": self._result()[\"data\"][\"sources\"]})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -177,10 +177,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcMemory",
-          "id": "RtrcMemory-library"
+          "type": "CardMemory",
+          "id": "CardMemory-library"
         },
-        "id": "RtrcMemory-library",
+        "id": "CardMemory-library",
         "type": "genericNode",
         "position": {
           "x": 40,
@@ -682,7 +682,7 @@
                 "tool_mode": false,
                 "trace_as_metadata": true,
                 "options": [
-                  "rtrc_memory"
+                  "project_memory"
                 ],
                 "options_metadata": [],
                 "combobox": false,
@@ -790,7 +790,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "knowledge_base",
-                "value": "rtrc_memory",
+                "value": "project_memory",
                 "display_name": "Knowledge",
                 "advanced": false,
                 "api_editable": false,
@@ -930,7 +930,7 @@
               "JSON",
               "Table"
             ],
-            "display_name": "Knowledge base rtrc_memory",
+            "display_name": "Knowledge base project_memory",
             "documentation": "",
             "minimized": false,
             "custom_fields": {},
@@ -1006,7 +1006,7 @@
           "id": "note-memory",
           "type": "note",
           "node": {
-            "description": "# Memory knowledge base fill · what the agent knows\n\nThe memory is the existing MaritimeISR model plus every design a person approved, parsed by the official Pilot into element cards (type, full name, value or connection ends, documentation text) with their links.\n\n- Running this flow fills the Langflow knowledge base **rtrc_memory** (Knowledge page): the card text is embedded by Qwen, the other columns are kept as metadata, and cards already there are skipped. Run it again after a design is approved outside the write-to-memory flow.\n- The design flows' ① Search memory always uses our own retrieval (MiniLM + FAISS, seeds + one hop), so its results match the results page.",
+            "description": "# Memory knowledge base fill · what the agent knows\n\nThe memory is the existing MaritimeISR model plus every design a person approved, parsed by the official Pilot into element cards (type, full name, value or connection ends, documentation text) with their links.\n\n- Running this flow fills the Langflow knowledge base **project_memory** (Knowledge page): the card text is embedded by Qwen, the other columns are kept as metadata, and cards already there are skipped. Run it again after a design is approved outside the write-to-memory flow.\n- The design flows' ① Search memory always uses our own retrieval (MiniLM + FAISS, seeds + one hop), so its results match the results page.",
             "display_name": "",
             "documentation": "",
             "template": {
@@ -1018,12 +1018,12 @@
     ],
     "edges": [
       {
-        "source": "RtrcMemory-library",
+        "source": "CardMemory-library",
         "target": "Knowledge-memory",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcMemory",
-            "id": "RtrcMemory-library",
+            "dataType": "CardMemory",
+            "id": "CardMemory-library",
             "name": "cards",
             "output_types": [
               "Table"
@@ -1042,20 +1042,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcMemoryœ, œidœ: œRtrcMemory-libraryœ, œnameœ: œcardsœ, œoutput_typesœ: [œTableœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardMemoryœ, œidœ: œCardMemory-libraryœ, œnameœ: œcardsœ, œoutput_typesœ: [œTableœ]}",
         "targetHandle": "{œfieldNameœ: œinput_dfœ, œidœ: œKnowledge-memoryœ, œinputTypesœ: [œMessageœ, œDataœ, œJSONœ, œDataFrameœ, œTableœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcMemory-library{œdataTypeœ:œRtrcMemoryœ,œidœ:œRtrcMemory-libraryœ,œnameœ:œcardsœ,œoutput_typesœ:[œTableœ]}-Knowledge-memory{œfieldNameœ:œinput_dfœ,œidœ:œKnowledge-memoryœ,œinputTypesœ:[œMessageœ,œDataœ,œJSONœ,œDataFrameœ,œTableœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardMemory-library{œdataTypeœ:œCardMemoryœ,œidœ:œCardMemory-libraryœ,œnameœ:œcardsœ,œoutput_typesœ:[œTableœ]}-Knowledge-memory{œfieldNameœ:œinput_dfœ,œidœ:œKnowledge-memoryœ,œinputTypesœ:[œMessageœ,œDataœ,œJSONœ,œDataFrameœ,œTableœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcMemory-library",
+        "source": "CardMemory-library",
         "target": "ChatOutput-memory",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcMemory",
-            "id": "RtrcMemory-library",
+            "dataType": "CardMemory",
+            "id": "CardMemory-library",
             "name": "summary",
             "output_types": [
               "Message"
@@ -1074,9 +1074,9 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcMemoryœ, œidœ: œRtrcMemory-libraryœ, œnameœ: œsummaryœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardMemoryœ, œidœ: œCardMemory-libraryœ, œnameœ: œsummaryœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-memoryœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcMemory-library{œdataTypeœ:œRtrcMemoryœ,œidœ:œRtrcMemory-libraryœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-memory{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-memoryœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardMemory-library{œdataTypeœ:œCardMemoryœ,œidœ:œCardMemory-libraryœ,œnameœ:œsummaryœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-memory{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-memoryœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false

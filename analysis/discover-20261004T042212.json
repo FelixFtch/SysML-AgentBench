@@ -289,7 +289,7 @@
       ],
       "repair_rounds": 0,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261004T042227-9ae08612",
+      "run_dir": "/data/robotics//mvp/runs/20261004T042227-9ae08612",
       "model": "qwen3.8-max",
       "usage": {
         "prompt_tokens": 796,
@@ -332,7 +332,7 @@
           "text": "Design A: the straightforward allocation that follows the brief literally."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261004T042212/DesignA.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261004T042212/DesignA.sysml",
       "numbers": {
         "DesignA::Vessel::uploadMbps": 18.0,
         "DesignA::Vessel::retentionHours": 4.0,
@@ -461,7 +461,7 @@
       ],
       "repair_rounds": 0,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261004T042241-b8408c4d",
+      "run_dir": "/data/robotics//mvp/runs/20261004T042241-b8408c4d",
       "model": "qwen3.8-max",
       "usage": {
         "prompt_tokens": 829,
@@ -504,7 +504,7 @@
           "text": "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261004T042212/DesignB.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261004T042212/DesignB.sysml",
       "numbers": {
         "DesignB::vessel::uplinkMbps": 20.0,
         "DesignB::vessel::retentionHours": 4.0,

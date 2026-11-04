@@ -15,7 +15,7 @@ It creates the six projects, imports every file under [`langflow/flows/`](../../
 
 **One flow:** drag its JSON file from `langflow/flows/<project folder>/` into the Langflow window, or Projects page → **Upload a flow**. This is Langflow's own import; it works for any of our files. Flows of projects 3 and 4 that call the shared tool flows need those imported first (project folder `5-shared-tools/`).
 
-Before either: the RTRC cards must be loaded (`LANGFLOW_COMPONENTS_PATH=langflow/components`, set by the start script). A flow imported without them shows empty cards.
+Before either: the cards must be loaded (`LANGFLOW_COMPONENTS_PATH=langflow/components`, set by the start script). A flow imported without them shows empty cards.
 
 ## The six projects
 

@@ -1,5 +1,5 @@
 package MaritimeISR {
-    /* Synthetic maritime ISR reference model. Numbers are not RTX specifications.
+    /* Synthetic maritime ISR reference model. Numbers are synthetic.
        Ground truth for the benchmark: frozen before any agent is scored against it. */
     private import ScalarValues::*;
 

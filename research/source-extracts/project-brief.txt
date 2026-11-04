@@ -1,6 +1,6 @@
 Senior Desing Project Title: Agentic AI for Systems Engineering Discovery and Design
 
-Company Name: RTX Technology Research Center (RTRC)
+Company Name: this project
 Faculty Advisors: George Bollas
 Industry Advisors: Francesca Stramandinoli, Kunal Srivastava, Andrew Radlbeck
 

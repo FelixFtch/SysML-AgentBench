@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_dae82dfeea364cf58001d035",
       "tool_input": {
-        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T072828-P-CODE-2-GEN-02/workspace 2>/dev/null; ls /data/robotics/RTRC/mvp 2>/dev/null | head",
+        "command": "ls -la /data/robotics//mvp/agent-runs/20261006T072828-P-CODE-2-GEN-02/workspace 2>/dev/null; ls /data/robotics//mvp 2>/dev/null | head",
         "description": "List workspace contents"
       }
     }

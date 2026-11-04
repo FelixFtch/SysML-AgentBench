@@ -438,7 +438,7 @@ def requirements_md(task_id: str, p: dict, s: dict) -> str:
         f"- USV uplink quota: {p['quota_usv']} Mbit/s\n- UAV uplink quota: {p['capacity'] - p['quota_usv']} Mbit/s"
         if p["scheme"] == "fixed"
         else f"- Preempting platform: {'USV' if p['scheme'] == 'preempt_usv' else 'UAV'}")
-    return f"""# {task_id} — synthetic, not an RTX specification
+    return f"""# {task_id} — synthetic
 
 SIM shared-uplink scheduling for the USV and the fixed-wing UAV in the maritime
 ISR scenario (the four-node system: unmanned surface vessel, fixed-wing UAV,
@@ -571,7 +571,7 @@ def model_sysml(task_id: str, p: dict) -> str:
             f"            TotalDemand(initialBacklog{camel}, {plat}Produced);")
     demand_block = "\n".join(demand_lines)
     return f"""package SharedUplink {{
-    /* Synthetic maritime ISR SIM task (family sim_uplink). Numbers are not RTX specifications. */
+    /* Synthetic maritime ISR SIM task (family sim_uplink). Numbers are synthetic. */
     private import SI::*;
     private import ISQ::*;
     private import ISQInformation::*;
@@ -714,8 +714,8 @@ PHASE_ROW_RE = re.compile(r"^\| (\d+) \| (\d+) \| (\d+) \| (\d+) \| (\d+) \|$")
 def parse_requirements(folder: Path) -> dict:
     text = (folder / "input" / "requirements.md").read_text(encoding="utf-8")
     first = text.splitlines()[0]
-    if not re.fullmatch(r"# SHR-\d{4} — synthetic, not an RTX specification", first):
-        raise SystemExit(f"{folder.name}: first line is not the RTX marker: {first!r}")
+    if not re.fullmatch(r"# SHR-\d{4} — synthetic", first):
+        raise SystemExit(f"{folder.name}: first line is not the synthetic marker: {first!r}")
     capacity = int(re.search(r"- Total uplink capacity C: (\d+) Mbit/s", text).group(1))
     window = int(re.search(r"- Mission window: 0 to (\d+) min", text).group(1))
     b0 = re.search(r"- Initial buffered data at t = 0: USV (\d+) Mbit, UAV (\d+) Mbit", text)

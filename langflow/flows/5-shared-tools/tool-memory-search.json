@@ -4,7 +4,7 @@
   "endpoint_name": "tool-memory-search",
   "is_component": false,
   "tags": [
-    "rtrc",
+    "",
     "tool",
     "search"
   ],
@@ -570,7 +570,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,\nMiniLM + FAISS seeds, one hop), write to memory (gate, write, record), validate pasted SysML (save, official Pilot),\nand the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the RTRC shell service,\nwhich runs the same code as the results page; the chain order on the canvas is kept by the \"From the previous card\"\ninput. The engineer's text (query, \"<run id> A\", or SysML) comes from the sub-flow's Chat Input.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n# card name -> (endpoint, what the payload carries)\nSTEPS = {\n    \"Memory library (paper 2): MaritimeISR + approved designs as cards\": (\"/tool/memory/library\", \"none\"),\n    \"MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus\": (\"/tool/memory/seeds\", \"query\"),\n    \"One hop of neighbours (paper 2) → cards for the assistant\": (\"/tool/memory/hop\", \"query\"),\n    \"Gate: Pilot PASS and all four checks PASS? (read only)\": (\"/tool/gate\", \"request\"),\n    \"Write the design into memory (through the page's gate)\": (\"/tool/write\", \"request\"),\n    \"Record the approval on the run (page 2.3)\": (\"/tool/record-approval\", \"request\"),\n    \"Save the pasted SysML as a file\": (\"/tool/validate/save\", \"sysml\"),\n    \"Official SysML v2 Pilot on that file\": (\"/tool/validate/pilot\", \"saved\"),\n    \"Prompt part · rules (paper 3)\": (\"/tool/prompt-part\", \"run:rules\"),\n    \"Prompt part · attribute template (paper 3)\": (\"/tool/prompt-part\", \"run:contract\"),\n    \"Prompt part · retrieved examples or similar project (paper 2)\": (\"/tool/prompt-part\", \"run:examples\"),\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcTool(Component):\n    display_name = \"RTRC Tool step\"\n    description = \"One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the RTRC shell service.\"\n    icon = \"wrench\"\n    name = \"RtrcTool\"\n\n    inputs = [\n        MessageInput(name=\"text\", display_name=\"Engineer's text\", required=False,\n                     info=\"From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.\"),\n        MessageInput(name=\"upstream\", display_name=\"From the previous card\", required=False,\n                     info=\"Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.\"),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False),\n        DropdownInput(name=\"step\", display_name=\"Card\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            path, kind = STEPS[self.step]\n            text, upstream = _text(self.text), _text(self.upstream) or _text(self.upstream_alt)\n            if kind == \"none\":\n                payload = {}\n            elif kind in (\"query\", \"request\", \"sysml\"):\n                payload = {kind: text, \"upstream\": upstream}  # the write and record cards echo the cards before them\n            elif kind == \"saved\":\n                payload = {\"saved\": upstream}\n            else:  # run:<part>\n                match = RUN.search(upstream)\n                if not match:\n                    raise ValueError(\"No run id in the incoming message; connect this card after a pipeline step\")\n                payload = {\"run\": match.group(1), \"part\": kind.split(\":\", 1)[1]}\n            self._cached = _call(path, payload)\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,\nMiniLM + FAISS seeds, one hop), write to memory (gate, write, record), validate pasted SysML (save, official Pilot),\nand the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the shell service,\nwhich runs the same code as the results page; the chain order on the canvas is kept by the \"From the previous card\"\ninput. The engineer's text (query, \"<run id> A\", or SysML) comes from the sub-flow's Chat Input.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n# card name -> (endpoint, what the payload carries)\nSTEPS = {\n    \"Memory library (paper 2): MaritimeISR + approved designs as cards\": (\"/tool/memory/library\", \"none\"),\n    \"MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus\": (\"/tool/memory/seeds\", \"query\"),\n    \"One hop of neighbours (paper 2) → cards for the assistant\": (\"/tool/memory/hop\", \"query\"),\n    \"Gate: Pilot PASS and all four checks PASS? (read only)\": (\"/tool/gate\", \"request\"),\n    \"Write the design into memory (through the page's gate)\": (\"/tool/write\", \"request\"),\n    \"Record the approval on the run (page 2.3)\": (\"/tool/record-approval\", \"request\"),\n    \"Save the pasted SysML as a file\": (\"/tool/validate/save\", \"sysml\"),\n    \"Official SysML v2 Pilot on that file\": (\"/tool/validate/pilot\", \"saved\"),\n    \"Prompt part · rules (paper 3)\": (\"/tool/prompt-part\", \"run:rules\"),\n    \"Prompt part · attribute template (paper 3)\": (\"/tool/prompt-part\", \"run:contract\"),\n    \"Prompt part · retrieved examples or similar project (paper 2)\": (\"/tool/prompt-part\", \"run:examples\"),\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardTool(Component):\n    display_name = \"Tool step\"\n    description = \"One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the shell service.\"\n    icon = \"wrench\"\n    name = \"CardTool\"\n\n    inputs = [\n        MessageInput(name=\"text\", display_name=\"Engineer's text\", required=False,\n                     info=\"From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.\"),\n        MessageInput(name=\"upstream\", display_name=\"From the previous card\", required=False,\n                     info=\"Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.\"),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False),\n        DropdownInput(name=\"step\", display_name=\"Card\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            path, kind = STEPS[self.step]\n            text, upstream = _text(self.text), _text(self.upstream) or _text(self.upstream_alt)\n            if kind == \"none\":\n                payload = {}\n            elif kind in (\"query\", \"request\", \"sysml\"):\n                payload = {kind: text, \"upstream\": upstream}  # the write and record cards echo the cards before them\n            elif kind == \"saved\":\n                payload = {\"saved\": upstream}\n            else:  # run:<part>\n                match = RUN.search(upstream)\n                if not match:\n                    raise ValueError(\"No run id in the incoming message; connect this card after a pipeline step\")\n                payload = {\"run\": match.group(1), \"part\": kind.split(\":\", 1)[1]}\n            self._cached = _call(path, payload)\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -902,10 +902,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcTool",
-          "id": "RtrcTool-hop"
+          "type": "CardTool",
+          "id": "CardTool-hop"
         },
-        "id": "RtrcTool-hop",
+        "id": "CardTool-hop",
         "type": "genericNode",
         "position": {
           "x": 1450,
@@ -924,7 +924,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,\nMiniLM + FAISS seeds, one hop), write to memory (gate, write, record), validate pasted SysML (save, official Pilot),\nand the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the RTRC shell service,\nwhich runs the same code as the results page; the chain order on the canvas is kept by the \"From the previous card\"\ninput. The engineer's text (query, \"<run id> A\", or SysML) comes from the sub-flow's Chat Input.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n# card name -> (endpoint, what the payload carries)\nSTEPS = {\n    \"Memory library (paper 2): MaritimeISR + approved designs as cards\": (\"/tool/memory/library\", \"none\"),\n    \"MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus\": (\"/tool/memory/seeds\", \"query\"),\n    \"One hop of neighbours (paper 2) → cards for the assistant\": (\"/tool/memory/hop\", \"query\"),\n    \"Gate: Pilot PASS and all four checks PASS? (read only)\": (\"/tool/gate\", \"request\"),\n    \"Write the design into memory (through the page's gate)\": (\"/tool/write\", \"request\"),\n    \"Record the approval on the run (page 2.3)\": (\"/tool/record-approval\", \"request\"),\n    \"Save the pasted SysML as a file\": (\"/tool/validate/save\", \"sysml\"),\n    \"Official SysML v2 Pilot on that file\": (\"/tool/validate/pilot\", \"saved\"),\n    \"Prompt part · rules (paper 3)\": (\"/tool/prompt-part\", \"run:rules\"),\n    \"Prompt part · attribute template (paper 3)\": (\"/tool/prompt-part\", \"run:contract\"),\n    \"Prompt part · retrieved examples or similar project (paper 2)\": (\"/tool/prompt-part\", \"run:examples\"),\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcTool(Component):\n    display_name = \"RTRC Tool step\"\n    description = \"One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the RTRC shell service.\"\n    icon = \"wrench\"\n    name = \"RtrcTool\"\n\n    inputs = [\n        MessageInput(name=\"text\", display_name=\"Engineer's text\", required=False,\n                     info=\"From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.\"),\n        MessageInput(name=\"upstream\", display_name=\"From the previous card\", required=False,\n                     info=\"Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.\"),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False),\n        DropdownInput(name=\"step\", display_name=\"Card\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            path, kind = STEPS[self.step]\n            text, upstream = _text(self.text), _text(self.upstream) or _text(self.upstream_alt)\n            if kind == \"none\":\n                payload = {}\n            elif kind in (\"query\", \"request\", \"sysml\"):\n                payload = {kind: text, \"upstream\": upstream}  # the write and record cards echo the cards before them\n            elif kind == \"saved\":\n                payload = {\"saved\": upstream}\n            else:  # run:<part>\n                match = RUN.search(upstream)\n                if not match:\n                    raise ValueError(\"No run id in the incoming message; connect this card after a pipeline step\")\n                payload = {\"run\": match.group(1), \"part\": kind.split(\":\", 1)[1]}\n            self._cached = _call(path, payload)\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,\nMiniLM + FAISS seeds, one hop), write to memory (gate, write, record), validate pasted SysML (save, official Pilot),\nand the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the shell service,\nwhich runs the same code as the results page; the chain order on the canvas is kept by the \"From the previous card\"\ninput. The engineer's text (query, \"<run id> A\", or SysML) comes from the sub-flow's Chat Input.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n# card name -> (endpoint, what the payload carries)\nSTEPS = {\n    \"Memory library (paper 2): MaritimeISR + approved designs as cards\": (\"/tool/memory/library\", \"none\"),\n    \"MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus\": (\"/tool/memory/seeds\", \"query\"),\n    \"One hop of neighbours (paper 2) → cards for the assistant\": (\"/tool/memory/hop\", \"query\"),\n    \"Gate: Pilot PASS and all four checks PASS? (read only)\": (\"/tool/gate\", \"request\"),\n    \"Write the design into memory (through the page's gate)\": (\"/tool/write\", \"request\"),\n    \"Record the approval on the run (page 2.3)\": (\"/tool/record-approval\", \"request\"),\n    \"Save the pasted SysML as a file\": (\"/tool/validate/save\", \"sysml\"),\n    \"Official SysML v2 Pilot on that file\": (\"/tool/validate/pilot\", \"saved\"),\n    \"Prompt part · rules (paper 3)\": (\"/tool/prompt-part\", \"run:rules\"),\n    \"Prompt part · attribute template (paper 3)\": (\"/tool/prompt-part\", \"run:contract\"),\n    \"Prompt part · retrieved examples or similar project (paper 2)\": (\"/tool/prompt-part\", \"run:examples\"),\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardTool(Component):\n    display_name = \"Tool step\"\n    description = \"One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the shell service.\"\n    icon = \"wrench\"\n    name = \"CardTool\"\n\n    inputs = [\n        MessageInput(name=\"text\", display_name=\"Engineer's text\", required=False,\n                     info=\"From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.\"),\n        MessageInput(name=\"upstream\", display_name=\"From the previous card\", required=False,\n                     info=\"Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.\"),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False),\n        DropdownInput(name=\"step\", display_name=\"Card\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            path, kind = STEPS[self.step]\n            text, upstream = _text(self.text), _text(self.upstream) or _text(self.upstream_alt)\n            if kind == \"none\":\n                payload = {}\n            elif kind in (\"query\", \"request\", \"sysml\"):\n                payload = {kind: text, \"upstream\": upstream}  # the write and record cards echo the cards before them\n            elif kind == \"saved\":\n                payload = {\"saved\": upstream}\n            else:  # run:<part>\n                match = RUN.search(upstream)\n                if not match:\n                    raise ValueError(\"No run id in the incoming message; connect this card after a pipeline step\")\n                payload = {\"run\": match.group(1), \"part\": kind.split(\":\", 1)[1]}\n            self._cached = _call(path, payload)\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -1256,10 +1256,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcTool",
-          "id": "RtrcTool-seeds"
+          "type": "CardTool",
+          "id": "CardTool-seeds"
         },
-        "id": "RtrcTool-seeds",
+        "id": "CardTool-seeds",
         "type": "genericNode",
         "position": {
           "x": 980,
@@ -1278,7 +1278,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,\nMiniLM + FAISS seeds, one hop), write to memory (gate, write, record), validate pasted SysML (save, official Pilot),\nand the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the RTRC shell service,\nwhich runs the same code as the results page; the chain order on the canvas is kept by the \"From the previous card\"\ninput. The engineer's text (query, \"<run id> A\", or SysML) comes from the sub-flow's Chat Input.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n# card name -> (endpoint, what the payload carries)\nSTEPS = {\n    \"Memory library (paper 2): MaritimeISR + approved designs as cards\": (\"/tool/memory/library\", \"none\"),\n    \"MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus\": (\"/tool/memory/seeds\", \"query\"),\n    \"One hop of neighbours (paper 2) → cards for the assistant\": (\"/tool/memory/hop\", \"query\"),\n    \"Gate: Pilot PASS and all four checks PASS? (read only)\": (\"/tool/gate\", \"request\"),\n    \"Write the design into memory (through the page's gate)\": (\"/tool/write\", \"request\"),\n    \"Record the approval on the run (page 2.3)\": (\"/tool/record-approval\", \"request\"),\n    \"Save the pasted SysML as a file\": (\"/tool/validate/save\", \"sysml\"),\n    \"Official SysML v2 Pilot on that file\": (\"/tool/validate/pilot\", \"saved\"),\n    \"Prompt part · rules (paper 3)\": (\"/tool/prompt-part\", \"run:rules\"),\n    \"Prompt part · attribute template (paper 3)\": (\"/tool/prompt-part\", \"run:contract\"),\n    \"Prompt part · retrieved examples or similar project (paper 2)\": (\"/tool/prompt-part\", \"run:examples\"),\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcTool(Component):\n    display_name = \"RTRC Tool step\"\n    description = \"One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the RTRC shell service.\"\n    icon = \"wrench\"\n    name = \"RtrcTool\"\n\n    inputs = [\n        MessageInput(name=\"text\", display_name=\"Engineer's text\", required=False,\n                     info=\"From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.\"),\n        MessageInput(name=\"upstream\", display_name=\"From the previous card\", required=False,\n                     info=\"Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.\"),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False),\n        DropdownInput(name=\"step\", display_name=\"Card\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            path, kind = STEPS[self.step]\n            text, upstream = _text(self.text), _text(self.upstream) or _text(self.upstream_alt)\n            if kind == \"none\":\n                payload = {}\n            elif kind in (\"query\", \"request\", \"sysml\"):\n                payload = {kind: text, \"upstream\": upstream}  # the write and record cards echo the cards before them\n            elif kind == \"saved\":\n                payload = {\"saved\": upstream}\n            else:  # run:<part>\n                match = RUN.search(upstream)\n                if not match:\n                    raise ValueError(\"No run id in the incoming message; connect this card after a pipeline step\")\n                payload = {\"run\": match.group(1), \"part\": kind.split(\":\", 1)[1]}\n            self._cached = _call(path, payload)\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,\nMiniLM + FAISS seeds, one hop), write to memory (gate, write, record), validate pasted SysML (save, official Pilot),\nand the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the shell service,\nwhich runs the same code as the results page; the chain order on the canvas is kept by the \"From the previous card\"\ninput. The engineer's text (query, \"<run id> A\", or SysML) comes from the sub-flow's Chat Input.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\n# card name -> (endpoint, what the payload carries)\nSTEPS = {\n    \"Memory library (paper 2): MaritimeISR + approved designs as cards\": (\"/tool/memory/library\", \"none\"),\n    \"MiniLM + FAISS seeds (paper 2): cosine ≥ 0.30 + exact-name bonus\": (\"/tool/memory/seeds\", \"query\"),\n    \"One hop of neighbours (paper 2) → cards for the assistant\": (\"/tool/memory/hop\", \"query\"),\n    \"Gate: Pilot PASS and all four checks PASS? (read only)\": (\"/tool/gate\", \"request\"),\n    \"Write the design into memory (through the page's gate)\": (\"/tool/write\", \"request\"),\n    \"Record the approval on the run (page 2.3)\": (\"/tool/record-approval\", \"request\"),\n    \"Save the pasted SysML as a file\": (\"/tool/validate/save\", \"sysml\"),\n    \"Official SysML v2 Pilot on that file\": (\"/tool/validate/pilot\", \"saved\"),\n    \"Prompt part · rules (paper 3)\": (\"/tool/prompt-part\", \"run:rules\"),\n    \"Prompt part · attribute template (paper 3)\": (\"/tool/prompt-part\", \"run:contract\"),\n    \"Prompt part · retrieved examples or similar project (paper 2)\": (\"/tool/prompt-part\", \"run:examples\"),\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardTool(Component):\n    display_name = \"Tool step\"\n    description = \"One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the shell service.\"\n    icon = \"wrench\"\n    name = \"CardTool\"\n\n    inputs = [\n        MessageInput(name=\"text\", display_name=\"Engineer's text\", required=False,\n                     info=\"From the sub-flow's Chat Input: the search words, '<run id> A' or '<run id> B', or the pasted SysML.\"),\n        MessageInput(name=\"upstream\", display_name=\"From the previous card\", required=False,\n                     info=\"Keeps the cards in order; the Pilot card reads the saved file from here, the prompt-part cards read the run id.\"),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False),\n        DropdownInput(name=\"step\", display_name=\"Card\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            path, kind = STEPS[self.step]\n            text, upstream = _text(self.text), _text(self.upstream) or _text(self.upstream_alt)\n            if kind == \"none\":\n                payload = {}\n            elif kind in (\"query\", \"request\", \"sysml\"):\n                payload = {kind: text, \"upstream\": upstream}  # the write and record cards echo the cards before them\n            elif kind == \"saved\":\n                payload = {\"saved\": upstream}\n            else:  # run:<part>\n                match = RUN.search(upstream)\n                if not match:\n                    raise ValueError(\"No run id in the incoming message; connect this card after a pipeline step\")\n                payload = {\"run\": match.group(1), \"part\": kind.split(\":\", 1)[1]}\n            self._cached = _call(path, payload)\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -1610,10 +1610,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcTool",
-          "id": "RtrcTool-library"
+          "type": "CardTool",
+          "id": "CardTool-library"
         },
-        "id": "RtrcTool-library",
+        "id": "CardTool-library",
         "type": "genericNode",
         "position": {
           "x": 510,
@@ -1641,7 +1641,7 @@
           "id": "note-search",
           "type": "note",
           "node": {
-            "description": "# Memory search\n\nThe assistant's memory search as cards, in the order the code runs: the library, the vector seeds, the one-hop expansion. Every card calls the same function the results page and the pipeline's ① Search memory use, so the cards here are the cards there. A tool of the memory assistants (projects 3 and 4), chat and exam versions.\n\n- The library is the memory itself: MaritimeISR plus every approved design, re-read on every call, so a newly approved design is searchable at once.\n- The MiniLM + FAISS index is a derived cache keyed by the cards' content; it rebuilds itself when the memory changes (bench/vector_index.py, frozen).\n- The knowledge base rtrc_memory (Qwen embeddings) is a second, separate index for Langflow's own search; the write-to-memory flow refreshes it.",
+            "description": "# Memory search\n\nThe assistant's memory search as cards, in the order the code runs: the library, the vector seeds, the one-hop expansion. Every card calls the same function the results page and the pipeline's ① Search memory use, so the cards here are the cards there. A tool of the memory assistants (projects 3 and 4), chat and exam versions.\n\n- The library is the memory itself: MaritimeISR plus every approved design, re-read on every call, so a newly approved design is searchable at once.\n- The MiniLM + FAISS index is a derived cache keyed by the cards' content; it rebuilds itself when the memory changes (bench/vector_index.py, frozen).\n- The knowledge base project_memory (Qwen embeddings) is a second, separate index for Langflow's own search; the write-to-memory flow refreshes it.",
             "display_name": "",
             "documentation": "",
             "template": {
@@ -1654,7 +1654,7 @@
     "edges": [
       {
         "source": "ChatInput-query",
-        "target": "RtrcTool-hop",
+        "target": "CardTool-hop",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
@@ -1666,7 +1666,7 @@
           },
           "targetHandle": {
             "fieldName": "text",
-            "id": "RtrcTool-hop",
+            "id": "CardTool-hop",
             "inputTypes": [
               "Message"
             ],
@@ -1674,15 +1674,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-queryœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œRtrcTool-hopœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-query{œdataTypeœ:œChatInputœ,œidœ:œChatInput-queryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-hop{œfieldNameœ:œtextœ,œidœ:œRtrcTool-hopœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œCardTool-hopœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-query{œdataTypeœ:œChatInputœ,œidœ:œChatInput-queryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardTool-hop{œfieldNameœ:œtextœ,œidœ:œCardTool-hopœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "ChatInput-query",
-        "target": "RtrcTool-library",
+        "target": "CardTool-library",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
@@ -1694,7 +1694,7 @@
           },
           "targetHandle": {
             "fieldName": "text",
-            "id": "RtrcTool-library",
+            "id": "CardTool-library",
             "inputTypes": [
               "Message"
             ],
@@ -1702,15 +1702,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-queryœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œRtrcTool-libraryœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-query{œdataTypeœ:œChatInputœ,œidœ:œChatInput-queryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-library{œfieldNameœ:œtextœ,œidœ:œRtrcTool-libraryœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œCardTool-libraryœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-query{œdataTypeœ:œChatInputœ,œidœ:œChatInput-queryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardTool-library{œfieldNameœ:œtextœ,œidœ:œCardTool-libraryœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "ChatInput-query",
-        "target": "RtrcTool-seeds",
+        "target": "CardTool-seeds",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
@@ -1722,7 +1722,7 @@
           },
           "targetHandle": {
             "fieldName": "text",
-            "id": "RtrcTool-seeds",
+            "id": "CardTool-seeds",
             "inputTypes": [
               "Message"
             ],
@@ -1730,19 +1730,19 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-queryœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œRtrcTool-seedsœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-query{œdataTypeœ:œChatInputœ,œidœ:œChatInput-queryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-seeds{œfieldNameœ:œtextœ,œidœ:œRtrcTool-seedsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œtextœ, œidœ: œCardTool-seedsœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-query{œdataTypeœ:œChatInputœ,œidœ:œChatInput-queryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardTool-seeds{œfieldNameœ:œtextœ,œidœ:œCardTool-seedsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcTool-hop",
+        "source": "CardTool-hop",
         "target": "ChatOutput-cards",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcTool",
-            "id": "RtrcTool-hop",
+            "dataType": "CardTool",
+            "id": "CardTool-hop",
             "name": "message",
             "output_types": [
               "Message"
@@ -1761,20 +1761,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcToolœ, œidœ: œRtrcTool-hopœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardToolœ, œidœ: œCardTool-hopœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-cardsœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcTool-hop{œdataTypeœ:œRtrcToolœ,œidœ:œRtrcTool-hopœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-cards{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-cardsœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardTool-hop{œdataTypeœ:œCardToolœ,œidœ:œCardTool-hopœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-cards{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-cardsœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcTool-library",
-        "target": "RtrcTool-seeds",
+        "source": "CardTool-library",
+        "target": "CardTool-seeds",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcTool",
-            "id": "RtrcTool-library",
+            "dataType": "CardTool",
+            "id": "CardTool-library",
             "name": "message",
             "output_types": [
               "Message"
@@ -1782,27 +1782,27 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcTool-seeds",
+            "id": "CardTool-seeds",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcToolœ, œidœ: œRtrcTool-libraryœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcTool-seedsœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcTool-library{œdataTypeœ:œRtrcToolœ,œidœ:œRtrcTool-libraryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-seeds{œfieldNameœ:œupstreamœ,œidœ:œRtrcTool-seedsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œCardToolœ, œidœ: œCardTool-libraryœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardTool-seedsœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-CardTool-library{œdataTypeœ:œCardToolœ,œidœ:œCardTool-libraryœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardTool-seeds{œfieldNameœ:œupstreamœ,œidœ:œCardTool-seedsœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcTool-seeds",
-        "target": "RtrcTool-hop",
+        "source": "CardTool-seeds",
+        "target": "CardTool-hop",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcTool",
-            "id": "RtrcTool-seeds",
+            "dataType": "CardTool",
+            "id": "CardTool-seeds",
             "name": "message",
             "output_types": [
               "Message"
@@ -1810,16 +1810,16 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcTool-hop",
+            "id": "CardTool-hop",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcToolœ, œidœ: œRtrcTool-seedsœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcTool-hopœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcTool-seeds{œdataTypeœ:œRtrcToolœ,œidœ:œRtrcTool-seedsœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcTool-hop{œfieldNameœ:œupstreamœ,œidœ:œRtrcTool-hopœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œCardToolœ, œidœ: œCardTool-seedsœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardTool-hopœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-CardTool-seeds{œdataTypeœ:œCardToolœ,œidœ:œCardTool-seedsœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardTool-hop{œfieldNameœ:œupstreamœ,œidœ:œCardTool-hopœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false

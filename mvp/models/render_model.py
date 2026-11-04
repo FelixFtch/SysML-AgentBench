@@ -235,7 +235,7 @@ def write_model_package(
     for path in sorted(output.rglob("*")):
         if path.is_file() and path != manifest_path:
             artifacts.append({"path": path.relative_to(output).as_posix(), "sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "size": path.stat().st_size})
-    manifest = {"schema_version": 1, "synthetic": True, "notice": "Synthetic engineering example, not RTX source data or hardware test evidence.",
+    manifest = {"schema_version": 1, "synthetic": True, "notice": "Synthetic engineering example, a synthetic example, not hardware test evidence.",
                 "configuration": config, "model_entrypoint": "MarineGateway.sysml", "required_model_files": [p.relative_to(output).as_posix() for p in model_files],
                 "validation_status": "NOT_RUN", "artifacts": artifacts}
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

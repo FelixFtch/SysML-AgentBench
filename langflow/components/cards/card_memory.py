@@ -1,4 +1,4 @@
-"""RTRC Memory: F0, the library the agent searches (paper 2): MaritimeISR plus every approved design, as cards
+"""Memory: F0, the library the agent searches (paper 2): MaritimeISR plus every approved design, as cards
 built from the official Pilot parse. The DataFrame output can be ingested into a Langflow knowledge base for browsing."""
 import json
 import os
@@ -13,26 +13,26 @@ from lfx.schema.message import Message
 
 
 def _call(path: str, payload: dict) -> dict:
-    url = os.environ.get("RTRC_SHELL_URL", "http://127.0.0.1:8781") + path
+    url = os.environ.get("SHELL_URL", "http://127.0.0.1:8781") + path
     request = urllib.request.Request(url, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": os.environ.get("RTRC_SHELL_TOKEN", "")})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": os.environ.get("SHELL_TOKEN", "")})
     try:
         with urllib.request.urlopen(request, timeout=1800) as response:
             body = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         body = json.loads(exc.read() or b"{}")
     except urllib.error.URLError as exc:
-        raise ValueError(f"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
+        raise ValueError(f"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
     if not body.get("ok"):
-        raise ValueError(body.get("error") or "The RTRC shell service returned an error")
+        raise ValueError(body.get("error") or "The shell service returned an error")
     return body
 
 
-class RtrcMemory(Component):
-    display_name = "RTRC Memory (paper 2)"
+class CardMemory(Component):
+    display_name = "Memory (paper 2)"
     description = "F0: MaritimeISR and every approved design as element cards from the official parse, with their links."
     icon = "database"
-    name = "RtrcMemory"
+    name = "CardMemory"
 
     inputs = [
         MessageInput(name="after", display_name="After (optional)", required=False, advanced=True,

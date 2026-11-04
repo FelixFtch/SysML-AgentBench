@@ -236,7 +236,7 @@ def export_run(record_id: str) -> bytes:
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "RTXLocalWorkbench/0.1"
+    server_version = "LocalWorkbench/0.1"
 
     def send_data(self, status: int, data: bytes, content_type: str, **headers: str) -> None:
         self.send_response(status)

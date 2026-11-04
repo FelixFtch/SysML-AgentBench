@@ -31,7 +31,7 @@ function render(record) {
   if (selectedId) history.replaceState(null, "", "?run=" + encodeURIComponent(selectedId));
   const result = record.result || {};
   $("project-context").textContent = result.reference_name ? "Public reference model · Sources, parsing and review evidence" : "Observation data subsystem · Models, checks and evidence";
-  $("case-notice").textContent = result.reference_name ? "Public source import. Real official SysML parsing. Source provenance is retained; static validation does not establish engineering acceptance or hardware performance. Marine gateway budgets are not applied to this reference." : "Synthetic engineering case. Real SysML parsing. Case parameters exercise the workflow; they are not controlled RTX product data. Parsing and engineering checks are reported separately. Execution complete does not mean verification passed.";
+  $("case-notice").textContent = result.reference_name ? "Public source import. Real official SysML parsing. Source provenance is retained; static validation does not establish engineering acceptance or hardware performance. Marine gateway budgets are not applied to this reference." : "Synthetic engineering case. Real SysML parsing. Case parameters exercise the workflow; they are not controlled product data. Parsing and engineering checks are reported separately. Execution complete does not mean verification passed.";
   const sysml = result.sysml || {};
   $("run-title").textContent = record.request?.case_name || record.request?.reference_name || "Engineering run record";
   const approval = typeof record.request?.preview_approved === "boolean" ? ` · Recorded P2 decision: ${record.request.preview_approved ? "approved" : "not approved"}` : "";
@@ -330,7 +330,7 @@ const architectureStages = {
     title: "01 · Read & snapshot", owner: "Owner: Python engine / read-only source access",
     input: "A selected configuration in legacy.sqlite, requirement JSON, two supplier models and interface documents, plus explicit user overrides.",
     action: "Read actual database rows and controlled files. Record source identities and copy evidence into the new run directory.",
-    output: "Source snapshots, row provenance and source-manifest.json with hashes. The original database is read-only; this is not an RTX production connector.",
+    output: "Source snapshots, row provenance and source-manifest.json with hashes. The original database is read-only; this is not a production connector.",
     code: "Code: engine.py · snapshot_sources / models/render_model.py"
   },
   model: {
@@ -393,7 +393,7 @@ const mapNodes = [
   {id:"provider",x:1062,y:76,w:246,h:107,kind:"agent",kicker:"MODEL PROVIDER · PENDING",title:"Configured language model",lines:["Prompt + selected tool outputs","Returns text or structured tool calls"],
     copy:"The service sends the conversation and selected tool results to the configured OpenAI-compatible endpoint. The model returns text or tool-call arguments. A local or remote provider must be configured before this path runs.",format:"Transport: model endpoint / request and response JSON; remote endpoints use HTTPS",example:"messages + tool schemas\n  → model inference\n  → text or tool_calls\nNo configured model in this demo"},
   {id:"sources",x:38,y:359,w:222,h:148,kicker:"LEGACY EVIDENCE · READ ONLY",title:"SQLite + source files",lines:["Requirements + supplier models","Interface docs + reuse records","Source IDs / revisions / hashes"],stage:"sources",
-    copy:"Actual rows from the synthetic SQLite fixture and controlled files supply the candidate. Source identities and original files are retained. This is not an automatic extraction of an RTX enterprise database.",format:"Files: fixtures/legacy.sqlite + JSON + supplier .sysml",example:"SQL row + requirement decision\n  → read + snapshot\n  → structured configuration\n     with source IDs and hashes"},
+    copy:"Actual rows from the synthetic SQLite fixture and controlled files supply the candidate. Source identities and original files are retained. This is not an automatic extraction of an enterprise database.",format:"Files: fixtures/legacy.sqlite + JSON + supplier .sysml",example:"SQL row + requirement decision\n  → read + snapshot\n  → structured configuration\n     with source IDs and hashes"},
   {id:"model",x:366,y:359,w:270,h:148,kicker:"PYTHON · READ + SNAPSHOT + RENDER",title:"Structured data → SysML v2",lines:["Parts, requirements and connections","Templates + two supplier packages","Paper 01 / sources · 03 / templates"],stage:"model",
     copy:"The renderer combines the selected configuration and explicit overrides with a SysML template, while preserving supplier packages. Three active budget requirement families are formalized; the entire source requirement set is not automatically formalized.",format:"Code: models/render_model.py / configuration JSON → multi-file SysML package",example:"configuration + user decision\n  → deterministic template\n  → MarineGateway.sysml\n     + supplier models + source mapping"},
   {id:"parse",x:737,y:359,w:245,h:148,kicker:"JAVA 21 · OFFICIAL SYSML PILOT",title:"Text → semantic model",lines:["Parse + link + static validation","IDs, types, owners and references","Parse failure blocks engineering checks"],stage:"parse",

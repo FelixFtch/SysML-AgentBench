@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_79d2dd32eb2143319f0b2b5b",
       "tool_input": {
-        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T071756-P-CODE-2-ALN-01/ 2>/dev/null; ls /data/robotics/RTRC/mvp/agent-runs/20261006T071756-P-CODE-2-ALN-01/workspace 2>/dev/null",
+        "command": "ls -la /data/robotics//mvp/agent-runs/20261006T071756-P-CODE-2-ALN-01/ 2>/dev/null; ls /data/robotics//mvp/agent-runs/20261006T071756-P-CODE-2-ALN-01/workspace 2>/dev/null",
         "description": "Inspect run folder layout"
       }
     },
@@ -53,7 +53,7 @@
       "tool_name": "Write",
       "tool_use_id": "call_e297446fc0c949648e8c4d96",
       "tool_input": {
-        "file_path": "/data/robotics/RTRC/mvp/agent-runs/20261006T071756-P-CODE-2-ALN-01/workspace/AlignCamera.sysml",
+        "file_path": "/data/robotics//mvp/agent-runs/20261006T071756-P-CODE-2-ALN-01/workspace/AlignCamera.sysml",
         "content": "package AlignCamera {\n    private import UsvPayloadSpec::*;\n    private import OptronicsKit::*;\n\n    alias ImageryPort for OptronicsKit::VideoOut;\n    alias Camera for OptronicsKit::EoCameraUnit;\n    alias drawW for OptronicsKit::EoCameraUnit::powerDrawW;\n    alias imagery for OptronicsKit::EoCameraUnit::videoOut;\n\n    allocation usvToKit allocate UsvPayloadSpec::usv to OptronicsKit::kit;\n    allocation eoCameraToCameraUnit allocate UsvPayloadSpec::usv::eoCamera to OptronicsKit::kit::cameraUnit;\n}\n"
       }
     }

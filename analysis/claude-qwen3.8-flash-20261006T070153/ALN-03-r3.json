@@ -45,7 +45,7 @@
       "tool_name": "Write",
       "tool_use_id": "call_ad7000e9b7dc48619fd663fb",
       "tool_input": {
-        "file_path": "/data/robotics/RTRC/mvp/agent-runs/20261006T081713-P-CODE-2-ALN-03/workspace/AlignRadar.sysml",
+        "file_path": "/data/robotics//mvp/agent-runs/20261006T081713-P-CODE-2-ALN-03/workspace/AlignRadar.sysml",
         "content": "package AlignRadar {\n    import UavSensorSpec::*;\n    import RadarVendor::*;\n\n    alias SearchRadar for RadarVendor::RadarModule_def;\n    alias Camera for RadarVendor::GimbalCamera_def;\n\n    allocation searchRadarAllocation allocate UavSensorSpec::uav::searchRadar to RadarVendor::payload::radar;\n    allocation eoCameraAllocation allocate UavSensorSpec::uav::eoCamera to RadarVendor::payload::gimbal;\n}\n"
       }
     }

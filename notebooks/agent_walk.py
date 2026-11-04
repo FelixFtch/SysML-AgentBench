@@ -2,8 +2,8 @@
 
 The card unboxed here is langflow/flows/4-langflow-agent-with-memory/langflow-agent-memory-chat-local.json: its system
 prompt, its local model through Ollama, and its tools. Each tool runs where the Langflow card sends it. The five MCP
-cards call the RTRC MCP server (tools/assistant_mcp.py on 127.0.0.1:8782). The four Run Flow cards run the cards of
-their flow, in canvas order, against the RTRC shell service (bench/shell_service.py on 127.0.0.1:8781). The
+cards call the MCP server (tools/assistant_mcp.py on 127.0.0.1:8782). The four Run Flow cards run the cards of
+their flow, in canvas order, against the shell service (bench/shell_service.py on 127.0.0.1:8781). The
 knowledge-base card is left out: it searches Langflow's own vector store, which has no search outside Langflow.
 Memory-search_tool reads the same cards.
 
@@ -30,9 +30,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FLOW_FILE = ROOT / "langflow" / "flows" / "4-langflow-agent-with-memory" / "langflow-agent-memory-chat-local.json"
 SHARED_FLOWS = ROOT / "langflow" / "flows" / "5-shared-tools"
-SHELL = os.environ.get("RTRC_SHELL_URL", "http://127.0.0.1:8781")
-MCP_URL = os.environ.get("RTRC_ASSISTANT_MCP_URL", "http://127.0.0.1:8782/mcp")
-OLLAMA = os.environ.get("RTRC_OLLAMA_URL", "http://127.0.0.1:11434")
+SHELL = os.environ.get("SHELL_URL", "http://127.0.0.1:8781")
+MCP_URL = os.environ.get("ASSISTANT_MCP_URL", "http://127.0.0.1:8782/mcp")
+OLLAMA = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434")
 SECRETS = ROOT / ".langflow" / "secrets.env"
 AGENT_RUNS = ROOT / "mvp" / "agent-runs"
 INBOX = ROOT / "mvp" / "exam-inbox"
@@ -118,26 +118,26 @@ def code(relpath: str, *names: str) -> None:
 
 def _token() -> str:
     for line in SECRETS.read_text(encoding="utf-8").splitlines():
-        if line.startswith("RTRC_SHELL_TOKEN="):
+        if line.startswith("SHELL_TOKEN="):
             return line.split("=", 1)[1].strip().strip("'\"")
-    raise RuntimeError("RTRC_SHELL_TOKEN is missing from .langflow/secrets.env (run python3 scripts/up.py --import once)")
+    raise RuntimeError("SHELL_TOKEN is missing from .langflow/secrets.env (run python3 scripts/up.py --import once)")
 
 
 def shell(path: str, payload: dict, *, timeout: int = 7200, announce: bool = True) -> dict:
-    """One POST to the RTRC shell service, the call every RTRC card makes."""
+    """One POST to the shell service, the call every card makes."""
     if announce:
         brief = {key: (value if len(str(value)) <= 140 else str(value)[:137] + "…") for key, value in payload.items()}
         print(f"→ POST {SHELL}{path} {json.dumps(brief, ensure_ascii=False)}")
     started = time.monotonic()
     request = urllib.request.Request(SHELL + path, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": _token()})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": _token()})
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             body = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         body = json.loads(exc.read() or b"{}")
     except urllib.error.URLError as exc:
-        raise ToolError(f"The RTRC shell service is not running at {SHELL} ({exc.reason}). Start it with python3 scripts/up.py --bg") from exc
+        raise ToolError(f"The shell service is not running at {SHELL} ({exc.reason}). Start it with python3 scripts/up.py --bg") from exc
     seconds = time.monotonic() - started
     if not body.get("ok"):
         if announce:
@@ -150,7 +150,7 @@ def shell(path: str, payload: dict, *, timeout: int = 7200, announce: bool = Tru
 
 
 class MCP:
-    """A minimal client of the RTRC MCP server (streamable HTTP), the server Langflow's MCP cards call."""
+    """A minimal client of the MCP server (streamable HTTP), the server Langflow's MCP cards call."""
 
     def __init__(self, url: str = MCP_URL):
         self.url, self.session, self.count = url, None, 0
@@ -166,7 +166,7 @@ class MCP:
                 self.session = response.headers.get("mcp-session-id") or self.session
                 kind = response.headers.get("content-type", "")
         except urllib.error.URLError as exc:
-            raise ToolError(f"The RTRC MCP server is not running at {self.url} ({getattr(exc, 'reason', exc)}). Start it with python3 scripts/up.py --bg") from exc
+            raise ToolError(f"The MCP server is not running at {self.url} ({getattr(exc, 'reason', exc)}). Start it with python3 scripts/up.py --bg") from exc
         if "event-stream" in kind:
             data = [line[5:].strip() for line in raw.splitlines() if line.startswith("data:")]
             raw = data[-1] if data else ""
@@ -181,7 +181,7 @@ class MCP:
 
     def open(self) -> None:
         self._request("initialize", {"protocolVersion": "2025-06-18", "capabilities": {},
-                                     "clientInfo": {"name": "rtrc-notebook", "version": "1"}})
+                                     "clientInfo": {"name": "-notebook", "version": "1"}})
         self._post({"jsonrpc": "2.0", "method": "notifications/initialized"})
 
     def tools(self) -> list[dict]:
@@ -228,15 +228,15 @@ def check_services(model: str | None = None) -> bool:
 
     try:
         health = _get(SHELL + "/health")
-        line("RTRC shell service", bool(health.get("ok")), f"{SHELL} · results page open: {health.get('page_running')}")
+        line("shell service", bool(health.get("ok")), f"{SHELL} · results page open: {health.get('page_running')}")
     except (urllib.error.URLError, OSError, ValueError) as exc:
-        line("RTRC shell service", False, f"{SHELL} not answering ({exc}); python3 scripts/up.py --bg")
+        line("shell service", False, f"{SHELL} not answering ({exc}); python3 scripts/up.py --bg")
     try:
         client = MCP()
         client.open()
-        line("RTRC MCP server", True, f"{MCP_URL} · {len(client.tools())} tools")
+        line("MCP server", True, f"{MCP_URL} · {len(client.tools())} tools")
     except (ToolError, OSError, ValueError) as exc:
-        line("RTRC MCP server", False, f"{exc}")
+        line("MCP server", False, f"{exc}")
     try:
         tags = [item.get("name") for item in _get(OLLAMA + "/api/tags").get("models", [])]
         loaded = [item.get("name") for item in _get(OLLAMA + "/api/ps").get("models", [])]
@@ -265,7 +265,7 @@ def load_card() -> dict:
     """The Agent card and its tool cards, read from the flow file Langflow imported."""
     flow = json.loads(FLOW_FILE.read_text(encoding="utf-8"))
     nodes = {node["id"]: node["data"]["node"] for node in flow["data"]["nodes"] if node.get("type") == "genericNode"}
-    agent = nodes["Agent-rtrc"]["template"]
+    agent = nodes["Agent-"]["template"]
     model = agent["model"]["value"][0]
     shared = {}
     for path in sorted(SHARED_FLOWS.glob("*.json")):
@@ -289,16 +289,16 @@ def load_card() -> dict:
                           "description": row.get("description") or "", "approval": bool(row.get("approval_actions"))})
         elif node_id.startswith("Knowledge-"):
             left_out.append(node["display_name"])
-    return {"flow": flow["name"], "agent_title": nodes["Agent-rtrc"]["display_name"], "model": model["name"],
+    return {"flow": flow["name"], "agent_title": nodes["Agent-"]["display_name"], "model": model["name"],
             "provider": model["provider"], "system_prompt": agent["system_prompt"]["value"],
             "n_messages": agent["n_messages"]["value"], "max_iterations": agent["max_iterations"]["value"],
             "handle_parsing_errors": agent.get("handle_parsing_errors", {}).get("value"), "cards": cards, "left_out": left_out}
 
 
 def pipeline_preset() -> dict:
-    """What the Design pipeline flow's RTRC Start card is set to (agent, model, refuse an empty brief)."""
+    """What the Design pipeline flow's Start card is set to (agent, model, refuse an empty brief)."""
     data = json.loads((SHARED_FLOWS / "tool-design-pipeline.json").read_text(encoding="utf-8"))
-    start = next(node for node in data["data"]["nodes"] if node["id"] == "RtrcStart-start")["data"]["node"]["template"]
+    start = next(node for node in data["data"]["nodes"] if node["id"] == "CardStart-start")["data"]["node"]["template"]
     return {"agent": START_AGENTS.get(start["agent"]["value"], "direct"), "model": start["model"]["value"],
             "require_brief": bool(start.get("require_brief", {}).get("value"))}
 
@@ -665,7 +665,7 @@ class Pipeline:
 
     def show_plan(self) -> None:
         print(f"\nThis tool is a flow of its own: {self.card['flow_file']}. Its cards run in this order; the next cells run them one by one.")
-        for line in ("RTRC Start (model " + self.agent.model + ")",
+        for line in ("Start (model " + self.agent.model + ")",
                      "① Search memory · Paper 2", "② Requirements", "Router: similar project found?",
                      "③ New design, or ③ Adapt the similar project · the writer of A and B. On the canvas: OpenCode in the sandbox. "
                      "In this notebook: the Langflow Agent, Pilot only card, one Pilot round per cell (pipe.writer)",
@@ -724,14 +724,14 @@ class Pipeline:
         return body
 
     def start(self) -> dict:
-        rule("Design pipeline · RTRC Start")
+        rule("Design pipeline · Start")
         if self.preset["require_brief"] and not self.brief:
             raise ToolError("No brief reached the pipeline; the card refuses an empty brief and nothing runs.")
         body = shell("/run/start", {"brief": self.brief, "agent": self.preset["agent"], "model": ollama_name(self.agent.model), "replay": ""})
         self.run = body["run"]
         print()
         show_text(body["summary"])
-        code("langflow/components/rtrc/rtrc_start.py", "RtrcStart")
+        code("langflow/components/cards/card_start.py", "CardStart")
         code("bench/shell_service.py", "run_start")
         self.out["start"] = body
         return body
@@ -1057,11 +1057,11 @@ def load_pilot_card() -> dict:
     its one Run Flow card points at, read from the flow files Langflow imported."""
     flow = json.loads(PILOT_CARD_FILE.read_text(encoding="utf-8"))
     nodes = {node["id"]: node["data"]["node"] for node in flow["data"]["nodes"] if node.get("type") == "genericNode"}
-    agent = nodes["Agent-rtrc"]["template"]
+    agent = nodes["Agent-"]["template"]
     validate = json.loads(VALIDATE_FLOW_FILE.read_text(encoding="utf-8"))
     chat_input = next(item["id"] for item in validate["data"]["nodes"] if item["id"].startswith("ChatInput-"))
     flow_name = nodes["RunFlow-validate"]["template"]["flow_name_selected"]["value"]
-    return {"flow": flow["name"], "agent_title": nodes["Agent-rtrc"]["display_name"], "system_prompt": agent["system_prompt"]["value"],
+    return {"flow": flow["name"], "agent_title": nodes["Agent-"]["display_name"], "system_prompt": agent["system_prompt"]["value"],
             "canvas_model": agent["model"]["value"][0]["name"], "max_iterations": agent["max_iterations"]["value"],
             "tool": {"name": tool_name(flow_name), "flow": flow_name, "flow_file": str(VALIDATE_FLOW_FILE.relative_to(ROOT)),
                      "key": f"{chat_input}~input_value",

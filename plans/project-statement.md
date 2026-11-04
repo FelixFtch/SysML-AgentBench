@@ -1,8 +1,8 @@
 # Agentic AI for Systems Engineering Discovery and Design
 
-**Sponsor:** RTX Technology Research Center (RTRC)
+**Sponsor:** this project
 **Faculty Advisor:** Prof. George Bollas
-**Industry Advisors:** Francesca Stramandinoli, Kunal Srivastava, Andrew Radlbeck (RTRC)
+**Industry Advisors:** Francesca Stramandinoli, Kunal Srivastava, Andrew Radlbeck ()
 **Student Team:** Thomas Johanns, Tianchonghui Fang, Tedi Naqo
 **University of Connecticut**
 **Version:** 1.1, 2026-10-02 (draft for sponsor review; aligned with execution plan v2.0)
@@ -13,7 +13,7 @@ Early-stage systems engineering—architecture discovery, requirements developme
 
 ## 2. Problem Statement
 
-Benchmarks of LLM-based SysML v2 generation have begun to appear, but they evaluate single, self-contained textbook models, stop at syntactic or tool-conformance validity, and do not assess engineering-semantic correctness, controlled modification of existing models, ambiguity handling, round-trip fidelity between requirements and models, or multi-platform mission contexts. The three sponsor-specified references demonstrate feasibility on small cases but report no reproducible performance evidence. No evidence-based evaluation exists for agent workflows under the conditions that matter for early-stage systems engineering, and without such evidence RTRC cannot judge whether, where, or how to invest in these workflows. This project closes that gap.
+Benchmarks of LLM-based SysML v2 generation have begun to appear, but they evaluate single, self-contained textbook models, stop at syntactic or tool-conformance validity, and do not assess engineering-semantic correctness, controlled modification of existing models, ambiguity handling, round-trip fidelity between requirements and models, or multi-platform mission contexts. The three sponsor-specified references demonstrate feasibility on small cases but report no reproducible performance evidence. No evidence-based evaluation exists for agent workflows under the conditions that matter for early-stage systems engineering, and without such evidence cannot judge whether, where, or how to invest in these workflows. This project closes that gap.
 
 ## 3. Objective
 
@@ -26,15 +26,15 @@ Specific, measurable aims:
 - **A3.** Produce a failure taxonomy and quantitative results covering validity, requirement-property recall, structural correctness, traceability, round-trip consistency, and cost and latency, with statistical reporting that respects task-family structure.
 - **A4.** Evaluate the full chain envisioned by the advisors—requirements → generated model → model validation → regenerated requirements—by measuring agreement between an LLM-based validator and deterministic toolchain checks and human adjudication. The LLM validator is an object of evaluation, not a source of ground truth.
 - **A5.** Demonstrate the evaluated workflow end to end on a maritime ISR representative scenario involving multiple platforms, varied sensing modalities, and coordinated information sharing.
-- **A6.** Synthesize the findings into prioritized recommended next steps for RTRC.
+- **A6.** Synthesize the findings into prioritized recommended next steps for .
 
 ## 4. Scope
 
 **In scope:** literature and tool survey; benchmark and gold-assertion design; agent pipeline implementation on the official SysML v2 pilot toolchain; controlled experiments; public-dataset validation using PURE and SysEngBench; a maritime ISR demonstration model; the final evaluation report and process knowledge base.
 
-**Out of scope:** hardware development; deployment into RTX production systems; classified or export-controlled (EAR/ITAR) data; enterprise security hardening; full language-conformance certification of any tool.
+**Out of scope:** hardware development; deployment into  production systems; classified or export-controlled (EAR/ITAR) data; enterprise security hardening; full language-conformance certification of any tool.
 
-**Scenario flexibility.** The representative scenario defaults to the maritime ISR context specified in the sponsor brief. Its concrete system boundary and use case will be confirmed with RTRC in the first sponsor meeting; the benchmark task families are scenario-agnostic so that a redirected use case can be accommodated without changing the method.
+**Scenario flexibility.** The representative scenario defaults to the maritime ISR context specified in the sponsor brief. Its concrete system boundary and use case will be confirmed with in the first sponsor meeting; the benchmark task families are scenario-agnostic so that a redirected use case can be accommodated without changing the method.
 
 ## 5. Technical Approach
 
@@ -54,7 +54,7 @@ The work is organized into six phases over twelve weeks.
 
 **Method foundations.** The three sponsor-specified references frame the method space: LLM-assisted semantic alignment and integration in collaborative MBSE using SysML v2 (Li, Husung, Wang, ISSE 2025) informs the alignment/modification tasks and the human-review principle; integrating SysML v2 into a GRAG LLM pipeline (Bader et al., ISSE 2025) informs the retrieval-augmented configuration; and leveraging generative AI to create, modify, and query MBSE models (Longshore, Bell, Madachy, NPS 2024) informs the example-augmented, feedback-driven configurations and the create/modify/query task typology. Public validation uses PURE (nlreqdataset.isti.cnr.it) and SysEngBench (rabell/SysEngBench) as specified, supplemented by public SysML v2 corpora with compatible licenses (e.g., official SysML-v2-Release examples), each recorded with source hash and license. Contamination controls are documented in the report.
 
-**Tooling.** Agent workflows are implemented as bounded, checkpointed tool-calling loops with human approval gates and hard token budgets; every step's prompts, tool calls, and diagnostics are archived and inspectable by advisors through local viewers, so no data leaves the team's machines beyond the model API call itself. Benchmark runs use an evaluation harness (Inspect AI) whose log viewer shows every sample, step, and score. Model validity is adjudicated by the official OMG SysML v2 pilot implementation (pinned version, EPL-2.0). An off-the-shelf open-source coding agent (OpenCode, version-pinned) is evaluated as a baseline through the same tool interface; where licensing permits, the vendor AI assistant built into CATIA Magic 2026x is evaluated as an additional black-box configuration. Development and primary experiments use an OpenAI-compatible Qwen cloud API already provisioned by the team under per-run and daily token caps; one frontier model (OpenAI/Anthropic API, or RTRC-provided Copilot/Bedrock, to be confirmed) is reserved for frozen experiments under a pre-approved budget. The free CATIA Magic/Cameo SysML v2 Community Edition is used for graphical review and SysML v1/v2 orientation; a second conformance checker (Syside CLI, trial or academic license) supports cross-checker agreement analysis. A visual low-code front end (e.g., Langflow) may be added for the final sponsor demonstration, wrapping the same tools, if desired by the advisors.
+**Tooling.** Agent workflows are implemented as bounded, checkpointed tool-calling loops with human approval gates and hard token budgets; every step's prompts, tool calls, and diagnostics are archived and inspectable by advisors through local viewers, so no data leaves the team's machines beyond the model API call itself. Benchmark runs use an evaluation harness (Inspect AI) whose log viewer shows every sample, step, and score. Model validity is adjudicated by the official OMG SysML v2 pilot implementation (pinned version, EPL-2.0). An off-the-shelf open-source coding agent (OpenCode, version-pinned) is evaluated as a baseline through the same tool interface; where licensing permits, the vendor AI assistant built into CATIA Magic 2026x is evaluated as an additional black-box configuration. Development and primary experiments use an OpenAI-compatible Qwen cloud API already provisioned by the team under per-run and daily token caps; one frontier model (OpenAI/Anthropic API, or -provided Copilot/Bedrock, to be confirmed) is reserved for frozen experiments under a pre-approved budget. The free CATIA Magic/Cameo SysML v2 Community Edition is used for graphical review and SysML v1/v2 orientation; a second conformance checker (Syside CLI, trial or academic license) supports cross-checker agreement analysis. A visual low-code front end (e.g., Langflow) may be added for the final sponsor demonstration, wrapping the same tools, if desired by the advisors.
 
 ## 6. Evaluation Metrics
 
@@ -96,11 +96,11 @@ The method references are the three papers in Section 5, as specified by the spo
 
 ## 10. Team Organization
 
-Thomas Johanns — benchmark and evaluation lead. Tianchonghui Fang — SysML toolchain and agent pipelines lead. Tedi Naqo — scenario, data, and documentation lead. The team meets biweekly with the faculty advisor, alternating with RTRC sponsor meetings; formal checkpoints at the end of Phases 2, 4, and 6. Status is tracked in a shared repository with an auto-generated status page regenerated after each experiment.
+Thomas Johanns — benchmark and evaluation lead. Tianchonghui Fang — SysML toolchain and agent pipelines lead. Tedi Naqo — scenario, data, and documentation lead. The team meets biweekly with the faculty advisor, alternating with sponsor meetings; formal checkpoints at the end of Phases 2, 4, and 6. Status is tracked in a shared repository with an auto-generated status page regenerated after each experiment.
 
 ## 11. Acceptance Criteria
 
 The project is complete when the sponsor receives Deliverable 4 containing quantitative results for at least two agent configurations and one off-the-shelf agent over at least 24 frozen tasks, a failure taxonomy grounded in archived evidence, validator-agreement and round-trip results, the maritime ISR demonstration walkthrough, and prioritized next-step recommendations—all reproducible from the archived evidence of Deliverable 3.
 
-Sponsor (RTRC): ______________________  Faculty Advisor: ______________________
+Sponsor (): ______________________  Faculty Advisor: ______________________
 Team: ______________________  Date: ______________________

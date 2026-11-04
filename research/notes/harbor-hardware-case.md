@@ -1,6 +1,6 @@
 # Concrete harbor inspection case
 
-Verified 2026-09-22. This is a proposed civilian demonstration, not an identified RTX product or approved hardware design. The page's existing maritime SysML model remains a synthetic functional model; the physical equipment references below have not been bound to a validated BOM.
+Verified 2026-09-22. This is a proposed civilian demonstration, not an identified  product or approved hardware design. The page's existing maritime SysML model remains a synthetic functional model; the physical equipment references below have not been bound to a validated BOM.
 
 ## Mission and physical mapping
 

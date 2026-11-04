@@ -180,7 +180,7 @@ def model_sysml(platform: str, sensor: int, link: int, mission: int,
     w = list(windows) + [(0, 0)] * (2 - len(windows))
     outage2_note = "0.0 means there is no second outage window"
     return f"""package MaritimeBacklog {{
-    /* Synthetic maritime ISR SIM task (family sim_backlog). Numbers are not RTX specifications. */
+    /* Synthetic maritime ISR SIM task (family sim_backlog). Numbers are synthetic. */
     private import SI::*;
     private import ISQ::*;
     private import ISQInformation::*;
@@ -248,7 +248,7 @@ def requirements_md(task_id: str, platform: str, sensor: int, link: int, mission
     win_lines = "\n".join(
         f"- Outage window {i + 1}: start {s} min, duration {d} min ({reasons[i]})"
         for i, (s, d) in enumerate(windows))
-    return f"""# {task_id} — SIM link-outage backlog (synthetic; not an RTX specification)
+    return f"""# {task_id} — SIM link-outage backlog (synthetic; synthetic)
 
 This is a closed-form data-backlog bookkeeping question over one relay path of the
 synthetic maritime ISR four-node picture (USV and fixed-wing UAV → command ship →

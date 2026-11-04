@@ -1,4 +1,4 @@
-# AMB-04 — synthetic, not an RTX specification
+# AMB-04 — synthetic
 
 One sentence says the uplink is 8. Another sentence says the uplink is 8 MHz. The unit is not settled.
 

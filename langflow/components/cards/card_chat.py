@@ -1,4 +1,4 @@
-"""RTRC Chat: the chat version of an exam candidate (decision 036). The person's message goes to the candidate as
+"""Chat: the chat version of an exam candidate (decision 036). The person's message goes to the candidate as
 written, in the conversation of this Langflow session, and the reply comes back. Nothing is scored.
 
 Candidates: the direct model with one approach (P0 one answer; P1 the official Pilot's complete error list back for
@@ -27,27 +27,27 @@ MODELS = ["qwen3.8-flash", "qwen3.8-max", "qwen3.8-27b (Ollama)"]
 
 
 def _call(path: str, payload: dict) -> dict:
-    url = os.environ.get("RTRC_SHELL_URL", "http://127.0.0.1:8781") + path
+    url = os.environ.get("SHELL_URL", "http://127.0.0.1:8781") + path
     request = urllib.request.Request(url, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": os.environ.get("RTRC_SHELL_TOKEN", "")})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": os.environ.get("SHELL_TOKEN", "")})
     try:
         with urllib.request.urlopen(request, timeout=3600) as response:
             body = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         body = json.loads(exc.read() or b"{}")
     except urllib.error.URLError as exc:
-        raise ValueError(f"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
+        raise ValueError(f"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
     if not body.get("ok"):
-        raise ValueError(body.get("error") or "The RTRC shell service returned an error")
+        raise ValueError(body.get("error") or "The shell service returned an error")
     return body
 
 
-class RtrcChat(Component):
-    display_name = "RTRC Chat"
+class CardChat(Component):
+    display_name = "Chat"
     description = ("A person's message to an exam candidate, as written, in a conversation that continues: the direct model with one "
                    "approach, or a coding agent in its sandbox. The official Pilot parses a reply only when it holds a model. Nothing is scored.")
     icon = "message-square-text"
-    name = "RtrcChat"
+    name = "CardChat"
 
     inputs = [
         MessageInput(name="message", display_name="Message", info="Whatever the person writes. A question gets an answer; a request for a model gets a model."),

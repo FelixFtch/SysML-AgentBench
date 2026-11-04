@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "synthetic": true,
-  "notice": "Synthetic engineering example, not RTX source data or hardware test evidence.",
+  "notice": "Synthetic engineering example, a synthetic example, not hardware test evidence.",
   "configuration": {
     "source_rowid": 3,
     "case_name": "candidate_a",
@@ -23,7 +23,7 @@
     "power_condition": "synthetic steady observation condition; total gateway node input including payloads and losses; excludes shore equipment",
     "synthetic": true,
     "database_sha256": "88c7bd9a47fc37f8eea73f500c06db16f402dce2a3e533749f3aa1175eee0d41",
-    "source_database": "/home/felix/Documents/ChatGPT/RTX agent/mvp/fixtures/legacy.sqlite",
+    "source_database": "/home/felix/Documents/ChatGPT/project/mvp/fixtures/legacy.sqlite",
     "runtime_overrides": {},
     "upload_rate_mbps": 2.0,
     "upload_policy": "P2_APPROVED",

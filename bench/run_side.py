@@ -298,7 +298,7 @@ def ask(candidate: str, model: str, prompt_id: str, prompt: str, system: str, sc
     if candidate.startswith("direct-"):
         return _ask_direct_approach(candidate.split("-", 1)[1].upper(), model, prompt_id, prompt)
     if candidate == "langflow":
-        return _ask_langflow(os.environ["RTRC_SIDE_FLOW"], model, prompt_id, prompt)
+        return _ask_langflow(os.environ["SIDE_FLOW"], model, prompt_id, prompt)
     task = synthetic_task(prompt_id, prompt, scratch)
     if candidate == "opencode":
         from agents.external.opencode_run import run_opencode
@@ -484,7 +484,7 @@ def main() -> None:
     if args.candidate.startswith("direct-") and args.candidate.split("-", 1)[1].upper() not in {"P0", "P1", "P2", "P3"}:
         raise SystemExit("--candidate direct-p0, direct-p1, direct-p2 or direct-p3")
     if args.flow:
-        os.environ["RTRC_SIDE_FLOW"] = args.flow
+        os.environ["SIDE_FLOW"] = args.flow
     load_env()
     os.environ["MVP_LLM_MODEL"] = args.model
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")

@@ -45,7 +45,7 @@
       "tool_name": "Write",
       "tool_use_id": "call_e06c3cef28144bd1ab98ebdd",
       "tool_input": {
-        "file_path": "/data/robotics/RTRC/mvp/agent-runs/20261006T074542-P-CODE-2-ALN-02/workspace/AlignLink.sysml",
+        "file_path": "/data/robotics//mvp/agent-runs/20261006T074542-P-CODE-2-ALN-02/workspace/AlignLink.sysml",
         "content": "package AlignLink {\n    private import ShipLinkIcd::*;\n    private import VendorRadioPack::*;\n\n    // Type-level correspondences\n    alias LinkPort for VendorRadioPack::DataLink;\n    alias HealthPort for VendorRadioPack::StatusOut;\n    alias Radio for VendorRadioPack::RadioUnit;\n    alias CommandShip for VendorRadioPack::ShipTerminal;\n\n    // Port- and attribute-usage correspondences inside the aligned part definitions\n    alias toShore for VendorRadioPack::RadioUnit::dataOut;\n    alias health for VendorRadioPack::RadioUnit::status;\n    alias uplinkMbps for VendorRadioPack::RadioUnit::linkRateMbps;\n    alias fromUsv for VendorRadioPack::ShipTerminal::linkA;\n\n    // Part-usage allocations\n    allocation usvToVessel allocate ShipLinkIcd::usv to VendorRadioPack::vessel;\n    allocation usvRadioToRadioUnit allocate ShipLinkIcd::usv.radio to VendorRadioPack::vessel.radioUnit;\n    allocation commandShipToTerminal allocate ShipLinkIcd::commandShip to VendorRadioPack::terminal;\n}\n"
       }
     }

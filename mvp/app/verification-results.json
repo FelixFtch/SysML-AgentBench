@@ -9,7 +9,7 @@
       },
       "record_id": "20260922T072858-5596f6667e",
       "run_id": "20260922T072858-5e5ea9c0",
-      "run_dir": "/home/felix/Documents/ChatGPT/RTX agent/mvp/runs/20260922T072858-5e5ea9c0",
+      "run_dir": "/home/felix/Documents/ChatGPT/project/mvp/runs/20260922T072858-5e5ea9c0",
       "sysml_status": "PASS",
       "status": "UNKNOWN",
       "checks": [
@@ -88,7 +88,7 @@
       },
       "record_id": "20260922T072908-2fc0378309",
       "run_id": "20260922T072908-7354fceb",
-      "run_dir": "/home/felix/Documents/ChatGPT/RTX agent/mvp/runs/20260922T072908-7354fceb",
+      "run_dir": "/home/felix/Documents/ChatGPT/project/mvp/runs/20260922T072908-7354fceb",
       "sysml_status": "PASS",
       "status": "UNKNOWN",
       "checks": [
@@ -167,7 +167,7 @@
       },
       "record_id": "20260922T072920-74f359651c",
       "run_id": "20260922T072920-ef623492",
-      "run_dir": "/home/felix/Documents/ChatGPT/RTX agent/mvp/runs/20260922T072920-ef623492",
+      "run_dir": "/home/felix/Documents/ChatGPT/project/mvp/runs/20260922T072920-ef623492",
       "sysml_status": "PASS",
       "status": "FAIL",
       "checks": [
@@ -247,7 +247,7 @@
       },
       "record_id": "20260922T072931-25d88864ef",
       "run_id": "20260922T072931-8ce2b7bd",
-      "run_dir": "/home/felix/Documents/ChatGPT/RTX agent/mvp/runs/20260922T072931-8ce2b7bd",
+      "run_dir": "/home/felix/Documents/ChatGPT/project/mvp/runs/20260922T072931-8ce2b7bd",
       "sysml_status": "PASS",
       "status": "FAIL",
       "checks": [
@@ -326,7 +326,7 @@
       },
       "record_id": "20260922T072942-9ea1552ae7",
       "run_id": "20260922T072942-131bee1e",
-      "run_dir": "/home/felix/Documents/ChatGPT/RTX agent/mvp/runs/20260922T072942-131bee1e",
+      "run_dir": "/home/felix/Documents/ChatGPT/project/mvp/runs/20260922T072942-131bee1e",
       "sysml_status": "PASS",
       "status": "FAIL",
       "checks": [
@@ -405,7 +405,7 @@
       },
       "record_id": "20260922T072953-debc0b84dd",
       "run_id": "20260922T072953-0780fe2b",
-      "run_dir": "/home/felix/Documents/ChatGPT/RTX agent/mvp/runs/20260922T072953-0780fe2b",
+      "run_dir": "/home/felix/Documents/ChatGPT/project/mvp/runs/20260922T072953-0780fe2b",
       "sysml_status": "PASS",
       "status": "FAIL",
       "checks": [

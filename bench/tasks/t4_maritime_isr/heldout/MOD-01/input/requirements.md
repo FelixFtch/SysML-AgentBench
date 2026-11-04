@@ -1,4 +1,4 @@
-# MOD-01 — synthetic, not an RTX specification
+# MOD-01 — synthetic
 
 Package name stays UsvPlain. Edit the baseline.
 

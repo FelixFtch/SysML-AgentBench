@@ -1,6 +1,6 @@
 # Jev 复现竞技场 — PURE 分类协议试点报告
 
-时间：2026-10-10 ｜ 机器：RTX 4090 24GB（空闲显存 ~15.9GB，另有桌面/UnrealEditor 占用）｜ 产物：`analysis/jev-arena-pilot-20261010-105531/`（逐句预测 jsonl + metrics.json + 运行日志）
+时间：2026-10-10 ｜ 机器：24 GB GPU 24GB（空闲显存 ~15.9GB，另有桌面/UnrealEditor 占用）｜ 产物：`analysis/jev-arena-pilot-20261010-105531/`（逐句预测 jsonl + metrics.json + 运行日志）
 
 ## 1. 候选仓库确认（真/伪/装不上）
 

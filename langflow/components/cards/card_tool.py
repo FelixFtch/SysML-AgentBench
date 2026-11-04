@@ -1,6 +1,6 @@
-"""RTRC Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,
+"""Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,
 MiniLM + FAISS seeds, one hop), write to memory (gate, write, record), validate pasted SysML (save, official Pilot),
-and the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the RTRC shell service,
+and the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the shell service,
 which runs the same code as the results page; the chain order on the canvas is kept by the "From the previous card"
 input. The engineer's text (query, "<run id> A", or SysML) comes from the sub-flow's Chat Input."""
 import json
@@ -32,18 +32,18 @@ RUN = re.compile(r"run (\d{8}T\d{6})")
 
 
 def _call(path: str, payload: dict) -> dict:
-    url = os.environ.get("RTRC_SHELL_URL", "http://127.0.0.1:8781") + path
+    url = os.environ.get("SHELL_URL", "http://127.0.0.1:8781") + path
     request = urllib.request.Request(url, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": os.environ.get("RTRC_SHELL_TOKEN", "")})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": os.environ.get("SHELL_TOKEN", "")})
     try:
         with urllib.request.urlopen(request, timeout=3600) as response:
             body = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         body = json.loads(exc.read() or b"{}")
     except urllib.error.URLError as exc:
-        raise ValueError(f"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
+        raise ValueError(f"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
     if not body.get("ok"):
-        raise ValueError(body.get("error") or "The RTRC shell service returned an error")
+        raise ValueError(body.get("error") or "The shell service returned an error")
     return body
 
 
@@ -53,11 +53,11 @@ def _text(value) -> str:
     return str(getattr(value, "text", value) or "")
 
 
-class RtrcTool(Component):
-    display_name = "RTRC Tool step"
-    description = "One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the RTRC shell service."
+class CardTool(Component):
+    display_name = "Tool step"
+    description = "One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the shell service."
     icon = "wrench"
-    name = "RtrcTool"
+    name = "CardTool"
 
     inputs = [
         MessageInput(name="text", display_name="Engineer's text", required=False,

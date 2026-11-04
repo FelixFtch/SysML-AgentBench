@@ -14,12 +14,12 @@ verdict below is recomputed mechanically from the task parameters.
   C pilot sample : every Nth task's model.sysml through the official SysML v2 Pilot
                    (mvp/toolchain/validate.py), per-task timeout, incremental writes.
   D modelica     : stratified random sample (>= 5% per family and variant), task
-                   parameters substituted into /tmp/omtest/RTRC.mo (MaritimeBattery /
+                   parameters substituted into /tmp/omtest/Model.mo (MaritimeBattery /
                    BufferFill / ThermalNode), simulated with the pinned OpenModelica
                    in tools/om (dassl, tol 1e-8), and compared with the gold closed
                    form: both |omc - gold| and |verifier-closed-form - gold| must be
                    under half the task tolerance, else RED.
-  E scenario     : the "synthetic, not an RTX specification" declaration, the maritime
+  E scenario     : the "synthetic" declaration, the maritime
                    four-node vocabulary, and the platform/path distribution.
 
 The bank is read-only: every artifact goes to <bank>/verification/. Safe to rerun
@@ -58,11 +58,11 @@ if str(ROOT) not in sys.path:
 DEFAULT_BANK = ROOT / "bench" / "tasks_staging" / "t_sim_bank"
 OM_HOME = ROOT / "tools" / "om"
 OMC = OM_HOME / "bin" / "omc"
-RTRC_MO = Path("/tmp/omtest/RTRC.mo")
+MODEL_MO = Path("/tmp/omtest/Model.mo")
 
 REQUIRED_FILES = ("input/model.sysml", "input/requirements.md", "gold/answer.json",
                   "gold/assertions.yaml", "gold/solution.md", "case.yaml")
-RTX_DECLARATION = "synthetic, not an RTX specification"
+SYNTHETIC_MARKER = "synthetic"
 MARITIME_VOCAB = ("usv", "unmanned surface vessel", "uav", "command ship", "shore station")
 NEAR_DUP_EPS = 0.02      # normalised parameter-space distance for "near duplicate"
 MARGIN_FACTOR = 3.0      # gold must sit >= 3 x tolerance from every decision edge
@@ -1018,20 +1018,20 @@ def audit_pilot(tasks: list[Task], out: Path, stride: int, timeout: int) -> dict
 
 # ---------------------------------------------------------------- audit D
 def omc_run(work: Path, model: str, overrides: dict, simulations: list[dict]) -> dict:
-    """Simulate a parameterised wrapper of a RTRC.mo model; return per-sim values."""
+    """Simulate a parameterised wrapper of a Model.mo model; return per-sim values."""
     if work.exists():
         shutil.rmtree(work)
     work.mkdir(parents=True)
-    shutil.copy(RTRC_MO, work / "RTRC.mo")
+    shutil.copy(MODEL_MO, work / "Model.mo")
     override_text = ", ".join(f"{name} = {value!r}" for name, value in sorted(overrides.items()))
     (work / "SimCase.mo").write_text(
-        f"within RTRC;\nmodel SimCase extends RTRC.{model}({override_text});\nend SimCase;\n", encoding="utf-8")
+        f"within ;\nmodel SimCase extends .{model}({override_text});\nend SimCase;\n", encoding="utf-8")
     lines = ["setCommandLineOptions(\"--sim-flag=-r=%s_res.csv\"); getErrorString();",
-             f"loadFile(\"{work}/RTRC.mo\"); getErrorString();",
+             f"loadFile(\"{work}/Model.mo\"); getErrorString();",
              f"loadFile(\"{work}/SimCase.mo\"); getErrorString();"]
     for index, sim in enumerate(simulations):
         intervals = max(2, int(sim["stop"] / sim.get("step", 5.0))) if sim["stop"] > 0 else 1
-        lines.append(f"simulate(RTRC.SimCase, startTime=0, stopTime={sim['stop']}, tolerance=1e-8, "
+        lines.append(f"simulate(.SimCase, startTime=0, stopTime={sim['stop']}, tolerance=1e-8, "
                      f"numberOfIntervals={intervals}, method=\"dassl\", outputFormat=\"csv\", "
                      f"fileNamePrefix=\"q{index}\"); getErrorString();")
     (work / "run.mos").write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -1083,7 +1083,7 @@ def crosscheck_battery(task: Task, params: dict, work: Path) -> dict:
               "params": {k: params[k] for k in ("capacity_wh", "soc_start_pct")},
               "duty_rows": len(rows), "queries": []}
     if not mappable:
-        record["reason"] = (f"{len(rows)} duty rows exceed the four tiers of RTRC.mo MaritimeBattery; "
+        record["reason"] = (f"{len(rows)} duty rows exceed the four tiers of Model.mo MaritimeBattery; "
                             "closed-form comparison only")
     queries = [q for q in (task.answer or {}).get("key_points", []) if _float(q.get("t_min") or 0) > 0]
     end_min = rows[-1]["end"]
@@ -1132,7 +1132,7 @@ def crosscheck_battery(task: Task, params: dict, work: Path) -> dict:
 
 def crosscheck_backlog(task: Task, params: dict, work: Path) -> dict:
     """Compare end/max/headroom golds with the closed form, and with omc when the
-    task fits RTRC.mo's BufferFill: single outage window AND sensor <= downlink.
+    task fits Model.mo's BufferFill: single outage window AND sensor <= downlink.
     The model's noEvent zero-switch makes backlog == 0 absorbing, so a sensor that
     outruns the link never grows from empty (verified numerically on BLG-0183);
     such tasks and multi-window tasks are checked against the closed form only."""
@@ -1151,9 +1151,9 @@ def crosscheck_backlog(task: Task, params: dict, work: Path) -> dict:
               "params": {k: params[k] for k in ("sensor", "link", "mission_min", "capacity_gb")},
               "windows": len(params["windows"]), "queries": []}
     if not mappable:
-        reason = (f"{len(params['windows'])} outage windows: RTRC.mo BufferFill has one"
+        reason = (f"{len(params['windows'])} outage windows: Model.mo BufferFill has one"
                   if len(params["windows"]) != 1 else
-                  "sensor > downlink: RTRC.mo BufferFill cannot grow from an empty buffer")
+                  "sensor > downlink: Model.mo BufferFill cannot grow from an empty buffer")
         record["reason"] = f"{reason}; closed form only"
 
     def compare(key, gold, tol, omc_value, cf_value):
@@ -1240,7 +1240,7 @@ def crosscheck_thermal(task: Task, params: dict, work: Path) -> dict:
 
 
 def crosscheck_harvest(task: Task, params: dict, work: Path) -> dict:
-    """omc crosscheck via a per-task generated Modelica model (RTRC.mo untouched):
+    """omc crosscheck via a per-task generated Modelica model (Model.mo untouched):
     an if-else chain over the row net powers integrates soc, dassl tol 1e-8."""
     rows = params["rows"]
     end_min = rows[-1]["end"]
@@ -1328,7 +1328,7 @@ def crosscheck_harvest(task: Task, params: dict, work: Path) -> dict:
 
 
 def crosscheck_closed_form(task: Task, params: dict, family: str) -> dict:
-    """Families without a differential-model counterpart in RTRC.mo (latency,
+    """Families without a differential-model counterpart in Model.mo (latency,
     storage, uplink): every numeric gold and boolean is checked against the
     verifier's independent closed form at half tolerance."""
     cf = {"latency": cf_latency, "storage": cf_storage, "uplink": cf_uplink}[family](params)
@@ -1341,7 +1341,7 @@ def crosscheck_closed_form(task: Task, params: dict, family: str) -> dict:
                 "storage": {"meets_target": "meets_target", "feasible": "feasible"},
                 "uplink": {"starved_usv": "starved_usv", "starved_uav": "starved_uav"}}
     record = {"id": task.id, "family": family, "status": "PASS",
-              "reason": "no RTRC.mo counterpart: verified against the independent closed form",
+              "reason": "no Model.mo counterpart: verified against the independent closed form",
               "queries": []}
     answers = task.answer or {}
     checks = task.checks()
@@ -1375,9 +1375,9 @@ def crosscheck_closed_form(task: Task, params: dict, family: str) -> dict:
 
 
 def audit_modelica(tasks: list[Task], out: Path, sample_pct: float, seed: int) -> dict:
-    if not OMC.is_file() or not RTRC_MO.is_file():
+    if not OMC.is_file() or not MODEL_MO.is_file():
         report = {"generated_at": stamp(), "status": "WARN",
-                  "reason": f"omc={OMC.is_file()} RTRC.mo={RTRC_MO.is_file()}"}
+                  "reason": f"omc={OMC.is_file()} Model.mo={MODEL_MO.is_file()}"}
         atomic_write(out / "modelica-crosscheck.json", report)
         return report
     rng = random.Random(seed)
@@ -1457,9 +1457,9 @@ def audit_scenario(tasks: list[Task], manifests: list[dict], out: Path) -> dict:
                 manifest_entries += 1
     for task in tasks:
         text = (task.text or "").lower()
-        if RTX_DECLARATION.lower() not in text:
+        if SYNTHETIC_MARKER.lower() not in text:
             normalised = re.sub(r"[;,\u2013\u2014-]+", ",", text)
-            if RTX_DECLARATION.lower() in normalised.replace(" , ", ", "):
+            if SYNTHETIC_MARKER.lower() in normalised.replace(" , ", ", "):
                 loose_declaration.append(task.id)  # same words, different punctuation
             else:
                 missing_declaration.append(task.id)
@@ -1474,7 +1474,7 @@ def audit_scenario(tasks: list[Task], manifests: list[dict], out: Path) -> dict:
         bucket[platform] = bucket.get(platform, 0) + 1
     report = {
         "generated_at": stamp(),
-        "rtx_declaration": {"required_line": RTX_DECLARATION,
+        "synthetic_marker": {"required_line": SYNTHETIC_MARKER,
                             "missing_count": len(missing_declaration), "missing_ids": missing_declaration[:50],
                             "punctuation_variant_count": len(loose_declaration),
                             "punctuation_variant_ids": loose_declaration[:50]},
@@ -1562,12 +1562,12 @@ def write_summary(out: Path, bank: Path, tasks, reports: dict, args) -> None:
                       f"- verified with omc (dassl, tol 1e-8): {len(omc_verified)}; "
                       f"verified against the independent closed form only: {len(results) - len(omc_verified)}",
                       f"- PASS {sum(1 for r in results if r['status'] == 'PASS')}, "
-                      f"closed-form-only WARN (variant not expressible in RTRC.mo): {len(cf_only)}",
+                      f"closed-form-only WARN (variant not expressible in Model.mo): {len(cf_only)}",
                       f"- RED ids: {report.get('red_ids') or 'none'}",
                       f"- closed-form-only ids: {report.get('warn_ids') or 'none'}"]
         elif name == "scenario":
-            lines += [f"- tasks missing the exact RTX declaration line: {report['rtx_declaration']['missing_count']}"
-                      + (f" (punctuation variants: {report['rtx_declaration']['punctuation_variant_count']})" if report['rtx_declaration']['punctuation_variant_count'] else ""),
+            lines += [f"- tasks missing the exact synthetic declaration line: {report['synthetic_marker']['missing_count']}"
+                      + (f" (punctuation variants: {report['synthetic_marker']['punctuation_variant_count']})" if report['synthetic_marker']['punctuation_variant_count'] else ""),
                       f"- tasks missing maritime vocabulary: {report['maritime_vocabulary']['missing_count']}",
                       f"- platform distribution: {json.dumps(report['platform_distribution'], ensure_ascii=False)}"]
         lines.append("")
@@ -1595,7 +1595,7 @@ def _battery_fixture(task_id, params, rows, reserve, planted=None):
     table = "\n".join(f"| {i+1} | mode{i+1} | {p} | {int(s)} | {int(e)} | {(e-s)/60:.1f} |"
                       for i, (p, s, e) in enumerate(rows))
     (dir_path / "input" / "requirements.md").write_text(
-        f"# {dir_path.name} — synthetic, not an RTX specification\n\nUSV battery endurance (command ship, shore station).\n\n"
+        f"# {dir_path.name} — synthetic\n\nUSV battery endurance (command ship, shore station).\n\n"
         f"## Battery\n\n- Capacity: {capacity} Wh\n- Initial SoC at t = 0: {int(soc0)} % of capacity (0.{int(soc0)})\n"
         f"- Reserve threshold: {int(reserve)} % of capacity.\n\n"
         f"## Mission duty cycle\n\n| # | Mode | Power (W) | Start (min) | End (min) | Duration (h) |\n|---|---|---|---|---|---|\n{table}\n",
@@ -1660,7 +1660,7 @@ def run_selftest(args) -> bool:
             cap_mbit = cap_gb * 8000
             window_text = "\n".join(f"- Outage window {w+1}: start {s} min, duration {d} min"
                                     for w, (s, d) in enumerate(windows))
-            declaration = "" if planted == "no_synth" else "# synthetic, not an RTX specification\n\n"
+            declaration = "" if planted == "no_synth" else "# synthetic\n\n"
             (task_dir / "input" / "requirements.md").write_text(
                 f"{declaration}UAV relay backlog to the command ship (USV, shore station world).\n\n"
                 f"- Sensor data rate (whole mission, constant): {sensor} Mbit/s\n- Downlink rate while the link is up: {link} Mbit/s\n"
@@ -1693,7 +1693,7 @@ def run_selftest(args) -> bool:
             (task_dir / "gold").mkdir(parents=True)
             vocab = "" if planted == "no_vocab" else "USV below-deck bay relaying imagery to the command ship and shore station.\n"
             (task_dir / "input" / "requirements.md").write_text(
-                f"# synthetic, not an RTX specification\n\n{vocab}\n- dissipation P = {P} W\n"
+                f"# synthetic\n\n{vocab}\n- dissipation P = {P} W\n"
                 f"- thermal resistance Rth = {Rth} K/W\n- thermal capacity Cth = {Cth} J/K\n"
                 f"- ambient temperature Tamb = {Tamb} degC\n- temperature limit Tmax = {Tmax} degC\n", encoding="utf-8")
             (task_dir / "input" / "model.sysml").write_text(
@@ -1750,7 +1750,7 @@ def run_selftest(args) -> bool:
         def harvest_fixture(task_id, cap, soc0, prot, rows, planted=None):
             table = "\n".join(f"| {i+1} | mode{i+1} | {load} | {solar} | {int(s)} | {int(e)} | {(e-s)/60:.1f} |"
                               for i, (load, solar, s, e) in enumerate(rows))
-            text = (f"# {task_id} — synthetic, not an RTX specification\n\nUSV solar harvesting (command ship, shore station).\n\n"
+            text = (f"# {task_id} — synthetic\n\nUSV solar harvesting (command ship, shore station).\n\n"
                     f"## Battery and solar array\n\n- Capacity: {cap} Wh\n- Initial SoC at t = 0: {int(soc0)} % of capacity (0.{int(soc0)})\n"
                     f"- Protection line: {int(prot)} % of capacity. SoC must never fall below this line.\n\n"
                     f"## Mission duty cycle (rows are sequential; the mission starts at t = 0 min)\n\n"
@@ -1774,7 +1774,7 @@ def run_selftest(args) -> bool:
         def latency_fixture(task_id, d_up, v_up, d_down, onboard, relay, period, first, spacing, n_msgs, threshold, planted=None):
             times = ", ".join(str(int(spacing * i)) for i in range(n_msgs))
             medium = "underwater acoustic" if v_up == 1500 else "surface radio"
-            text = (f"# {task_id} — synthetic, not an RTX specification\n\nUSV link latency (USV, UAV, command ship, shore station).\n\n"
+            text = (f"# {task_id} — synthetic\n\nUSV link latency (USV, UAV, command ship, shore station).\n\n"
                     f"## Data path (sensor collection → final subscriber)\n\n"
                     f"| Hop | From | To | Medium | Distance | Propagation speed |\n|-----|------|----|--------|----------|-------------------|\n"
                     f"| uplink | USV sensor | shore station relay | {medium} | {d_up} km | {v_up} m/s |\n"
@@ -1808,7 +1808,7 @@ def run_selftest(args) -> bool:
                 tiers = "\n".join(f"| T{k} | {k} | {rate/k} Mbit/s |" for k in (1, 2, 4, 8, 16))
                 tail = (f"## Compression tiers\n\n| Tier | factor k | stored rate |\n|---|---|---|\n{tiers}\n\n"
                         f"Choose the storage plan: report the smallest tier factor k whose retention reaches the target.\n")
-            text = (f"# {task_id} — synthetic, not an RTX specification\n\nUSV mission recorder (command ship, shore station).\n\n"
+            text = (f"# {task_id} — synthetic\n\nUSV mission recorder (command ship, shore station).\n\n"
                     f"## Recorder\n\n- Raw stream rate R: {rate} Mbit/s (constant)\n"
                     f"- Recorder capacity S: {cap} GB (decimal units: 1 GB = 8000 Mbit)\n"
                     f"- Required retention T: {target} h\n\n{tail}")
@@ -1836,7 +1836,7 @@ def run_selftest(args) -> bool:
                          f"- UAV uplink quota: {quota[1]} Mbit/s\n")
             else:
                 alloc = (f"- Allocation scheme: priority preemption (UAV preempts)\n- Preempting platform: UAV\n")
-            text = (f"# {task_id} — synthetic, not an RTX specification\n\nShared shore uplink for the USV and the "
+            text = (f"# {task_id} — synthetic\n\nShared shore uplink for the USV and the "
                     f"fixed-wing UAV (command ship, shore station relay the streams).\n\n"
                     f"## Shared shore uplink\n\n- Total uplink capacity C: {cap} Mbit/s\n{alloc}"
                     f"- Mission window: 0 to {mission} min\n"
@@ -1918,7 +1918,7 @@ def run_selftest(args) -> bool:
              any(r.get("id") == "BLG-0002" and r["status"] == "WARN"
                  and all(q["status"] == "CF_ONLY" for q in r.get("queries", []))
                  for r in reports["modelica"]["results"])),
-            ("E: missing RTX declaration flagged", reports["scenario"]["rtx_declaration"]["missing_count"] >= 1),
+            ("E: missing the synthetic declaration flagged", reports["scenario"]["synthetic_marker"]["missing_count"] >= 1),
             ("E: missing vocabulary flagged", reports["scenario"]["maritime_vocabulary"]["missing_count"] == 1),
             ("E: platform distribution aggregated", reports["scenario"]["platform_distribution"].get("sim_battery", {}).get("usv", 0) >= 1),
             ("E: dual platform bucket counted", reports["scenario"]["platform_distribution"].get("sim_uplink", {}).get("usv+uav", 0) == 3),

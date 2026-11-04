@@ -1,6 +1,6 @@
 {
   "synthetic": true,
-  "notice": "Synthetic engineering test materials; not RTX products, original company records, or hardware measurements.",
+  "notice": "Synthetic engineering test materials; synthetic test materials, not vendor products or hardware measurements.",
   "schema_version": 1,
   "common": {
     "retention_hours": 8.0,

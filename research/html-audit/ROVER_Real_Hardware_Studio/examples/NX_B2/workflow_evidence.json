@@ -44,14 +44,14 @@
     {
       "id": "BRIEF",
       "color": "ours",
-      "title": "RTRC / UConn · Agentic AI for Systems Engineering Discovery and Design",
+      "title": "/ UConn · Agentic AI for Systems Engineering Discovery and Design",
       "authors": "用户上传项目书",
-      "file": "2706 - RTRC - Agentic AI for Systems Engineering Discovery and Design.docx",
+      "file": "2706 - - Agentic AI for Systems Engineering Discovery and Design.docx",
       "pages": "第1页 Statement of Need；第2页 Additional Requirements",
       "url": "",
       "supported": "核心目标是 requirements-to-SysML 的agent探索、比较及证据报告；以多平台海事场景为代表，并要求自然语言需求数据验证。",
       "transfer": "小车是我们选定的方法开发案例；最终替代海事场景需赞助方认可。",
-      "boundary": "本页不是RTRC现有工作流的审计，不是已部署产品，也不是完整实验结果。"
+      "boundary": "本页不是现有工作流的审计，不是已部署产品，也不是完整实验结果。"
     }
   ],
   "approvedRequirements": [

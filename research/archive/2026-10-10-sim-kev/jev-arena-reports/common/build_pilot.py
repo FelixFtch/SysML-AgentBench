@@ -8,7 +8,7 @@ import glob, json, os, random, re, sys
 import xml.etree.ElementTree as ET
 
 XML_DIR = "/tmp/pure_xml/XMLZIPFile"
-OUT_DIR = "/data/robotics/RTRC/tools/jev-arena/common"
+OUT_DIR = "/data/robotics//tools/jev-arena/common"
 
 ABBR = {"e.g","i.e","etc","vs","cf","approx","fig","no","mr","mrs","ms","dr","sr","jr","st","inc","ltd","co","corp","u.s","a.m","p.m","sec","min","max","ref","vol","pp","al"}
 NUM_ABBR = re.compile(r"^\d")

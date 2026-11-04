@@ -45,7 +45,7 @@
       "tool_name": "Write",
       "tool_use_id": "call_40f0a151e2f043c4ac1e6c8a",
       "tool_input": {
-        "file_path": "/data/robotics/RTRC/mvp/agent-runs/20261006T074135-P-CODE-2-ALN-01/workspace/output/AlignCamera.sysml",
+        "file_path": "/data/robotics//mvp/agent-runs/20261006T074135-P-CODE-2-ALN-01/workspace/output/AlignCamera.sysml",
         "content": "package AlignCamera {\n    private import UsvPayloadSpec::*;\n    private import OptronicsKit::*;\n\n    alias ImageryPort for OptronicsKit::VideoOut;\n    alias Camera for OptronicsKit::EoCameraUnit;\n    alias imagery for OptronicsKit::EoCameraUnit::videoOut;\n    alias drawW for OptronicsKit::EoCameraUnit::powerDrawW;\n\n    allocation eoCameraToCameraUnit allocate UsvPayloadSpec.usv.eoCamera to OptronicsKit.kit.cameraUnit;\n}\n"
       }
     }

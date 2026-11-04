@@ -1,4 +1,4 @@
-"""RTRC Gate record: one node per Human Input branch of a stop-and-ask gate (AGENTS.md: a stated limit may only change
+"""Gate record: one node per Human Input branch of a stop-and-ask gate (AGENTS.md: a stated limit may only change
 with a person's approval). Stores the choice in analysis/langflow-gates.jsonl."""
 import json
 import os
@@ -11,26 +11,26 @@ from lfx.schema.message import Message
 
 
 def _call(path: str, payload: dict) -> dict:
-    url = os.environ.get("RTRC_SHELL_URL", "http://127.0.0.1:8781") + path
+    url = os.environ.get("SHELL_URL", "http://127.0.0.1:8781") + path
     request = urllib.request.Request(url, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": os.environ.get("RTRC_SHELL_TOKEN", "")})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": os.environ.get("SHELL_TOKEN", "")})
     try:
         with urllib.request.urlopen(request, timeout=600) as response:
             body = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         body = json.loads(exc.read() or b"{}")
     except urllib.error.URLError as exc:
-        raise ValueError(f"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
+        raise ValueError(f"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
     if not body.get("ok"):
-        raise ValueError(body.get("error") or "The RTRC shell service returned an error")
+        raise ValueError(body.get("error") or "The shell service returned an error")
     return body
 
 
-class RtrcGateRecord(Component):
-    display_name = "RTRC Gate record"
+class CardGateRecord(Component):
+    display_name = "Gate record"
     description = "Put one after each Human Input branch of a stop-and-ask gate; records the person's choice."
     icon = "shield-check"
-    name = "RtrcGateRecord"
+    name = "CardGateRecord"
 
     inputs = [
         MessageInput(name="upstream", display_name="From the person's choice", required=False),

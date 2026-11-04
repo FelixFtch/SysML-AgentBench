@@ -5,7 +5,7 @@
   "task_id": "MOD-03",
   "configuration": "P0",
   "model": "qwen3.8-max",
-  "requirements": "# MOD-03 — synthetic, not an RTX specification\n\nPackage name stays ShoreHop. Edit the baseline.\n\nAdd a connection from vessel.radio.toShore to shore.fromVessel.\nKeep the connection from vessel.processor.uplink to vessel.radio.fromProcessor.\nDo not invent numeric limits.\n\n\nBaseline file ShoreHop.sysml:\n```sysml\npackage ShoreHop {\n    port def LinkPort;\n    part def Radio { port fromProcessor : LinkPort; port toShore : LinkPort; }\n    part def Processor { port uplink : LinkPort; }\n    part def ShoreStation { port fromVessel : LinkPort; }\n    part vessel {\n        part processor : Processor;\n        part radio : Radio;\n    }\n    part shore : ShoreStation;\n    connect vessel.processor.uplink to vessel.radio.fromProcessor;\n}\n```",
+  "requirements": "# MOD-03 — synthetic\n\nPackage name stays ShoreHop. Edit the baseline.\n\nAdd a connection from vessel.radio.toShore to shore.fromVessel.\nKeep the connection from vessel.processor.uplink to vessel.radio.fromProcessor.\nDo not invent numeric limits.\n\n\nBaseline file ShoreHop.sysml:\n```sysml\npackage ShoreHop {\n    port def LinkPort;\n    part def Radio { port fromProcessor : LinkPort; port toShore : LinkPort; }\n    part def Processor { port uplink : LinkPort; }\n    part def ShoreStation { port fromVessel : LinkPort; }\n    part vessel {\n        part processor : Processor;\n        part radio : Radio;\n    }\n    part shore : ShoreStation;\n    connect vessel.processor.uplink to vessel.radio.fromProcessor;\n}\n```",
   "baseline": "package ShoreHop {\n    port def LinkPort;\n    part def Radio { port fromProcessor : LinkPort; port toShore : LinkPort; }\n    part def Processor { port uplink : LinkPort; }\n    part def ShoreStation { port fromVessel : LinkPort; }\n    part vessel {\n        part processor : Processor;\n        part radio : Radio;\n    }\n    part shore : ShoreStation;\n    connect vessel.processor.uplink to vessel.radio.fromProcessor;\n}\n",
   "gold_note": "标准答案在阅卷时才打开，没有放进两次模型调用。",
   "answer": "package ShoreHop {\n    port def LinkPort;\n    part def Radio { port fromProcessor : LinkPort; port toShore : LinkPort; }\n    part def Processor { port uplink : LinkPort; }\n    part def ShoreStation { port fromVessel : LinkPort; }\n    part vessel {\n        part processor : Processor;\n        part radio : Radio;\n    }\n    part shore : ShoreStation;\n    connect vessel.processor.uplink to vessel.radio.fromProcessor;\n    connect vessel.radio.toShore to shore.fromVessel;\n}\n",
@@ -31,7 +31,7 @@
     "missing": []
   },
   "invented_numbers": [],
-  "run_dir": "/data/robotics/RTRC/mvp/runs/20261003T152118-6254326d",
+  "run_dir": "/data/robotics//mvp/runs/20261003T152118-6254326d",
   "approval": {
     "triggered": false,
     "answer": "not-requested",

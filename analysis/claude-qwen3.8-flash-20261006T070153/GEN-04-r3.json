@@ -45,15 +45,15 @@
       "tool_name": "Bash",
       "tool_use_id": "call_beb59d226e3a4236a604dee5",
       "tool_input": {
-        "command": "ls /data/robotics/RTRC/mvp/ 2>/dev/null; ls /data/robotics/RTRC/ 2>/dev/null | head",
-        "description": "List RTRC repo structure"
+        "command": "ls /data/robotics//mvp/ 2>/dev/null; ls /data/robotics// 2>/dev/null | head",
+        "description": "List repo structure"
       }
     },
     {
       "tool_name": "Bash",
       "tool_use_id": "call_501763cd3a2849bfbef415ab",
       "tool_input": {
-        "command": "find /data/robotics/RTRC -maxdepth 3 -type d -not -path '*/.git*' 2>/dev/null | head -40",
+        "command": "find /data/robotics/-maxdepth 3 -type d -not -path '*/.git*' 2>/dev/null | head -40",
         "description": "Show directory tree of repo"
       }
     }

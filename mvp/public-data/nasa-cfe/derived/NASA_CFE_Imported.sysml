@@ -1,6 +1,6 @@
 package NASA_CFE_Imported {
     private import ScalarValues::*;
-    doc /* Public NASA cFE requirement text import. Not RTX requirements.
+    doc /* Public NASA cFE requirement text import. Not external requirements.
         No design satisfaction or executable verification is asserted.
         Semantic mapping and new-project applicability remain pending. */
 

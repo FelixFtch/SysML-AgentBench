@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_16bdcc9c709f4dc4acba5600",
       "tool_input": {
-        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01/workspace/input; echo \"---\"; find /data/robotics/RTRC/mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01 -maxdepth 2 -type f | head -50",
+        "command": "ls -la /data/robotics//mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01/workspace/input; echo \"---\"; find /data/robotics//mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01 -maxdepth 2 -type f | head -50",
         "description": "Inspect input directory and run files"
       }
     },
@@ -53,7 +53,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_7c6c43cae1384e35a2e90861",
       "tool_input": {
-        "command": "diff <(cat /data/robotics/RTRC/mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01/workspace/input/model.sysml) /dev/null | head -5; grep -n \"part usv\\|part uav\\|part commandShip\\|part shore\" /data/robotics/RTRC/mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01/workspace/input/model.sysml",
+        "command": "diff <(cat /data/robotics//mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01/workspace/input/model.sysml) /dev/null | head -5; grep -n \"part usv\\|part uav\\|part commandShip\\|part shore\" /data/robotics//mvp/agent-runs/20261006T073354-P-CODE-2-QRY-01/workspace/input/model.sysml",
         "description": "Confirm platform part usages in the frozen model file"
       }
     }

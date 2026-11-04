@@ -1,4 +1,4 @@
-"""RTRC Kev classify: the requirement-sentence judge of the Kev flows (project 7).
+"""Kev classify: the requirement-sentence judge of the Kev flows (project 7).
 
 One card, stateless: the sentences from the sub-flow's Chat Input go to the Kev decision service (the laptop-scale
 Jev clone of tools/jev-arena/kev, 127.0.0.1:8009, POST /v1/systemone) as one noul question per sentence, in batches of
@@ -79,12 +79,12 @@ def _judge(sentences: list[str]) -> list[dict]:
     return verdicts
 
 
-class RtrcKevClassify(Component):
-    display_name = "RTRC Kev classify"
+class CardKevClassify(Component):
+    display_name = "Kev classify"
     description = ("Judge whether sentences are software requirement statements with the Kev decision service: one "
                    "yes/no question per sentence, in batches of 40, milliseconds per batch.")
     icon = "wand"
-    name = "RtrcKevClassify"
+    name = "CardKevClassify"
 
     inputs = [
         MessageInput(name="text", display_name="Sentences",

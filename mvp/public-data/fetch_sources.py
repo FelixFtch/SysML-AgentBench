@@ -31,7 +31,7 @@ def main():
         manifest = {**source, "retrieved_at": prior["retrieved_at"] if prior else datetime.now(timezone.utc).isoformat(),
                     "source_url": "https://github.com/" + source["repository"],
                     "license_scope": "Upstream repository declaration; original licenses and notices retained; no relicensing of third-party material",
-                    "rtx_relation": "Public independent source, not RTX requirements, models, parameters or endorsement",
+                    "source_relation": "Public independent source, not an external specification, models, parameters or endorsement",
                     "provenance": "Downloaded byte-for-byte over HTTPS from commit-pinned upstream raw URLs",
                     "files": []}
         for relative in source["files"]:

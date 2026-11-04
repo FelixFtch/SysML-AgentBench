@@ -4,7 +4,7 @@
   "endpoint_name": "other-exam-results",
   "is_component": false,
   "tags": [
-    "rtrc",
+    "",
     "results"
   ],
   "data": {
@@ -21,7 +21,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Results: F3, the frozen results (page 1.2) as tables: by task type, by approach, the agents, the side\nbenchmarks, the retry run and the cost. The matrix, cost chart and diagrams stay on the results page.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\n\nORDER = [\"flash\", \"max\", \"opencode\", \"claude\"]\nTYPES = [\"GEN\", \"MOD\", \"ALN\", \"QRY\", \"AMB\", \"RT\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcResults(Component):\n    display_name = \"RTRC Results\"\n    description = \"F3: the frozen exam results (revision 2) as tables.\"\n    icon = \"table\"\n    name = \"RtrcResults\"\n\n    inputs = []\n    outputs = [\n        Output(display_name=\"Tables\", name=\"tables\", method=\"as_message\"),\n        Output(display_name=\"By task type\", name=\"by_type\", method=\"as_dataframe\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _facts(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            self._cached = _call(\"/facts\", {})\n            self.status = self._cached[\"summary\"]\n        return self._cached[\"data\"]\n\n    def as_message(self) -> Message:\n        f = self._facts()\n        c = f[\"cohorts\"]\n        rows = [\"| Task type | \" + \" | \".join(c[k][\"short\"] for k in ORDER) + \" |\", \"|---|\" + \"---:|\" * len(ORDER)]\n        for t in TYPES:\n            rows.append(f\"| {t} | \" + \" | \".join(f\"{c[k]['by_type'][t]['pass']}/{c[k]['by_type'][t]['n']}\" for k in ORDER) + \" |\")\n        rows.append(\"| **All** | \" + \" | \".join(f\"**{c[k]['pass']}/{c[k]['n']}**\" for k in ORDER) + \" |\")\n        approaches = [\"\", \"| Approach | \" + \" | \".join(c[k][\"label\"] for k in (\"flash\", \"max\")) + \" |\", \"|---|---:|---:|\"]\n        for i, cfg in enumerate(c[\"flash\"][\"configs\"]):\n            approaches.append(f\"| {cfg['id']} | {cfg['pass']}/{cfg['n']} | {c['max']['configs'][i]['pass']}/{c['max']['configs'][i]['n']} |\")\n        retry = (f.get(\"retry\") or {}).get(\"agents\") or {}\n        extra = [\"\", \"Extra run, the 14 failed tasks retried with agents on qwen3.8-max (not a score): \"\n                 + \"; \".join(f\"{a['label']} {a['pass']}/{a['n']}, ${a['usd']:.2f}\" for a in retry.values())] if retry else []\n        text = \"\\n\".join([\"Exam results on the 27 frozen tasks (revision 2)\", \"\"] + rows + approaches + extra\n                         + [\"\", f\"Recorded cost about ${f['costs'].get('recorded_usd', 0):.2f} at the list price. The matrix and diagrams are on the results page.\"])\n        return Message(text=text)\n\n    def as_dataframe(self) -> DataFrame:\n        c = self._facts()[\"cohorts\"]\n        return DataFrame(data=[{\"type\": t, **{c[k][\"short\"]: f\"{c[k]['by_type'][t]['pass']}/{c[k]['by_type'][t]['n']}\" for k in ORDER}} for t in TYPES])\n\n    def as_data(self) -> Data:\n        f = self._facts()\n        return Data(data={\"cohorts\": {k: {kk: v for kk, v in f[\"cohorts\"][k].items() if kk in {\"label\", \"pass\", \"n\", \"by_type\"}} for k in ORDER},\n                          \"retry\": f.get(\"retry\"), \"recorded_usd\": f[\"costs\"].get(\"recorded_usd\")})\n",
+                "value": "\"\"\"Results: F3, the frozen results (page 1.2) as tables: by task type, by approach, the agents, the side\nbenchmarks, the retry run and the cost. The matrix, cost chart and diagrams stay on the results page.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.dataframe import DataFrame\nfrom lfx.schema.message import Message\n\nORDER = [\"flash\", \"max\", \"opencode\", \"claude\"]\nTYPES = [\"GEN\", \"MOD\", \"ALN\", \"QRY\", \"AMB\", \"RT\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardResults(Component):\n    display_name = \"Results\"\n    description = \"F3: the frozen exam results (revision 2) as tables.\"\n    icon = \"table\"\n    name = \"CardResults\"\n\n    inputs = []\n    outputs = [\n        Output(display_name=\"Tables\", name=\"tables\", method=\"as_message\"),\n        Output(display_name=\"By task type\", name=\"by_type\", method=\"as_dataframe\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _facts(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            self._cached = _call(\"/facts\", {})\n            self.status = self._cached[\"summary\"]\n        return self._cached[\"data\"]\n\n    def as_message(self) -> Message:\n        f = self._facts()\n        c = f[\"cohorts\"]\n        rows = [\"| Task type | \" + \" | \".join(c[k][\"short\"] for k in ORDER) + \" |\", \"|---|\" + \"---:|\" * len(ORDER)]\n        for t in TYPES:\n            rows.append(f\"| {t} | \" + \" | \".join(f\"{c[k]['by_type'][t]['pass']}/{c[k]['by_type'][t]['n']}\" for k in ORDER) + \" |\")\n        rows.append(\"| **All** | \" + \" | \".join(f\"**{c[k]['pass']}/{c[k]['n']}**\" for k in ORDER) + \" |\")\n        approaches = [\"\", \"| Approach | \" + \" | \".join(c[k][\"label\"] for k in (\"flash\", \"max\")) + \" |\", \"|---|---:|---:|\"]\n        for i, cfg in enumerate(c[\"flash\"][\"configs\"]):\n            approaches.append(f\"| {cfg['id']} | {cfg['pass']}/{cfg['n']} | {c['max']['configs'][i]['pass']}/{c['max']['configs'][i]['n']} |\")\n        retry = (f.get(\"retry\") or {}).get(\"agents\") or {}\n        extra = [\"\", \"Extra run, the 14 failed tasks retried with agents on qwen3.8-max (not a score): \"\n                 + \"; \".join(f\"{a['label']} {a['pass']}/{a['n']}, ${a['usd']:.2f}\" for a in retry.values())] if retry else []\n        text = \"\\n\".join([\"Exam results on the 27 frozen tasks (revision 2)\", \"\"] + rows + approaches + extra\n                         + [\"\", f\"Recorded cost about ${f['costs'].get('recorded_usd', 0):.2f} at the list price. The matrix and diagrams are on the results page.\"])\n        return Message(text=text)\n\n    def as_dataframe(self) -> DataFrame:\n        c = self._facts()[\"cohorts\"]\n        return DataFrame(data=[{\"type\": t, **{c[k][\"short\"]: f\"{c[k]['by_type'][t]['pass']}/{c[k]['by_type'][t]['n']}\" for k in ORDER}} for t in TYPES])\n\n    def as_data(self) -> Data:\n        f = self._facts()\n        return Data(data={\"cohorts\": {k: {kk: v for kk, v in f[\"cohorts\"][k].items() if kk in {\"label\", \"pass\", \"n\", \"by_type\"}} for k in ORDER},\n                          \"retry\": f.get(\"retry\"), \"recorded_usd\": f[\"costs\"].get(\"recorded_usd\")})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -100,10 +100,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcResults",
-          "id": "RtrcResults-facts"
+          "type": "CardResults",
+          "id": "CardResults-facts"
         },
-        "id": "RtrcResults-facts",
+        "id": "CardResults-facts",
         "type": "genericNode",
         "position": {
           "x": 40,
@@ -415,12 +415,12 @@
     ],
     "edges": [
       {
-        "source": "RtrcResults-facts",
+        "source": "CardResults-facts",
         "target": "ChatOutput-results",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcResults",
-            "id": "RtrcResults-facts",
+            "dataType": "CardResults",
+            "id": "CardResults-facts",
             "name": "tables",
             "output_types": [
               "Message"
@@ -439,9 +439,9 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcResultsœ, œidœ: œRtrcResults-factsœ, œnameœ: œtablesœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardResultsœ, œidœ: œCardResults-factsœ, œnameœ: œtablesœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-resultsœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcResults-facts{œdataTypeœ:œRtrcResultsœ,œidœ:œRtrcResults-factsœ,œnameœ:œtablesœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-results{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-resultsœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardResults-facts{œdataTypeœ:œCardResultsœ,œidœ:œCardResults-factsœ,œnameœ:œtablesœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-results{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-resultsœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false

@@ -5,7 +5,7 @@
   "task_id": "MOD-02",
   "configuration": "P0",
   "model": "qwen3.8-max",
-  "requirements": "# MOD-02 — synthetic, not an RTX specification\n\nPackage name stays VesselAlign. Edit the baseline.\n\nAdd part usage ais of AisReceiver inside vessel. Connect vessel.ais.tracks to vessel.processor.trackIn.\nAdd requirement definition TimeAlign whose doc comment says tracks and imagery share a timestamp.\nKeep the camera connection. Do not invent numeric limits.\n\n\nBaseline file VesselAlign.sysml:\n```sysml\npackage VesselAlign {\n    port def ImageryPort;\n    port def TrackPort;\n    part def Camera { port imagery : ImageryPort; }\n    part def AisReceiver { port tracks : TrackPort; }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n    }\n    part vessel {\n        part camera : Camera;\n        part processor : Processor;\n    }\n    connect vessel.camera.imagery to vessel.processor.imageryIn;\n}\n```",
+  "requirements": "# MOD-02 — synthetic\n\nPackage name stays VesselAlign. Edit the baseline.\n\nAdd part usage ais of AisReceiver inside vessel. Connect vessel.ais.tracks to vessel.processor.trackIn.\nAdd requirement definition TimeAlign whose doc comment says tracks and imagery share a timestamp.\nKeep the camera connection. Do not invent numeric limits.\n\n\nBaseline file VesselAlign.sysml:\n```sysml\npackage VesselAlign {\n    port def ImageryPort;\n    port def TrackPort;\n    part def Camera { port imagery : ImageryPort; }\n    part def AisReceiver { port tracks : TrackPort; }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n    }\n    part vessel {\n        part camera : Camera;\n        part processor : Processor;\n    }\n    connect vessel.camera.imagery to vessel.processor.imageryIn;\n}\n```",
   "baseline": "package VesselAlign {\n    port def ImageryPort;\n    port def TrackPort;\n    part def Camera { port imagery : ImageryPort; }\n    part def AisReceiver { port tracks : TrackPort; }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n    }\n    part vessel {\n        part camera : Camera;\n        part processor : Processor;\n    }\n    connect vessel.camera.imagery to vessel.processor.imageryIn;\n}\n",
   "gold_note": "标准答案在阅卷时才打开，没有放进两次模型调用。",
   "answer": "package VesselAlign {\n    port def ImageryPort;\n    port def TrackPort;\n    part def Camera { port imagery : ImageryPort; }\n    part def AisReceiver { port tracks : TrackPort; }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n    }\n    part vessel {\n        part camera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n    }\n    connect vessel.camera.imagery to vessel.processor.imageryIn;\n    connect vessel.ais.tracks to vessel.processor.trackIn;\n    requirement def TimeAlign {\n        doc /* tracks and imagery share a timestamp */\n    }\n}\n",
@@ -31,7 +31,7 @@
     "missing": []
   },
   "invented_numbers": [],
-  "run_dir": "/data/robotics/RTRC/mvp/runs/20261003T152108-7a8669b8",
+  "run_dir": "/data/robotics//mvp/runs/20261003T152108-7a8669b8",
   "approval": {
     "triggered": false,
     "answer": "not-requested",

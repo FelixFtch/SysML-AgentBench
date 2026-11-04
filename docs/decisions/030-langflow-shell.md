@@ -4,7 +4,7 @@ Date: 2026-10-06. Status: done (user decisions of 2026-10-06: build the plan; me
 
 ## Question
 
-Can everything we show RTRC, above all the Part 2 agent flow (requirement → memory search → new design or adapt a similar project → official Pilot loop → checks → a person's decision → memory, with grades and times), run and be shown in Langflow, without a second implementation that could drift from the results page?
+Can everything we show , above all the Part 2 agent flow (requirement → memory search → new design or adapt a similar project → official Pilot loop → checks → a person's decision → memory, with grades and times), run and be shown in Langflow, without a second implementation that could drift from the results page?
 
 ## What was built
 
@@ -12,7 +12,7 @@ Can everything we show RTRC, above all the Part 2 agent flow (requirement → me
 - **Seven flows** (`langflow/flows/build_flows.py`, built in Python like Langflow's starter projects): the agent flow, F0 memory, F1/F2 exam cells (replay or live), F3 results, F5 MOD change chain, and the Cameo check. Official components carry the control flow: If-Else for new vs reuse and for "all four checks pass", Human Input for the person's decision. Canvas notes name the paper each step applies.
 - **New in the agent flow:** the reuse branch. When ① finds a similar project (an approved design, else MaritimeISR), design A adapts its model (paper 3's modify) and design B is written new; with nothing similar, both are new as on the page.
 - **Cameo:** ⑦ exports each design that passes the Pilot; the Cameo check flow records a person's result on the run's record. The Pilot stays the judge.
-- **Memory as Langflow's own knowledge base** (the user's option A): F0 ingests the 152 memory cards into the knowledge base "rtrc memory", embedded by Qwen (`qwen3.7-text-embedding`, through Langflow's "OpenAI Compatible" provider; `langflow/flows/setup_knowledge.py`). RTRC can search and filter the cards on Langflow's Knowledge page; rerunning F0 adds only new cards. The agent flow's ① Search memory still uses our retrieval, so its results match the results page.
+- **Memory as Langflow's own knowledge base** (the user's option A): F0 ingests the 152 memory cards into the knowledge base " memory", embedded by Qwen (`qwen3.7-text-embedding`, through Langflow's "OpenAI Compatible" provider; `langflow/flows/setup_knowledge.py`). can search and filter the cards on Langflow's Knowledge page; rerunning F0 adds only new cards. The agent flow's ① Search memory still uses our retrieval, so its results match the results page.
 
 ## Evidence
 
@@ -31,4 +31,4 @@ Login on, local only, CORS limited to the local origin; `LANGFLOW_ALLOW_CUSTOM_C
 
 ## What would reverse it
 
-RTRC asking for Langflow's own agent and retrieval components instead of ours (the page's results could then no longer be reproduced in Langflow), or a Langflow release that makes the shell service unnecessary, for example durable Human Input joins plus an allow-listed component that can call the pipeline in-process.
+asking for Langflow's own agent and retrieval components instead of ours (the page's results could then no longer be reproduced in Langflow), or a Langflow release that makes the shell service unnecessary, for example durable Human Input joins plus an allow-listed component that can call the pipeline in-process.

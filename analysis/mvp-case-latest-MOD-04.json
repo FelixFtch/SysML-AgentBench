@@ -5,7 +5,7 @@
   "task_id": "MOD-04",
   "configuration": "P0",
   "model": "qwen3.8-max",
-  "requirements": "# MOD-04 — synthetic, not an RTX specification\n\nPackage name stays RadioHealth. Edit the baseline.\n\nAdd port health of type LinkPort on usv.radio.\nKeep uplinkMbps equal to 8.0. Do not add other numbers.\n\n\nBaseline file RadioHealth.sysml:\n```sysml\npackage RadioHealth {\n    private import ScalarValues::*;\n    port def LinkPort;\n    part usv {\n        attribute uplinkMbps : Real = 8.0;\n        part radio { port fromProcessor : LinkPort; }\n    }\n}\n```",
+  "requirements": "# MOD-04 — synthetic\n\nPackage name stays RadioHealth. Edit the baseline.\n\nAdd port health of type LinkPort on usv.radio.\nKeep uplinkMbps equal to 8.0. Do not add other numbers.\n\n\nBaseline file RadioHealth.sysml:\n```sysml\npackage RadioHealth {\n    private import ScalarValues::*;\n    port def LinkPort;\n    part usv {\n        attribute uplinkMbps : Real = 8.0;\n        part radio { port fromProcessor : LinkPort; }\n    }\n}\n```",
   "baseline": "package RadioHealth {\n    private import ScalarValues::*;\n    port def LinkPort;\n    part usv {\n        attribute uplinkMbps : Real = 8.0;\n        part radio { port fromProcessor : LinkPort; }\n    }\n}\n",
   "gold_note": "标准答案在阅卷时才打开，没有放进两次模型调用。",
   "answer": "package RadioHealth {\n    private import ScalarValues::*;\n    port def LinkPort;\n    part usv {\n        attribute uplinkMbps : Real = 8.0;\n        part radio {\n            port fromProcessor : LinkPort;\n            port health : LinkPort;\n        }\n    }\n}\n",
@@ -31,7 +31,7 @@
     "missing": []
   },
   "invented_numbers": [],
-  "run_dir": "/data/robotics/RTRC/mvp/runs/20261003T152131-dad2742f",
+  "run_dir": "/data/robotics//mvp/runs/20261003T152131-dad2742f",
   "approval": {
     "triggered": false,
     "answer": "not-requested",

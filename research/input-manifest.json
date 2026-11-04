@@ -3,9 +3,9 @@
   "review_date": "2026-09-22",
   "inputs": [
     {
-      "id": "rtx-brief.docx",
-      "source_path": "/home/felixfang/Downloads/2706 - RTRC - Agentic AI for Systems Engineering Discovery and Design.docx",
-      "archive_path": "research/inputs/rtx-brief.docx",
+      "id": "project-brief.docx",
+      "source_path": "/home/felixfang/Downloads/2706 - - Agentic AI for Systems Engineering Discovery and Design.docx",
+      "archive_path": "research/inputs/project-brief.docx",
       "sha256": "b2ca873c396b26d60eb0e9a046dc78f5bf0cb9c2210182ab3264fe5317c1d94c",
       "bytes": 88783,
       "role": "user_provided_reference",

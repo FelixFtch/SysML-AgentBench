@@ -49,7 +49,7 @@
     ],
     "review": {
       "at": "2026-10-07T00:57:24+00:00",
-      "text": "run 20261007T005632 · review for a person\nBrief: Small observation buoy for maritime ISR: one camera drawing 5 W and one radio drawing 3 W (8 W total) against a 10 W power limit; local video recording at 2 Mbps retained for 4 hours on 32 GB of storage; upload at 2 Mbps over a 4 Mbps uplink capacity. Write both design A and design B from scratch, adapting no existing project.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T005659-9bcddbac&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T005632/DesignA.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nDesign B: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T005702-5be60167&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T005632/DesignB.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nAlignment: 6/6 pairs verified; package PASS\nGate: Designs A, B pass all four checks and may be approved into memory by a person."
+      "text": "run 20261007T005632 · review for a person\nBrief: Small observation buoy for maritime ISR: one camera drawing 5 W and one radio drawing 3 W (8 W total) against a 10 W power limit; local video recording at 2 Mbps retained for 4 hours on 32 GB of storage; upload at 2 Mbps over a 4 Mbps uplink capacity. Write both design A and design B from scratch, adapting no existing project.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T005659-9bcddbac&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T005632/DesignA.sysml (open it in Cameo's SysML v2 when provides the license)\nDesign B: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T005702-5be60167&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T005632/DesignB.sysml (open it in Cameo's SysML v2 when provides the license)\nAlignment: 6/6 pairs verified; package PASS\nGate: Designs A, B pass all four checks and may be approved into memory by a person."
     }
   },
   "retrieval": {
@@ -366,7 +366,7 @@
       "max_rounds": 20,
       "first_pass_attempt": 1,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T005659-9bcddbac",
+      "run_dir": "/data/robotics//mvp/runs/20261007T005659-9bcddbac",
       "model": "qwen3.8-max",
       "usage": {
         "prompt_tokens": 794,
@@ -409,7 +409,7 @@
           "text": "Design A: the straightforward allocation that follows the brief literally."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T005632/DesignA.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261007T005632/DesignA.sysml",
       "numbers": {
         "DesignA::vessel::uplinkMbps": 4.0,
         "DesignA::vessel::camera::drawW": 5.0,
@@ -541,7 +541,7 @@
       "max_rounds": 20,
       "first_pass_attempt": 1,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T005702-5be60167",
+      "run_dir": "/data/robotics//mvp/runs/20261007T005702-5be60167",
       "model": "qwen3.8-max",
       "usage": {
         "prompt_tokens": 827,
@@ -584,7 +584,7 @@
           "text": "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T005632/DesignB.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261007T005632/DesignB.sysml",
       "numbers": {
         "DesignB::ObservationBuoy::radio::drawW": 3.0,
         "DesignB::ObservationBuoy::powerLimitW": 10.0,

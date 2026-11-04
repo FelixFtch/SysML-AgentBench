@@ -20,4 +20,4 @@ That is the entirety of what the model asserts. Spelled out:
 - No `assume`, `frame`, refinement, sub-requirement decomposition, or `verify`/validation case.
 - No statement of why the sharing is needed, or any rationale beyond the doc string itself.
 
-The `synthetic: true` flag in `case.yaml` and the header's "not an RTX specification" caveat both hold: the model is a minimal one-requirement stub, so a faithful restatement is correspondingly short. Any longer answer would be padding it with domain assumptions.
+The `synthetic: true` flag in `case.yaml` and the header's "synthetic" caveat both hold: the model is a minimal one-requirement stub, so a faithful restatement is correspondingly short. Any longer answer would be padding it with domain assumptions.

@@ -4,7 +4,7 @@
     "PASS": 70,
     "FAIL": 11
   },
-  "directory": "/data/robotics/RTRC/analysis/heldout-p3doc-qwen3.8-flash-20261006T171547",
+  "directory": "/data/robotics//analysis/heldout-p3doc-qwen3.8-flash-20261006T171547",
   "cohort": "direct",
   "model": "qwen3.8-flash",
   "configs": [

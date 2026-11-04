@@ -1,6 +1,6 @@
 # Public engineering material: follow-up checks and actual integration
 
-Date: 2026-09-22. Scope: only two sets of material that can be demonstrated end to end; every original file is kept in `mvp/public-data/` and not mixed into application source. Public material is not called RTX internal data, and tutorial models are not called formal designs of a physical system.
+Date: 2026-09-22. Scope: only two sets of material that can be demonstrated end to end; every original file is kept in `mvp/public-data/` and not mixed into application source. Public material is not called  internal data, and tutorial models are not called formal designs of a physical system.
 
 ## 1 NASA cFE: traceable, real public requirements as input
 
@@ -30,7 +30,7 @@ This shows that a real public document has entered a parseable SysML project. It
 - Actual run of the official tool: **PASS, 0 diagnostics, 493 AST elements, 6.68 s**, producing the native API delta JSON and an EMF reference/location summary. Evidence is in `mvp/public-data/sysml-official-vehicle/validation/`.
 - It demonstrates real cross-file imports, types, ports/interfaces and variant model import. It is not real vehicle data, not a requirements-to-model accuracy benchmark, and does not show physical safety.
 
-Both examples ship a `reference.json`, whitelisted as IDs `nasa-cfe` and `sysml-official-vehicle`. The application reads the original model by relative path, creates a new run that actually calls the tool, and binds the file hashes. Choosing these two public examples does not change the product's cross-domain positioning and does not presuppose that RTX must work on vehicles or spacecraft.
+Both examples ship a `reference.json`, whitelisted as IDs `nasa-cfe` and `sysml-official-vehicle`. The application reads the original model by relative path, creates a new run that actually calls the tool, and binds the file hashes. Choosing these two public examples does not change the product's cross-domain positioning and does not presuppose that  must work on vehicles or spacecraft.
 
 ## 3 Hugging Face, checked in practice: samples exist, but they are not high-quality gold
 

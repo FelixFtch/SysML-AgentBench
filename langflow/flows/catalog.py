@@ -1,11 +1,11 @@
-"""The RTRC flows and the six Langflow projects they live in (decision 035). One place for the names.
+"""The flows and the six Langflow projects they live in (decision 035). One place for the names.
 
 Each project holds one candidate's exam version and chat version side by side, so the same canvas can sit the
 27-task exam (one task in, one answer out, scored outside) or talk to a person:
 
 1. Direct model, approaches P0 to P3: the fixed paths of the exam, no tools; one flow per approach.
 2. Sandboxed coding agents: OpenCode and Claude Code with files and ./validate (the official Pilot), nothing else.
-3. OpenCode with memory: the conversational assistant (OpenCode over the RTRC tools).
+3. OpenCode with memory: the conversational assistant (OpenCode over the tools).
 4. Langflow Agent with memory: the same tools on Langflow's own Agent, each tool a card.
 5. Shared tool flows: memory search, validate, write to memory, the design pipeline; run as tools by 3 and 4.
 6. Other: the design agent flow with a person's decision, the knowledge-base fill, the results tables, the MOD
@@ -61,7 +61,7 @@ PROJECTS: list[tuple[str, str, list[tuple[str, str]]]] = [
       ("sandbox-chat-claude-code", "Claude Code in the sandbox chat"),
       ("langflow-agent-pilot-chat", "Langflow Agent, Pilot only chat")]),
     ("3 · OpenCode with memory",
-     "OpenCode as the conversational harness over the RTRC tools (memory search, read a project, the design pipeline, the official Pilot, the memory gate, decisions, Cameo export). Chat: the design assistant. Exam: a fresh session per task, answer only, memory search and the Pilot as the only tools, qwen3.8-flash.",
+     "OpenCode as the conversational harness over the tools (memory search, read a project, the design pipeline, the official Pilot, the memory gate, decisions, Cameo export). Chat: the design assistant. Exam: a fresh session per task, answer only, memory search and the Pilot as the only tools, qwen3.8-flash.",
      [("opencode-memory-exam", "OpenCode with memory exam"),
       ("opencode-memory-chat", "OpenCode with memory chat")]),
     ("4 · Langflow Agent with memory",
@@ -69,7 +69,7 @@ PROJECTS: list[tuple[str, str, list[tuple[str, str]]]] = [
      [("langflow-agent-memory-exam", "Langflow Agent with memory exam"),
       ("langflow-agent-memory-chat-max", "Langflow Agent with memory chat · qwen3.8-max"),
       ("langflow-agent-memory-chat-local", "Langflow Agent with memory chat · local Qwen3.8-27B"),
-      ("rtrc-assistant-langchain", "Langflow Agent with memory chat · qwen3.8-max · one MCP card (decision 031)")]),
+      ("design-assistant-langchain", "Langflow Agent with memory chat · qwen3.8-max · one MCP card (decision 031)")]),
     ("6 · Other",
      "The design agent flow with the person's decision at ⑧ (cloud Qwen, and the local Qwen3.8-27B via OpenCode), the knowledge-base fill, the exam results tables, the MOD change chain, the Cameo check.",
      [("other-design-agent-flow", "Design agent flow with a person's decision"),
@@ -92,14 +92,14 @@ def flow_file(slug: str) -> Path:
 
 # The single project of decisions 030 to 034 and the flow names it held; an import moves everything into the six
 # projects above and removes these.
-OLD_PROJECT = "RTRC SysML-AgentBench"
+OLD_PROJECT = "SysML-AgentBench"
 RETIRED = [
-    "RTRC design assistant", "RTRC design assistant (Langflow Agent, qwen3.8-max)", "RTRC design assistant (local Qwen3.8-27B)",
-    "RTRC design assistant · unfolded (qwen3.8-max)", "RTRC design assistant · unfolded (local 27B)",
-    "RTRC memory search", "RTRC write to memory", "RTRC validate SysML", "RTRC design pipeline", "RTRC design pipeline (as a tool)",
-    "RTRC agent flow: requirement to approved SysML v2 design", "RTRC agent flow · local Qwen3.8-27B via OpenCode",
-    "RTRC F0: memory (what the agent knows)", "RTRC F1: exam cell, direct model", "RTRC F2: exam cell, sandboxed coding agent",
-    "RTRC F3: results", "RTRC F5: MOD change chain", "RTRC Cameo check (when licensed)",
+    "design assistant", "design assistant (Langflow Agent, qwen3.8-max)", "design assistant (local Qwen3.8-27B)",
+    "design assistant · unfolded (qwen3.8-max)", "design assistant · unfolded (local 27B)",
+    "memory search", "write to memory", "validate SysML", "design pipeline", "design pipeline (as a tool)",
+    "agent flow: requirement to approved SysML v2 design", "agent flow · local Qwen3.8-27B via OpenCode",
+    "F0: memory (what the agent knows)", "F1: exam cell, direct model", "F2: exam cell, sandboxed coding agent",
+    "F3: results", "F5: MOD change chain", "Cameo check (when licensed)",
 ]
 
 

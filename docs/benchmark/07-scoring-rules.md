@@ -27,7 +27,7 @@ Whether a design meets its budget is a separate **design verdict** (decision 019
 
 ## What the direct approaches get, and the agents do not
 
-The direct prompts carry the SysML rules (one fenced block, one package, `private import ScalarValues::*;` when Real is used, never change a kept number) and, for ALN, the alignment rules; the harness runs the repair loop (the Pilot's complete error list back into the same conversation, up to 20 times, stop after three identical answers). The sandboxed agents get no rules in the prompt: the task, a rules file and `./validate`, and they repair inside their own session. The Langflow Agent exam flows get the exam prompt (`tools/assistant/rtrc-assistant-exam.md` with the frozen rules appended) and the Pilot as a tool. The columns compare harnesses on the same model; the help differs by design and is written down.
+The direct prompts carry the SysML rules (one fenced block, one package, `private import ScalarValues::*;` when Real is used, never change a kept number) and, for ALN, the alignment rules; the harness runs the repair loop (the Pilot's complete error list back into the same conversation, up to 20 times, stop after three identical answers). The sandboxed agents get no rules in the prompt: the task, a rules file and `./validate`, and they repair inside their own session. The Langflow Agent exam flows get the exam prompt (`tools/assistant/design-assistant-exam.md` with the frozen rules appended) and the Pilot as a tool. The columns compare harnesses on the same model; the help differs by design and is written down.
 
 ## Where the rules live
 

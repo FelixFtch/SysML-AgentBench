@@ -359,7 +359,7 @@ def requirements_md(task_id: str, p: dict, s: dict, platform: str) -> str:
         "This task covers only the UAV battery and its solar array; the command "
         "ship and the shore station appear as the downlink destinations in the "
         "mission story.")
-    return f"""# {task_id} — synthetic, not an RTX specification
+    return f"""# {task_id} — synthetic
 
 SIM net-energy bookkeeping with solar harvesting for {PLATFORM_TEXT[platform]} in
 the maritime ISR scenario (the four-node system: unmanned surface vessel,
@@ -549,8 +549,8 @@ ROW_RE = re.compile(
 def verify_from_disk(folder: Path) -> dict:
     text = (folder / "input" / "requirements.md").read_text(encoding="utf-8")
     first = text.splitlines()[0]
-    if not re.fullmatch(r"# HRV-\d{4} — synthetic, not an RTX specification", first):
-        raise SystemExit(f"{folder.name}: requirements.md first line is not the RTX marker: {first!r}")
+    if not re.fullmatch(r"# HRV-\d{4} — synthetic", first):
+        raise SystemExit(f"{folder.name}: requirements.md first line is not the synthetic marker: {first!r}")
     cap = int(re.search(r"- Capacity: (\d+) Wh", text).group(1))
     soc0 = int(re.search(r"- Initial SoC at t = 0: (\d+) %", text).group(1))
     protect = int(re.search(r"- Protection line: (\d+) %", text).group(1))

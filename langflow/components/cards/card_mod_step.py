@@ -1,4 +1,4 @@
-"""RTRC MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.
+"""MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.
 The "Limit check" message starts with "moved" or "unchanged", so an If-Else can stop for a person when a stated limit moved."""
 from lfx.custom.custom_component.component import Component
 from lfx.io import DataInput, DropdownInput, Output
@@ -12,11 +12,11 @@ def _record(value) -> dict:
     return dict(getattr(value, "data", None) or (value if isinstance(value, dict) else {}))
 
 
-class RtrcModStep(Component):
-    display_name = "RTRC MOD step"
+class CardModStep(Component):
+    display_name = "MOD step"
     description = "One step of the MOD change chain, from the case record."
     icon = "list-checks"
-    name = "RtrcModStep"
+    name = "CardModStep"
 
     inputs = [
         DataInput(name="case", display_name="Case record"),

@@ -21,7 +21,7 @@
 
 TypeSafe 在 2026-09-15 发布 Jev 的官方介绍称其为 System One 模型。它接收 state 和一组原子问题，输出 Choice、Score、Noul 等类型化结果与概率；不生成自由文本。因此适合分类、路由、候选排序、是否需要复核等窄判断。[官方介绍](https://typesafe.ai/blog/introducing-system-one-models-and-jev)、[API/概念文档](https://docs.typesafe.ai/introduction)
 
-**证据边界：**官方速度/成本数字来自四类厂商设计 workflow；评估以其他大型模型的概率共识为参照，不是 RTX 工程师标注的正确答案。官方所谓无幻觉首先对应输出 schema/type 的保证，不能推导出“该器件兼容”或“该需求已满足”的事实保证。Choice/Score 的 confidence 是概率分布的统计量，不能直接当正确率；官方也要求本地设阈值并测试。[官方评估方法](https://evals.typesafe.ai/)、[confidence 定义](https://docs.typesafe.ai/confidence)
+**证据边界：**官方速度/成本数字来自四类厂商设计 workflow；评估以其他大型模型的概率共识为参照，不是  工程师标注的正确答案。官方所谓无幻觉首先对应输出 schema/type 的保证，不能推导出“该器件兼容”或“该需求已满足”的事实保证。Choice/Score 的 confidence 是概率分布的统计量，不能直接当正确率；官方也要求本地设阈值并测试。[官方评估方法](https://evals.typesafe.ai/)、[confidence 定义](https://docs.typesafe.ai/confidence)
 
 **可取用位置（本项目设计）：**
 
@@ -34,7 +34,7 @@ TypeSafe 在 2026-09-15 发布 Jev 的官方介绍称其为 System One 模型。
 
 **许可与部署：**官方 [Python SDK](https://github.com/typesafe-ai/typesafe-sdk-python) / [JS SDK](https://github.com/typesafe-ai/typesafe-sdk-js)是 MIT；这只是客户端代码许可。本次未找到开放 Jev 权重或可下载自托管模型，不能把 SDK 开源说成模型可离线运行。[官方 GitHub 组织](https://github.com/typesafe-ai)
 
-**数据处理：**TypeSafe 隐私政策明确不以 Input 训练或微调模型，但会处理 prompts/data/instructions，并按提供服务及商业用途所需保留；声明服务托管在美国。公开政策未给出我们可据以承诺的固定零留存 SLA。因此 MVP 先用公开/合成测试集，若将来使用企业材料，部署与合同条件应跟 RTX 的实际环境一起确定。[TypeSafe 隐私政策，Input / Retention / International Visitors](https://typesafe.ai/legal/privacy-policy)
+**数据处理：**TypeSafe 隐私政策明确不以 Input 训练或微调模型，但会处理 prompts/data/instructions，并按提供服务及商业用途所需保留；声明服务托管在美国。公开政策未给出我们可据以承诺的固定零留存 SLA。因此 MVP 先用公开/合成测试集，若将来使用企业材料，部署与合同条件应跟  的实际环境一起确定。[TypeSafe 隐私政策，Input / Retention / International Visitors](https://typesafe.ai/legal/privacy-policy)
 
 建议 Jev 作为可替换 `DecisionScorer` 的 **shadow mode 实验插件**：先只记录建议与延时，不参与写入/删除；等有项目内校准集再决定是否启用。未采用 Jev 时，主流程仍必须正常运行。
 

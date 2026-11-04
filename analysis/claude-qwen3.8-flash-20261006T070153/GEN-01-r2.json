@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_8f7ca1de3d4c4aae969d886e",
       "tool_input": {
-        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T072722-P-CODE-2-GEN-01/workspace && find /data/robotics/RTRC/mvp -maxdepth 2 -name \"*.md\" | head -20",
+        "command": "ls -la /data/robotics//mvp/agent-runs/20261006T072722-P-CODE-2-GEN-01/workspace && find /data/robotics//mvp -maxdepth 2 -name \"*.md\" | head -20",
         "description": "List workspace contents and find docs"
       }
     }

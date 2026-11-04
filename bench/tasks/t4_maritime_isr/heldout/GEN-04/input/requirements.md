@@ -1,4 +1,4 @@
-# GEN-04 — synthetic, not an RTX specification
+# GEN-04 — synthetic
 
 Package name: ShoreArchive
 

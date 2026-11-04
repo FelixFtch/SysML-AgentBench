@@ -1,11 +1,11 @@
-"""MCP tools for the RTRC design assistant: the OpenCode assistant (Langflow node RtrcOpenCodeAssistant and
+"""MCP tools for the design assistant: the OpenCode assistant (Langflow node CardOpenCodeAssistant and
 scripts/assistant.sh, decision 032) and the Langflow-Agent comparison flow (decision 031).
 
     python3 tools/assistant_mcp.py            # streamable HTTP on 127.0.0.1:8782/mcp
 
 The Agent decides when to call a tool; the tools decide nothing by themselves. Memory search is the results
 page's retrieval (MiniLM + FAISS, seeds plus one hop). run_design runs the verified Part 2 pipeline through the
-RTRC shell service (bench/shell_service.py): requirements, two designs (by default written by OpenCode in the
+shell service (bench/shell_service.py): requirements, two designs (by default written by OpenCode in the
 sandbox with ./validate in hand, decision 032; or by the model directly), the official SysML v2 Pilot repair
 loop, alignment, the four checks, trade-offs, diagram and Cameo export; its record appears on results page 2.3.
 Writing a design into memory goes through the same gate as the page: every gated check must pass.
@@ -28,15 +28,15 @@ if str(ROOT) not in sys.path:
 
 from mcp.server.mcpserver import MCPServer  # noqa: E402
 
-SHELL = os.environ.get("RTRC_SHELL_URL", "http://127.0.0.1:8781")
+SHELL = os.environ.get("SHELL_URL", "http://127.0.0.1:8781")
 SECRETS = ROOT / ".langflow" / "secrets.env"
 MODELS = ("qwen3.8-max", "qwen3.8-flash", "qwen3.8-27b (Ollama)")
 RUN_ID = re.compile(r"^\d{8}T\d{6}$")
 
 server = MCPServer(
-    "rtrc-assistant",
+    "design-assistant",
     instructions=(
-        "Tools of the RTRC SysML v2 design assistant. search_memory and list_projects read the memory "
+        "Tools of the SysML v2 design assistant. search_memory and list_projects read the memory "
         "(MaritimeISR plus approved designs). run_design runs the verified design pipeline on a brief whose "
         "numbers all come from the engineer; it takes several minutes. validate_sysml_text parses SysML v2 "
         "with the official Pilot. write_to_memory needs the engineer's approval and every gated check passed."
@@ -46,21 +46,21 @@ server = MCPServer(
 
 def _token() -> str:
     for line in SECRETS.read_text(encoding="utf-8").splitlines():
-        if line.startswith("RTRC_SHELL_TOKEN="):
+        if line.startswith("SHELL_TOKEN="):
             return line.split("=", 1)[1].strip().strip("'\"")
-    raise RuntimeError("RTRC_SHELL_TOKEN missing from .langflow/secrets.env")
+    raise RuntimeError("SHELL_TOKEN missing from .langflow/secrets.env")
 
 
 def _shell(path: str, payload: dict, timeout: int = 1800) -> dict:
     request = urllib.request.Request(SHELL + path, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": _token()})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": _token()})
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             body = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         body = json.loads(exc.read() or b"{}")
     except urllib.error.URLError as exc:
-        raise RuntimeError(f"The RTRC shell service is not running at {SHELL} ({exc.reason}); start it with scripts/langflow.sh") from exc
+        raise RuntimeError(f"The shell service is not running at {SHELL} ({exc.reason}); start it with scripts/langflow.sh") from exc
     if not body.get("ok"):
         raise RuntimeError(body.get("error") or f"{path} failed")
     return body
@@ -126,7 +126,7 @@ def read_project(name: str) -> str:
 
 
 @server.tool(description=(
-    "Run the verified RTRC design pipeline on a brief and return its review. Only call it after the engineer has "
+    "Run the verified design pipeline on a brief and return its review. Only call it after the engineer has "
     "confirmed the brief, and only with numbers the engineer gave (device powers in W, the power limit, recording "
     "rate in Mbps, retention hours, storage GB, upload rate and uplink capacity in Mbps). The pipeline searches the "
     "memory, writes numbered requirements, writes design A (adapting a similar project if one exists) and design B, "
@@ -251,6 +251,6 @@ def export_cameo(run_id: str) -> str:
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("RTRC_ASSISTANT_MCP_PORT", "8782"))
-    print(f"rtrc-assistant MCP on http://127.0.0.1:{port}/mcp", file=sys.stderr, flush=True)
+    port = int(os.environ.get("ASSISTANT_MCP_PORT", "8782"))
+    print(f"design-assistant MCP on http://127.0.0.1:{port}/mcp", file=sys.stderr, flush=True)
     server.run(transport="streamable-http", host="127.0.0.1", port=port)

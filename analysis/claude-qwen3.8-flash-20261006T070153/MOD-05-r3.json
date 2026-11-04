@@ -45,7 +45,7 @@
       "tool_name": "Write",
       "tool_use_id": "call_ba6c7fa7ce5749c6ac73bb18",
       "tool_input": {
-        "file_path": "/data/robotics/RTRC/mvp/agent-runs/20261006T075540-P-CODE-2-MOD-05/workspace/input/baseline/PowerBudget.sysml",
+        "file_path": "/data/robotics//mvp/agent-runs/20261006T075540-P-CODE-2-MOD-05/workspace/input/baseline/PowerBudget.sysml",
         "content": "package PowerBudget {\n    private import ScalarValues::*;\n    part usv {\n        attribute powerLimitW : Real = 60.0;\n        part eoCamera { attribute drawW : Real = 41.0; }\n        part computer { attribute drawW : Real = 25.0; }\n        part irCamera { attribute drawW : Real = 12.0; }\n    }\n}\n"
       }
     }

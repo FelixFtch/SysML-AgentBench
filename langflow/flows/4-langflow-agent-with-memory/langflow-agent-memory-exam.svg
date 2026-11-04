@@ -15,16 +15,16 @@
 <text xml:space="preserve" text-anchor="middle" x="131.38" y="-143.05" font-family="Helvetica,sans-Serif" font-size="11.00">Task statement (one exam task)</text>
 <text xml:space="preserve" text-anchor="middle" x="131.38" y="-129.55" font-family="Helvetica,sans-Serif" font-size="11.00">ChatInput</text>
 </g>
-<!-- Agent&#45;rtrc -->
+<!-- Agent&#45; -->
 <g id="node4" class="node">
-<title>Agent&#45;rtrc</title>
+<title>Agent&#45;</title>
 <path fill="#fff1cc" stroke="#9aa4ad" d="M601.5,-97C601.5,-97 317.75,-97 317.75,-97 311.75,-97 305.75,-91 305.75,-85 305.75,-85 305.75,-73 305.75,-73 305.75,-67 311.75,-61 317.75,-61 317.75,-61 601.5,-61 601.5,-61 607.5,-61 613.5,-67 613.5,-73 613.5,-73 613.5,-85 613.5,-85 613.5,-91 607.5,-97 601.5,-97"/>
 <text xml:space="preserve" text-anchor="middle" x="459.62" y="-82.05" font-family="Helvetica,sans-Serif" font-size="11.00">Langflow Agent with memory exam · Langflow Agent</text>
 <text xml:space="preserve" text-anchor="middle" x="459.62" y="-68.55" font-family="Helvetica,sans-Serif" font-size="11.00">Agent</text>
 </g>
-<!-- ChatInput&#45;ask&#45;&gt;Agent&#45;rtrc -->
+<!-- ChatInput&#45;ask&#45;&gt;Agent&#45; -->
 <g id="edge2" class="edge">
-<title>ChatInput&#45;ask&#45;&gt;Agent&#45;rtrc</title>
+<title>ChatInput&#45;ask&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M229.38,-121.86C267.78,-114.68 312.07,-106.4 351.42,-99.04"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="351.82,-101.46 358.25,-97.77 350.92,-96.65 351.82,-101.46"/>
 </g>
@@ -35,9 +35,9 @@
 <text xml:space="preserve" text-anchor="middle" x="131.38" y="-82.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · official Pilot on pasted SysML (a flow) ·</text>
 <text xml:space="preserve" text-anchor="middle" x="131.38" y="-68.55" font-family="Helvetica,sans-Serif" font-size="11.00">RunFlow</text>
 </g>
-<!-- RunFlow&#45;validate&#45;&gt;Agent&#45;rtrc -->
+<!-- RunFlow&#45;validate&#45;&gt;Agent&#45; -->
 <g id="edge4" class="edge">
-<title>RunFlow&#45;validate&#45;&gt;Agent&#45;rtrc</title>
+<title>RunFlow&#45;validate&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M263.19,-79C274.39,-79 285.8,-79 297.2,-79"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="296.98,-81.45 303.98,-79 296.98,-76.55 296.98,-81.45"/>
 </g>
@@ -48,9 +48,9 @@
 <text xml:space="preserve" text-anchor="middle" x="131.38" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">Tool · search memory (a flow) · Paper 2</text>
 <text xml:space="preserve" text-anchor="middle" x="131.38" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">RunFlow</text>
 </g>
-<!-- RunFlow&#45;search&#45;&gt;Agent&#45;rtrc -->
+<!-- RunFlow&#45;search&#45;&gt;Agent&#45; -->
 <g id="edge3" class="edge">
-<title>RunFlow&#45;search&#45;&gt;Agent&#45;rtrc</title>
+<title>RunFlow&#45;search&#45;&gt;Agent&#45;</title>
 <path fill="none" stroke="#6b7680" d="M231.15,-36.47C269.23,-43.59 312.88,-51.75 351.7,-59.01"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="351.09,-61.39 358.42,-60.26 351.99,-56.57 351.09,-61.39"/>
 </g>
@@ -61,9 +61,9 @@
 <text xml:space="preserve" text-anchor="middle" x="791.25" y="-82.05" font-family="Helvetica,sans-Serif" font-size="11.00">Answer (scored outside, by the frozen scorer)</text>
 <text xml:space="preserve" text-anchor="middle" x="791.25" y="-68.55" font-family="Helvetica,sans-Serif" font-size="11.00">ChatOutput</text>
 </g>
-<!-- Agent&#45;rtrc&#45;&gt;ChatOutput&#45;answer -->
+<!-- Agent&#45;&#45;&gt;ChatOutput&#45;answer -->
 <g id="edge1" class="edge">
-<title>Agent&#45;rtrc&#45;&gt;ChatOutput&#45;answer</title>
+<title>Agent&#45;&#45;&gt;ChatOutput&#45;answer</title>
 <path fill="none" stroke="#6b7680" d="M613.86,-79C625.22,-79 636.66,-79 647.95,-79"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="647.64,-81.45 654.64,-79 647.64,-76.55 647.64,-81.45"/>
 </g>

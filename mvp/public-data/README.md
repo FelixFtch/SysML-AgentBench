@@ -1,6 +1,6 @@
 # Public engineering data used by the MVP
 
-Two small source packages are downloaded locally, version-pinned, hashed, and kept separate from application code. They serve different purposes. Neither is RTX material, an RTX-endorsed design, or a collection of accepted requirements-to-SysML gold pairs.
+Two small source packages are downloaded locally, version-pinned, hashed, and kept separate from application code. They serve different purposes. Neither is outside material, an outside design, or a collection of accepted requirements-to-SysML gold pairs.
 
 | Source package | Upstream version and license | Actual local use |
 |---|---|---|
@@ -32,7 +32,7 @@ Use `nasa-cfe/derived/demo-requirements.md` as the readable English input, `demo
 
 Both example directories have `reference.json` with the package name and model paths relative to that directory. The MVP can whitelist `nasa-cfe` and `sysml-official-vehicle`, then rerun the actual files into a fresh evidence directory. Existing successful logs are evidence of the recorded run; they do not substitute for validating a changed file.
 
-These are cFE software-service requirements. They do not specify the synthetic maritime gateway's camera rate, battery power, storage capacity or link speed. They have no corresponding official SysML v2 gold model in this package. They cannot establish RTX internal needs, certify a new system, or justify copying mission-defined values from one configuration to another.
+These are cFE software-service requirements. They do not specify the synthetic maritime gateway's camera rate, battery power, storage capacity or link speed. They have no corresponding official SysML v2 gold model in this package. They cannot establish  internal needs, certify a new system, or justify copying mission-defined values from one configuration to another.
 
 ## Official SysML reference project: actual language/tool interoperability
 

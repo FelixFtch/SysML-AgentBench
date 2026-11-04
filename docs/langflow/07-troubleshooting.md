@@ -4,9 +4,9 @@ One symptom, one cause, one fix. Logs: `.langflow/langflow.log`, `.langflow/shel
 
 | You see | Why | Do |
 |---|---|---|
-| The sidebar has no **Rtrc** group; imported flows show empty cards | Langflow started without our components folder | Start with `scripts/langflow.sh` (it sets `LANGFLOW_COMPONENTS_PATH=langflow/components`), or set that variable yourself and restart |
-| A card says `The RTRC shell service is not reachable at http://127.0.0.1:8781` | The shell service is not running | `.venv/bin/python -u bench/shell_service.py` (the start script does it); check `.langflow/shell_service.log` |
-| `missing or wrong X-RTRC-Token` | Langflow and the shell service read different `.langflow/secrets.env` values | Restart both after `python scripts/langflow_secrets.py`; the token must be in Langflow's environment (the start script exports it) |
+| The sidebar has no **cards** group; imported flows show empty cards | Langflow started without our components folder | Start with `scripts/langflow.sh` (it sets `LANGFLOW_COMPONENTS_PATH=langflow/components`), or set that variable yourself and restart |
+| A card says `The shell service is not reachable at http://127.0.0.1:8781` | The shell service is not running | `.venv/bin/python -u bench/shell_service.py` (the start script does it); check `.langflow/shell_service.log` |
+| `missing or wrong X-Shell-Token` | Langflow and the shell service read different `.langflow/secrets.env` values | Restart both after `python scripts/langflow_secrets.py`; the token must be in Langflow's environment (the start script exports it) |
 | An Agent flow fails in seconds with `Incorrect API key provided: EMPTY` or `API key is required` | The Agent's provider variable is missing for *your* Langflow user (variables are per user) | Settings → Global Variables → add `OPENAI_COMPATIBLE_API_KEY` and `OPENAI_COMPATIBLE_BASE_URL` (or your provider's), or run `langflow/scripts/setup_assistant.py` then `move_to_user.py <you>` |
 | `HTTP 401 Token has expired` during a long exam | Langflow's access token lasts one hour | `bench/langflow_exam.py` logs in again by itself; if you drive the API yourself, log in again |
 | A model name is refused, or the model dropdown does not have yours | Old build of the cards | Type the name in the model field (the dropdowns accept any value); for an Ollama model use `<tag> (Ollama)` |

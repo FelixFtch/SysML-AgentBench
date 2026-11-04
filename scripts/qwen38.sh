@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# The local Qwen3.8-27B (3-bit) on this machine's RTX 4090, served by Ollama on 127.0.0.1:11434.
-#   scripts/qwen38.sh            start Ollama if needed, build the RTRC tag if missing, open a chat with it
+# The local Qwen3.8-27B (3-bit) on this machine's 24 GB GPU, served by Ollama on 127.0.0.1:11434.
+#   scripts/qwen38.sh            start Ollama if needed, build the tag if missing, open a chat with it
 #   scripts/qwen38.sh --serve    start Ollama and build the tag only (what the Langflow flows need)
 #   scripts/qwen38.sh --status   what is loaded and how much of it is on the GPU
-# The RTRC tag qwen3.8-27b-q3:64k is the published smtek/Qwen3.8-27B:Q3_K_XL with num_ctx 65536
+# The tag qwen3.8-27b-q3:64k is the published smtek/Qwen3.8-27B:Q3_K_XL with num_ctx 65536
 # (tools/ollama/qwen3.8-27b-q3-64k.Modelfile), so the whole model sits in the GPU's memory.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

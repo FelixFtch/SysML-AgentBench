@@ -55,7 +55,7 @@
     ],
     "review": {
       "at": "2026-10-13T16:04:24+00:00",
-      "text": "run 20261013T155413 · review for a person\nBrief: Design a fixed-wing UAV modeled on the MaritimeISR FixedWingUav structure, carrying a Mid-360S lidar (6.5 W, 9-27 V DC, 100 BASE-TX Ethernet, 200,000 points/s at 10 Hz), an EO camera (5 W) and a search radar (30 W), all feeding an edge computer (14 W) and a data radio (10 W), under a total power limit of 120 W. The lidar point cloud shall be recorded locally at 25.6 Mbps with 8 h retention on 256 GB of storage. Processed data shall be uploaded at 10 Mbps within a 20 Mbps uplink capacity.\n\nDesign A: official Pilot PASS after 1 parse(s); SOURCE PASS, POWER PASS, LINK PASS, STORE PASS, TRACE PASS, REQS UNKNOWN, MISSION PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261013T160401-8563dea9&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261013T155413/DesignA.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nDesign B: official Pilot PASS after 1 parse(s); SOURCE PASS, POWER PASS, LINK PASS, STORE PASS, TRACE PASS, REQS UNKNOWN, MISSION PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261013T160406-21590d4a&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261013T155413/DesignB.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nAlignment: 4/4 pairs verified; package PASS\nGate: Designs A, B pass every check and may be approved into memory by a person. The script does not choose."
+      "text": "run 20261013T155413 · review for a person\nBrief: Design a fixed-wing UAV modeled on the MaritimeISR FixedWingUav structure, carrying a Mid-360S lidar (6.5 W, 9-27 V DC, 100 BASE-TX Ethernet, 200,000 points/s at 10 Hz), an EO camera (5 W) and a search radar (30 W), all feeding an edge computer (14 W) and a data radio (10 W), under a total power limit of 120 W. The lidar point cloud shall be recorded locally at 25.6 Mbps with 8 h retention on 256 GB of storage. Processed data shall be uploaded at 10 Mbps within a 20 Mbps uplink capacity.\n\nDesign A: official Pilot PASS after 1 parse(s); SOURCE PASS, POWER PASS, LINK PASS, STORE PASS, TRACE PASS, REQS UNKNOWN, MISSION PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261013T160401-8563dea9&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261013T155413/DesignA.sysml (open it in Cameo's SysML v2 when provides the license)\nDesign B: official Pilot PASS after 1 parse(s); SOURCE PASS, POWER PASS, LINK PASS, STORE PASS, TRACE PASS, REQS UNKNOWN, MISSION PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261013T160406-21590d4a&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261013T155413/DesignB.sysml (open it in Cameo's SysML v2 when provides the license)\nAlignment: 4/4 pairs verified; package PASS\nGate: Designs A, B pass every check and may be approved into memory by a person. The script does not choose."
     }
   },
   "retrieval": {
@@ -390,7 +390,7 @@
       "max_rounds": 20,
       "first_pass_attempt": 1,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261013T160401-8563dea9",
+      "run_dir": "/data/robotics//mvp/runs/20261013T160401-8563dea9",
       "model": "opencode on qwen3.8-27b (Ollama)",
       "usage": null,
       "prompt_parts": [
@@ -410,7 +410,7 @@
           "key": "baseline",
           "label": "Similar project to adapt · MaritimeISR",
           "paper": "p2",
-          "text": "package MaritimeISR {\n    /* Synthetic maritime ISR reference model. Numbers are not RTX specifications.\n       Ground truth for the benchmark: frozen before any agent is scored against it. */\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def TrackPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def AisReceiver {\n        port tracks : TrackPort;\n    }\n    part def Radar {\n        port tracks : TrackPort;\n    }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n        port trackOut : TrackPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def UnmannedSurfaceVessel {\n        part eoCamera : Camera;\n        part irCamera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 60.0;\n        attribute uplinkMbps : Real = 8.0;\n        attribute storageGB : Real = 128.0;\n    }\n    part def FixedWingUav {\n        part eoCamera : Camera;\n        part searchRadar : Radar;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 120.0;\n        attribute downlinkMbps : Real = 20.0;\n    }\n    part def CommandShip {\n        port fromUsv : LinkPort;\n        port fromUav : LinkPort;\n        port toShore : LinkPort;\n        part fusion : Processor;\n        attribute fusionLatencyS : Real = 2.0;\n    }\n    part def ShoreStation {\n        port fromCommand : LinkPort;\n        part archive : Processor;\n        attribute backhaulMbps : Real = 50.0;\n    }\n\n    part usv : UnmannedSurfaceVessel;\n    part uav : FixedWingUav;\n    part commandShip : CommandShip;\n    part shore : ShoreStation;\n\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.irCamera.imagery to usv.processor.imageryIn;\n    connect usv.ais.tracks to usv.processor.trackIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n    connect usv.radio.toShore to commandShip.fromUsv;\n    connect uav.searchRadar.tracks to uav.processor.trackIn;\n    connect uav.eoCamera.imagery to uav.processor.imageryIn;\n    connect uav.processor.uplink to uav.radio.fromProcessor;\n    connect uav.radio.toShore to commandShip.fromUav;\n    connect commandShip.toShore to shore.fromCommand;\n\n    requirement def LocalRawRetention {\n        doc /* USV raw imagery is retained locally. Numeric retention is a separate synthetic budget, not implied here. */\n    }\n    requirement def PowerLimitUnchanged {\n        doc /* Synthetic: USV input power limit stays 60 W. An agent must not edit this limit to make a design pass. */\n    }\n    requirement def TrackSharing {\n        doc /* Synthetic: USV AIS tracks and UAV radar tracks are shared to the command ship, then to the shore archive. */\n    }\n}\n"
+          "text": "package MaritimeISR {\n    /* Synthetic maritime ISR reference model. Numbers are synthetic.\n       Ground truth for the benchmark: frozen before any agent is scored against it. */\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def TrackPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def AisReceiver {\n        port tracks : TrackPort;\n    }\n    part def Radar {\n        port tracks : TrackPort;\n    }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n        port trackOut : TrackPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def UnmannedSurfaceVessel {\n        part eoCamera : Camera;\n        part irCamera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 60.0;\n        attribute uplinkMbps : Real = 8.0;\n        attribute storageGB : Real = 128.0;\n    }\n    part def FixedWingUav {\n        part eoCamera : Camera;\n        part searchRadar : Radar;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 120.0;\n        attribute downlinkMbps : Real = 20.0;\n    }\n    part def CommandShip {\n        port fromUsv : LinkPort;\n        port fromUav : LinkPort;\n        port toShore : LinkPort;\n        part fusion : Processor;\n        attribute fusionLatencyS : Real = 2.0;\n    }\n    part def ShoreStation {\n        port fromCommand : LinkPort;\n        part archive : Processor;\n        attribute backhaulMbps : Real = 50.0;\n    }\n\n    part usv : UnmannedSurfaceVessel;\n    part uav : FixedWingUav;\n    part commandShip : CommandShip;\n    part shore : ShoreStation;\n\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.irCamera.imagery to usv.processor.imageryIn;\n    connect usv.ais.tracks to usv.processor.trackIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n    connect usv.radio.toShore to commandShip.fromUsv;\n    connect uav.searchRadar.tracks to uav.processor.trackIn;\n    connect uav.eoCamera.imagery to uav.processor.imageryIn;\n    connect uav.processor.uplink to uav.radio.fromProcessor;\n    connect uav.radio.toShore to commandShip.fromUav;\n    connect commandShip.toShore to shore.fromCommand;\n\n    requirement def LocalRawRetention {\n        doc /* USV raw imagery is retained locally. Numeric retention is a separate synthetic budget, not implied here. */\n    }\n    requirement def PowerLimitUnchanged {\n        doc /* Synthetic: USV input power limit stays 60 W. An agent must not edit this limit to make a design pass. */\n    }\n    requirement def TrackSharing {\n        doc /* Synthetic: USV AIS tracks and UAV radar tracks are shared to the command ship, then to the shore archive. */\n    }\n}\n"
         },
         {
           "key": "task",
@@ -425,7 +425,7 @@
           "text": "Design A: adapt the similar existing project. Start from its model: keep its structure, part names and port names where they fit the brief; change only what the requirements need; add what is missing; leave out what the brief does not need. Every number must come from the requirements, and a stated limit is never changed."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261013T155413/DesignA.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261013T155413/DesignA.sysml",
       "numbers": {
         "DesignA::FixedWingUav::uplinkMbps": 20.0,
         "DesignA::FixedWingUav::searchRadar::drawW": 30.0,
@@ -575,7 +575,7 @@
           "unit": "links"
         }
       ],
-      "agent_workspace": "/data/robotics/RTRC/mvp/agent-runs/20261013T155419-f9d7-P-CODE-agent-A/workspace",
+      "agent_workspace": "/data/robotics//mvp/agent-runs/20261013T155419-f9d7-P-CODE-agent-A/workspace",
       "read_back": "The total power consumption of the UAV payload and avionics shall not exceed the system power limit.\nThe Mid-360S lidar shall operate with a power draw of 6.5 W.\nThe EO camera shall operate with a power draw of 5 W.\nThe search radar shall operate with a power draw of 30 W.\nThe edge computer shall operate with a power draw of 14 W.\nThe data radio shall operate with a power draw of 10 W.\nThe lidar point cloud shall be recorded locally at a data rate of 25.6 Mbps.\nThe local storage system shall provide a retention time of 8 hours for recorded data.\nThe local storage system shall have a capacity of 256 GB.",
       "read_back_numbers": {
         "0": false,
@@ -616,7 +616,7 @@
       "max_rounds": 20,
       "first_pass_attempt": 1,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261013T160406-21590d4a",
+      "run_dir": "/data/robotics//mvp/runs/20261013T160406-21590d4a",
       "model": "opencode on qwen3.8-27b (Ollama)",
       "usage": null,
       "prompt_parts": [
@@ -651,7 +651,7 @@
           "text": "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261013T155413/DesignB.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261013T155413/DesignB.sysml",
       "numbers": {
         "DesignB::top::uploadMbps": 10.0,
         "DesignB::top::uplinkMbps": 20.0,
@@ -802,7 +802,7 @@
           "unit": "links"
         }
       ],
-      "agent_workspace": "/data/robotics/RTRC/mvp/agent-runs/20261013T155821-49f1-P-CODE-agent-B/workspace",
+      "agent_workspace": "/data/robotics//mvp/agent-runs/20261013T155821-49f1-P-CODE-agent-B/workspace",
       "read_back": "The total power consumption of the UAV payload and avionics shall not exceed the system power limit of 120 W.\nThe Mid-360S lidar shall operate with a power draw of 6.5 W.\nThe EO camera shall operate with a power draw of 5 W.\nThe search radar shall operate with a power draw of 30 W.\nThe edge computer shall operate with a power draw of 14 W.\nThe data radio shall operate with a power draw of 10 W.\nThe lidar point cloud shall be recorded locally at a data rate of 25.6 Mbps.\nThe local storage system shall provide a retention time of 8 hours for recorded data.\nThe local storage system shall have a capacity of 256 GB.",
       "read_back_numbers": {
         "0": false,

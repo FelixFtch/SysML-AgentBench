@@ -1,4 +1,4 @@
-# MOD-03 — synthetic, not an RTX specification
+# MOD-03 — synthetic
 
 Package name stays ShoreHop. Edit the baseline.
 

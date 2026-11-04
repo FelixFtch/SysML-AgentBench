@@ -18,4 +18,4 @@ I read `input/model.sysml` (identical to the model given in the task) and `input
 ## Notes on faithfulness
 
 - The model asserts exactly two quantitative facts: 30 days retention and 50 Mbit/s backhaul, both located in the `shore` part and echoed in the `Archive` doc.
-- Everything else (what "tracks" are, why the round-trip context matters, hardware specifics) is not stated in the model, so I have not inferred it, per the "synthetic, not an RTX specification" framing in the task.
+- Everything else (what "tracks" are, why the round-trip context matters, hardware specifics) is not stated in the model, so I have not inferred it, per the "synthetic" framing in the task.

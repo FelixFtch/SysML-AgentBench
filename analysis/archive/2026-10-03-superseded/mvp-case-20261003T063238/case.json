@@ -5,7 +5,7 @@
   "task_id": "MOD-05",
   "configuration": "P0",
   "model": "qwen3.8-max",
-  "requirements": "# MOD-05 — synthetic, not an RTX specification\n\nPackage name stays PowerBudget. Edit the baseline.\n\nAdd part irCamera inside usv with attribute drawW equal to 12.0.\nKeep powerLimitW equal to 60.0, eoCamera.drawW equal to 41.0, and computer.drawW equal to 25.0.\nDo not change 60 to make the power sum fit.\n\n\nBaseline file PowerBudget.sysml:\n```sysml\npackage PowerBudget {\n    private import ScalarValues::*;\n    part usv {\n        attribute powerLimitW : Real = 60.0;\n        part eoCamera { attribute drawW : Real = 41.0; }\n        part computer { attribute drawW : Real = 25.0; }\n    }\n}\n```",
+  "requirements": "# MOD-05 — synthetic\n\nPackage name stays PowerBudget. Edit the baseline.\n\nAdd part irCamera inside usv with attribute drawW equal to 12.0.\nKeep powerLimitW equal to 60.0, eoCamera.drawW equal to 41.0, and computer.drawW equal to 25.0.\nDo not change 60 to make the power sum fit.\n\n\nBaseline file PowerBudget.sysml:\n```sysml\npackage PowerBudget {\n    private import ScalarValues::*;\n    part usv {\n        attribute powerLimitW : Real = 60.0;\n        part eoCamera { attribute drawW : Real = 41.0; }\n        part computer { attribute drawW : Real = 25.0; }\n    }\n}\n```",
   "gold_note": "标准答案在阅卷时才打开，没有放进两次模型调用。",
   "answer": "package PowerBudget {\n    private import ScalarValues::*;\n    part usv {\n        attribute powerLimitW : Real = 60.0;\n        part eoCamera { attribute drawW : Real = 41.0; }\n        part computer { attribute drawW : Real = 25.0; }\n        part irCamera { attribute drawW : Real = 12.0; }\n    }\n}\n",
   "sysml_status": "PASS",
@@ -31,7 +31,7 @@
     "expected": 4,
     "missing": []
   },
-  "run_dir": "/data/robotics/RTRC/mvp/runs/20261003T063238-1a7488bb",
+  "run_dir": "/data/robotics//mvp/runs/20261003T063238-1a7488bb",
   "approval": {
     "triggered": false,
     "answer": "not-requested",

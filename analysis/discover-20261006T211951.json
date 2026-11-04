@@ -60,7 +60,7 @@
     "eligible": [],
     "review": {
       "at": "2026-10-06T21:24:23+00:00",
-      "text": "run 20261006T211951 · review for a person\nBrief: A harbor patrol unmanned surface vessel carries a visible camera drawing 41 W and an edge computer drawing 25 W. Add an infrared camera drawing 12 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 18 Mbps over one 8 Mbps uplink.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER FAIL, LINK FAIL, STORE PASS, TRACE PASS\n  approval: The POWER check did not pass (FAIL); it cannot go into memory.\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261006T212019-f0d0c0f8&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261006T211951/DesignA.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nDesign B: official Pilot FAIL after 21 parse(s); SYNTAX FAIL\n  approval: The official parse did not pass; it cannot go into memory.\nAlignment: 5/5 pairs verified; package PASS\nGate: No design passes all four checks, so none can go into memory. Pick a trade-off and send the brief back."
+      "text": "run 20261006T211951 · review for a person\nBrief: A harbor patrol unmanned surface vessel carries a visible camera drawing 41 W and an edge computer drawing 25 W. Add an infrared camera drawing 12 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 128 GB of storage. Imagery is uploaded to shore at 18 Mbps over one 8 Mbps uplink.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER FAIL, LINK FAIL, STORE PASS, TRACE PASS\n  approval: The POWER check did not pass (FAIL); it cannot go into memory.\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261006T212019-f0d0c0f8&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261006T211951/DesignA.sysml (open it in Cameo's SysML v2 when provides the license)\nDesign B: official Pilot FAIL after 21 parse(s); SYNTAX FAIL\n  approval: The official parse did not pass; it cannot go into memory.\nAlignment: 5/5 pairs verified; package PASS\nGate: No design passes all four checks, so none can go into memory. Pick a trade-off and send the brief back."
     },
     "decision": {
       "action": "reject",
@@ -407,7 +407,7 @@
       "max_rounds": 20,
       "first_pass_attempt": 1,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261006T212019-f0d0c0f8",
+      "run_dir": "/data/robotics//mvp/runs/20261006T212019-f0d0c0f8",
       "model": "qwen3.8-flash",
       "usage": {
         "prompt_tokens": 1600,
@@ -435,7 +435,7 @@
           "key": "baseline",
           "label": "Similar project to adapt · MaritimeISR",
           "paper": "p2",
-          "text": "package MaritimeISR {\n    /* Synthetic maritime ISR reference model. Numbers are not RTX specifications.\n       Ground truth for the benchmark: frozen before any agent is scored against it. */\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def TrackPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def AisReceiver {\n        port tracks : TrackPort;\n    }\n    part def Radar {\n        port tracks : TrackPort;\n    }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n        port trackOut : TrackPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def UnmannedSurfaceVessel {\n        part eoCamera : Camera;\n        part irCamera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 60.0;\n        attribute uplinkMbps : Real = 8.0;\n        attribute storageGB : Real = 128.0;\n    }\n    part def FixedWingUav {\n        part eoCamera : Camera;\n        part searchRadar : Radar;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 120.0;\n        attribute downlinkMbps : Real = 20.0;\n    }\n    part def CommandShip {\n        port fromUsv : LinkPort;\n        port fromUav : LinkPort;\n        port toShore : LinkPort;\n        part fusion : Processor;\n        attribute fusionLatencyS : Real = 2.0;\n    }\n    part def ShoreStation {\n        port fromCommand : LinkPort;\n        part archive : Processor;\n        attribute backhaulMbps : Real = 50.0;\n    }\n\n    part usv : UnmannedSurfaceVessel;\n    part uav : FixedWingUav;\n    part commandShip : CommandShip;\n    part shore : ShoreStation;\n\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.irCamera.imagery to usv.processor.imageryIn;\n    connect usv.ais.tracks to usv.processor.trackIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n    connect usv.radio.toShore to commandShip.fromUsv;\n    connect uav.searchRadar.tracks to uav.processor.trackIn;\n    connect uav.eoCamera.imagery to uav.processor.imageryIn;\n    connect uav.processor.uplink to uav.radio.fromProcessor;\n    connect uav.radio.toShore to commandShip.fromUav;\n    connect commandShip.toShore to shore.fromCommand;\n\n    requirement def LocalRawRetention {\n        doc /* USV raw imagery is retained locally. Numeric retention is a separate synthetic budget, not implied here. */\n    }\n    requirement def PowerLimitUnchanged {\n        doc /* Synthetic: USV input power limit stays 60 W. An agent must not edit this limit to make a design pass. */\n    }\n    requirement def TrackSharing {\n        doc /* Synthetic: USV AIS tracks and UAV radar tracks are shared to the command ship, then to the shore archive. */\n    }\n}\n"
+          "text": "package MaritimeISR {\n    /* Synthetic maritime ISR reference model. Numbers are synthetic.\n       Ground truth for the benchmark: frozen before any agent is scored against it. */\n    private import ScalarValues::*;\n\n    port def ImageryPort;\n    port def TrackPort;\n    port def LinkPort;\n\n    part def Camera {\n        port imagery : ImageryPort;\n    }\n    part def AisReceiver {\n        port tracks : TrackPort;\n    }\n    part def Radar {\n        port tracks : TrackPort;\n    }\n    part def Processor {\n        port imageryIn : ImageryPort;\n        port trackIn : TrackPort;\n        port trackOut : TrackPort;\n        port uplink : LinkPort;\n    }\n    part def Radio {\n        port fromProcessor : LinkPort;\n        port toShore : LinkPort;\n    }\n\n    part def UnmannedSurfaceVessel {\n        part eoCamera : Camera;\n        part irCamera : Camera;\n        part ais : AisReceiver;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 60.0;\n        attribute uplinkMbps : Real = 8.0;\n        attribute storageGB : Real = 128.0;\n    }\n    part def FixedWingUav {\n        part eoCamera : Camera;\n        part searchRadar : Radar;\n        part processor : Processor;\n        part radio : Radio;\n        attribute powerLimitW : Real = 120.0;\n        attribute downlinkMbps : Real = 20.0;\n    }\n    part def CommandShip {\n        port fromUsv : LinkPort;\n        port fromUav : LinkPort;\n        port toShore : LinkPort;\n        part fusion : Processor;\n        attribute fusionLatencyS : Real = 2.0;\n    }\n    part def ShoreStation {\n        port fromCommand : LinkPort;\n        part archive : Processor;\n        attribute backhaulMbps : Real = 50.0;\n    }\n\n    part usv : UnmannedSurfaceVessel;\n    part uav : FixedWingUav;\n    part commandShip : CommandShip;\n    part shore : ShoreStation;\n\n    connect usv.eoCamera.imagery to usv.processor.imageryIn;\n    connect usv.irCamera.imagery to usv.processor.imageryIn;\n    connect usv.ais.tracks to usv.processor.trackIn;\n    connect usv.processor.uplink to usv.radio.fromProcessor;\n    connect usv.radio.toShore to commandShip.fromUsv;\n    connect uav.searchRadar.tracks to uav.processor.trackIn;\n    connect uav.eoCamera.imagery to uav.processor.imageryIn;\n    connect uav.processor.uplink to uav.radio.fromProcessor;\n    connect uav.radio.toShore to commandShip.fromUav;\n    connect commandShip.toShore to shore.fromCommand;\n\n    requirement def LocalRawRetention {\n        doc /* USV raw imagery is retained locally. Numeric retention is a separate synthetic budget, not implied here. */\n    }\n    requirement def PowerLimitUnchanged {\n        doc /* Synthetic: USV input power limit stays 60 W. An agent must not edit this limit to make a design pass. */\n    }\n    requirement def TrackSharing {\n        doc /* Synthetic: USV AIS tracks and UAV radar tracks are shared to the command ship, then to the shore archive. */\n    }\n}\n"
         },
         {
           "key": "task",
@@ -450,7 +450,7 @@
           "text": "Design A: adapt the similar existing project. Start from its model: keep its structure, part names and port names where they fit the brief; change only what the requirements need; add what is missing; leave out what the brief does not need. Every number must come from the requirements, and a stated limit is never changed."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261006T211951/DesignA.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261006T211951/DesignA.sysml",
       "numbers": {
         "DesignA::UnmannedSurfaceVessel::uploadMbps": 18.0,
         "DesignA::UnmannedSurfaceVessel::irCamera::drawW": 12.0,
@@ -2763,7 +2763,7 @@
         "An occurrence, item or part must be typed by occurrence definitions.",
         "An occurrence, item or part must be typed by occurrence definitions."
       ],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261006T212338-254b071c",
+      "run_dir": "/data/robotics//mvp/runs/20261006T212338-254b071c",
       "model": "qwen3.8-flash",
       "usage": {
         "prompt_tokens": 852,
@@ -2806,7 +2806,7 @@
           "text": "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261006T211951/DesignB.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261006T211951/DesignB.sysml",
       "checks": [
         {
           "id": "SYNTAX",

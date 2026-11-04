@@ -22,7 +22,7 @@ stands.
 
 Mission profile: duration = retentionHours (the brief's recording window), constant rates, link up. The brief and
 the requirements state no outage, no queue policy and no energy store, so none is assumed; the exploratory outage
-sweep is labelled as such and is not a requirement. All values are synthetic and not an RTX specification.
+sweep is labelled as such and is not a requirement. All values are synthetic and synthetic.
 
     python3 bench/simulate_design.py                 # every analysis/discover-*.json
     python3 bench/simulate_design.py --run latest    # one run
@@ -288,7 +288,7 @@ def evaluate(record: dict, folder: Path) -> dict:
 def report(result: dict) -> str:
     lines = [f"# Simulation check · run {result['run_id']}", "",
              "Requirements and designs produced by the design flow, simulated over the mission (minute steps, constant rates, link up). "
-             "Synthetic values, not an RTX specification.", "", f"Brief: {result['brief']}", "",
+             "Synthetic values.", "", f"Brief: {result['brief']}", "",
              f"## Consistency of the requirements: {result['consistency']['status']}", ""]
     for check in result["consistency"]["checks"]:
         lines.append(f"- {check['id']}: {check['status']} — {check.get('detail', '')}")
@@ -326,7 +326,7 @@ def summary(results: list[dict]) -> str:
     lines = ["# Simulation checks over the Part 2 runs", "",
              "One row per run of the design flow (analysis/discover-*.json). Consistency: the requirements against each other. "
              "Alignment: each design's own numbers over the mission. Cross-check: OpenModelica against the Python integration. "
-             "Synthetic values, not an RTX specification.", "",
+             "Synthetic values.", "",
              "| run | mission h | consistency | design A | design B | cross-check |", "|---|---|---|---|---|---|"]
     for result in results:
         by_key = {d["key"]: d for d in result["alignment"]}

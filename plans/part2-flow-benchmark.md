@@ -3,7 +3,7 @@
 Date: 2026-10-10. Status: proposal and hand-off; nothing built yet. Scope: a benchmark of the Part 2 design flow
 end to end (brief in, approvable design out), with expected outcomes computed by code from the same catalogue the
 flow is built on. This is not asked for by the sponsor brief; D4 §8 and §11 name it as the missing measurement.
-Every value is synthetic and not an RTX specification.
+Every value is synthetic and synthetic.
 
 ## 1. Where the "questions" come from today
 

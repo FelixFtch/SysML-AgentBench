@@ -1,6 +1,6 @@
 # 6 · The task bank: format, keys, freeze; replacing it with real tasks
 
-**You get:** how a task is written, how its key is written, what "frozen" means, and the steps to bring in a real RTRC task bank when one arrives.
+**You get:** how a task is written, how its key is written, what "frozen" means, and the steps to bring in a real task bank when one arrives.
 **You need:** nothing to read this; Java and the toolchain to validate keys. 15 minutes.
 
 ## One task is one folder
@@ -32,11 +32,11 @@ ALN tasks are generated from pairs of models by `bench/build_aln_tasks.py`.
 
 `python3 bench/freeze.py` hashes every task folder and the scoring code into `bench/FREEZE.md`; `--check` verifies them. A frozen bank is not edited while a batch runs, and a change after a batch is a *revision*: re-score the saved answers with `bench/rescore.py` (which writes `results-r2.jsonl` next to the original), list every verdict that changed, rerun the cells whose inputs changed, and add a line to the History section of `FREEZE.md`. Revision 2 of this bank (decision 028) fixed three keys and reran every P3 cell that way.
 
-## Replacing the bank with real RTRC tasks
+## Replacing the bank with real tasks
 
 When a real task bank arrives, the shape stays and the content changes. The steps, in order:
 
-1. **A new bank folder**, `bench/tasks/t6_rtrc/heldout/` (or whatever the family is), with the same per-task layout and its own `index.jsonl`. Keep the synthetic bank where it is; it remains the practice bank and the one the frozen results refer to.
+1. **A new bank folder**, `bench/tasks/t6_cards/heldout/` (or whatever the family is), with the same per-task layout and its own `index.jsonl`. Keep the synthetic bank where it is; it remains the practice bank and the one the frozen results refer to.
 2. **Keys before runs.** Write every key and reference before any model sees a statement; run `validate_gold.py` and `review_gold.py`; record the second review. If the real tasks carry restricted data, the bank does not go in this repository (rule 5 of the README); a private repository with the same layout works unchanged.
 3. **Point the code at it.** The bank path is the constant `HELD` in the runners and the page (`bench/experiment.py`, `run_opencode.py`, `run_claude_qwen.py`, `langflow_exam.py`, `exam_board.py`, `shell_service.py`, `freeze.py`). `bench/experiment.py` is a frozen file, so this is by definition a new freeze: change the constants in one commit, run `bench/freeze.py`, tag it.
 4. **Generalize the page's scenario text.** A few parts of the results page are written for the maritime scenario and would read wrong on other tasks: the task-type guide (`TYPE_GUIDE` in `bench/board.js`), the MOD-05 power note (78 W against 60 W) in `bench/exam_board.py`, and the drawn scene of section 1.4 (`bench/board.js`, the platforms and flows it knows). These should become per-bank configuration (a `bank.yaml` next to `index.jsonl` with the type guide, the scene, the budget tasks) in the same commit.

@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_14aa85e49382472f9482b026",
       "tool_input": {
-        "command": "find /data/robotics/RTRC/mvp/agent-runs/20261006T080607-P-CODE-2-RT-04 -maxdepth 3 -not -path '*/.git/*' | head -100",
+        "command": "find /data/robotics//mvp/agent-runs/20261006T080607-P-CODE-2-RT-04 -maxdepth 3 -not -path '*/.git/*' | head -100",
         "description": "List run directory tree"
       }
     },
@@ -53,7 +53,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_17b42f60bfed46d99b6edcbf",
       "tool_input": {
-        "command": "ls -la /data/robotics/RTRC/mvp/ 2>/dev/null; echo \"---AGENT RUNS---\"; ls -1 /data/robotics/RTRC/mvp/agent-runs/ 2>/dev/null | head -40",
+        "command": "ls -la /data/robotics//mvp/ 2>/dev/null; echo \"---AGENT RUNS---\"; ls -1 /data/robotics//mvp/agent-runs/ 2>/dev/null | head -40",
         "description": "Inspect mvp directory layout"
       }
     },
@@ -61,7 +61,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_1c3236185a7740c1a4c1a6ce",
       "tool_input": {
-        "command": "ls -1 /data/robotics/RTRC/mvp/",
+        "command": "ls -1 /data/robotics//mvp/",
         "description": "List mvp directory"
       }
     }

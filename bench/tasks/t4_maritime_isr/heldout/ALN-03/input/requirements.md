@@ -1,4 +1,4 @@
-# ALN-03 — synthetic, not an RTX specification
+# ALN-03 — synthetic
 
 Align two independently written models of the UAV sensors: definitions versus instances. The specification package is `UavSensorSpec`; the supplier package is `RadarVendor`. Both are given below as baseline files and must not be changed.
 

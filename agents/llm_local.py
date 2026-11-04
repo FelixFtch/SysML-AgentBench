@@ -9,7 +9,7 @@ A local model is named "<Ollama tag> (Ollama)" in the flows; the two names in LO
 
 The Ollama tag is the derived model made by scripts/qwen38.sh (tools/ollama/qwen3.8-27b-q3-64k.Modelfile): the same
 3-bit weights as smtek/Qwen3.8-27B:Q3_K_XL with num_ctx 65536 instead of the published 224840, so the whole model sits
-in the RTX 4090's memory. With the published value Ollama reserved the cache for 224k tokens, kept a third of the
+in the 24 GB GPU's memory. With the published value Ollama reserved the cache for 224k tokens, kept a third of the
 weights on the CPU and ran at 8 tokens/s (run 20261007T014335).
 """
 from __future__ import annotations
@@ -28,7 +28,7 @@ LOCAL_MODELS = {
     "qwen3.8-27b local": OLLAMA_TAG,
 }
 LOCAL_SUFFIX = " (Ollama)"
-LOCAL_URL = os.environ.get("RTRC_LOCAL_LLM_URL", "http://127.0.0.1:11434/v1/chat/completions")
+LOCAL_URL = os.environ.get("LOCAL_LLM_URL", "http://127.0.0.1:11434/v1/chat/completions")
 LOCAL_BASE = LOCAL_URL[: -len("/chat/completions")] if LOCAL_URL.endswith("/chat/completions") else LOCAL_URL
 
 

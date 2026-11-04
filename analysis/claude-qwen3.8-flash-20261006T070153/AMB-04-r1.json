@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_96568761004c4c5482559609",
       "tool_input": {
-        "command": "find /data/robotics/RTRC/mvp/agent-runs/20261006T071353-P-CODE-2-AMB-04 -maxdepth 3 -not -path '*/.git/*' | head -50",
+        "command": "find /data/robotics//mvp/agent-runs/20261006T071353-P-CODE-2-AMB-04 -maxdepth 3 -not -path '*/.git/*' | head -50",
         "description": "List task directory tree"
       }
     }

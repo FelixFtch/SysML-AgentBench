@@ -54,7 +54,7 @@
     ],
     "review": {
       "at": "2026-10-07T00:30:38+00:00",
-      "text": "run 20261007T002947 · review for a person\nBrief: A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add a standard infrared camera drawing 12 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 256 GB of storage. Imagery is uploaded to shore at 8 Mbps over one 8 Mbps uplink.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T003011-225cd30d&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T002947/DesignA.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nDesign B: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T003016-76f2294c&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T002947/DesignB.sysml (open it in Cameo's SysML v2 when RTRC provides the license)\nAlignment: 6/6 pairs verified; package PASS\nGate: Designs A, B pass all four checks and may be approved into memory by a person."
+      "text": "run 20261007T002947 · review for a person\nBrief: A harbor patrol unmanned surface vessel carries a visible camera drawing 28 W and an edge computer drawing 14 W. Add a standard infrared camera drawing 12 W. The vessel power limit is 60 W. Imagery is recorded locally at 18 Mbps for 8 hours on 256 GB of storage. Imagery is uploaded to shore at 8 Mbps over one 8 Mbps uplink.\n\nDesign A: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T003011-225cd30d&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T002947/DesignA.sysml (open it in Cameo's SysML v2 when provides the license)\nDesign B: official Pilot PASS after 1 parse(s); POWER PASS, LINK PASS, STORE PASS, TRACE PASS\n  approval: eligible\n  ⑦ diagram: http://127.0.0.1:8781/diagram?run=20261007T003016-76f2294c&view=connections\n  Cameo: export ready at analysis/cameo-exports/20261007T002947/DesignB.sysml (open it in Cameo's SysML v2 when provides the license)\nAlignment: 6/6 pairs verified; package PASS\nGate: Designs A, B pass all four checks and may be approved into memory by a person."
     },
     "decision": {
       "action": "Send back",
@@ -413,7 +413,7 @@
       "max_rounds": 20,
       "first_pass_attempt": 1,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T003011-225cd30d",
+      "run_dir": "/data/robotics//mvp/runs/20261007T003011-225cd30d",
       "model": "qwen3.8-max",
       "usage": {
         "prompt_tokens": 1447,
@@ -456,7 +456,7 @@
           "text": "Design A: adapt the similar existing project. Start from its model: keep its structure, part names and port names where they fit the brief; change only what the requirements need; add what is missing; leave out what the brief does not need. Every number must come from the requirements, and a stated limit is never changed."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T002947/DesignA.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261007T002947/DesignA.sysml",
       "numbers": {
         "DesignA::Vessel::dataRateMbps": 18.0,
         "DesignA::Vessel::retentionHours": 8.0,
@@ -604,7 +604,7 @@
       "max_rounds": 20,
       "first_pass_attempt": 1,
       "diagnostics": [],
-      "run_dir": "/data/robotics/RTRC/mvp/runs/20261007T003016-76f2294c",
+      "run_dir": "/data/robotics//mvp/runs/20261007T003016-76f2294c",
       "model": "qwen3.8-max",
       "usage": {
         "prompt_tokens": 895,
@@ -647,7 +647,7 @@
           "text": "Design B: same attribute names and the same numbers, but a different arrangement: for example route imagery through a separate recorder part, or share one data port between the two cameras. Keep the same structure rules as Design A."
         }
       ],
-      "path": "/data/robotics/RTRC/mvp/exam-inbox/discover-20261007T002947/DesignB.sysml",
+      "path": "/data/robotics//mvp/exam-inbox/discover-20261007T002947/DesignB.sysml",
       "numbers": {
         "DesignB::vessel::dataRateMbps": 18.0,
         "DesignB::vessel::powerLimitW": 60.0,

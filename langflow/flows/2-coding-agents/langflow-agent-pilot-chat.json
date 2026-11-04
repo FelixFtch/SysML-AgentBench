@@ -4,7 +4,7 @@
   "endpoint_name": "langflow-agent-pilot-chat",
   "is_component": false,
   "tags": [
-    "rtrc",
+    "",
     "langflow-agent",
     "assistant"
   ],
@@ -315,7 +315,7 @@
         }
       },
       {
-        "id": "Agent-rtrc",
+        "id": "Agent-",
         "type": "genericNode",
         "position": {
           "x": 640,
@@ -868,7 +868,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "system_prompt",
-                "value": "You are a SysML v2 assistant for a synthetic maritime ISR exercise; the numbers are not an RTX specification. You have one tool, the official SysML v2 Pilot: Validate-SysML-with-the-official-Pilot_tool, flow_tweak_data = {\"ChatInput-sysml~input_value\": <the SysML text>}, parses SysML v2 with the official SysML v2 Pilot, the same judge that scores the exam; run it on every model you write and fix what it reports before you reply. You have no memory of existing projects and no design pipeline; say so when asked for them. Never invent a number and never change a stated limit. Answer in the language the person writes in.",
+                "value": "You are a SysML v2 assistant for a synthetic maritime ISR exercise; the numbers are synthetic. You have one tool, the official SysML v2 Pilot: Validate-SysML-with-the-official-Pilot_tool, flow_tweak_data = {\"ChatInput-sysml~input_value\": <the SysML text>}, parses SysML v2 with the official SysML v2 Pilot, the same judge that scores the exam; run it on every model you write and fix what it reports before you reply. You have no memory of existing projects and no design pipeline; say so when asked for them. Never invent a number and never change a stated limit. Answer in the language the person writes in.",
                 "display_name": "Agent Instructions",
                 "advanced": false,
                 "api_editable": false,
@@ -939,7 +939,7 @@
             "tool_mode": false
           },
           "type": "Agent",
-          "id": "Agent-rtrc"
+          "id": "Agent-"
         }
       },
       {
@@ -1387,12 +1387,12 @@
     ],
     "edges": [
       {
-        "source": "Agent-rtrc",
+        "source": "Agent-",
         "target": "ChatOutput-answer",
         "data": {
           "sourceHandle": {
             "dataType": "Agent",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "name": "response",
             "output_types": [
               "Message"
@@ -1411,16 +1411,16 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œAgentœ, œidœ: œAgent-rtrcœ, œnameœ: œresponseœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œAgentœ, œidœ: œAgent-œ, œnameœ: œresponseœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-answerœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-Agent-rtrc{œdataTypeœ:œAgentœ,œidœ:œAgent-rtrcœ,œnameœ:œresponseœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-answer{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-answerœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-Agent-{œdataTypeœ:œAgentœ,œidœ:œAgent-œ,œnameœ:œresponseœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-answer{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-answerœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "ChatInput-ask",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
@@ -1432,7 +1432,7 @@
           },
           "targetHandle": {
             "fieldName": "input_value",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Message"
             ],
@@ -1440,15 +1440,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-askœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-ask{œdataTypeœ:œChatInputœ,œidœ:œChatInput-askœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-Agent-rtrc{œfieldNameœ:œinput_valueœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œAgent-œ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-ask{œdataTypeœ:œChatInputœ,œidœ:œChatInput-askœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-Agent-{œfieldNameœ:œinput_valueœ,œidœ:œAgent-œ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "RunFlow-validate",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "RunFlow",
@@ -1460,7 +1460,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -1468,8 +1468,8 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œRunFlowœ, œidœ: œRunFlow-validateœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RunFlow-validate{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-validateœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RunFlow-validate{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-validateœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false

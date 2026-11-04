@@ -1,5 +1,5 @@
 """Create .langflow/secrets.env once: the Langflow superuser password and secret key, and the token the
-Langflow nodes send to the RTRC shell service. The folder is gitignored; nothing is printed.
+Langflow nodes send to the shell service. The folder is gitignored; nothing is printed.
 
     python3 scripts/langflow_secrets.py
 """
@@ -11,10 +11,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FILE = ROOT / ".langflow" / "secrets.env"
 KEYS = {
-    "LANGFLOW_SUPERUSER": lambda: "rtrc",
+    "LANGFLOW_SUPERUSER": lambda: "",
     "LANGFLOW_SUPERUSER_PASSWORD": lambda: secrets.token_urlsafe(18),
     "LANGFLOW_SECRET_KEY": lambda: secrets.token_urlsafe(32),
-    "RTRC_SHELL_TOKEN": lambda: secrets.token_urlsafe(24),
+    "SHELL_TOKEN": lambda: secrets.token_urlsafe(24),
 }
 
 

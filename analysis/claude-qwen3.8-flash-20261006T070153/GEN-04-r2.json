@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_5426f487dc7242fb9e99ea82",
       "tool_input": {
-        "command": "find /data/robotics/RTRC -maxdepth 3 -type d | head -50",
+        "command": "find /data/robotics/-maxdepth 3 -type d | head -50",
         "description": "Survey repo directory structure"
       }
     },
@@ -53,7 +53,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_2cde6785dbef4517ab3a3c19",
       "tool_input": {
-        "command": "find /data/robotics/RTRC -name \"*.sysml\" 2>/dev/null | head -20",
+        "command": "find /data/robotics/-name \"*.sysml\" 2>/dev/null | head -20",
         "description": "Find SysML example files"
       }
     }

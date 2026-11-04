@@ -1,6 +1,6 @@
 {
   "time": "2026-09-16T00:48:18Z",
-  "environment": "Chromium with ANGLE SwiftShader (WebGL API path, not physicalRTX4090)",
+  "environment": "Chromium with ANGLE SwiftShader (WebGL API path, not physical24 GB GPU)",
   "summary": {
     "passed": 74,
     "total": 74

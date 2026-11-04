@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Start the RTRC Langflow shell: the RTRC shell service (127.0.0.1:8781), Ollama for the local Qwen3.8-27B
+# Start the Langflow shell: the shell service (127.0.0.1:8781), Ollama for the local Qwen3.8-27B
 # (127.0.0.1:11434) and Langflow 1.12.5 (127.0.0.1:7860).
 #   scripts/langflow.sh            start them (Langflow in the foreground)
 #   scripts/langflow.sh --import   also import the flow files of langflow/flows/ into the six projects of langflow/flows/catalog.py
-#                                  and set up the knowledge base rtrc_memory (Qwen embeddings; langflow/scripts/setup_knowledge.py)
+#                                  and set up the knowledge base project_memory (Qwen embeddings; langflow/scripts/setup_knowledge.py)
 # Langflow runs local-only with login on, and executes only built-in components and ours (langflow/components);
-# edited or pasted component code is refused. The RTRC nodes call the shell service, which reads .env itself; the only
+# edited or pasted component code is refused. The nodes call the shell service, which reads .env itself; the only
 # key Langflow holds is the Qwen key for the knowledge base's embeddings, stored as an encrypted credential.
 # Login: user and password are in .langflow/secrets.env (never committed).
 set -euo pipefail
@@ -23,13 +23,13 @@ set -a
 set +a
 
 if ! curl -s -m 2 http://127.0.0.1:8781/health >/dev/null; then
-  echo "Starting the RTRC shell service on 127.0.0.1:8781 (log: .langflow/shell_service.log)"
+  echo "Starting the shell service on 127.0.0.1:8781 (log: .langflow/shell_service.log)"
   nohup python3 -u bench/shell_service.py >> .langflow/shell_service.log 2>&1 &
   for _ in $(seq 1 30); do curl -s -m 1 http://127.0.0.1:8781/health >/dev/null && break; sleep 1; done
 fi
 
 if ! curl -s -m 2 -o /dev/null http://127.0.0.1:8782/mcp; then
-  echo "Starting the RTRC assistant MCP server on 127.0.0.1:8782 (log: .langflow/assistant_mcp.log)"
+  echo "Starting the assistant MCP server on 127.0.0.1:8782 (log: .langflow/assistant_mcp.log)"
   nohup python3 -u tools/assistant_mcp.py >> .langflow/assistant_mcp.log 2>&1 &
 fi
 
@@ -44,7 +44,7 @@ export LANGFLOW_ALLOW_CUSTOM_COMPONENTS=False LANGFLOW_CUSTOM_COMPONENT_ADMIN_ON
 export LANGFLOW_CONFIG_DIR="$ROOT/.langflow/config" LANGFLOW_COMPONENTS_PATH="$ROOT/langflow/components"
 export LANGFLOW_CORS_ORIGINS="http://127.0.0.1:$LANGFLOW_PORT,http://localhost:$LANGFLOW_PORT"
 export LANGFLOW_DO_NOT_TRACK=true LANGFLOW_OPEN_BROWSER=false
-export RTRC_SHELL_URL=http://127.0.0.1:8781 RTRC_ROOT="$ROOT"
+export SHELL_URL=http://127.0.0.1:8781 REPO_ROOT="$ROOT"
 mkdir -p "$LANGFLOW_CONFIG_DIR"
 
 if [ "${1:-}" = "--import" ]; then

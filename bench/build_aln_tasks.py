@@ -8,7 +8,7 @@ The sources are never edited. The answer key lists the pairs that must be declar
 that look alike but must not be declared, and the elements that must be reported unmatched.
 
 Running this again replaces the three task directories and re-appends them to index.jsonl.
-No model is called. All content is synthetic and is not an RTX specification.
+No model is called. All content is synthetic.
 """
 from __future__ import annotations
 
@@ -284,7 +284,7 @@ def main() -> None:
                 "synthetic": True, "status": "single-author", "second_reviewer": "pending"}
         _write(folder / "case.yaml", yaml.safe_dump(case, sort_keys=False))
         _write(folder / "input" / "requirements.md",
-               f"# {spec['id']} — synthetic, not an RTX specification\n\n"
+               f"# {spec['id']} — synthetic\n\n"
                f"Align two independently written models of the {spec['title']}. The specification package is "
                f"`{spec['spec_name']}`; the supplier package is `{spec['supplier_name']}`. Both are given below as baseline files and must not be changed.\n\n"
                + CONTRACT.format(package=spec["package"]))

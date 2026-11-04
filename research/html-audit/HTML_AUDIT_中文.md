@@ -108,7 +108,7 @@ P1：先用模型查询+关键词 baseline，再加论文式图检索并比较�
 复现独立计算与 mutation 检查：
 
 ```bash
-cd '/home/felix/Documents/ChatGPT/RTX agent'
+cd '/home/felix/Documents/ChatGPT/project'
 node research/html-audit/check_core.cjs
 ```
 

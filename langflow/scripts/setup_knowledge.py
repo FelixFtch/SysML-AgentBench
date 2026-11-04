@@ -19,7 +19,7 @@ from import_flows import ROOT, _request, _secrets  # noqa: E402
 
 PROVIDER = "OpenAI Compatible"
 MODEL = "qwen3.7-text-embedding"
-KNOWLEDGE_BASE = "rtrc_memory"
+KNOWLEDGE_BASE = "project_memory"
 
 
 def _env() -> dict:

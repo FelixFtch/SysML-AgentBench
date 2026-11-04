@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_9b3eb37e8d45472f88f29904",
       "tool_input": {
-        "command": "ls /data/robotics/RTRC/mvp/agent-runs/20261006T075039-P-CODE-2-GEN-02/workspace; grep -rl \"port def\" /data/robotics/RTRC/bank 2>/dev/null | head -3",
+        "command": "ls /data/robotics//mvp/agent-runs/20261006T075039-P-CODE-2-GEN-02/workspace; grep -rl \"port def\" /data/robotics//bank 2>/dev/null | head -3",
         "description": "Check workspace and any reference SysML examples"
       }
     }

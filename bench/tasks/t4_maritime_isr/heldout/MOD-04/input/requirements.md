@@ -1,4 +1,4 @@
-# MOD-04 — synthetic, not an RTX specification
+# MOD-04 — synthetic
 
 Package name stays RadioHealth. Edit the baseline.
 

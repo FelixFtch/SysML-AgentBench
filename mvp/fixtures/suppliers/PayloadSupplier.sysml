@@ -1,5 +1,5 @@
 package PayloadSupplier {
-    doc /* SYNTHETIC FIXTURE. Not RTX or real supplier data. ICD revision PAYLOAD-ICD-R1. */
+    doc /* SYNTHETIC FIXTURE. Synthetic fixture. ICD revision PAYLOAD-ICD-R1. */
     private import ScalarValues::*;
     item def ObservationFrame {
         attribute sequenceNumber : Integer;

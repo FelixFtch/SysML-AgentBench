@@ -15,7 +15,7 @@ Date: 2026-10-03.
 7. The model reads its own design back as sentences; code checks every brief number.
 8. A person approves a design or not. Approved designs go to `analysis/memory/approved.jsonl` and are retrieved by the next run.
 
-All parts and numbers are synthetic, not RTX specifications.
+All parts and numbers are synthetic.
 
 ## Decisions taken with it
 

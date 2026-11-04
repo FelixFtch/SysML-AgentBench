@@ -1,5 +1,5 @@
 package MarineGateway {
-    doc /* SYNTHETIC ENGINEERING FIXTURE. Not RTX data or hardware measurements.
+    doc /* SYNTHETIC ENGINEERING FIXTURE. Synthetic fixture.
         Case: baseline. Source configuration: MARINE-01-C0.
         A satisfy relationship represents design intent, not successful verification. */
     private import ScalarValues::*;

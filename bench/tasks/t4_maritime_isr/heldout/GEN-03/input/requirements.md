@@ -1,4 +1,4 @@
-# GEN-03 — synthetic, not an RTX specification
+# GEN-03 — synthetic
 
 Package name: FusionNode
 

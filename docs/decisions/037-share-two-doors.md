@@ -29,4 +29,4 @@ Langflow's official way to share is files, not a store: the Store was removed (l
 
 ## Not done, said so in the pages
 
-The page's scenario-specific texts (task-type guide, the MOD-05 note, the drawn scene) would have to become per-bank configuration before a real RTRC bank replaces the synthetic one (`docs/benchmark/06-task-bank.md`, step 4). The three Langflow columns on the local 27B were started after this record was written and appear on the page as their folders fill.
+The page's scenario-specific texts (task-type guide, the MOD-05 note, the drawn scene) would have to become per-bank configuration before a real bank replaces the synthetic one (`docs/benchmark/06-task-bank.md`, step 4). The three Langflow columns on the local 27B were started after this record was written and appear on the page as their folders fill.

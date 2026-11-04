@@ -1,6 +1,6 @@
 {
   "date": "2026-09-22",
-  "scope": "Working local engineering MVP; model provider and RTX-internal integration remain pending.",
+  "scope": "Working local engineering MVP; model provider and external integration remain pending.",
   "full_git_clones": 9,
   "actual_runtime": "Official SysML Pilot 2026-08 / 0.62.0 + locked Release library + project-local Java 21",
   "application_boundary_tests": {
@@ -56,7 +56,7 @@
     "toolchain_matches": true,
     "analysis_code_matches": true,
     "language_status": "PASS",
-    "path": "/home/felix/Documents/ChatGPT/RTX agent/mvp/verification/relocated-final-candidate-a",
+    "path": "/home/felix/Documents/ChatGPT/project/mvp/verification/relocated-final-candidate-a",
     "tamper_checks": [
       {
         "file": "model/source_mapping.json",
@@ -71,9 +71,9 @@
     ]
   },
   "limits": [
-    "Synthetic marine parameters are not RTX specifications.",
+    "Synthetic marine parameters are synthetic.",
     "NASA text import does not establish formal requirement semantics.",
     "No configured model provider; no successful LLM session claimed.",
-    "No live RTX connector or hardware/preview-quality testing."
+    "No live external connector or hardware/preview-quality testing."
   ]
 }

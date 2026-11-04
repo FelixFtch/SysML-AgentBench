@@ -6,7 +6,7 @@
   "toolchain_matches": true,
   "analysis_code_matches": true,
   "language_status": "PASS",
-  "path": "/home/felix/Documents/ChatGPT/RTX agent/mvp/verification/relocated-final-candidate-a",
+  "path": "/home/felix/Documents/ChatGPT/project/mvp/verification/relocated-final-candidate-a",
   "tamper_checks": [
     {
       "file": "model/source_mapping.json",

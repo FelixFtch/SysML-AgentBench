@@ -4,7 +4,7 @@
   "endpoint_name": "langflow-agent-memory-exam",
   "is_component": false,
   "tags": [
-    "rtrc",
+    "",
     "langflow-agent",
     "exam"
   ],
@@ -36,7 +36,7 @@
             "template": {
               "backgroundColor": "blue"
             },
-            "description": "# Langflow Agent with memory exam\n\nLangflow's Agent sitting the 27-task exam with memory (decision 035): the exam prompt (tools/assistant/rtrc-assistant-exam.md plus the frozen rules of agents/solve.py), qwen3.8-flash (the model of the frozen exam), and two tools as flows: **Validate SysML with the official Pilot** and **Memory search** (paper 2 retrieval over MaritimeISR and the approved designs). No design pipeline, no write to memory, no knowledge-base card.\n\n- The same prompt and the same two tools as **OpenCode with memory exam**, so the two columns on results page 1.3 compare the harnesses, not the tools.\n- Run the whole exam with `python3 bench/langflow_exam.py --flow \"Langflow Agent with memory exam\"`: 27 tasks × 3 repeats, a fresh session per task, scored by the frozen scorer; time and tokens (the Agent's usage field) recorded per task. The answer keys never enter the prompt.\n- One task by hand: paste its statement in the Playground; nothing is scored there."
+            "description": "# Langflow Agent with memory exam\n\nLangflow's Agent sitting the 27-task exam with memory (decision 035): the exam prompt (tools/assistant/design-assistant-exam.md plus the frozen rules of agents/solve.py), qwen3.8-flash (the model of the frozen exam), and two tools as flows: **Validate SysML with the official Pilot** and **Memory search** (paper 2 retrieval over MaritimeISR and the approved designs). No design pipeline, no write to memory, no knowledge-base card.\n\n- The same prompt and the same two tools as **OpenCode with memory exam**, so the two columns on results page 1.3 compare the harnesses, not the tools.\n- Run the whole exam with `python3 bench/langflow_exam.py --flow \"Langflow Agent with memory exam\"`: 27 tasks × 3 repeats, a fresh session per task, scored by the frozen scorer; time and tokens (the Agent's usage field) recorded per task. The answer keys never enter the prompt.\n- One task by hand: paste its statement in the Playground; nothing is scored there."
           }
         }
       },
@@ -315,7 +315,7 @@
         }
       },
       {
-        "id": "Agent-rtrc",
+        "id": "Agent-",
         "type": "genericNode",
         "position": {
           "x": 640,
@@ -868,7 +868,7 @@
                 "placeholder": "",
                 "show": true,
                 "name": "system_prompt",
-                "value": "You are sitting the RTRC SysML v2 exam. Each message is one task from a sealed task bank about a synthetic maritime ISR scenario; the numbers are not an RTX specification. Answer the task in this same reply. There is no conversation: nobody will answer a question you ask, and nothing you write is carried to the next task.\n\nRules:\n1. Reply with the answer the task asks for, in the form it asks for, and nothing else. A task that asks for a model gets one fenced code block tagged sysml. A query task gets one JSON object with the field names the task gives. A task that asks you to restate a model gets plain sentences. An alignment task gets one fenced sysml block and then one fenced json block.\n2. When the task says a number or unit is missing and tells you to ask, your whole reply is that question: no SysML and no invented value. Otherwise do not ask; answer.\n3. Never invent a numeric limit. Never change a number the task says to keep. Write qualified names in full with :: when a task asks for names.\n4. Tools: Validate-SysML-with-the-official-Pilot_tool, flow_tweak_data = {\"ChatInput-sysml~input_value\": <the SysML text>}, parses SysML v2 with the official SysML v2 Pilot, the same judge that scores the exam; run it on every model you write and fix what it reports before you reply. Memory-search_tool, flow_tweak_data = {\"ChatInput-query~input_value\": <a few search words>}, finds elements of the existing maritime model and of approved designs; use it for names when the task refers to the existing model. No other tool exists; do not ask for one and do not run a design.\n5. The final reply is what is scored. Put the final text of the model in the reply itself, not a reference to a tool result.\n\nFor a task that asks you to generate or modify a model, follow these rules:\nYou write SysML v2 textual notation.\nRules:\n- Output one fenced code block tagged sysml, and no prose before or after it.\n- The file contains exactly one package whose name is given in the task.\n- When you use Real, write `private import ScalarValues::*;` as the first line inside the package. In this toolchain an import inside a package needs the visibility keyword; a bare `import` is rejected. Do not import anything else.\n- Use only names the task requires. Do not invent numeric limits.\n- Do not change a number the task tells you to keep.\nFor an alignment task, follow these rules instead:\nYou align two independently written SysML v2 packages without editing either of them.\nRules:\n- Output one fenced code block tagged sysml containing exactly one package with the name given in the task, then one fenced code block tagged json, and no prose.\n- The package may contain only import statements, `alias <Name> for <Qualified::Name>;` declarations and `allocation <name> allocate <a.b.c> to <x.y.z>;` declarations. Do not declare parts, ports, attributes or definitions of your own.\n- In this toolchain an import inside a package needs a visibility keyword: write `private import Pkg::*;` or `public import Pkg::*;`, never a bare `import`.\n- Alias names are the specification's short names; alias targets are fully qualified with `::` at every level (`Pkg::Def::feature`). Allocation ends are usage paths: the package name, `::`, then the nested usages joined with dots (`Pkg::usv.radio`), never a dot after the package name.\n- Alias a definition only to a definition and a feature only to a feature; map usages to usages with allocations.\n- Do not map elements whose meaning differs; list them under \"unmatched\" in the json report instead.\n",
+                "value": "You are sitting the SysML v2 exam. Each message is one task from a sealed task bank about a synthetic maritime ISR scenario; the numbers are synthetic. Answer the task in this same reply. There is no conversation: nobody will answer a question you ask, and nothing you write is carried to the next task.\n\nRules:\n1. Reply with the answer the task asks for, in the form it asks for, and nothing else. A task that asks for a model gets one fenced code block tagged sysml. A query task gets one JSON object with the field names the task gives. A task that asks you to restate a model gets plain sentences. An alignment task gets one fenced sysml block and then one fenced json block.\n2. When the task says a number or unit is missing and tells you to ask, your whole reply is that question: no SysML and no invented value. Otherwise do not ask; answer.\n3. Never invent a numeric limit. Never change a number the task says to keep. Write qualified names in full with :: when a task asks for names.\n4. Tools: Validate-SysML-with-the-official-Pilot_tool, flow_tweak_data = {\"ChatInput-sysml~input_value\": <the SysML text>}, parses SysML v2 with the official SysML v2 Pilot, the same judge that scores the exam; run it on every model you write and fix what it reports before you reply. Memory-search_tool, flow_tweak_data = {\"ChatInput-query~input_value\": <a few search words>}, finds elements of the existing maritime model and of approved designs; use it for names when the task refers to the existing model. No other tool exists; do not ask for one and do not run a design.\n5. The final reply is what is scored. Put the final text of the model in the reply itself, not a reference to a tool result.\n\nFor a task that asks you to generate or modify a model, follow these rules:\nYou write SysML v2 textual notation.\nRules:\n- Output one fenced code block tagged sysml, and no prose before or after it.\n- The file contains exactly one package whose name is given in the task.\n- When you use Real, write `private import ScalarValues::*;` as the first line inside the package. In this toolchain an import inside a package needs the visibility keyword; a bare `import` is rejected. Do not import anything else.\n- Use only names the task requires. Do not invent numeric limits.\n- Do not change a number the task tells you to keep.\nFor an alignment task, follow these rules instead:\nYou align two independently written SysML v2 packages without editing either of them.\nRules:\n- Output one fenced code block tagged sysml containing exactly one package with the name given in the task, then one fenced code block tagged json, and no prose.\n- The package may contain only import statements, `alias <Name> for <Qualified::Name>;` declarations and `allocation <name> allocate <a.b.c> to <x.y.z>;` declarations. Do not declare parts, ports, attributes or definitions of your own.\n- In this toolchain an import inside a package needs a visibility keyword: write `private import Pkg::*;` or `public import Pkg::*;`, never a bare `import`.\n- Alias names are the specification's short names; alias targets are fully qualified with `::` at every level (`Pkg::Def::feature`). Allocation ends are usage paths: the package name, `::`, then the nested usages joined with dots (`Pkg::usv.radio`), never a dot after the package name.\n- Alias a definition only to a definition and a feature only to a feature; map usages to usages with allocations.\n- Do not map elements whose meaning differs; list them under \"unmatched\" in the json report instead.\n",
                 "display_name": "Agent Instructions",
                 "advanced": false,
                 "api_editable": false,
@@ -939,7 +939,7 @@
             "tool_mode": false
           },
           "type": "Agent",
-          "id": "Agent-rtrc"
+          "id": "Agent-"
         }
       },
       {
@@ -1557,12 +1557,12 @@
     ],
     "edges": [
       {
-        "source": "Agent-rtrc",
+        "source": "Agent-",
         "target": "ChatOutput-answer",
         "data": {
           "sourceHandle": {
             "dataType": "Agent",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "name": "response",
             "output_types": [
               "Message"
@@ -1581,16 +1581,16 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œAgentœ, œidœ: œAgent-rtrcœ, œnameœ: œresponseœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œAgentœ, œidœ: œAgent-œ, œnameœ: œresponseœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-answerœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-Agent-rtrc{œdataTypeœ:œAgentœ,œidœ:œAgent-rtrcœ,œnameœ:œresponseœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-answer{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-answerœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-Agent-{œdataTypeœ:œAgentœ,œidœ:œAgent-œ,œnameœ:œresponseœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-answer{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-answerœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "ChatInput-ask",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
@@ -1602,7 +1602,7 @@
           },
           "targetHandle": {
             "fieldName": "input_value",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Message"
             ],
@@ -1610,15 +1610,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-askœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-ask{œdataTypeœ:œChatInputœ,œidœ:œChatInput-askœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-Agent-rtrc{œfieldNameœ:œinput_valueœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œAgent-œ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-ask{œdataTypeœ:œChatInputœ,œidœ:œChatInput-askœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-Agent-{œfieldNameœ:œinput_valueœ,œidœ:œAgent-œ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "RunFlow-search",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "RunFlow",
@@ -1630,7 +1630,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -1638,15 +1638,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œRunFlowœ, œidœ: œRunFlow-searchœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RunFlow-search{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-searchœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RunFlow-search{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-searchœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "RunFlow-validate",
-        "target": "Agent-rtrc",
+        "target": "Agent-",
         "data": {
           "sourceHandle": {
             "dataType": "RunFlow",
@@ -1658,7 +1658,7 @@
           },
           "targetHandle": {
             "fieldName": "tools",
-            "id": "Agent-rtrc",
+            "id": "Agent-",
             "inputTypes": [
               "Tool"
             ],
@@ -1666,8 +1666,8 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œRunFlowœ, œidœ: œRunFlow-validateœ, œnameœ: œcomponent_as_toolœ, œoutput_typesœ: [œToolœ]}",
-        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-rtrcœ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RunFlow-validate{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-validateœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-rtrc{œfieldNameœ:œtoolsœ,œidœ:œAgent-rtrcœ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
+        "targetHandle": "{œfieldNameœ: œtoolsœ, œidœ: œAgent-œ, œinputTypesœ: [œToolœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-RunFlow-validate{œdataTypeœ:œRunFlowœ,œidœ:œRunFlow-validateœ,œnameœ:œcomponent_as_toolœ,œoutput_typesœ:[œToolœ]}-Agent-{œfieldNameœ:œtoolsœ,œidœ:œAgent-œ,œinputTypesœ:[œToolœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false

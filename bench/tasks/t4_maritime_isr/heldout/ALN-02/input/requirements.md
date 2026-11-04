@@ -1,4 +1,4 @@
-# ALN-02 — synthetic, not an RTX specification
+# ALN-02 — synthetic
 
 Align two independently written models of the ship data link: interface control document vs vendor radio pack. The specification package is `ShipLinkIcd`; the supplier package is `VendorRadioPack`. Both are given below as baseline files and must not be changed.
 

@@ -38,7 +38,7 @@
   ],
   "scored_by": "bench.experiment.validate_and_grade (frozen scorer)",
   "model_tweaks": {
-    "Agent-rtrc": {
+    "Agent-": {
       "model": [
         {
           "name": "qwen3.8-27b-q3:64k",

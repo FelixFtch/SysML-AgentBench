@@ -38,7 +38,7 @@
   ],
   "scored_by": "bench.experiment.validate_and_grade (frozen scorer)",
   "model_tweaks": {
-    "RtrcOpenCode-assistant": {
+    "CardOpenCode-assistant": {
       "model": "qwen3.8-27b (Ollama)"
     }
   },

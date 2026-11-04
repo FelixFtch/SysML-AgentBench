@@ -1,6 +1,6 @@
 # Rules for this SysML v2 modeling task
 
-You are editing SysML v2 textual models (`.sysml`) for a synthetic maritime ISR exercise. The numbers are not an RTX specification.
+You are editing SysML v2 textual models (`.sysml`) for a synthetic maritime ISR exercise. The numbers are synthetic.
 
 1. After every edit, run the official validator if it is available, and fix reported errors before finishing.
 2. Report every failing check verbatim. Do not change a stated limit, rate, or budget to make a check pass.

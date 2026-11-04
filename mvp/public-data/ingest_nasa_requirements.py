@@ -42,7 +42,7 @@ def main():
                                      "source_sha256": digest, "source_commit": manifest["commit"],
                                      "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
                                      "source_owner": "NASA cFE public repository",
-                                     "license": manifest["license"], "is_rtx_requirement": False})
+                                     "license": manifest["license"], "is_external_requirement": False})
             else:
                 if not requirements:
                     raise ValueError("Continuation without an identified predecessor")
@@ -69,7 +69,7 @@ def main():
     (output / "demo-bus-requirements.json").write_text(json.dumps(selected, indent=2, ensure_ascii=False) + "\n")
     document = ["# Public NASA cFE software-bus requirement sample", "",
                 "Source: NASA cFE, commit `" + manifest["commit"] + "`, Apache-2.0.", "",
-                "These are public source-system requirements, not RTX requirements or an approved gateway specification.",
+                "These are public source-system requirements, not an external specification or an approved gateway specification.",
                 "Mission/platform placeholders remain unresolved. Review applicability before reuse.", ""]
     for item in selected:
         document.extend(["## " + item["requirement_id"] + " — " + item["summary"], "", item["description"], "",
@@ -79,7 +79,7 @@ def main():
     # Preserve natural-language requirements as requirements, without inventing
     # quantified acceptance predicates, system design, satisfy links or verification results.
     model = ["package NASA_CFE_Imported {", "    private import ScalarValues::*;",
-             "    doc /* Public NASA cFE requirement text import. Not RTX requirements.",
+             "    doc /* Public NASA cFE requirement text import. Not external requirements.",
              "        No design satisfaction or executable verification is asserted.",
              "        Semantic mapping and new-project applicability remain pending. */", "",
              "    requirement def ImportedCFERequirement {",

@@ -18,7 +18,7 @@ if str(ROOT) not in sys.path:
 HELD = ROOT / "bench" / "tasks" / "t4_maritime_isr" / "heldout"
 PAGE = Path(__file__).with_name("exam_board.html")
 COMPARE = Path(__file__).with_name("flow_compare.html")
-BRIEF = Path(__file__).with_name("rtx-brief.html")
+BRIEF = Path(__file__).with_name("project-brief.html")
 NUM = re.compile(r"(\w+)\s*:\s*Real\s*=\s*([0-9]+(?:\.[0-9]+)?)")
 STATIC = {
     "/board.css": ("board.css", "text/css; charset=utf-8"),
@@ -707,7 +707,7 @@ class Handler(BaseHTTPRequestHandler):
         if parsed.path in {"/compare", "/compare/"}:
             self._send(200, COMPARE.read_bytes(), "text/html; charset=utf-8")
             return
-        if parsed.path in {"/rtx", "/rtx/"}:
+        if parsed.path in {"/brief", "/brief/"}:
             self._send(200, BRIEF.read_bytes(), "text/html; charset=utf-8")
             return
         if parsed.path == "/style.css":

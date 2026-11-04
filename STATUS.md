@@ -1,6 +1,6 @@
 # STATUS
 
-Generated 2026-10-06 18:36 UTC by `python3 scripts/make_status.py` from saved results. All maritime numbers are synthetic, not RTX specifications. The official SysML v2 Pilot 0.62 is the only syntax judge; the answer keys are the ground truth; no model judges (decision 025).
+Generated 2026-10-06 18:36 UTC by `python3 scripts/make_status.py` from saved results. All maritime numbers are synthetic. The official SysML v2 Pilot 0.62 is the only syntax judge; the answer keys are the ground truth; no model judges (decision 025).
 
 Task bank: 27 sealed tasks, second review recorded in `bench/tasks/t4_maritime_isr/heldout/REVIEW.md`, frozen in `bench/FREEZE.md` (tag `freeze-2026-10-06-r2`).
 

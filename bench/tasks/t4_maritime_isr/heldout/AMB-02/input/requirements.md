@@ -1,4 +1,4 @@
-# AMB-02 — synthetic, not an RTX specification
+# AMB-02 — synthetic
 
 The vessel power use must be as low as possible. No watt limit is given.
 

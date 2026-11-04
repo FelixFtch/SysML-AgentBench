@@ -7,7 +7,7 @@
 | Path | Holds |
 |---|---|
 | `case.yaml` | `id`, `type` (GEN, MOD, ALN, QRY, AMB, RT), `package`, `synthetic: true`, review status |
-| `input/requirements.md` | The task statement the candidate sees, marked "synthetic, not an RTX specification" |
+| `input/requirements.md` | The task statement the candidate sees, marked "synthetic" |
 | `input/baseline/*.sysml` | Models the candidate starts from or must not change (MOD, ALN) |
 | `input/model.sysml` | The model to read (QRY, RT) |
 | `gold/assertions.yaml` | The key. GEN/MOD: `must_exist`, `must_connect`, `must_preserve` (value to keep), engineering checks. ALN: `must_map`, `must_not_map`, `must_report_unmatched`. AMB: `should_ask` (groups of words, one group per missing quantity), `must_not_invent_number`. RT: `must_mention`. |

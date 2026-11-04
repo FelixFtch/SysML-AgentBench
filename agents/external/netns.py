@@ -26,7 +26,7 @@ import sys
 import threading
 from pathlib import Path
 
-SOCKET_DIR = ".rtrc-net"
+SOCKET_DIR = ".-net"
 # slirp4netns's built-in DNS forwarder; the host's /etc/resolv.conf points at systemd-resolved on 127.0.0.53, which the
 # sandbox cannot reach.
 RESOLV = "nameserver 10.0.2.3\n"

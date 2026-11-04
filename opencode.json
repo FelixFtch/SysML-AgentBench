@@ -15,9 +15,9 @@
     }
   },
   "mcp": {
-    "rtrc": {
+    "": {
       "type": "local",
-      "command": ["python3", "/data/robotics/RTRC/tools/mcp_server.py"],
+      "command": ["python3", "/data/robotics//tools/mcp_server.py"],
       "enabled": true,
       "timeout": 120000
     }

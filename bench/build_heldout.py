@@ -323,7 +323,7 @@ def main() -> None:
     HELD.mkdir(parents=True, exist_ok=True)
     models = [
         {"id": "GEN-01", "type": "GEN", "package": "UsvLink", "sysml": USV_LINK,
-         "requirements": """# GEN-01 — synthetic, not an RTX specification
+         "requirements": """# GEN-01 — synthetic
 
 Package name: UsvLink
 
@@ -346,7 +346,7 @@ Do not invent numeric limits.
                           ["UsvLink::usv::processor::uplink", "UsvLink::usv::radio::fromProcessor"],
                           ["UsvLink::usv::radio::toShore", "UsvLink::commandShip::fromUsv"]]},
         {"id": "GEN-02", "type": "GEN", "package": "UavSearch", "sysml": UAV_SEARCH,
-         "requirements": """# GEN-02 — synthetic, not an RTX specification
+         "requirements": """# GEN-02 — synthetic
 
 Package name: UavSearch
 
@@ -366,7 +366,7 @@ Do not invent numeric limits.
                           ["UavSearch::uav::eoCamera::imagery", "UavSearch::uav::processor::imageryIn"],
                           ["UavSearch::uav::processor::uplink", "UavSearch::uav::radio::fromProcessor"]]},
         {"id": "GEN-03", "type": "GEN", "package": "FusionNode", "sysml": FUSION,
-         "requirements": """# GEN-03 — synthetic, not an RTX specification
+         "requirements": """# GEN-03 — synthetic
 
 Package name: FusionNode
 
@@ -382,7 +382,7 @@ Do not add other numbers.
                         "FusionNode::commandShip::fusion", "FusionNode::commandShip::fusionLatencyS"],
          "must_preserve": [{"qualified_name": "FusionNode::commandShip::fusionLatencyS", "value": 2.0}]},
         {"id": "GEN-04", "type": "GEN", "package": "ShoreArchive", "sysml": SHORE,
-         "requirements": """# GEN-04 — synthetic, not an RTX specification
+         "requirements": """# GEN-04 — synthetic
 
 Package name: ShoreArchive
 
@@ -397,7 +397,7 @@ Package name: ShoreArchive
          "must_preserve": [{"qualified_name": "ShoreArchive::shore::backhaulMbps", "value": 50.0},
                            {"qualified_name": "ShoreArchive::shore::archiveDays", "value": 30.0}]},
         {"id": "GEN-05", "type": "GEN", "package": "FourNode", "sysml": FOUR,
-         "requirements": """# GEN-05 — synthetic, not an RTX specification
+         "requirements": """# GEN-05 — synthetic
 
 Package name: FourNode
 
@@ -416,7 +416,7 @@ Do not invent numeric limits.
                           ["FourNode::uav::radio::toCommand", "FourNode::commandShip::fromUav"],
                           ["FourNode::commandShip::toShore", "FourNode::shore::fromCommand"]]},
         {"id": "MOD-01", "type": "MOD", "package": "UsvPlain", "baseline": MOD1_BASE, "sysml": MOD1_GOLD,
-         "requirements": """# MOD-01 — synthetic, not an RTX specification
+         "requirements": """# MOD-01 — synthetic
 
 Package name stays UsvPlain. Edit the baseline.
 
@@ -431,7 +431,7 @@ Do not add other numbers.
                           ["UsvPlain::usv::ais::tracks", "UsvPlain::usv::processor::trackIn"]],
          "must_preserve": [{"qualified_name": "UsvPlain::usv::powerLimitW", "value": 60.0}]},
         {"id": "MOD-02", "type": "MOD", "package": "VesselAlign", "baseline": MOD2_BASE, "sysml": MOD2_GOLD,
-         "requirements": """# MOD-02 — synthetic, not an RTX specification
+         "requirements": """# MOD-02 — synthetic
 
 Package name stays VesselAlign. Edit the baseline.
 
@@ -443,7 +443,7 @@ Keep the camera connection. Do not invent numeric limits.
          "must_connect": [["VesselAlign::vessel::camera::imagery", "VesselAlign::vessel::processor::imageryIn"],
                           ["VesselAlign::vessel::ais::tracks", "VesselAlign::vessel::processor::trackIn"]]},
         {"id": "MOD-03", "type": "MOD", "package": "ShoreHop", "baseline": MOD3_BASE, "sysml": MOD3_GOLD,
-         "requirements": """# MOD-03 — synthetic, not an RTX specification
+         "requirements": """# MOD-03 — synthetic
 
 Package name stays ShoreHop. Edit the baseline.
 
@@ -455,7 +455,7 @@ Do not invent numeric limits.
          "must_connect": [["ShoreHop::vessel::processor::uplink", "ShoreHop::vessel::radio::fromProcessor"],
                           ["ShoreHop::vessel::radio::toShore", "ShoreHop::shore::fromVessel"]]},
         {"id": "MOD-04", "type": "MOD", "package": "RadioHealth", "baseline": MOD4_BASE, "sysml": MOD4_GOLD,
-         "requirements": """# MOD-04 — synthetic, not an RTX specification
+         "requirements": """# MOD-04 — synthetic
 
 Package name stays RadioHealth. Edit the baseline.
 
@@ -465,7 +465,7 @@ Keep uplinkMbps equal to 8.0. Do not add other numbers.
          "must_exist": ["RadioHealth::usv::radio::health", "RadioHealth::usv::uplinkMbps"],
          "must_preserve": [{"qualified_name": "RadioHealth::usv::uplinkMbps", "value": 8.0}]},
         {"id": "MOD-05", "type": "MOD", "package": "PowerBudget", "baseline": MOD5_BASE, "sysml": MOD5_GOLD,
-         "requirements": """# MOD-05 — synthetic, not an RTX specification
+         "requirements": """# MOD-05 — synthetic
 
 Package name stays PowerBudget. Edit the baseline.
 
@@ -508,7 +508,7 @@ Do not change 60 to make the power sum fit.
         if folder.exists():
             shutil.rmtree(folder)
         _write(folder / "case.yaml", yaml.safe_dump(_case(task_id, "QRY", "MaritimeISR"), sort_keys=False))
-        _write(folder / "input" / "requirements.md", f"# {task_id} — synthetic, not an RTX specification\n\n{question}\n")
+        _write(folder / "input" / "requirements.md", f"# {task_id} — synthetic\n\n{question}\n")
         shutil.copy2(SCENARIO, folder / "input" / "model.sysml")
         _write(folder / "gold" / "answer.json", json.dumps(answer, indent=2) + "\n")
 
@@ -528,7 +528,7 @@ Do not change 60 to make the power sum fit.
             shutil.rmtree(folder)
         _write(folder / "case.yaml", yaml.safe_dump(_case(task_id, "AMB", None), sort_keys=False))
         _write(folder / "input" / "requirements.md",
-               f"# {task_id} — synthetic, not an RTX specification\n\n{text}\n\n"
+               f"# {task_id} — synthetic\n\n{text}\n\n"
                "If a number or unit needed for a check is missing or in conflict, ask. Do not invent a value and do not write SysML.\n")
         _write(folder / "gold" / "assertions.yaml", yaml.safe_dump(
             {"task_id": task_id, "should_ask": groups, "must_not_invent_number": True}, sort_keys=False))
@@ -547,7 +547,7 @@ Do not change 60 to make the power sum fit.
         package = model.split()[1]
         _write(folder / "case.yaml", yaml.safe_dump(_case(task_id, "RT", package), sort_keys=False))
         _write(folder / "input" / "requirements.md",
-               f"# {task_id} — synthetic, not an RTX specification\n\n"
+               f"# {task_id} — synthetic\n\n"
                "Read the given model and restate its requirements in sentences. "
                "Do not add facts that are not in the model.\n")
         _write(folder / "input" / "model.sysml", model)

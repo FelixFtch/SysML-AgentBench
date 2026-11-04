@@ -1,8 +1,8 @@
 # Outer harness comparison, local Qwen3.8-27B: OpenCode vs Langflow's Agent (2026-10-07)
 
 Two assistants on the same local model (`qwen3.8-27b-q3:64k`, Ollama), the same MCP tools, and the same inner writer
-(OpenCode in the sandbox writing the designs). Only the outer layer differs: **RTRC design assistant** (OpenCode chooses
-the tools) and **RTRC design assistant · unfolded (local 27B)** (Langflow's Agent component chooses the cards). One
+(OpenCode in the sandbox writing the designs). Only the outer layer differs: **design assistant** (OpenCode chooses
+the tools) and **design assistant · unfolded (local 27B)** (Langflow's Agent component chooses the cards). One
 scripted conversation each, same wording, fresh sessions, run through the Workflow API on the superuser copies, results
 page stopped. Raw turns: `assistant-harness-comparison-20261007/` (`opencode-outer.jsonl`, `langflow-agent-outer.jsonl`,
 `langflow-agent-outer-rerun-after-fix.jsonl`, `runner.py`). The Langflow side's first attempt died on my script's login

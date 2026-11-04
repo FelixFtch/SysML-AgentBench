@@ -1,5 +1,5 @@
 """MCP tool for the Kev requirement classifier: one tool, classify_requirement, mounted by the OpenCode-with-memory
-Kev flows of langflow/flows/7-kev-tools/ as their `kev` MCP server, next to the `rtrc` server of tools/assistant_mcp.py.
+Kev flows of langflow/flows/7-kev-tools/ as their `kev` MCP server, next to the `` server of tools/assistant_mcp.py.
 
     python3 tools/kev_mcp.py            # streamable HTTP on 127.0.0.1:8793/mcp
 

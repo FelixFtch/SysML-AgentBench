@@ -1,4 +1,4 @@
-# PWR-01 (development) — synthetic, not an RTX specification
+# PWR-01 (development) — synthetic
 
 Package name: PowerCheck
 

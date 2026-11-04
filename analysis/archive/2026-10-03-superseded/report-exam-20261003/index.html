@@ -20,7 +20,7 @@ footer { border-top: 1px solid #bbb; margin-top: 28px; padding-top: 16px; font-s
 <main>
 <h1>Maritime SysML exam</h1>
 <p class="subtitle">Results from saved answers. Each cohort is listed on its own; there is no combined total.</p>
-<p class="byline">Synthetic numbers, not RTX specifications. The official Pilot judges syntax. The answer key judges the required numbers and the power budget. A second model is compared and never changes a score.</p>
+<p class="byline">Synthetic numbers. The official Pilot judges syntax. The answer key judges the required numbers and the power budget. A second model is compared and never changes a score.</p>
 
 <h2>What can be said</h2>
 <table>
@@ -110,7 +110,7 @@ footer { border-top: 1px solid #bbb; margin-top: 28px; padding-top: 16px; font-s
 <tr><td>Claude Code, first run</td><td>qwen3.8-max, through the local Qwen route</td><td>21 pass, 1 fail (GEN-04), 2 not submitted (MOD-01, QRY-02). A missing submission is not a failure. MOD-05 passes under the current scorer (it failed under the archived one).</td><td>analysis/claude-qwen-20261003T014507/results.jsonl</td></tr>
 <tr><td>Claude Code, four tasks re-run</td><td>Same route, no time limit</td><td>GEN-04 PASS, MOD-01 PASS, MOD-05 PASS, QRY-02 PASS. Replacing the first run's failures with the re-run leaves this cohort at 24 pass and 0 fail.</td><td>analysis/claude-qwen-20261003T034819/results.jsonl</td></tr>
 </table>
-<p>An empty session named "RTRC maritime tasks" on the web UI has no messages and is not in this table. OpenCode's evidence is the 24 command-line answers above.</p>
+<p>An empty session named "maritime tasks" on the web UI has no messages and is not in this table. OpenCode's evidence is the 24 command-line answers above.</p>
 
 <h2>5. A second model reads the 288 flash answers</h2>
 <p>The judge is qwen3.8-max. It agrees on 157 of 288 cells and calls a failure a pass on 70. The file is <code>analysis/validator-all-max.jsonl</code>. It does not change the pass counts in section 2. The question it was asked says an over-budget design fails, so it is compared with the tool's design verdict; only MOD-05 has a design verdict (FAIL) different from its task verdict (PASS).</p>

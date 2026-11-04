@@ -4,7 +4,7 @@
   "endpoint_name": "other-mod-change-chain",
   "is_component": false,
   "tags": [
-    "rtrc",
+    "",
     "mod"
   ],
   "data": {
@@ -21,7 +21,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC MOD change: F5, the MOD change chain (page 2.4): the model edits an existing model, the official tool\njudges it, a limit change stops for a person, and the model reads the edited model back. Replayed or run live.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nTASKS = [\"MOD-01\", \"MOD-02\", \"MOD-03\", \"MOD-04\", \"MOD-05\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcModChange(Component):\n    display_name = \"RTRC MOD change\"\n    description = \"F5: one change to an existing model (MOD-01 to MOD-05): the latest saved run, or a new run on Qwen (two model calls).\"\n    icon = \"git-compare\"\n    name = \"RtrcModChange\"\n\n    inputs = [\n        DropdownInput(name=\"task\", display_name=\"Task\", options=TASKS, value=\"MOD-05\"),\n        DropdownInput(name=\"mode\", display_name=\"Mode\", options=[\"Replay the latest run\", \"Run it again (live)\"], value=\"Replay the latest run\"),\n    ]\n    outputs = [\n        Output(display_name=\"Case\", name=\"case\", method=\"as_data\"),\n        Output(display_name=\"Summary\", name=\"summary\", method=\"as_message\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            path = \"/mod/case\" if self.mode.startswith(\"Replay\") else \"/mod/run\"\n            self._cached = _call(path, {\"task\": self.task})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n",
+                "value": "\"\"\"MOD change: F5, the MOD change chain (page 2.4): the model edits an existing model, the official tool\njudges it, a limit change stops for a person, and the model reads the edited model back. Replayed or run live.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nTASKS = [\"MOD-01\", \"MOD-02\", \"MOD-03\", \"MOD-04\", \"MOD-05\"]\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardModChange(Component):\n    display_name = \"MOD change\"\n    description = \"F5: one change to an existing model (MOD-01 to MOD-05): the latest saved run, or a new run on Qwen (two model calls).\"\n    icon = \"git-compare\"\n    name = \"CardModChange\"\n\n    inputs = [\n        DropdownInput(name=\"task\", display_name=\"Task\", options=TASKS, value=\"MOD-05\"),\n        DropdownInput(name=\"mode\", display_name=\"Mode\", options=[\"Replay the latest run\", \"Run it again (live)\"], value=\"Replay the latest run\"),\n    ]\n    outputs = [\n        Output(display_name=\"Case\", name=\"case\", method=\"as_data\"),\n        Output(display_name=\"Summary\", name=\"summary\", method=\"as_message\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            path = \"/mod/case\" if self.mode.startswith(\"Replay\") else \"/mod/run\"\n            self._cached = _call(path, {\"task\": self.task})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -144,10 +144,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcModChange",
-          "id": "RtrcModChange-case"
+          "type": "CardModChange",
+          "id": "CardModChange-case"
         },
-        "id": "RtrcModChange-case",
+        "id": "CardModChange-case",
         "type": "genericNode",
         "position": {
           "x": 40,
@@ -464,7 +464,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcModStep(Component):\n    display_name = \"RTRC MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"RtrcModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
+                "value": "\"\"\"MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass CardModStep(Component):\n    display_name = \"MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"CardModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -560,10 +560,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcModStep",
-          "id": "RtrcModStep-readback"
+          "type": "CardModStep",
+          "id": "CardModStep-readback"
         },
-        "id": "RtrcModStep-readback",
+        "id": "CardModStep-readback",
         "type": "genericNode",
         "position": {
           "x": 2860,
@@ -608,7 +608,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcModStep(Component):\n    display_name = \"RTRC MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"RtrcModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
+                "value": "\"\"\"MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass CardModStep(Component):\n    display_name = \"MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"CardModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -704,10 +704,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcModStep",
-          "id": "RtrcModStep-4"
+          "type": "CardModStep",
+          "id": "CardModStep-4"
         },
-        "id": "RtrcModStep-4",
+        "id": "CardModStep-4",
         "type": "genericNode",
         "position": {
           "x": 2390,
@@ -752,7 +752,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcModStep(Component):\n    display_name = \"RTRC MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"RtrcModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
+                "value": "\"\"\"MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass CardModStep(Component):\n    display_name = \"MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"CardModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -848,10 +848,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcModStep",
-          "id": "RtrcModStep-3"
+          "type": "CardModStep",
+          "id": "CardModStep-3"
         },
-        "id": "RtrcModStep-3",
+        "id": "CardModStep-3",
         "type": "genericNode",
         "position": {
           "x": 1920,
@@ -896,7 +896,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcModStep(Component):\n    display_name = \"RTRC MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"RtrcModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
+                "value": "\"\"\"MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass CardModStep(Component):\n    display_name = \"MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"CardModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -992,10 +992,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcModStep",
-          "id": "RtrcModStep-2"
+          "type": "CardModStep",
+          "id": "CardModStep-2"
         },
-        "id": "RtrcModStep-2",
+        "id": "CardModStep-2",
         "type": "genericNode",
         "position": {
           "x": 1450,
@@ -1040,7 +1040,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcModStep(Component):\n    display_name = \"RTRC MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"RtrcModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
+                "value": "\"\"\"MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass CardModStep(Component):\n    display_name = \"MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"CardModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -1136,10 +1136,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcModStep",
-          "id": "RtrcModStep-1"
+          "type": "CardModStep",
+          "id": "CardModStep-1"
         },
-        "id": "RtrcModStep-1",
+        "id": "CardModStep-1",
         "type": "genericNode",
         "position": {
           "x": 980,
@@ -1184,7 +1184,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass RtrcModStep(Component):\n    display_name = \"RTRC MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"RtrcModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
+                "value": "\"\"\"MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.\nThe \"Limit check\" message starts with \"moved\" or \"unchanged\", so an If-Else can stop for a person when a stated limit moved.\"\"\"\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DataInput, DropdownInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nVIEWS = [\"Task and baseline\", \"Model change\", \"Official syntax\", \"Task and design verdicts\", \"Limit check\", \"Read-back\"]\n\n\ndef _record(value) -> dict:\n    return dict(getattr(value, \"data\", None) or (value if isinstance(value, dict) else {}))\n\n\nclass CardModStep(Component):\n    display_name = \"MOD step\"\n    description = \"One step of the MOD change chain, from the case record.\"\n    icon = \"list-checks\"\n    name = \"CardModStep\"\n\n    inputs = [\n        DataInput(name=\"case\", display_name=\"Case record\"),\n        DropdownInput(name=\"view\", display_name=\"Step\", options=VIEWS, value=VIEWS[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Case record\", name=\"case_out\", method=\"pass_on\"),\n        Output(display_name=\"This step\", name=\"message\", method=\"show\"),\n    ]\n\n    def show(self) -> Message:\n        case = _record(self.case)\n        if self.view == \"Task and baseline\":\n            text = f\"{case.get('task_id')}: the task statement and the baseline model the model starts from\\n\\n{str(case.get('requirements') or '')[:1500]}\\n\\n{str(case.get('baseline') or '')[:2500]}\"\n        elif self.view == \"Model change\":\n            text = f\"Model {case.get('model')} wrote the changed model\\n\\n{str(case.get('answer') or '')[:3000]}\"\n        elif self.view == \"Official syntax\":\n            text = f\"Official SysML v2 Pilot: {case.get('sysml_status')}\" + \"\".join(f\"\\n  {item.get('message')}\" for item in case.get(\"diagnostics\") or [])\n        elif self.view == \"Task and design verdicts\":\n            checks = case.get(\"checks\") or []\n            text = (f\"Task verdict {case.get('status')} (the answer key's checklist) · design verdict {case.get('engineering_status')} (the budget)\\n\"\n                    + \"\".join(f\"\\n  {item.get('id', '')} {item.get('status', '')} {item.get('actual', '')} / {item.get('limit', '')}\" for item in checks))\n        elif self.view == \"Limit check\":\n            moved = case.get(\"limit_in_model\") != case.get(\"limit_in_baseline\")\n            text = (f\"{'moved' if moved else 'unchanged'} · stated limit {case.get('limit_in_baseline')} in the baseline, {case.get('limit_in_model')} in the answer\"\n                    + (\" · a person must decide\" if moved else \" · no approval needed\"))\n        else:\n            mentions = case.get(\"round_trip_mentions\") or {}\n            text = f\"Read-back restates {sum(mentions.values())} of {len(mentions)} numbers in the model\\n\\n{str(case.get('round_trip') or '')[:2000]}\"\n        self.status = text\n        return Message(text=text)\n\n    def pass_on(self) -> Data:\n        return Data(data=_record(self.case))\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -1280,10 +1280,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcModStep",
-          "id": "RtrcModStep-0"
+          "type": "CardModStep",
+          "id": "CardModStep-0"
         },
-        "id": "RtrcModStep-0",
+        "id": "CardModStep-0",
         "type": "genericNode",
         "position": {
           "x": 510,
@@ -1596,7 +1596,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Gate record: one node per Human Input branch of a stop-and-ask gate (AGENTS.md: a stated limit may only change\nwith a person's approval). Stores the choice in analysis/langflow-gates.jsonl.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcGateRecord(Component):\n    display_name = \"RTRC Gate record\"\n    description = \"Put one after each Human Input branch of a stop-and-ask gate; records the person's choice.\"\n    icon = \"shield-check\"\n    name = \"RtrcGateRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        StrInput(name=\"gate\", display_name=\"Gate\", value=\"stated limit\"),\n        StrInput(name=\"choice\", display_name=\"This branch\", value=\"\"),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.choice}: not chosen\"\n            return Message(text=\"\")\n        body = _call(\"/gate/decision\", {\"gate\": self.gate, \"choice\": self.choice, \"context\": text[:2000]})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
+                "value": "\"\"\"Gate record: one node per Human Input branch of a stop-and-ask gate (AGENTS.md: a stated limit may only change\nwith a person's approval). Stores the choice in analysis/langflow-gates.jsonl.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardGateRecord(Component):\n    display_name = \"Gate record\"\n    description = \"Put one after each Human Input branch of a stop-and-ask gate; records the person's choice.\"\n    icon = \"shield-check\"\n    name = \"CardGateRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        StrInput(name=\"gate\", display_name=\"Gate\", value=\"stated limit\"),\n        StrInput(name=\"choice\", display_name=\"This branch\", value=\"\"),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.choice}: not chosen\"\n            return Message(text=\"\")\n        body = _call(\"/gate/decision\", {\"gate\": self.gate, \"choice\": self.choice, \"context\": text[:2000]})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -1744,10 +1744,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcGateRecord",
-          "id": "RtrcGateRecord-keep"
+          "type": "CardGateRecord",
+          "id": "CardGateRecord-keep"
         },
-        "id": "RtrcGateRecord-keep",
+        "id": "CardGateRecord-keep",
         "type": "genericNode",
         "position": {
           "x": 40,
@@ -2458,7 +2458,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Gate record: one node per Human Input branch of a stop-and-ask gate (AGENTS.md: a stated limit may only change\nwith a person's approval). Stores the choice in analysis/langflow-gates.jsonl.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcGateRecord(Component):\n    display_name = \"RTRC Gate record\"\n    description = \"Put one after each Human Input branch of a stop-and-ask gate; records the person's choice.\"\n    icon = \"shield-check\"\n    name = \"RtrcGateRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        StrInput(name=\"gate\", display_name=\"Gate\", value=\"stated limit\"),\n        StrInput(name=\"choice\", display_name=\"This branch\", value=\"\"),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.choice}: not chosen\"\n            return Message(text=\"\")\n        body = _call(\"/gate/decision\", {\"gate\": self.gate, \"choice\": self.choice, \"context\": text[:2000]})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
+                "value": "\"\"\"Gate record: one node per Human Input branch of a stop-and-ask gate (AGENTS.md: a stated limit may only change\nwith a person's approval). Stores the choice in analysis/langflow-gates.jsonl.\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import MessageInput, Output, StrInput\nfrom lfx.schema.message import Message\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardGateRecord(Component):\n    display_name = \"Gate record\"\n    description = \"Put one after each Human Input branch of a stop-and-ask gate; records the person's choice.\"\n    icon = \"shield-check\"\n    name = \"CardGateRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        StrInput(name=\"gate\", display_name=\"Gate\", value=\"stated limit\"),\n        StrInput(name=\"choice\", display_name=\"This branch\", value=\"\"),\n    ]\n    outputs = [Output(display_name=\"Message\", name=\"message\", method=\"record\")]\n\n    def record(self) -> Message:\n        text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n        if not text.strip():\n            self.status = f\"{self.choice}: not chosen\"\n            return Message(text=\"\")\n        body = _call(\"/gate/decision\", {\"gate\": self.gate, \"choice\": self.choice, \"context\": text[:2000]})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -2606,10 +2606,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcGateRecord",
-          "id": "RtrcGateRecord-approve"
+          "type": "CardGateRecord",
+          "id": "CardGateRecord-approve"
         },
-        "id": "RtrcGateRecord-approve",
+        "id": "CardGateRecord-approve",
         "type": "genericNode",
         "position": {
           "x": 40,
@@ -2848,7 +2848,7 @@
     "edges": [
       {
         "source": "HumanInput-limit",
-        "target": "RtrcGateRecord-approve",
+        "target": "CardGateRecord-approve",
         "data": {
           "sourceHandle": {
             "dataType": "HumanInput",
@@ -2860,7 +2860,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcGateRecord-approve",
+            "id": "CardGateRecord-approve",
             "inputTypes": [
               "Message"
             ],
@@ -2868,15 +2868,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-limitœ, œnameœ: œbranch_approve_the_new_limitœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcGateRecord-approveœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-HumanInput-limit{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-limitœ,œnameœ:œbranch_approve_the_new_limitœ,œoutput_typesœ:[œMessageœ]}-RtrcGateRecord-approve{œfieldNameœ:œupstreamœ,œidœ:œRtrcGateRecord-approveœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardGateRecord-approveœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-limit{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-limitœ,œnameœ:œbranch_approve_the_new_limitœ,œoutput_typesœ:[œMessageœ]}-CardGateRecord-approve{œfieldNameœ:œupstreamœ,œidœ:œCardGateRecord-approveœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "HumanInput-limit",
-        "target": "RtrcGateRecord-keep",
+        "target": "CardGateRecord-keep",
         "data": {
           "sourceHandle": {
             "dataType": "HumanInput",
@@ -2888,7 +2888,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcGateRecord-keep",
+            "id": "CardGateRecord-keep",
             "inputTypes": [
               "Message"
             ],
@@ -2896,8 +2896,8 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-limitœ, œnameœ: œbranch_keep_the_stated_limitœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcGateRecord-keepœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-HumanInput-limit{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-limitœ,œnameœ:œbranch_keep_the_stated_limitœ,œoutput_typesœ:[œMessageœ]}-RtrcGateRecord-keep{œfieldNameœ:œupstreamœ,œidœ:œRtrcGateRecord-keepœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardGateRecord-keepœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-limit{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-limitœ,œnameœ:œbranch_keep_the_stated_limitœ,œoutput_typesœ:[œMessageœ]}-CardGateRecord-keep{œfieldNameœ:œupstreamœ,œidœ:œCardGateRecord-keepœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
@@ -2931,12 +2931,12 @@
         "selected": false
       },
       {
-        "source": "RtrcGateRecord-approve",
+        "source": "CardGateRecord-approve",
         "target": "ChatOutput-approve",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcGateRecord",
-            "id": "RtrcGateRecord-approve",
+            "dataType": "CardGateRecord",
+            "id": "CardGateRecord-approve",
             "name": "message",
             "output_types": [
               "Message"
@@ -2955,20 +2955,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcGateRecordœ, œidœ: œRtrcGateRecord-approveœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardGateRecordœ, œidœ: œCardGateRecord-approveœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-approveœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcGateRecord-approve{œdataTypeœ:œRtrcGateRecordœ,œidœ:œRtrcGateRecord-approveœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-approve{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-approveœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardGateRecord-approve{œdataTypeœ:œCardGateRecordœ,œidœ:œCardGateRecord-approveœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-approve{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-approveœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcGateRecord-keep",
+        "source": "CardGateRecord-keep",
         "target": "ChatOutput-keep",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcGateRecord",
-            "id": "RtrcGateRecord-keep",
+            "dataType": "CardGateRecord",
+            "id": "CardGateRecord-keep",
             "name": "message",
             "output_types": [
               "Message"
@@ -2987,20 +2987,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcGateRecordœ, œidœ: œRtrcGateRecord-keepœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardGateRecordœ, œidœ: œCardGateRecord-keepœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-keepœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcGateRecord-keep{œdataTypeœ:œRtrcGateRecordœ,œidœ:œRtrcGateRecord-keepœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-keep{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-keepœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardGateRecord-keep{œdataTypeœ:œCardGateRecordœ,œidœ:œCardGateRecord-keepœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-keep{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-keepœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcModChange-case",
-        "target": "RtrcModStep-0",
+        "source": "CardModChange-case",
+        "target": "CardModStep-0",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcModChange",
-            "id": "RtrcModChange-case",
+            "dataType": "CardModChange",
+            "id": "CardModChange-case",
             "name": "case",
             "output_types": [
               "JSON"
@@ -3008,7 +3008,7 @@
           },
           "targetHandle": {
             "fieldName": "case",
-            "id": "RtrcModStep-0",
+            "id": "CardModStep-0",
             "inputTypes": [
               "Data",
               "JSON"
@@ -3016,20 +3016,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcModChangeœ, œidœ: œRtrcModChange-caseœ, œnameœ: œcaseœ, œoutput_typesœ: [œJSONœ]}",
-        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œRtrcModStep-0œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcModChange-case{œdataTypeœ:œRtrcModChangeœ,œidœ:œRtrcModChange-caseœ,œnameœ:œcaseœ,œoutput_typesœ:[œJSONœ]}-RtrcModStep-0{œfieldNameœ:œcaseœ,œidœ:œRtrcModStep-0œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "sourceHandle": "{œdataTypeœ: œCardModChangeœ, œidœ: œCardModChange-caseœ, œnameœ: œcaseœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œCardModStep-0œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-CardModChange-case{œdataTypeœ:œCardModChangeœ,œidœ:œCardModChange-caseœ,œnameœ:œcaseœ,œoutput_typesœ:[œJSONœ]}-CardModStep-0{œfieldNameœ:œcaseœ,œidœ:œCardModStep-0œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcModStep-0",
-        "target": "RtrcModStep-1",
+        "source": "CardModStep-0",
+        "target": "CardModStep-1",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcModStep",
-            "id": "RtrcModStep-0",
+            "dataType": "CardModStep",
+            "id": "CardModStep-0",
             "name": "case_out",
             "output_types": [
               "JSON"
@@ -3037,7 +3037,7 @@
           },
           "targetHandle": {
             "fieldName": "case",
-            "id": "RtrcModStep-1",
+            "id": "CardModStep-1",
             "inputTypes": [
               "Data",
               "JSON"
@@ -3045,20 +3045,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcModStepœ, œidœ: œRtrcModStep-0œ, œnameœ: œcase_outœ, œoutput_typesœ: [œJSONœ]}",
-        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œRtrcModStep-1œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcModStep-0{œdataTypeœ:œRtrcModStepœ,œidœ:œRtrcModStep-0œ,œnameœ:œcase_outœ,œoutput_typesœ:[œJSONœ]}-RtrcModStep-1{œfieldNameœ:œcaseœ,œidœ:œRtrcModStep-1œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "sourceHandle": "{œdataTypeœ: œCardModStepœ, œidœ: œCardModStep-0œ, œnameœ: œcase_outœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œCardModStep-1œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-CardModStep-0{œdataTypeœ:œCardModStepœ,œidœ:œCardModStep-0œ,œnameœ:œcase_outœ,œoutput_typesœ:[œJSONœ]}-CardModStep-1{œfieldNameœ:œcaseœ,œidœ:œCardModStep-1œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcModStep-1",
-        "target": "RtrcModStep-2",
+        "source": "CardModStep-1",
+        "target": "CardModStep-2",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcModStep",
-            "id": "RtrcModStep-1",
+            "dataType": "CardModStep",
+            "id": "CardModStep-1",
             "name": "case_out",
             "output_types": [
               "JSON"
@@ -3066,7 +3066,7 @@
           },
           "targetHandle": {
             "fieldName": "case",
-            "id": "RtrcModStep-2",
+            "id": "CardModStep-2",
             "inputTypes": [
               "Data",
               "JSON"
@@ -3074,20 +3074,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcModStepœ, œidœ: œRtrcModStep-1œ, œnameœ: œcase_outœ, œoutput_typesœ: [œJSONœ]}",
-        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œRtrcModStep-2œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcModStep-1{œdataTypeœ:œRtrcModStepœ,œidœ:œRtrcModStep-1œ,œnameœ:œcase_outœ,œoutput_typesœ:[œJSONœ]}-RtrcModStep-2{œfieldNameœ:œcaseœ,œidœ:œRtrcModStep-2œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "sourceHandle": "{œdataTypeœ: œCardModStepœ, œidœ: œCardModStep-1œ, œnameœ: œcase_outœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œCardModStep-2œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-CardModStep-1{œdataTypeœ:œCardModStepœ,œidœ:œCardModStep-1œ,œnameœ:œcase_outœ,œoutput_typesœ:[œJSONœ]}-CardModStep-2{œfieldNameœ:œcaseœ,œidœ:œCardModStep-2œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcModStep-2",
-        "target": "RtrcModStep-3",
+        "source": "CardModStep-2",
+        "target": "CardModStep-3",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcModStep",
-            "id": "RtrcModStep-2",
+            "dataType": "CardModStep",
+            "id": "CardModStep-2",
             "name": "case_out",
             "output_types": [
               "JSON"
@@ -3095,7 +3095,7 @@
           },
           "targetHandle": {
             "fieldName": "case",
-            "id": "RtrcModStep-3",
+            "id": "CardModStep-3",
             "inputTypes": [
               "Data",
               "JSON"
@@ -3103,20 +3103,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcModStepœ, œidœ: œRtrcModStep-2œ, œnameœ: œcase_outœ, œoutput_typesœ: [œJSONœ]}",
-        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œRtrcModStep-3œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcModStep-2{œdataTypeœ:œRtrcModStepœ,œidœ:œRtrcModStep-2œ,œnameœ:œcase_outœ,œoutput_typesœ:[œJSONœ]}-RtrcModStep-3{œfieldNameœ:œcaseœ,œidœ:œRtrcModStep-3œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "sourceHandle": "{œdataTypeœ: œCardModStepœ, œidœ: œCardModStep-2œ, œnameœ: œcase_outœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œCardModStep-3œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-CardModStep-2{œdataTypeœ:œCardModStepœ,œidœ:œCardModStep-2œ,œnameœ:œcase_outœ,œoutput_typesœ:[œJSONœ]}-CardModStep-3{œfieldNameœ:œcaseœ,œidœ:œCardModStep-3œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcModStep-3",
-        "target": "RtrcModStep-4",
+        "source": "CardModStep-3",
+        "target": "CardModStep-4",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcModStep",
-            "id": "RtrcModStep-3",
+            "dataType": "CardModStep",
+            "id": "CardModStep-3",
             "name": "case_out",
             "output_types": [
               "JSON"
@@ -3124,7 +3124,7 @@
           },
           "targetHandle": {
             "fieldName": "case",
-            "id": "RtrcModStep-4",
+            "id": "CardModStep-4",
             "inputTypes": [
               "Data",
               "JSON"
@@ -3132,20 +3132,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcModStepœ, œidœ: œRtrcModStep-3œ, œnameœ: œcase_outœ, œoutput_typesœ: [œJSONœ]}",
-        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œRtrcModStep-4œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcModStep-3{œdataTypeœ:œRtrcModStepœ,œidœ:œRtrcModStep-3œ,œnameœ:œcase_outœ,œoutput_typesœ:[œJSONœ]}-RtrcModStep-4{œfieldNameœ:œcaseœ,œidœ:œRtrcModStep-4œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "sourceHandle": "{œdataTypeœ: œCardModStepœ, œidœ: œCardModStep-3œ, œnameœ: œcase_outœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œCardModStep-4œ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-CardModStep-3{œdataTypeœ:œCardModStepœ,œidœ:œCardModStep-3œ,œnameœ:œcase_outœ,œoutput_typesœ:[œJSONœ]}-CardModStep-4{œfieldNameœ:œcaseœ,œidœ:œCardModStep-4œ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcModStep-4",
-        "target": "RtrcModStep-readback",
+        "source": "CardModStep-4",
+        "target": "CardModStep-readback",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcModStep",
-            "id": "RtrcModStep-4",
+            "dataType": "CardModStep",
+            "id": "CardModStep-4",
             "name": "case_out",
             "output_types": [
               "JSON"
@@ -3153,7 +3153,7 @@
           },
           "targetHandle": {
             "fieldName": "case",
-            "id": "RtrcModStep-readback",
+            "id": "CardModStep-readback",
             "inputTypes": [
               "Data",
               "JSON"
@@ -3161,20 +3161,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcModStepœ, œidœ: œRtrcModStep-4œ, œnameœ: œcase_outœ, œoutput_typesœ: [œJSONœ]}",
-        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œRtrcModStep-readbackœ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcModStep-4{œdataTypeœ:œRtrcModStepœ,œidœ:œRtrcModStep-4œ,œnameœ:œcase_outœ,œoutput_typesœ:[œJSONœ]}-RtrcModStep-readback{œfieldNameœ:œcaseœ,œidœ:œRtrcModStep-readbackœ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
+        "sourceHandle": "{œdataTypeœ: œCardModStepœ, œidœ: œCardModStep-4œ, œnameœ: œcase_outœ, œoutput_typesœ: [œJSONœ]}",
+        "targetHandle": "{œfieldNameœ: œcaseœ, œidœ: œCardModStep-readbackœ, œinputTypesœ: [œDataœ, œJSONœ], œtypeœ: œotherœ}",
+        "id": "reactflow__edge-CardModStep-4{œdataTypeœ:œCardModStepœ,œidœ:œCardModStep-4œ,œnameœ:œcase_outœ,œoutput_typesœ:[œJSONœ]}-CardModStep-readback{œfieldNameœ:œcaseœ,œidœ:œCardModStep-readbackœ,œinputTypesœ:[œDataœ,œJSONœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcModStep-4",
+        "source": "CardModStep-4",
         "target": "IfElse-limit",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcModStep",
-            "id": "RtrcModStep-4",
+            "dataType": "CardModStep",
+            "id": "CardModStep-4",
             "name": "message",
             "output_types": [
               "Message"
@@ -3189,20 +3189,20 @@
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcModStepœ, œidœ: œRtrcModStep-4œ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardModStepœ, œidœ: œCardModStep-4œ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_textœ, œidœ: œIfElse-limitœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcModStep-4{œdataTypeœ:œRtrcModStepœ,œidœ:œRtrcModStep-4œ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-IfElse-limit{œfieldNameœ:œinput_textœ,œidœ:œIfElse-limitœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "id": "reactflow__edge-CardModStep-4{œdataTypeœ:œCardModStepœ,œidœ:œCardModStep-4œ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-IfElse-limit{œfieldNameœ:œinput_textœ,œidœ:œIfElse-limitœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcModStep-readback",
+        "source": "CardModStep-readback",
         "target": "ChatOutput-readback",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcModStep",
-            "id": "RtrcModStep-readback",
+            "dataType": "CardModStep",
+            "id": "CardModStep-readback",
             "name": "message",
             "output_types": [
               "Message"
@@ -3221,9 +3221,9 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcModStepœ, œidœ: œRtrcModStep-readbackœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardModStepœ, œidœ: œCardModStep-readbackœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-readbackœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcModStep-readback{œdataTypeœ:œRtrcModStepœ,œidœ:œRtrcModStep-readbackœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-readback{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-readbackœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardModStep-readback{œdataTypeœ:œCardModStepœ,œidœ:œCardModStep-readbackœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-readback{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-readbackœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false

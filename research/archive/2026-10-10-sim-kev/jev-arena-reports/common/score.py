@@ -61,7 +61,7 @@ def main(pred_files, gold_path, out_path):
 
 if __name__ == "__main__":
     ts = sys.argv[1]
-    d = f"/data/robotics/RTRC/analysis/jev-arena-pilot-{ts}"
+    d = f"/data/robotics//analysis/jev-arena-pilot-{ts}"
     main(sorted(glob.glob(d + "/preds-*.jsonl")),
-         "/data/robotics/RTRC/tools/jev-arena/common/pilot_sentences.jsonl",
+         "/data/robotics//tools/jev-arena/common/pilot_sentences.jsonl",
          d + "/metrics.json")

@@ -161,5 +161,5 @@ with sync_playwright() as p:
  except Exception as e:
   add('Unexpected harness interruption',False,traceback.format_exc());print(traceback.format_exc())
  finally:
-  report={'time':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'environment':'Chromium with ANGLE SwiftShader (WebGL API path, not physicalRTX4090)','summary':{'passed':sum(x['pass'] for x in rows),'total':len(rows)},'checks':rows,'js_errors':errors,'limitations':['No real LLM calls','No SysML parser executed','No device/driver/USB measurements','Model and geometry share authored data; not parser-derived CAD','All operating loads are editable planning assumptions']}
+  report={'time':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'environment':'Chromium with ANGLE SwiftShader (WebGL API path, not physical24 GB GPU)','summary':{'passed':sum(x['pass'] for x in rows),'total':len(rows)},'checks':rows,'js_errors':errors,'limitations':['No real LLM calls','No SysML parser executed','No device/driver/USB measurements','Model and geometry share authored data; not parser-derived CAD','All operating loads are editable planning assumptions']}
   (OUTPUT/'browser_report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print(json.dumps(report['summary']));b.close()

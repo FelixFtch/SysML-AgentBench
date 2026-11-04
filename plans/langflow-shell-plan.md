@@ -1,6 +1,6 @@
-# Langflow shell for the RTRC pipeline: research and plan
+# Langflow shell for the pipeline: research and plan
 
-Date: 2026-10-06. Status: proposal, not started. Scope: a drag-and-drop view of the project's flows for the advisor and RTRC: first the Part 2 agent flow (results page 2.1, §4–§11), then every page section (§12). Nothing here changes a score, the frozen task bank or the exam harness.
+Date: 2026-10-06. Status: proposal, not started. Scope: a drag-and-drop view of the project's flows for the advisor and : first the Part 2 agent flow (results page 2.1, §4–§11), then every page section (§12). Nothing here changes a score, the frozen task bank or the exam harness.
 
 ## 0. Summary
 
@@ -40,7 +40,7 @@ Coding agents outside Langflow: OpenCode has a headless server (`opencode serve`
 | Knowledge base ("memory") | MaritimeISR element cards built from its official parse (`bench/graph_query.py`), plus every approved design (`analysis/memory/approved.jsonl`, `analysis/memory/designs/`), plus alignment reviews (`analysis/memory/alignment-reviews.jsonl`) |
 | Retrieval | `bench/vector_index.py`: pinned MiniLM snapshot and FAISS (`requirements-retrieval.txt`, `check()` self-test), cosine ≥ 0.30, +0.10 per exact-name word, seeds then one hop; Part 2 uses 4 seeds and up to 12 cards, the exam's P3 3 seeds and up to 6 cards from `analysis/vector-index/examples/` |
 | Official validator | `mvp/toolchain` (Pilot 0.62), `mvp.engine.run_submitted_model` |
-| MCP server | `tools/mcp_server.py` ("rtrc-tools"): `validate_sysml`, `check_budget`, run diff, `query_power`; refuses any path under `gold/` |
+| MCP server | `tools/mcp_server.py` ("-tools"): `validate_sysml`, `check_budget`, run diff, `query_power`; refuses any path under `gold/` |
 | Coding agents | `agents/external/jail.py` (bubblewrap sandbox, `./validate` in the scorer's file order), `agents/external/opencode_run.py`, `bench/run_claude_qwen.py`, `bench/run_agents_retry.py` |
 | Direct model calls | `agents/llm.py` against the OpenAI-compatible Qwen endpoint in `.env` (`MVP_LLM_URL`, `MVP_LLM_API_KEY`) |
 | Results page | `bench/exam_board.py` on 127.0.0.1:8770: 2.1 flow, 2.3 run record, approvals, model diagrams. It also serves answer keys, which is why it is stopped while agents run |
@@ -58,18 +58,18 @@ Coding agents outside Langflow: OpenCode has a headless server (`opencode serve`
 ```mermaid
 flowchart LR
   subgraph LF["Langflow 1.12.5 (.venv-langflow, 127.0.0.1:7860, auth on)"]
-    CI[Chat Input: brief] --> R[RTRC Retrieve]
-    R --> G[RTRC Requirements + Designs]
-    G --> V[RTRC Validate and repair]
-    V --> A[RTRC Align]
-    A --> C[RTRC Checks + read-back]
+    CI[Chat Input: brief] --> R[Retrieve]
+    R --> G[Requirements + Designs]
+    G --> V[Validate and repair]
+    V --> A[Align]
+    A --> C[Checks + read-back]
     C --> CR{Conditional Router: all checks pass?}
-    CR -- no --> T[RTRC Trade-offs] --> CO[Chat Output]
+    CR -- no --> T[Trade-offs] --> CO[Chat Output]
     CR -- yes --> HI[Human Input: Approve A / Approve B / Reject]
-    HI -- approve --> AP[RTRC Approve into memory] --> CO
+    HI -- approve --> AP[Approve into memory] --> CO
     HI -- reject --> CO
   end
-  subgraph SVC["RTRC shell service (main env, 127.0.0.1:8781, token)"]
+  subgraph SVC["shell service (main env, 127.0.0.1:8781, token)"]
     E1["/retrieve /requirements /design /validate /align /checks /tradeoffs /approve /agent /cards"]
   end
   R & G & V & A & C & T & AP -->|HTTP JSON| E1
@@ -81,20 +81,20 @@ flowchart LR
 
 | Our stage (page 2.1) | Official Langflow pattern | Node on the canvas | Backed by | Same as our pipeline? |
 |---|---|---|---|---|
-| Brief (2.2) | Chat Input / Text Input | Chat Input; optional **RTRC Brief from catalog** (part choices → brief) | `/catalog` → `brief_from` | Yes |
-| ① Retrieve | Knowledge (Retrieve) or vector store + embedding nodes | **RTRC Retrieve** (outputs: cards as Message, full retrieval as JSON) | `/retrieve` → `retrieve_existing` | Yes, same code and pinned stack. The official Knowledge node would not be (§7) |
-| ② Requirements and designs A / B | Prompt Template + Language Model, or Agent | **RTRC Requirements**, **RTRC Design** (variant A or B) | `/requirements`, `/design` → `write_requirements`, `write_design` | Yes, same prompts (rules + template + retrieved cards + brief). A native variant (Prompt Template + Language Model on Qwen) can sit beside it, labelled |
-| Number source check | — | output of RTRC Requirements | same | Yes |
-| ③ Official validation + repair (≤20) | tool call or Loop | **RTRC Validate and repair** | `/validate` → `_validate_design` | Yes. Loop cannot hold the conditional repair, so the loop stays inside the step |
-| ④ Align with MaritimeISR | — | **RTRC Align** (mapping table, alignment package, Pilot result, diagram link) | `/align` → `align` | Yes. The per-pair Accept / Reject review stays on page 2.3 (one pause per pair would be unusable) |
-| ⑤ Budget checks + read-back | — | **RTRC Checks** | `/checks` → `parsed_numbers`, `simulate`, `read_back` | Yes |
-| Trade-offs | Conditional Router | Conditional Router on "all four checks pass" → **RTRC Trade-offs** | `/tradeoffs` → `propose_tradeoffs` | Yes |
-| ⑥ Person decides | **Human Input** (User Actions → branches) | Human Input: Form Content = `approval_block` text; actions "Approve design A", "Approve design B", "Reject"; no fallback | then **RTRC Approve** → `/approve` → `approve` | Yes, the same memory write. Langflow pauses the run and resumes from its checkpoint |
+| Brief (2.2) | Chat Input / Text Input | Chat Input; optional **Brief from catalog** (part choices → brief) | `/catalog` → `brief_from` | Yes |
+| ① Retrieve | Knowledge (Retrieve) or vector store + embedding nodes | **Retrieve** (outputs: cards as Message, full retrieval as JSON) | `/retrieve` → `retrieve_existing` | Yes, same code and pinned stack. The official Knowledge node would not be (§7) |
+| ② Requirements and designs A / B | Prompt Template + Language Model, or Agent | **Requirements**, **Design** (variant A or B) | `/requirements`, `/design` → `write_requirements`, `write_design` | Yes, same prompts (rules + template + retrieved cards + brief). A native variant (Prompt Template + Language Model on Qwen) can sit beside it, labelled |
+| Number source check | — | output of Requirements | same | Yes |
+| ③ Official validation + repair (≤20) | tool call or Loop | **Validate and repair** | `/validate` → `_validate_design` | Yes. Loop cannot hold the conditional repair, so the loop stays inside the step |
+| ④ Align with MaritimeISR | — | **Align** (mapping table, alignment package, Pilot result, diagram link) | `/align` → `align` | Yes. The per-pair Accept / Reject review stays on page 2.3 (one pause per pair would be unusable) |
+| ⑤ Budget checks + read-back | — | **Checks** | `/checks` → `parsed_numbers`, `simulate`, `read_back` | Yes |
+| Trade-offs | Conditional Router | Conditional Router on "all four checks pass" → **Trade-offs** | `/tradeoffs` → `propose_tradeoffs` | Yes |
+| ⑥ Person decides | **Human Input** (User Actions → branches) | Human Input: Form Content = `approval_block` text; actions "Approve design A", "Approve design B", "Reject"; no fallback | then **Approve** → `/approve` → `approve` | Yes, the same memory write. Langflow pauses the run and resumes from its checkpoint |
 | Output | Chat Output | summary + links to page 2.3 and `/api/diagram?run=…` | — | — |
 
 ## 6. Coding agents and direct API calls
 
-**Claude Code / OpenCode (recommended path: our sandbox).** One custom node, **RTRC Sandboxed agent** (inputs: task text, agent = OpenCode or Claude Code, model, limits), calls `/agent`, which runs the existing runners inside `agents/external/jail.py`: a fresh workspace with the task input, AGENTS.md and `./validate`, no answer keys, the same time and validator limits as the retry run. It returns the answer, the official parse status, the run folder and the cost. In Part 2 it can replace "② Designs" as a variant ("design written by a sandboxed coding agent").
+**Claude Code / OpenCode (recommended path: our sandbox).** One custom node, **Sandboxed agent** (inputs: task text, agent = OpenCode or Claude Code, model, limits), calls `/agent`, which runs the existing runners inside `agents/external/jail.py`: a fresh workspace with the task input, AGENTS.md and `./validate`, no answer keys, the same time and validator limits as the retry run. It returns the answer, the official parse status, the run folder and the cost. In Part 2 it can replace "② Designs" as a variant ("design written by a sandboxed coding agent").
 
 Not recommended for anything scored:
 - `opencode serve` (OpenCode's own HTTP API). It runs outside our sandbox, so the agent could read the repository.
@@ -110,14 +110,14 @@ Not recommended for anything scored:
 
 - **Authoritative:** the shell service builds the same library `_library()` builds today (MaritimeISR cards plus approved designs) and calls `bench.vector_index.retrieve`. At start it runs `vector_index.check()` and refuses to serve if a pin does not match.
 - **Why not the official Knowledge component:** it would re-embed with Langflow's built-in models into Chroma and return plain top-k similarity. It cannot apply the 0.30 threshold, the exact-name bonus, the seed-then-one-hop expansion, the card caps, or the card text taken from the official parse. Results would differ from page 2.1/2.3 and from the exam's P3.
-- **The memory is visible in Langflow (user's choice, option A, 2026-10-06):** `/cards` returns the library as rows (id, type, name, text, source, documentation). Flow F0 ingests them into a Langflow knowledge base `rtrc-memory` with the Knowledge component (Ingest mode), so RTRC browses the memory as Langflow's own knowledge base. The retrieval step still uses RTRC Retrieve, so results match the page; F0 re-ingests after each approval.
+- **The memory is visible in Langflow (user's choice, option A, 2026-10-06):** `/cards` returns the library as rows (id, type, name, text, source, documentation). Flow F0 ingests them into a Langflow knowledge base `-memory` with the Knowledge component (Ingest mode), so browses the memory as Langflow's own knowledge base. The retrieval step still uses Retrieve, so results match the page; F0 re-ingests after each approval.
 - **Reuse or new design, made visible:** ① already labels each run `reuse` (retrieved elements carry values; they become the design prompt's examples and the alignment target) or `new` (nothing related; no examples, so the design starts from scratch). In F4 a Conditional Router on that label draws the two cases as two branches into the same design step.
-- **Parity test:** for 10 fixed briefs, the RTRC Retrieve node and a direct call to `retrieve_existing` must return byte-identical JSON (card ids, scores, roles, edges).
+- **Parity test:** for 10 fixed briefs, the Retrieve node and a direct call to `retrieve_existing` must return byte-identical JSON (card ids, scores, roles, edges).
 
 ## 8. Human input in detail
 
 - After ⑤, when all four checks pass for at least one design, the run reaches Human Input. Its Form Content is the same approval text the page shows (`approval_block`): requirements, numbers and their sources, the four checks, the read-back, the alignment summary, and links to the model diagrams.
-- The User Choices "Approve design A", "Approve design B", "Reject" and "Send back" become four branches, each with its own RTRC Record node and Chat Output (as built; see §15 for why branches are not joined). The approve records write memory exactly as the page's Approve button does, through the same gate.
+- The User Choices "Approve design A", "Approve design B", "Reject" and "Send back" become four branches, each with its own Record node and Chat Output (as built; see §15 for why branches are not joined). The approve records write memory exactly as the page's Approve button does, through the same gate.
 - Langflow checkpoints the run, so approving later does not re-run ①–⑦. Programmatic approval uses the Workflow API (beta): a background run reports `suspended`, `GET /api/v2/workflows/pending?flow_id=…` gives the request id, and `POST /api/v2/workflows/{job_id}/resume` with `{"request_id": …, "decision": {"action_id": "approve_design_a"}}` resumes it.
 - Per-pair alignment review stays on page 2.3. Run Flow cannot contain Human Input, and one pause per pair would be unusable.
 
@@ -138,12 +138,12 @@ Not recommended for anything scored:
 | Phase | Work | Files | Done when | Effort |
 |---|---|---|---|---|
 | 0 Set-up | Pin versions; secure start script; OpenAI-compatible provider for Qwen; register `tools/mcp_server.py` as a STDIO MCP server | `requirements-langflow.txt`, `scripts/langflow.sh`, `langflow/README.md` | Langflow starts with auth on; Simple Agent template answers through Qwen; MCP Tools lists `validate_sysml` | 0.5 day |
-| 1 Service + nodes | Gold-free shell service over `bench/discover.py`; nine thin custom components | `bench/shell_service.py`, `langflow/components/rtrc/*.py` | each node runs alone in the Playground; service self-test (`vector_index.check()`) passes | 1 day |
-| 2 Flow + person | Flow "RTRC Part 2 · six stages" with Conditional Router and Human Input; output links to page 2.3 and diagrams; export | `langflow/flows/rtrc-part2.json` | one brief runs end to end, pauses for approval, and the approval appears in page 2.3 and memory | 0.5 day |
-| 3 Agents + variants | RTRC Sandboxed agent node; native ② variant; optional Langflow Agent flow with MCP tools and tool approval | `langflow/flows/rtrc-agent.json` | a sandboxed OpenCode / Claude Code design runs from the canvas with the same workspace and limits as the retry run | 0.5 day |
+| 1 Service + nodes | Gold-free shell service over `bench/discover.py`; nine thin custom components | `bench/shell_service.py`, `langflow/components/cards/*.py` | each node runs alone in the Playground; service self-test (`vector_index.check()`) passes | 1 day |
+| 2 Flow + person | Flow "Part 2 · six stages" with Conditional Router and Human Input; output links to page 2.3 and diagrams; export | `langflow/flows/-part2.json` | one brief runs end to end, pauses for approval, and the approval appears in page 2.3 and memory | 0.5 day |
+| 3 Agents + variants | Sandboxed agent node; native ② variant; optional Langflow Agent flow with MCP tools and tool approval | `langflow/flows/-agent.json` | a sandboxed OpenCode / Claude Code design runs from the canvas with the same workspace and limits as the retry run | 0.5 day |
 | 4 Parity + docs | Parity tests (retrieval byte-identical; prompts hash-identical; same SysML gives the same Pilot result); a page link "Open this flow in Langflow" in 2.1; decision record (new; amends 003); knowledge-base note | `bench/langflow_parity.py`, docs | parity tests pass; secret scan clean; decision written | 0.5 day |
 
-Total about 3 days. Phases 0–2 alone (about 2 days) give the advisor/RTRC demo.
+Total about 3 days. Phases 0–2 alone (about 2 days) give the advisor/demo.
 
 ## 11. Risks and open questions
 
@@ -151,33 +151,33 @@ Total about 3 days. Phases 0–2 alone (about 2 days) give the advisor/RTRC demo
 - **Workflow API is beta.** Resume semantics may change; the Playground path does not depend on it.
 - **Repair loop and pair review stay inside steps** (Loop cannot branch; Run Flow cannot pause). The canvas shows them as single nodes.
 - **Cost.** A canvas run costs the same as a page run (one Part 2 run is about 6–11 model calls). The optional Langflow Agent candidate on the 27 tasks would need its own budget.
-- **Audience.** Worth doing only if the advisor or RTRC want a drag-and-drop canvas; the page already shows the same flow with real records.
+- **Audience.** Worth doing only if the advisor or want a drag-and-drop canvas; the page already shows the same flow with real records.
 
 ## 12. The whole project in Langflow (all page sections)
 
-Asked on 2026-10-06: show everything, not only Part 2. The user chose all of F0–F5 (F6 stays optional). The page has two agent flows doing real work, Part 2 (F4) and the MOD change chain (F5); F1–F2 show the exam's candidates, F0 the memory they read and write, F3 the results. One Langflow project, "RTRC SysML-AgentBench", with one flow per page section. Every flow runs in one of two modes, chosen on its first node:
+Asked on 2026-10-06: show everything, not only Part 2. The user chose all of F0–F5 (F6 stays optional). The page has two agent flows doing real work, Part 2 (F4) and the MOD change chain (F5); F1–F2 show the exam's candidates, F0 the memory they read and write, F3 the results. One Langflow project, "SysML-AgentBench", with one flow per page section. Every flow runs in one of two modes, chosen on its first node:
 
 - **Replay** (default): nodes read the archived record of a cell or run (the same files the page reads) and show each step's real input and output. No model call, no cost, and the numbers are the frozen ones.
 - **Live**: nodes call the shell service and run the step again, with the same code as the page's console (1.5) and Part 2 (2.2). A live exam cell is written to a console results file, never to the scored batches.
 
-| Flow | Page section | Node chain (all "RTRC" nodes are thin clients of the shell service) | Modes |
+| Flow | Page section | Node chain (all "" nodes are thin clients of the shell service) | Modes |
 |---|---|---|---|
-| F0 Memory and libraries | 0.2 | Model files (scenario, approved designs, official examples) → RTRC Official parse → RTRC Cards and edges → RTRC Vector index (self-test) → Chat Output (library sizes); optional Knowledge (Ingest) mirror | Replay; Live rebuild |
-| F1 Exam: one cell, direct model | 1.1, 1.4, 1.5 | RTRC Cell picker (task, approach P0–P3, model, repeat) → RTRC Issue task (statement only) → RTRC Retrieve examples (P3 only) → RTRC Outline (P2/P3 only) → RTRC Write answer → RTRC Official syntax → RTRC Repair loop (P1–P3, ≤20) → RTRC Read values → RTRC Check against key → RTRC Approval gate → RTRC Archive → Chat Output (verdicts, link to page 1.4, diagram) | Replay any of the 648 direct cells; Live re-run |
-| F2 Exam: one cell, sandboxed agent | 1.1 (agent path), 1.6 | RTRC Cell picker (task, OpenCode / Claude Code, model, repeat) → RTRC Issue task → RTRC Sandboxed agent (workspace, AGENTS.md, ./validate, limits) → RTRC Tool-call trace (Table) → RTRC Check against key → RTRC Archive → Chat Output | Replay any agent run (scored, superseded, retry); Live run in the sandbox |
-| F3 Exam batch and results | 1.2, 1.3 | Replay: RTRC Facts → Tables (by type, approaches, agents, side benchmarks, costs, runs that do not count, retry). Live (optional): RTRC Cell list → Loop → Run Flow (F1 or F2) → RTRC Summarize | Replay; Live only by decision (costs) |
+| F0 Memory and libraries | 0.2 | Model files (scenario, approved designs, official examples) → Official parse → Cards and edges → Vector index (self-test) → Chat Output (library sizes); optional Knowledge (Ingest) mirror | Replay; Live rebuild |
+| F1 Exam: one cell, direct model | 1.1, 1.4, 1.5 | Cell picker (task, approach P0–P3, model, repeat) → Issue task (statement only) → Retrieve examples (P3 only) → Outline (P2/P3 only) → Write answer → Official syntax → Repair loop (P1–P3, ≤20) → Read values → Check against key → Approval gate → Archive → Chat Output (verdicts, link to page 1.4, diagram) | Replay any of the 648 direct cells; Live re-run |
+| F2 Exam: one cell, sandboxed agent | 1.1 (agent path), 1.6 | Cell picker (task, OpenCode / Claude Code, model, repeat) → Issue task → Sandboxed agent (workspace, AGENTS.md, ./validate, limits) → Tool-call trace (Table) → Check against key → Archive → Chat Output | Replay any agent run (scored, superseded, retry); Live run in the sandbox |
+| F3 Exam batch and results | 1.2, 1.3 | Replay: Facts → Tables (by type, approaches, agents, side benchmarks, costs, runs that do not count, retry). Live (optional): Cell list → Loop → Run Flow (F1 or F2) → Summarize | Replay; Live only by decision (costs) |
 | F4 Part 2: blank task to approvable design | 2.1, 2.2, 2.3 | as in §4 and §5, with Human Input at ⑥ | Replay a saved run; Live |
-| F5 MOD change chain | 2.4 | RTRC MOD picker → RTRC Baseline → RTRC Change model → RTRC Official syntax → RTRC Task and design verdicts → Human Input only if the change asks to relax a limit → Chat Output | Replay; Live |
-| F6 Langflow-native agent (optional) | new | Chat Input → Agent (OpenAI-compatible Qwen, AGENTS.md as instructions) + MCP Tools (`tools/mcp_server.py`) → RTRC Check against key → Chat Output | Live |
+| F5 MOD change chain | 2.4 | MOD picker → Baseline → Change model → Official syntax → Task and design verdicts → Human Input only if the change asks to relax a limit → Chat Output | Replay; Live |
+| F6 Langflow-native agent (optional) | new | Chat Input → Agent (OpenAI-compatible Qwen, AGENTS.md as instructions) + MCP Tools (`tools/mcp_server.py`) → Check against key → Chat Output | Live |
 
 How the canvas mirrors the page's diagrams:
 
 - **Conditional steps skip themselves.** Langflow cannot merge two branches into one input, so the optional exam steps (Retrieve examples, Outline, Repair) are always on the canvas and report "skipped (P0)" when they do not apply, like the grey nodes in 1.1. Conditional Router is used only where the page has a real branch: trade-offs, and the approval gate in F4 and F5.
 - **Nesting limits.** Run Flow cannot run a flow that contains Human Input, and Loop cannot contain If-Else. So F1 and F2 mark the approval gate as "flagged for a person" instead of pausing, F3's batch loop calls them through Run Flow, and the person decides after the loop. In the exam the gate never triggered.
 - **Paper tags and owners.** Each node's name carries its stage label (① … ⑥, or the 1.1 step name). A canvas Note beside it says who does the step (Model, Code, Official tool, Person) and which paper it follows (Paper 1 align, Paper 2 retrieve, Paper 3 rules + repair), so the canvas reads like 0.3.
-- **Answer keys stay out of Langflow.** RTRC Check against key returns the verdicts and the checklist items found or missing, not the key file. The side-by-side key view stays on the page (1.4). The replay endpoints are gold-free copies of the page's (the page's `/api/cell` includes the key text and is not used).
+- **Answer keys stay out of Langflow.** Check against key returns the verdicts and the checklist items found or missing, not the key file. The side-by-side key view stays on the page (1.4). The replay endpoints are gold-free copies of the page's (the page's `/api/cell` includes the key text and is not used).
 
-Node palette (category "RTRC", about 25 thin components): Cell picker, MOD picker, Brief; Issue task, Retrieve examples, Outline, Write answer, Sandboxed agent, Tool-call trace, Official syntax, Repair loop, Read values, Check against key, Approval gate, Archive; Retrieve memory, Requirements, Design, Validate and repair, Align, Checks and read-back, Trade-offs, Approve into memory; Official parse, Cards and edges, Vector index; Facts, Summarize, Diagram. Built-in nodes used: Chat Input / Output, Text Input, Conditional Router, Loop, Run Flow, Human Input, Note, Agent, Language Model, MCP Tools, Knowledge (mirror only).
+Node palette (category "", about 25 thin components): Cell picker, MOD picker, Brief; Issue task, Retrieve examples, Outline, Write answer, Sandboxed agent, Tool-call trace, Official syntax, Repair loop, Read values, Check against key, Approval gate, Archive; Retrieve memory, Requirements, Design, Validate and repair, Align, Checks and read-back, Trade-offs, Approve into memory; Official parse, Cards and edges, Vector index; Facts, Summarize, Diagram. Built-in nodes used: Chat Input / Output, Text Input, Conditional Router, Loop, Run Flow, Human Input, Note, Agent, Language Model, MCP Tools, Knowledge (mirror only).
 
 Build order and effort for the whole project:
 
@@ -190,13 +190,13 @@ Build order and effort for the whole project:
 | 5 | F3 results tables, F0 memory, notes and paper tags, parity tests, export, docs | 1–1.5 days |
 | 6 (optional) | F3 live batch loop; F6 Langflow-native agent as a candidate | by decision |
 
-About 5–5.5 days without step 6. After step 2 the advisor/RTRC demo works.
+About 5–5.5 days without step 6. After step 2 the advisor/demo works.
 
 ## 13. The main agent flow after the user's review (2026-10-06)
 
 The user reviewed the flow drawn in the canvas "The Langflow agent flow to build" and asked for three changes.
 
-**Qwen only for now.** RTRC has not answered which models may be used. Every agent option runs on Qwen (qwen3.8-flash or qwen3.8-max): directly through the OpenAI-compatible endpoint, or through Claude Code or OpenCode in the sandbox. OpenAI, Claude and the Cameo AI Assistant are later options and need no change to the flow.
+**Qwen only for now.** has not answered which models may be used. Every agent option runs on Qwen (qwen3.8-flash or qwen3.8-max): directly through the OpenAI-compatible endpoint, or through Claude Code or OpenCode in the sandbox. OpenAI, Claude and the Cameo AI Assistant are later options and need no change to the flow.
 
 **The flow, with the paper each step applies:**
 
@@ -213,10 +213,10 @@ The user reviewed the flow drawn in the canvas "The Langflow agent flow to build
 11. ⑧ Person decides (Human Input; **Paper 1**'s human review): approve, reject or send back.
 12. Write to memory (**Paper 2**: the approved design becomes retrievable cards) and ⑨ record grades and times (verdicts, attempts, seconds, tokens, USD).
 
-**Cameo where it is needed, active once RTRC provides the license:**
+**Cameo where it is needed, active once provides the license:**
 
 - Next to ④, a **Cameo check**: the node exports the .sysml file, a person opens it in Cameo's SysML v2 and records "opens cleanly" or the errors through Human Input; with Teamwork Cloud the node can call its standard SysML v2 API instead. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability).
-- Next to ⑦, **Open in Cameo**: RTRC reviews the design as diagrams in its own tool; the Langflow diagram stays the automatic preview.
+- Next to ⑦, **Open in Cameo**: reviews the design as diagrams in its own tool; the Langflow diagram stays the automatic preview.
 - Later, the **Cameo AI Assistant** as an agent option, only if the 2026x license includes it and its terms allow evaluation: its exported model enters at ④ and gets the same checks and the exam (F1).
 
 ## 14. Correction to decision 003
@@ -227,26 +227,26 @@ Decision 003 (2026-10-02) gives three reasons. "A builder is not an evaluator" a
 
 Built and tested; guide in `langflow/README.md`, decision 030.
 
-- **Built:** the shell service; 13 RTRC nodes; seven flows as code (agent flow, F0, F1, F2, F3, F5, Cameo check) imported into the project "RTRC SysML-AgentBench"; the secure start script; the parity test.
+- **Built:** the shell service; 13 nodes; seven flows as code (agent flow, F0, F1, F2, F3, F5, Cameo check) imported into the project "SysML-AgentBench"; the secure start script; the parity test.
 - **Tested:** every flow in the server and, except F0 (its Knowledge node needs the server), headless; Human Input pause and resume from the terminal, through the v2 Workflow API and by clicking the card in the editor; a live agent-flow run through the Langflow server (run 20261006T215846, on page 2.3); a live direct exam cell and a live OpenCode exam cell (with the results page stopped; the shell refuses while it runs); parity on run 20261006T211951.
 - **Changed from the plan:**
-  - Human Input branches are not joined again: in 1.12.5 a node fed by two branches receives the review text on both, and a node after two branch nodes fails. RTRC Approve is merged into RTRC Record, one per choice. The MOD gate sits after the read-back for the same reason.
-  - Security uses `LANGFLOW_ALLOW_CUSTOM_COMPONENTS=False` (§9). The Simple Agent template and the MCP Tools registration of phase 0 were not done; the RTRC nodes do not need them.
+  - Human Input branches are not joined again: in 1.12.5 a node fed by two branches receives the review text on both, and a node after two branch nodes fails. Approve is merged into Record, one per choice. The MOD gate sits after the read-back for the same reason.
+  - Security uses `LANGFLOW_ALLOW_CUSTOM_COMPONENTS=False` (§9). The Simple Agent template and the MCP Tools registration of phase 0 were not done; the nodes do not need them.
   - The agent flow's adapt step (reuse) is new; on the page both designs are always new.
-  - The memory mirror (§7, option A): Langflow 1.12.5 knowledge bases embed only through a model provider (OpenAI, Google, Ollama, WatsonX, Azure, or the "OpenAI Compatible" bundle), not a local MiniLM. The user chose Qwen's embeddings: the knowledge base "rtrc memory" uses `qwen3.7-text-embedding` through "OpenAI Compatible", with the Qwen key stored in Langflow as an encrypted credential (the only key Langflow holds). F0 filled it with the 152 cards.
+  - The memory mirror (§7, option A): Langflow 1.12.5 knowledge bases embed only through a model provider (OpenAI, Google, Ollama, WatsonX, Azure, or the "OpenAI Compatible" bundle), not a local MiniLM. The user chose Qwen's embeddings: the knowledge base " memory" uses `qwen3.7-text-embedding` through "OpenAI Compatible", with the Qwen key stored in Langflow as an encrypted credential (the only key Langflow holds). F0 filled it with the 152 cards.
 - **Open finding:** Part 2's repair loop has no stop on identical resubmissions (design B used all 20 repairs in both live runs, 16 of 21 attempts identical to the previous one); kept so the flow matches the page.
 
 ## 16. The conversational assistant (2026-10-06)
 
-The fixed flows measure; they are not how an engineer works. Decision 031 adds **RTRC design assistant**: Langflow's Agent harness (`qwen3.8-max`) over an MCP server that exposes our memory search, the verified design pipeline (`run_design`, the same code as the fixed flow and page 2.3), the official Pilot, the memory gate and the decision record, plus the knowledge base `rtrc memory`. The engineer asks, describes a need, confirms the brief the assistant proposes, and decides; verdicts still come from the Pilot and the checks. The local 3-bit Qwen3.8-27B (Ollama) is a model option for the pipeline. Set-up and the per-user ownership step are in `langflow/README.md`.
+The fixed flows measure; they are not how an engineer works. Decision 031 adds **design assistant**: Langflow's Agent harness (`qwen3.8-max`) over an MCP server that exposes our memory search, the verified design pipeline (`run_design`, the same code as the fixed flow and page 2.3), the official Pilot, the memory gate and the decision record, plus the knowledge base ` memory`. The engineer asks, describes a need, confirms the brief the assistant proposes, and decides; verdicts still come from the Pilot and the checks. The local 3-bit Qwen3.8-27B (Ollama) is a model option for the pipeline. Set-up and the per-user ownership step are in `langflow/README.md`.
 
 ## 17. OpenCode as the harness, outside and inside, on the local model (2026-10-06, decision 032)
 
-Same day, on the user's decisions after three findings: the 27B written directly got stuck on `part usage vessel` for 20 identical repairs (the open finding of §15, now with a cause); Langflow's Agent component could validate text but had no way to hand an edited design to the four checks, so its only path was that same direct loop, and it retried the whole pipeline on its own; and the published Ollama tag's `num_ctx 224840` kept a third of the weights on the CPU (8 tokens/s). What changed: a 64k-context tag (`scripts/qwen38.sh`, whole model on the GPU, 113 tokens/s); OpenCode's provider pointed at Ollama with thinking off (`agents/external/opencode_run.py`); `run_design` writing the designs with the sandboxed OpenCode (`agent`, default `opencode`); the assistant's harness swapped from Langflow's Agent component to OpenCode itself, as one Langflow node (`RtrcOpenCodeAssistant`, Chat Input → node → Chat Output) and as a terminal script (`scripts/assistant.sh`), over the same MCP tools and rules, with OpenCode's file and shell tools off; and a second main flow, **RTRC agent flow · local Qwen3.8-27B via OpenCode**, for measuring with the local model. The Agent-component flow of §16 stays as **RTRC design assistant (Langflow Agent, qwen3.8-max)**, with `run_design` on `direct`, so the two harnesses can be compared on the same tools and briefs.
+Same day, on the user's decisions after three findings: the 27B written directly got stuck on `part usage vessel` for 20 identical repairs (the open finding of §15, now with a cause); Langflow's Agent component could validate text but had no way to hand an edited design to the four checks, so its only path was that same direct loop, and it retried the whole pipeline on its own; and the published Ollama tag's `num_ctx 224840` kept a third of the weights on the CPU (8 tokens/s). What changed: a 64k-context tag (`scripts/qwen38.sh`, whole model on the GPU, 113 tokens/s); OpenCode's provider pointed at Ollama with thinking off (`agents/external/opencode_run.py`); `run_design` writing the designs with the sandboxed OpenCode (`agent`, default `opencode`); the assistant's harness swapped from Langflow's Agent component to OpenCode itself, as one Langflow node (`CardOpenCodeAssistant`, Chat Input → node → Chat Output) and as a terminal script (`scripts/assistant.sh`), over the same MCP tools and rules, with OpenCode's file and shell tools off; and a second main flow, **agent flow · local Qwen3.8-27B via OpenCode**, for measuring with the local model. The Agent-component flow of §16 stays as **design assistant (Langflow Agent, qwen3.8-max)**, with `run_design` on `direct`, so the two harnesses can be compared on the same tools and briefs.
 
 ## 18. The assistant unfolded on the canvas (2026-10-07, decision 033)
 
-Added next to the others, nothing changed: **RTRC design assistant · unfolded** (a qwen3.8-max and a local-27B version) is Langflow's Agent with one card per RTRC tool, the knowledge base, and **RTRC design pipeline** (the agent flow without the person's step) as a flow the Agent runs as a tool; write to memory pauses for the person's approval on a card. One run through the pipeline tool passed both designs and all four checks on the local 27B; the approval card paused the run and a Reject wrote nothing. Found on the way: a flow becomes a tool only when its input node lists its fields in `field_order`; the Run Flow card's flow id must be `null`, not `""`; one tool per MCP card is the card's Actions table.
+Added next to the others, nothing changed: **design assistant · unfolded** (a qwen3.8-max and a local-27B version) is Langflow's Agent with one card per tool, the knowledge base, and **design pipeline** (the agent flow without the person's step) as a flow the Agent runs as a tool; write to memory pauses for the person's approval on a card. One run through the pipeline tool passed both designs and all four checks on the local 27B; the approval card paused the run and a Reject wrote nothing. Found on the way: a flow becomes a tool only when its input node lists its fields in `field_order`; the Run Flow card's flow id must be `null`, not `""`; one tool per MCP card is the card's Actions table.
 
 ## 19. The tools with steps unfolded into flows (2026-10-07, decision 034)
 

@@ -69,7 +69,7 @@ WebGL默认工程正交；可旋转、缩放、拆解、点选。软件备援也
 ## 运行与未运行
 
 已运行：浏览器本地数值与图规则、版本失效、审批控制、导出、三种硬件的WebGL旋转与CPU备援路径、390/768/1440px布局。
-环境：Chromium/ANGLE/SwiftShader，真实WebGL API/着色器路径，但不是RTX4090硬件驱动实测。
+环境：Chromium/ANGLE/SwiftShader，真实WebGL API/着色器路径，但不是24 GB GPU硬件驱动实测。
 未运行：LLM、SysML parser/compiler、ROS驱动/SDK/固件、实际USB profile、导航/识别、供电/热/机械、安全或实物测试。
 SysML草稿来自同一份作者数据，不是解析器结果；几何也没有赋予模型仿真能力。
 

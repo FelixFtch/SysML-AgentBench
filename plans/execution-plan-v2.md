@@ -1,15 +1,15 @@
 # SysML-AgentBench execution plan (v2.0)
 
-**Project**: Agentic AI for Systems Engineering Discovery and Design (RTRC / UConn Senior Design)
+**Project**: Agentic AI for Systems Engineering Discovery and Design (/ UConn Senior Design)
 **Version**: v2.0, 2026-10-02 (replaces v1.0 and the two older plans dated 2026-09-22; the old files are in `research/archive/plans-2026-09/`, kept as history and no longer directing the work)
 **Status**: the only authoritative execution plan. Any change is recorded in the decision log in §18. Where the body conflicts with decisions 016–021 (2026-10-03) in §18, the decision wins; see `docs/decisions/`. Current numbers are in `STATUS.md`.
-**Upstream sources**: `research/source-extracts/rtx-brief.txt` (the sponsor brief, verbatim); notes from the first meeting with Prof. Bollas (2026-10); `research/notes/vendor-ai-mcp-landscape-2026-10.md` (vendor-AI landscape check).
+**Upstream sources**: `research/source-extracts/project-brief.txt` (the sponsor brief, verbatim); notes from the first meeting with Prof. Bollas (2026-10); `research/notes/vendor-ai-mcp-landscape-2026-10.md` (vendor-AI landscape check).
 
 ---
 
 ## 0. One sentence, and what we hand over
 
-> Write a set of maritime-ISR SysML v2 modeling tasks with the answer keys written first, have several AI agents attempt them, score the attempts automatically with the official OMG tool and the answer keys, count how many they get right and how they get them wrong, and write a report that tells RTRC how far this path goes today, which approach works best, where it cannot be trusted, and what to fund next.
+> Write a set of maritime-ISR SysML v2 modeling tasks with the answer keys written first, have several AI agents attempt them, score the attempts automatically with the official OMG tool and the answer keys, count how many they get right and how they get them wrong, and write a report that tells how far this path goes today, which approach works best, where it cannot be trusted, and what to fund next.
 
 **The main deliverable is the report, not a system.** The agent workflow, the task bank, and the scoring programs are experimental equipment built to produce the report.
 
@@ -18,7 +18,7 @@ One report (D4)
   Chapter 1  Feasibility   Can AI turn requirements into loadable, semantically correct SysML v2? → numbers
   Chapter 2  Performance   Which approach is best (write directly / tool feedback / outline first / with retrieved notes / an off-the-shelf coding agent / a vendor AI) → comparison
   Chapter 3  Limits        Where it fails, and how often; whether an AI checker is trustworthy; how much is lost when the model writes the requirements back → failure classes
-  Chapter 4  Advice        Which steps RTRC can use now, which must stay with a person, and what to study next
+  Chapter 4  Advice        Which steps can use now, which must stay with a person, and what to study next
 Appendices
   Task bank + answer keys (D2)  Exam code (D3)  Every run record (D3)  Maritime ISR model package (D6)  Live demo (D5)  Knowledge base (D7)
 ```
@@ -34,7 +34,7 @@ Appendices
 | Q1 Feasibility | how requirements can be automatically translated into SysML v2 / feasibility, performance | Can AI turn requirement text into usable SysML v2, and how far? | Scores on the generate tasks |
 | Q2 Best approach | what workflows or architectures are most effective | Write directly / fix from tool errors / outline first / write with retrieved notes / an off-the-shelf coding agent / a vendor AI — which is best? | One model × several configurations, normalized by compute |
 | Q3 Reliability and limits | reliably applied / limitations | Where does it go wrong? Can something look right and be wrong? Is a second AI checker reliable? Is the model still right when it writes the requirements back? | Failure classes, false-pass rate, checker agreement, round-trip agreement, run variance |
-| Q4 Advice | recommended next steps | How should RTRC use this, what must a person own, and what should be funded next | Report chapter 4 |
+| Q4 Advice | recommended next steps | How should use this, what must a person own, and what should be funded next | Report chapter 4 |
 
 ### 1.2 Coverage matrix (used at acceptance)
 
@@ -72,7 +72,7 @@ Appendices
 
 **Ground truth is the answer-key list written when the task is written**, the way an exam works: the examiner writes the answers and the marking scheme first → the candidate attempts the task → the attempt is marked against the scheme. That order cannot be reversed.
 
-- It does not come from RTX, from a vendor, or from an AI
+- It does not come from a sponsor, from a vendor, or from an AI
 - Each task has one list: which elements, connections, and units **must exist**, what **must be kept**, what **must not be invented**, what result an engineering check **should** give, and **whether the agent should ask**
 - The author writes a reference model first and runs it through the official validator and the engineering checks, proving the list can be satisfied and the numbers add up; a second person reviews it; it is frozen in week 4
 - What the list cannot cover (readability, level of abstraction) → a two-person blind sample, with agreement reported as κ; a dimension with low agreement is reported honestly as "a person has to judge this for now"
@@ -126,7 +126,7 @@ Design rules (inherited from the existing tool layer): checks read only the pars
 
 ## 5. Scenario specification: the synthetic maritime ISR reference model (D6)
 
-**Every number is synthetic, marked `synthetic`, and does not represent any RTX specification. After the first sponsor meeting the boundaries are adjusted to Francesca's use case; the task types do not change.**
+**Every number is synthetic, marked `synthetic`, and does not represent a measured specification. After the first sponsor meeting the boundaries are adjusted to Francesca's use case; the task types do not change.**
 
 ### 5.1 Platforms and nodes
 
@@ -292,19 +292,19 @@ Implementation:
 | Permissions | `edit: allow`; `bash: ask`; the `requirements/` directory `deny` | Equivalent settings |
 | How it is run | `opencode run --model <qwen> "<task>"` (called by the Inspect solver) | `claude -p "<task>"` or `inspect-swe` |
 
-Role: an out-of-the-box baseline. OpenCode ≈ P1 → "RTX does not have to build its own"; OpenCode ≪ P1 → "a purpose-built workflow is worth the investment".
+Role: an out-of-the-box baseline. OpenCode ≈ P1 → "a team does not have to build its own"; OpenCode ≪ P1 → "a purpose-built workflow is worth the investment".
 
 ### 7.3 Vendor AI (conditional configuration P-VENDOR)
 
-The AI Assistant built into Dassault CATIA Magic 2026x (it generates candidate architectures from stakeholder needs). **If** Bollas's license is Magic Cyber Systems Engineer / SoS Architect 2026x and the terms allow a published evaluation: use it to generate the T4 generate-tasks → export `.sysml` text → mark it with the same scorer. It is a black box with no published success rate, which is exactly why it is the most valuable comparison for RTRC (a Cameo user). See `research/notes/vendor-ai-mcp-landscape-2026-10.md`.
+The AI Assistant built into Dassault CATIA Magic 2026x (it generates candidate architectures from stakeholder needs). **If** Bollas's license is Magic Cyber Systems Engineer / SoS Architect 2026x and the terms allow a published evaluation: use it to generate the T4 generate-tasks → export `.sysml` text → mark it with the same scorer. It is a black box with no published success rate, which is exactly why it is the most valuable comparison for (a Cameo user). See `research/notes/vendor-ai-mcp-landscape-2026-10.md`.
 
 ### 7.4 Models
 
 | Model | Use | Notes |
 |---|---|---|
-| **Qwen cloud API** (Alibaba Cloud Model Studio, OpenAI-compatible endpoint; CCR is already configured on this machine) `qwen3.8-flash` / `qwen3.8-max` | `flash` for development and debugging; `max` as the main model under test (every task ×3) | Cheap, no GPU-memory pressure; **on 2026-10-02 the endpoint, authentication, tool-calling, and the full agent loop were verified**. The run manifest records the full model name; it is not swapped during an experiment. The endpoint is in the China region: every datum in this project is synthetic or public and may leave the machine; if the sponsor requires data residency, the formal experiment switches to an RTRC endpoint |
-| 1 frontier model (RTRC Copilot/Bedrock, or an OpenAI/Anthropic API) | Every task ×1, to check that the conclusion does not change with the model | Budget capped (estimate $50–150) |
-| Local Ollama (Qwen3.5-27B / 35B-A3B) | **Optional**: when measuring the "local vs cloud" gap | RTX 4090, 24 GB; 15.7 GB currently taken by other processes |
+| **Qwen cloud API** (Alibaba Cloud Model Studio, OpenAI-compatible endpoint; CCR is already configured on this machine) `qwen3.8-flash` / `qwen3.8-max` | `flash` for development and debugging; `max` as the main model under test (every task ×3) | Cheap, no GPU-memory pressure; **on 2026-10-02 the endpoint, authentication, tool-calling, and the full agent loop were verified**. The run manifest records the full model name; it is not swapped during an experiment. The endpoint is in the China region: every datum in this project is synthetic or public and may leave the machine; if the sponsor requires data residency, the formal experiment switches to a endpoint |
+| 1 frontier model (Copilot/Bedrock, or an OpenAI/Anthropic API) | Every task ×1, to check that the conclusion does not change with the model | Budget capped (estimate $50–150) |
+| Local Ollama (Qwen3.5-27B / 35B-A3B) | **Optional**: when measuring the "local vs cloud" gap | 24 GB GPU, 24 GB; 15.7 GB currently taken by other processes |
 
 Configuration: `.env` at the repository root (git-ignored, already filled in).
 
@@ -414,7 +414,7 @@ Meeting template (10 minutes): STATUS for 2 minutes → open one failed run live
 
 ---
 
-## 13. Repository layout (`/data/robotics/RTRC`, git already initialized)
+## 13. Repository layout (`/data/robotics/`, git already initialized)
 
 ```
 README.md                      entry point, rules, directory notes
@@ -439,7 +439,7 @@ vendor -> original-directory/vendor   full upstream clones (not in git)
 
 Three people: **A** scenario / SysML / gold; **B** toolbox / scorers / infrastructure; **C** agents / experiments / analysis. Each updates STATUS on Friday.
 
-**Already done by 2026-10-02 (week-1 items brought forward)**: the repository moved to `/data/robotics/RTRC` and the first commit was made; the toolchain runs at the new root (9/9 tests, baseline 8 PASS + 1 UNKNOWN); the Qwen API endpoint was verified; **the project's first real LLM agent run finished** (`20261002T204611-agent-d0a63097`: 5 calls, 4 `run_design` calls through official validation and the engineering checks, 49k tokens, correctly exposed the storage FAIL and the power FAIL, did not change a requirement on its own); the vendor-AI landscape was checked.
+**Already done by 2026-10-02 (week-1 items brought forward)**: the repository moved to `/data/robotics/` and the first commit was made; the toolchain runs at the new root (9/9 tests, baseline 8 PASS + 1 UNKNOWN); the Qwen API endpoint was verified; **the project's first real LLM agent run finished** (`20261002T204611-agent-d0a63097`: 5 calls, 4 `run_design` calls through official validation and the engineering checks, 49k tokens, correctly exposed the storage FAIL and the power FAIL, did not change a requirement on its own); the vendor-AI landscape was checked.
 
 | Week | A (scenario and gold) | B (tools and scoring) | C (agents and experiments) | Friday acceptance |
 |---|---|---|---|---|
@@ -463,7 +463,7 @@ Three people: **A** scenario / SysML / gold; **B** toolbox / scorers / infrastru
 | Risk | Response |
 |---|---|
 | The frontier-model endpoint is late | The Qwen API is already usable and carries development and the main experiment; the frontier model only has to arrive before week 8 |
-| The Qwen API being in the China region worries the sponsor | The data is entirely synthetic or public; the formal experiment can switch to an RTRC endpoint by changing env only |
+| The Qwen API being in the China region worries the sponsor | The data is entirely synthetic or public; the formal experiment can switch to a endpoint by changing env only |
 | Labeling gold for 24 tasks is more work than expected | 24 is a floor; 20 clean tasks is better than more messy ones; the week-4 freeze is a hard date |
 | Francesca's use case differs a lot from the maritime default | The task types stay; only the scenario data changes; week 3 leaves room for the adjustment |
 | The model is weak on SysML v2 and fails broadly | That is the answer to Q1; the frontier model gives the upper bound |
@@ -478,12 +478,12 @@ Three people: **A** scenario / SysML / gold; **B** toolbox / scorers / infrastru
 
 ## 16. Honesty statements (written into the report)
 
-- Every maritime number is synthetic and does not represent an RTX specification
+- Every maritime number is synthetic and does not represent a measured specification
 - A SysML validation PASS is not engineering acceptance; an engineering state with no evidence is UNKNOWN
 - A person holds requirement decisions; the agent does not approve itself
 - The answer keys reflect the author's judgment; two-person review, a reference model that passes the tools, and blind-review agreement are the evidence for how far the keys can be trusted
 - Public datasets may be inside a model's training data; the task bank we wrote is the "uncontaminated" evidence and is reported separately
-- 24 tasks × 3 repeats support a feasibility and failure analysis; they do not support generalization across RTX's business
+- 24 tasks × 3 repeats support a feasibility and failure analysis; they do not support generalization across one company's business
 - The internal prompts of an off-the-shelf agent or a vendor AI change with the version; only the pinned version is reported
 - "first evidence-based evaluation" is scoped to: multi-platform tasks × scoring of engineering semantics × controlled modification × round-trip × a human decision gate
 - "SysML v2 is an open OMG standard and ships an official reference implementation under EPL-2.0" — do not write "SysML v2 is open source"
@@ -522,10 +522,10 @@ Three people: **A** scenario / SysML / gold; **B** toolbox / scorers / infrastru
 | 007 | The evaluation framework is Inspect AI | The most mature support for tasks, scoring, logs, and external agents; MIT | 2026-10-02 |
 | 008 | Do not adopt AutoGen / CrewAI / Swarm / AutoGPT | AutoGen is no longer maintained; CrewAI's multiple roles have no evidence of an advantage and are hard to control | 2026-10-02 |
 | 009 | The project statement's "no evidence-based evaluation exists" is changed to a scoped wording | SysMBench 2025, CMU 2026, and RADIANT 2026 already exist | 2026-10-02 |
-| 010 | The repository root moves to `/data/robotics/RTRC`; the old directory is a read-only archive; `vendor/` is a symlink | The sandbox can write here, there is room, and git starts from 0 | 2026-10-02 |
+| 010 | The repository root moves to `/data/robotics/`; the old directory is a read-only archive; `vendor/` is a symlink | The sandbox can write here, there is room, and git starts from 0 | 2026-10-02 |
 | 011 | The main model is the Qwen cloud API already configured (flash for development / max for the experiment); local Ollama is optional | Cheap, no GPU-memory pressure; synthetic data may leave the machine; the manifest records the model name | 2026-10-02 |
 | 012 | Model viewing is Cameo SysML v2 CE (free) first, SysON as backup; the second checker is the Syside CLI first, Cameo as backup; the official Pilot stays the main judge | Cameo CE is free and keeps diagrams and text in sync both ways; Syside is the only second checker with a CI-grade CLI | 2026-10-02 |
-| 013 | Add a conditional configuration P-VENDOR (Cameo 2026x AI Assistant) | Dassault already has product-grade AI generation but no published success rate; RTRC uses Cameo, so the comparison is the most valuable one; it depends on the license | 2026-10-02 |
+| 013 | Add a conditional configuration P-VENDOR (Cameo 2026x AI Assistant) | Dassault already has product-grade AI generation but no published success rate; uses Cameo, so the comparison is the most valuable one; it depends on the license | 2026-10-02 |
 | 014 | No RSI; the AI checker is only something we measure | The brief does not ask for it; LLM evaluators are unreliable (Topcu 2026); the thing being measured must stay frozen | 2026-10-02 |
 | 015 | The old plans (the two dated 2026-09-22, plus v1.0) move to `research/archive/plans-2026-09/`; this file is the only authority | So the old direction does not mislead the team; the history stays in git and in the archive | 2026-10-02 |
 | 016 | P0–P3 use plain Python (`agents/solve.py`); LangGraph is only a read-only view of a saved run (`agents/exam_graph.py`), which closes 004 | Each way of writing is one or two calls plus official validation and at most 3 repair rounds; the live flow diagram is the exam page | 2026-10-03 |

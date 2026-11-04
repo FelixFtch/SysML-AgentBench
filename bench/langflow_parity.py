@@ -30,7 +30,7 @@ SHELL = "http://127.0.0.1:8781"
 
 def _shell(path: str, payload: dict) -> dict:
     request = urllib.request.Request(SHELL + path, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": shell_service._token()})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": shell_service._token()})
     with urllib.request.urlopen(request, timeout=600) as response:
         return json.loads(response.read())
 

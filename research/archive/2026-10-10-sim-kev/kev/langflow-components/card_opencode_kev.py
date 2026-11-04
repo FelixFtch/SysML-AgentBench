@@ -1,15 +1,15 @@
-"""RTRC OpenCode assistant, Kev variant: the conversational design assistant of project 7 with the Kev requirement
+"""OpenCode assistant, Kev variant: the conversational design assistant of project 7 with the Kev requirement
 classifier mounted. One turn per chat message, or one exam answer.
 
-The same harness as RtrcOpenCodeAssistant (OpenCode, the exam's pinned binary, with the RTRC MCP tools of
+The same harness as CardOpenCodeAssistant (OpenCode, the exam's pinned binary, with the MCP tools of
 tools/assistant_mcp.py on 127.0.0.1:8782 and its file and shell tools off), with one difference: the `kev` MCP server
 (tools/kev_mcp.py, 127.0.0.1:8793) is mounted too, so the assistant can call kev_classify_requirement. The workspace
-is prepared by tools/assistant/kev_workspace.py in its own homes (~/.rtrc-assistant-kev, ~/.rtrc-assistant-kev-exam),
+is prepared by tools/assistant/kev_workspace.py in its own homes (~/.design-assistant-kev, ~/.design-assistant-kev-exam),
 apart from project 3's, so nothing changes for the two flows without Kev.
 
-Chat mode: the local Qwen3.8-27B served by Ollama (or a cloud Qwen), all nine RTRC tools plus the Kev classifier, and
+Chat mode: the local Qwen3.8-27B served by Ollama (or a cloud Qwen), all nine tools plus the Kev classifier, and
 each Langflow chat session maps to one OpenCode session, so the conversation continues across messages. Exam mode:
-the exam workspace, qwen3.8-flash, the exam prompt, memory search and the official Pilot as the only RTRC tools plus
+the exam workspace, qwen3.8-flash, the exam prompt, memory search and the official Pilot as the only tools plus
 the Kev classifier, and a fresh OpenCode session for every message.
 """
 import json
@@ -25,12 +25,12 @@ from lfx.custom.custom_component.component import Component
 from lfx.io import DropdownInput, MessageInput, Output
 from lfx.schema.message import Message
 
-# Langflow runs component code from a copy, so the repository is found from the environment (RTRC_ROOT, set by
+# Langflow runs component code from a copy, so the repository is found from the environment (REPO_ROOT, set by
 # scripts/langflow.sh) or from the virtual environment, which lives at <repository>/.venv-langflow.
-ROOT = Path(os.environ.get("RTRC_ROOT") or Path(sys.prefix).resolve().parent)
+ROOT = Path(os.environ.get("REPO_ROOT") or Path(sys.prefix).resolve().parent)
 OPENCODE = ROOT / "tools" / "opencode" / "opencode"
 WORKSPACE = ROOT / "tools" / "assistant" / "kev_workspace.py"
-MCP_URL = os.environ.get("RTRC_ASSISTANT_MCP_URL", "http://127.0.0.1:8782/mcp")
+MCP_URL = os.environ.get("ASSISTANT_MCP_URL", "http://127.0.0.1:8782/mcp")
 KEV_MCP_URL = os.environ.get("KEV_MCP_URL", "http://127.0.0.1:8793/mcp")
 MODES = ["Chat: one OpenCode session per Langflow session, all nine tools and the Kev requirement classifier",
          "Exam: a fresh session per message, answer only, memory search, the official Pilot and the Kev requirement classifier as the tools"]
@@ -49,13 +49,13 @@ def _env() -> dict:
     return env
 
 
-class RtrcOpenCodeKevAssistant(Component):
-    display_name = "RTRC OpenCode assistant · Kev"
-    description = ("One turn of the RTRC design assistant with the Kev requirement classifier: OpenCode with the RTRC "
+class CardOpenCodeKevAssistant(Component):
+    display_name = "OpenCode assistant · Kev"
+    description = ("One turn of the design assistant with the Kev requirement classifier: OpenCode with the "
                    "tools (memory, the verified design pipeline, the official Pilot, the memory gate, decisions, Cameo "
                    "export) and kev_classify_requirement; or, in exam mode, one exam answer.")
     icon = "bot"
-    name = "RtrcOpenCodeKevAssistant"
+    name = "CardOpenCodeKevAssistant"
 
     inputs = [
         MessageInput(name="message", display_name="Engineer's message",
@@ -72,14 +72,14 @@ class RtrcOpenCodeKevAssistant(Component):
         if not text:
             raise ValueError("Write a message for the assistant")
         if not OPENCODE.is_file():
-            raise ValueError(f"Missing the pinned OpenCode binary {OPENCODE}; set RTRC_ROOT to the repository")
-        for server, url in (("rtrc", MCP_URL), ("kev", KEV_MCP_URL)):
+            raise ValueError(f"Missing the pinned OpenCode binary {OPENCODE}; set REPO_ROOT to the repository")
+        for server, url in (("", MCP_URL), ("kev", KEV_MCP_URL)):
             try:
                 urllib.request.urlopen(urllib.request.Request(url, method="GET"), timeout=3).read(1)
             except Exception as exc:  # noqa: BLE001 - any failure means the tools are not there
                 if "HTTP Error" not in str(exc):
                     raise ValueError(f"The {server} MCP server is not running at {url}; start it with "
-                                     "scripts/langflow.sh (rtrc) or scripts/kev_up.sh (kev)") from exc
+                                     "scripts/langflow.sh () or scripts/kev_up.sh (kev)") from exc
         exam = str(self.mode or MODES[0]).startswith("Exam")
         model = str(self.model or MODELS[0])
         env = _env()

@@ -1,4 +1,4 @@
-# RTX SysML v2 MVP：运行工程与调研资料
+#  SysML v2 MVP：运行工程与调研资料
 
 本目录保存2026年9月22日的项目审查、公开资料调研，以及随后实现的英文工程工作台。用户原始附件未修改。
 
@@ -6,13 +6,13 @@
 
 [HTTP 实际运行证据](mvp/app/verification-results.json)与[公开数据说明](mvp/public-data/README.md)记录了真实执行范围。预算可行不等于硬件或系统整体验证成功，工作台保留 UNKNOWN 状态。
 
-从 [主计划](plans/RTX_SysML_v2_MVP_落地计划.md) 开始阅读。它按三人团队组织，区分RTX已公开的事实、需求推断、拟开发功能与验收目标。
+从 [主计划](plans/sysml-v2-mvp-plan.md) 开始阅读。它按三人团队组织，区分已公开的事实、需求推断、拟开发功能与验收目标。
 
 需要直接看产品要做成什么，请看 [首个 MVP 的具体产品与演示规格](plans/MVP_具体产品与演示规格.md)：历史系统升级工程台，以海事观测数据网关为首例，列出旧系统接入、候选方案、可见工作区、真实执行边界与开工关口。
 
 配套资料：
 
-- [RTX近期业务与招聘证据](research/notes/rtx-business-fit.md)
+- [近期业务与招聘证据](research/notes/project-context.md)
 - [HTML与源码审查](research/html-audit/HTML_AUDIT_中文.md)
 - [前两篇SysML研究核验](research/notes/papers-1-2.md)
 - [NPS文献和公开benchmark核验](research/notes/paper-3-benchmarks.md)

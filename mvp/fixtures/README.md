@@ -1,6 +1,6 @@
 # Synthetic legacy engineering and supplier inputs
 
-**Every material in this directory is an original synthetic test fixture. None is an RTX record, a real supplier document, or evidence from real hardware. The 44/54/68 W values are synthetic engineering budgets, not measurements.**
+**Every material in this directory is an original synthetic test fixture. None is a company record, a real supplier document, or evidence from real hardware. The 44/54/68 W values are synthetic engineering budgets, not measurements.**
 
 The application reads its configuration from the actual `legacy.sqlite` database. `configs.json` is a rebuild seed; runtime `get_case_config()` queries SQLite rows without reading that seed. The five tables are `metadata`, `sources`, `configs`, `components`, and `interfaces`. They hold five configurations, seven power-allocation entries per configuration, eight interfaces, and source locators.
 

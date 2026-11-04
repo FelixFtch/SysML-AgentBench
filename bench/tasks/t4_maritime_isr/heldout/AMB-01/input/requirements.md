@@ -1,4 +1,4 @@
-# AMB-01 — synthetic, not an RTX specification
+# AMB-01 — synthetic
 
 Tracks must be shared from the vessel to the shore in real time. No latency and no bandwidth are given.
 

@@ -1,4 +1,4 @@
-"""RTRC Start: begins one run of the RTRC agent flow (Part 2) through the RTRC shell service (bench/shell_service.py)."""
+"""Start: begins one run of the agent flow (Part 2) through the shell service (bench/shell_service.py)."""
 import json
 import os
 import urllib.error
@@ -12,26 +12,26 @@ AGENTS = {"Qwen direct": "direct", "Claude Code on Qwen (sandbox)": "claude-code
 
 
 def _call(path: str, payload: dict) -> dict:
-    url = os.environ.get("RTRC_SHELL_URL", "http://127.0.0.1:8781") + path
+    url = os.environ.get("SHELL_URL", "http://127.0.0.1:8781") + path
     request = urllib.request.Request(url, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": os.environ.get("RTRC_SHELL_TOKEN", "")})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": os.environ.get("SHELL_TOKEN", "")})
     try:
         with urllib.request.urlopen(request, timeout=3600) as response:
             body = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         body = json.loads(exc.read() or b"{}")
     except urllib.error.URLError as exc:
-        raise ValueError(f"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
+        raise ValueError(f"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
     if not body.get("ok"):
-        raise ValueError(body.get("error") or "The RTRC shell service returned an error")
+        raise ValueError(body.get("error") or "The shell service returned an error")
     return body
 
 
-class RtrcStart(Component):
-    display_name = "RTRC Start"
-    description = "Starts one run of the RTRC agent flow: the brief, the agent and the Qwen model, or a replay of a saved run without model calls."
+class CardStart(Component):
+    display_name = "Start"
+    description = "Starts one run of the agent flow: the brief, the agent and the Qwen model, or a replay of a saved run without model calls."
     icon = "play"
-    name = "RtrcStart"
+    name = "CardStart"
 
     inputs = [
         MultilineInput(name="brief", display_name="Requirement / brief",

@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_63021c2ea80446e78b363558",
       "tool_input": {
-        "command": "grep -rl \"part def\\|PortDef\\|port def\" /data/robotics/RTRC --include=\"*.sysml\" -I 2>/dev/null | head -20",
+        "command": "grep -rl \"part def\\|PortDef\\|port def\" /data/robotics/--include=\"*.sysml\" -I 2>/dev/null | head -20",
         "description": "Find SysML reference files in repo"
       }
     },
@@ -53,7 +53,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_58a42340d73d4e6fa22864e3",
       "tool_input": {
-        "command": "find /data/robotics/RTRC/mvp -maxdepth 3 -type d 2>/dev/null | head -30; find /data/robotics/RTRC -name \"*.sysml\" -I 2>/dev/null | head -20",
+        "command": "find /data/robotics//mvp -maxdepth 3 -type d 2>/dev/null | head -30; find /data/robotics/-name \"*.sysml\" -I 2>/dev/null | head -20",
         "description": "Look for SysML syntax references in repo"
       }
     }

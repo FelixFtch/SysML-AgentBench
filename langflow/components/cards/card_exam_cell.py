@@ -1,4 +1,4 @@
-"""RTRC Exam cell: F1 / F2, one exam cell, replayed from the archive or run live on Qwen; the answer key is used
+"""Exam cell: F1 / F2, one exam cell, replayed from the archive or run live on Qwen; the answer key is used
 only by the scorer and never returned."""
 import json
 import os
@@ -14,26 +14,26 @@ MODES = ["Replay a graded cell", "Live: direct Qwen (P0–P3)", "Live: sandboxed
 
 
 def _call(path: str, payload: dict) -> dict:
-    url = os.environ.get("RTRC_SHELL_URL", "http://127.0.0.1:8781") + path
+    url = os.environ.get("SHELL_URL", "http://127.0.0.1:8781") + path
     request = urllib.request.Request(url, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": os.environ.get("RTRC_SHELL_TOKEN", "")})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": os.environ.get("SHELL_TOKEN", "")})
     try:
         with urllib.request.urlopen(request, timeout=3600) as response:
             body = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         body = json.loads(exc.read() or b"{}")
     except urllib.error.URLError as exc:
-        raise ValueError(f"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
+        raise ValueError(f"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
     if not body.get("ok"):
-        raise ValueError(body.get("error") or "The RTRC shell service returned an error")
+        raise ValueError(body.get("error") or "The shell service returned an error")
     return body
 
 
-class RtrcExamCell(Component):
-    display_name = "RTRC Exam cell"
+class CardExamCell(Component):
+    display_name = "Exam cell"
     description = "One exam cell: replay any graded cell, or run a sealed task live on Qwen (direct or a sandboxed coding agent). Not added to any score."
     icon = "clipboard-check"
-    name = "RtrcExamCell"
+    name = "CardExamCell"
 
     inputs = [
         DropdownInput(name="mode", display_name="Mode", options=MODES, value=MODES[0]),

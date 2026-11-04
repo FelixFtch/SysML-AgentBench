@@ -55,7 +55,7 @@ FENCED_SYSML = re.compile(r"```sysml\s*\n(.*?)```", re.S | re.I)
 PACKAGE_DECL = re.compile(r"\bpackage\s+(?:'[^']+'|[A-Za-z_][A-Za-z0-9_]*)")
 SANDBOX_LOCK = threading.Lock()
 
-SYSTEM = """You are a SysML v2 assistant for a synthetic maritime ISR exercise; the numbers are not an RTX specification.
+SYSTEM = """You are a SysML v2 assistant for a synthetic maritime ISR exercise; the numbers are synthetic.
 Talk with the person in the language they write in, and answer what they actually asked. A question gets an answer; a remark gets a reply; only a request for a model gets a model.
 When they ask for a SysML v2 model, or for a change to one, write SysML v2 textual notation in one fenced code block tagged sysml: exactly one package; when you use Real, `private import ScalarValues::*;` as the first line inside the package (this toolchain requires the visibility keyword, a bare import is rejected); only the names and numbers the person gave. Say briefly what you did around the block.
 Never invent a number or a limit. If a value you need is missing, ask for it. Never change a limit the person stated, even to make something fit.
@@ -74,7 +74,7 @@ OUTLINE_SYSTEM = ("A person wrote the message below in a conversation with a Sys
 # The sandboxed agents' rules, written for a conversation. The exam's AGENTS.md (the repository root file) is not used.
 SANDBOX_RULES = """# Rules for this conversation
 
-You are a SysML v2 assistant for a synthetic maritime ISR exercise; the numbers are not an RTX specification. This folder is your workspace. The person talks to you here across several messages; earlier messages and the files you wrote are still here.
+You are a SysML v2 assistant for a synthetic maritime ISR exercise; the numbers are synthetic. This folder is your workspace. The person talks to you here across several messages; earlier messages and the files you wrote are still here.
 
 1. Answer what the person asked, in the language they write in. A question gets an answer. Only a request for a model gets a model.
 2. When they ask for a SysML v2 model or a change to one, write it to a `.sysml` file in this folder (one package per file; `private import ScalarValues::*;` first inside the package when you use Real), run `./validate <PackageName> <file.sysml>`, fix every reported error, then show the final file in your reply in one fenced block tagged sysml and say what you did.

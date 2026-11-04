@@ -32,7 +32,7 @@ def main() -> None:
         "# STATUS",
         "",
         f"Generated {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} by `python3 scripts/make_status.py` from saved results. "
-        "All maritime numbers are synthetic, not RTX specifications. The official SysML v2 Pilot 0.62 is the only syntax judge; "
+        "All maritime numbers are synthetic. The official SysML v2 Pilot 0.62 is the only syntax judge; "
         "the answer keys are the ground truth; no model judges (decision 025).",
         "",
         f"Task bank: 27 sealed tasks, second review recorded in `bench/tasks/t4_maritime_isr/heldout/REVIEW.md`, frozen in `{f['freeze']['file']}` (tag `{f['freeze']['tag']}`).",

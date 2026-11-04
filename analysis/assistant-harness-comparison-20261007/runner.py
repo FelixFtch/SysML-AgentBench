@@ -5,8 +5,8 @@ import sys
 import time
 
 FLOW, TAG = sys.argv[1], sys.argv[2]
-OUT = f"/tmp/rtrc-compare/{TAG}.jsonl"
-WF = ["python3", "/tmp/rtrc-compare/wf2.py"]
+OUT = f"/tmp/-compare/{TAG}.jsonl"
+WF = ["python3", "/tmp/-compare/wf2.py"]
 
 TURNS = [
     ("1", "记忆里有哪些项目？每个的功率上限是多少？", 300),

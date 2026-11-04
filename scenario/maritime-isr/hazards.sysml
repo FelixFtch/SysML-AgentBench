@@ -1,5 +1,5 @@
 package MaritimeHazards {
-    /* Synthetic STPA notes for the maritime scenario. These are not RTX hazards.
+    /* Synthetic STPA notes for the maritime scenario. These are not  hazards.
        They use ordinary requirement definitions so the official parser can load
        them without the DLR metadata library. */
     requirement def LossOfSeparation {

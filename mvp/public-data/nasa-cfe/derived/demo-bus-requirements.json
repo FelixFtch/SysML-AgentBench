@@ -23,7 +23,7 @@
     "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
     "source_owner": "NASA cFE public repository",
     "license": "Apache-2.0",
-    "is_rtx_requirement": false,
+    "is_external_requirement": false,
     "configuration_placeholders": [],
     "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
   },
@@ -51,7 +51,7 @@
     "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
     "source_owner": "NASA cFE public repository",
     "license": "Apache-2.0",
-    "is_rtx_requirement": false,
+    "is_external_requirement": false,
     "configuration_placeholders": [],
     "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
   },
@@ -79,7 +79,7 @@
     "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
     "source_owner": "NASA cFE public repository",
     "license": "Apache-2.0",
-    "is_rtx_requirement": false,
+    "is_external_requirement": false,
     "configuration_placeholders": [],
     "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
   },
@@ -107,7 +107,7 @@
     "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
     "source_owner": "NASA cFE public repository",
     "license": "Apache-2.0",
-    "is_rtx_requirement": false,
+    "is_external_requirement": false,
     "configuration_placeholders": [],
     "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
   },
@@ -135,7 +135,7 @@
     "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
     "source_owner": "NASA cFE public repository",
     "license": "Apache-2.0",
-    "is_rtx_requirement": false,
+    "is_external_requirement": false,
     "configuration_placeholders": [
       "MISSION_DEFINED"
     ],
@@ -165,7 +165,7 @@
     "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
     "source_owner": "NASA cFE public repository",
     "license": "Apache-2.0",
-    "is_rtx_requirement": false,
+    "is_external_requirement": false,
     "configuration_placeholders": [],
     "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
   },
@@ -193,7 +193,7 @@
     "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
     "source_owner": "NASA cFE public repository",
     "license": "Apache-2.0",
-    "is_rtx_requirement": false,
+    "is_external_requirement": false,
     "configuration_placeholders": [
       "MISSION_DEFINED"
     ],
@@ -223,7 +223,7 @@
     "source_file": "upstream/docs/cFE_FunctionalRequirements.csv",
     "source_owner": "NASA cFE public repository",
     "license": "Apache-2.0",
-    "is_rtx_requirement": false,
+    "is_external_requirement": false,
     "configuration_placeholders": [],
     "scope_note": "Source-system cFE requirement; applicability to a new design must be reviewed."
   }

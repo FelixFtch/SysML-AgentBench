@@ -34,7 +34,7 @@ OPENCODE_BIN = ROOT / "tools" / "opencode"
 NETNS = Path(__file__).resolve().with_name("netns.py")
 # claude-code-router's gateway, which `ccr` inside the sandbox calls for Claude Code (the address it names when down).
 CCR_GATEWAY_PORT = 3456
-JAIL_HOMES = Path(os.environ.get("BENCH_JAIL_HOMES", "/tmp/rtrc-jail-homes"))
+JAIL_HOMES = Path(os.environ.get("BENCH_JAIL_HOMES", "/tmp/-jail-homes"))
 
 VALIDATE = r'''#!/usr/bin/env python3
 """Official SysML v2 Pilot 0.62 validator (the same one that scores the answer).

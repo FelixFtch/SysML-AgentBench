@@ -1,5 +1,5 @@
 "use strict";
-/* RTRC exam board. Part 1 reads archived benchmark cells; Part 2 drives the blank-task agent flow. */
+/* exam board. Part 1 reads archived benchmark cells; Part 2 drives the blank-task agent flow. */
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -411,7 +411,7 @@ const APP = {
     { id: "repair", row: "side", col: 4, kind: "loop", owner: "Model", title: "Repair from errors", sub: "error text sent back, numbers kept", papers: ["p3"],
       does: "When a design fails the official Pilot, the complete error list (line and column) goes back to the model in the same conversation, after every earlier version, with: fix the syntax, keep the numbers. Up to 20 repairs per design; three identical resubmissions in a row stop the loop. The same loop as the exam's P1–P3.", input: "The conversation so far + the complete error list", output: "A new version, validated again" },
     { id: "catalog", row: "side", col: 5, kind: "source", owner: "Synthetic catalog", title: "Parts catalog", sub: "5 slots, 11 parts · 3 parameters",
-      does: "2 visible cameras, 3 infrared options, 2 computers, 2 uplinks, 2 storage sizes, plus recording rate, retention hours and upload rate. The choices in 2.2 come from here. Not RTX data.", input: "—", output: "Parts and parameters to choose from" },
+      does: "2 visible cameras, 3 infrared options, 2 computers, 2 uplinks, 2 storage sizes, plus recording rate, retention hours and upload rate. The choices in 2.2 come from here. Not vendor data.", input: "—", output: "Parts and parameters to choose from" },
     { id: "tradeoff", row: "side", col: 6, kind: "loop", owner: "Model · code recomputes", title: "Trade-offs", sub: "catalog choices only",
       does: "If a check fails, the model proposes 3 alternatives using only catalog parts and parameters. Its numbers are not trusted: code recomputes each one from the catalog and marks it feasible or not. 60 W cannot change.", input: "Brief + failing checks + catalog", output: "3 proposals + code's recomputation" },
   ],
@@ -554,7 +554,7 @@ function renderSources() {
     { color: "#2b8a3e", title: "Approved designs", size: `${S.memory.length} designs`, small: S.memory.length ? S.memory.map((m) => `${m.run_id}·${m.design}`).join(", ") : "none approved yet", path: k.memory.file,
       how: "Only designs that pass every gated check, carry no number of unknown origin, and that a person approved.", prompt: "Retrieved together with the MaritimeISR cards, tagged \"approved\" in the prompt.", use: [["2.1 ⑥ Into memory", "app", "human"], ["2.1 ① Retrieve", "app", "retrieve"]] },
     { color: "#a996e0", title: "Synthetic parts catalog", size: `${k.catalog.options} parts`, small: `${k.catalog.slots} slots · ${k.catalog.params} parameters (incl. the fixed 60 W)`, path: "bench/discover.py · CATALOG",
-      how: "Not a bill of materials and not RTX data.", prompt: "Only in the trade-off prompt; the model's numbers are not trusted, code recomputes from the catalog.", use: [["2.1 Parts catalog", "app", "catalog"], ["2.1 Trade-offs", "app", "tradeoff"]] },
+      how: "Not a bill of materials and not vendor data.", prompt: "Only in the trade-off prompt; the model's numbers are not trusted, code recomputes from the catalog.", use: [["2.1 Parts catalog", "app", "catalog"], ["2.1 Trade-offs", "app", "tradeoff"]] },
     { color: "#7d8b96", title: "Official SysML v2 standard library", size: `${k.maritime.library_files} files`, small: "ships with Pilot 0.62", path: "vendor/ (not modified)",
       how: "Libraries such as ScalarValues and ISQ, loaded by the official tool when parsing.", prompt: "Not in any prompt. It is part of the tool, not the agent's memory.", use: [["1.1 Official syntax", "bench", "syntax"], ["2.1 ③ Official validation", "app", "syntax"]] },
   ];

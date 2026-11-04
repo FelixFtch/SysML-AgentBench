@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_e12702cde23040a695ad7cb2",
       "tool_input": {
-        "command": "find /data/robotics/RTRC/mvp/agent-runs/20261006T080433-P-CODE-2-RT-01 -type f | head -50",
+        "command": "find /data/robotics//mvp/agent-runs/20261006T080433-P-CODE-2-RT-01 -type f | head -50",
         "description": "Find files in the run directory"
       }
     }

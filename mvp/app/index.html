@@ -7,7 +7,7 @@
   <script src="/harbor-replay.js" defer></script>
 </head>
 <body>
-  <header><div><p class="eyebrow">RTX RESEARCH · LOCAL MVP</p><h1>Engineering Change Workbench</h1><p id="project-context">Observation data subsystem · Models, checks and evidence</p></div><span id="service-state" class="badge">Connecting</span></header>
+  <header><div><p class="eyebrow">LOCAL MVP</p><h1>Engineering Change Workbench</h1><p id="project-context">Observation data subsystem · Models, checks and evidence</p></div><span id="service-state" class="badge">Connecting</span></header>
   <section id="architecture-guide" class="architecture-guide" aria-labelledby="architecture-title">
     <div class="architecture-heading">
       <div><p class="eyebrow">START HERE · SYSTEM ARCHITECTURE</p><h2 id="architecture-title">From legacy evidence to a checked design</h2><p>What we are designing, what the software does, and where each engineering decision comes from.</p></div>
@@ -53,7 +53,7 @@
         </ol>
         <div id="stage-detail" class="stage-detail" role="region" aria-label="Selected pipeline stage" aria-live="polite">
           <div class="stage-detail-title"><strong id="stage-title">01 · Read &amp; snapshot</strong><span id="stage-owner">Owner: Python engine / read-only source access</span></div>
-          <div class="stage-detail-grid"><div><h4>Input</h4><p id="stage-input">A selected configuration in legacy.sqlite, requirement JSON, two supplier models and interface documents, plus explicit user overrides.</p></div><div><h4>Action</h4><p id="stage-action">Read actual database rows and controlled files. Record source identities and copy evidence into the new run directory.</p></div><div><h4>Output</h4><p id="stage-output">Source snapshots, row provenance and source-manifest.json with hashes. The original database is read-only; this is not an RTX production connector.</p></div></div>
+          <div class="stage-detail-grid"><div><h4>Input</h4><p id="stage-input">A selected configuration in legacy.sqlite, requirement JSON, two supplier models and interface documents, plus explicit user overrides.</p></div><div><h4>Action</h4><p id="stage-action">Read actual database rows and controlled files. Record source identities and copy evidence into the new run directory.</p></div><div><h4>Output</h4><p id="stage-output">Source snapshots, row provenance and source-manifest.json with hashes. The original database is read-only; this is not a production connector.</p></div></div>
           <p class="stage-code" id="stage-code">Code: engine.py · snapshot_sources / models/render_model.py</p>
         </div>
         <div class="pipeline-feedback"><span aria-hidden="true">↶</span><p><strong>Feedback:</strong> diagnostics and check results return as JSON to the browser and, on the agent path, to the same agent conversation. A further candidate produces a new run. The engineer reviews the evidence and controls requirement decisions.</p></div>
@@ -94,7 +94,7 @@
       <div class="guide-bottom"><p><strong>What a successful demo proves:</strong> a traceable source-to-model-to-check workflow, with real SysML tooling and reproducible evidence.</p><a class="button guide-start" href="#workbench">Start with Run a case ↓</a></div>
     </div>
   </section>
-  <div class="notice" id="case-notice"><strong>Synthetic engineering case. Real SysML parsing.</strong> Case parameters exercise the workflow; they are not controlled RTX product data. Parsing and engineering checks are reported separately. Execution complete does not mean verification passed.</div>
+  <div class="notice" id="case-notice"><strong>Synthetic engineering case. Real SysML parsing.</strong> Case parameters exercise the workflow; they are not controlled product data. Parsing and engineering checks are reported separately. Execution complete does not mean verification passed.</div>
   <div class="workspace" id="workbench">
     <aside>
       <section><h2>Run a case</h2>

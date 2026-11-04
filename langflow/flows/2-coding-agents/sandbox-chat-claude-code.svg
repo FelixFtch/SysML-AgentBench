@@ -15,16 +15,16 @@
 <text xml:space="preserve" text-anchor="middle" x="34.62" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">Person</text>
 <text xml:space="preserve" text-anchor="middle" x="34.62" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">ChatInput</text>
 </g>
-<!-- RtrcChat&#45;candidate -->
+<!-- CardChat&#45;candidate -->
 <g id="node2" class="node">
-<title>RtrcChat&#45;candidate</title>
+<title>CardChat&#45;candidate</title>
 <path fill="#e9f7ef" stroke="#9aa4ad" d="M358.5,-36C358.5,-36 124.25,-36 124.25,-36 118.25,-36 112.25,-30 112.25,-24 112.25,-24 112.25,-12 112.25,-12 112.25,-6 118.25,0 124.25,0 124.25,0 358.5,0 358.5,0 364.5,0 370.5,-6 370.5,-12 370.5,-12 370.5,-24 370.5,-24 370.5,-30 364.5,-36 358.5,-36"/>
 <text xml:space="preserve" text-anchor="middle" x="241.38" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">Claude Code in the sandbox · qwen3.8&#45;flash</text>
-<text xml:space="preserve" text-anchor="middle" x="241.38" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">RtrcChat</text>
+<text xml:space="preserve" text-anchor="middle" x="241.38" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">CardChat</text>
 </g>
-<!-- ChatInput&#45;person&#45;&gt;RtrcChat&#45;candidate -->
+<!-- ChatInput&#45;person&#45;&gt;CardChat&#45;candidate -->
 <g id="edge1" class="edge">
-<title>ChatInput&#45;person&#45;&gt;RtrcChat&#45;candidate</title>
+<title>ChatInput&#45;person&#45;&gt;CardChat&#45;candidate</title>
 <path fill="none" stroke="#6b7680" d="M69.44,-18C79.5,-18 91.2,-18 103.66,-18"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="103.44,-20.45 110.44,-18 103.44,-15.55 103.44,-20.45"/>
 </g>
@@ -35,9 +35,9 @@
 <text xml:space="preserve" text-anchor="middle" x="472.5" y="-21.05" font-family="Helvetica,sans-Serif" font-size="11.00">Reply (not scored)</text>
 <text xml:space="preserve" text-anchor="middle" x="472.5" y="-7.55" font-family="Helvetica,sans-Serif" font-size="11.00">ChatOutput</text>
 </g>
-<!-- RtrcChat&#45;candidate&#45;&gt;ChatOutput&#45;reply -->
+<!-- CardChat&#45;candidate&#45;&gt;ChatOutput&#45;reply -->
 <g id="edge2" class="edge">
-<title>RtrcChat&#45;candidate&#45;&gt;ChatOutput&#45;reply</title>
+<title>CardChat&#45;candidate&#45;&gt;ChatOutput&#45;reply</title>
 <path fill="none" stroke="#6b7680" d="M370.67,-18C382.48,-18 394.1,-18 405.01,-18"/>
 <polygon fill="#6b7680" stroke="#6b7680" points="404.69,-20.45 411.69,-18 404.69,-15.55 404.69,-20.45"/>
 </g>

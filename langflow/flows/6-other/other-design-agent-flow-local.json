@@ -4,7 +4,7 @@
   "endpoint_name": "other-design-agent-flow-local",
   "is_component": false,
   "tags": [
-    "rtrc",
+    "",
     "agent",
     "local"
   ],
@@ -568,7 +568,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves\nthe person's decision with the grades and the times, the record page 2.3 shows.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nDECISIONS = {\"Approve design A\": \"A\", \"Approve design B\": \"B\", \"Reject\": None, \"Send back\": None}\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcRecord(Component):\n    display_name = \"RTRC Record the decision\"\n    description = (\"⑨ Put one after each Human Input branch. Approve writes the design into memory (paper 2; refused unless all four \"\n                   \"checks passed). Every branch saves the decision with each stage's verdict, attempts, seconds, model calls and cost.\")\n    icon = \"clipboard-list\"\n    name = \"RtrcRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"decision\", display_name=\"This branch\", options=list(DECISIONS), value=\"Reject\"),\n        StrInput(name=\"note\", display_name=\"Note\", value=\"\", required=False),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n            if not text.strip():\n                self.status = f\"{self.decision}: not chosen\"\n                self._cached = {\"summary\": \"\", \"data\": {}}\n                return self._cached\n            match = RUN.search(text)\n            if not match:\n                raise ValueError(\"No run id in the incoming message\")\n            key, note, lines = DECISIONS.get(self.decision), str(self.note or \"\"), []\n            if key:\n                approval = _call(\"/run/approve\", {\"run\": match.group(1), \"key\": key})\n                lines.append(approval[\"summary\"].splitlines()[-1])\n                note = (note + \" \" + lines[-1]).strip()\n            body = _call(\"/run/decision\", {\"run\": match.group(1), \"decision\": self.decision, \"note\": note})\n            self._cached = {\"summary\": \"\\n\".join(lines + [body[\"summary\"]]), \"data\": body.get(\"data\") or {}}\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n",
+                "value": "\"\"\"Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves\nthe person's decision with the grades and the times, the record page 2.3 shows.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nDECISIONS = {\"Approve design A\": \"A\", \"Approve design B\": \"B\", \"Reject\": None, \"Send back\": None}\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardRecord(Component):\n    display_name = \"Record the decision\"\n    description = (\"⑨ Put one after each Human Input branch. Approve writes the design into memory (paper 2; refused unless all four \"\n                   \"checks passed). Every branch saves the decision with each stage's verdict, attempts, seconds, model calls and cost.\")\n    icon = \"clipboard-list\"\n    name = \"CardRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"decision\", display_name=\"This branch\", options=list(DECISIONS), value=\"Reject\"),\n        StrInput(name=\"note\", display_name=\"Note\", value=\"\", required=False),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n            if not text.strip():\n                self.status = f\"{self.decision}: not chosen\"\n                self._cached = {\"summary\": \"\", \"data\": {}}\n                return self._cached\n            match = RUN.search(text)\n            if not match:\n                raise ValueError(\"No run id in the incoming message\")\n            key, note, lines = DECISIONS.get(self.decision), str(self.note or \"\"), []\n            if key:\n                approval = _call(\"/run/approve\", {\"run\": match.group(1), \"key\": key})\n                lines.append(approval[\"summary\"].splitlines()[-1])\n                note = (note + \" \" + lines[-1]).strip()\n            body = _call(\"/run/decision\", {\"run\": match.group(1), \"decision\": self.decision, \"note\": note})\n            self._cached = {\"summary\": \"\\n\".join(lines + [body[\"summary\"]]), \"data\": body.get(\"data\") or {}}\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -761,10 +761,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcRecord",
-          "id": "RtrcRecord-A"
+          "type": "CardRecord",
+          "id": "CardRecord-A"
         },
-        "id": "RtrcRecord-A",
+        "id": "CardRecord-A",
         "type": "genericNode",
         "position": {
           "x": 2390,
@@ -783,7 +783,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Step: one step of the RTRC agent flow, run by the existing pipeline through the RTRC shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcStep(Component):\n    display_name = \"RTRC Step\"\n    description = \"One step of the RTRC agent flow, run by the code behind the results page through the RTRC shell service.\"\n    icon = \"workflow\"\n    name = \"RtrcStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after RTRC Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Step: one step of the agent flow, run by the existing pipeline through the shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardStep(Component):\n    display_name = \"Step\"\n    description = \"One step of the agent flow, run by the code behind the results page through the shell service.\"\n    icon = \"workflow\"\n    name = \"CardStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -1036,10 +1036,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcStep",
-          "id": "RtrcStep-review"
+          "type": "CardStep",
+          "id": "CardStep-review"
         },
-        "id": "RtrcStep-review",
+        "id": "CardStep-review",
         "type": "genericNode",
         "position": {
           "x": 1450,
@@ -1456,7 +1456,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Step: one step of the RTRC agent flow, run by the existing pipeline through the RTRC shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcStep(Component):\n    display_name = \"RTRC Step\"\n    description = \"One step of the RTRC agent flow, run by the code behind the results page through the RTRC shell service.\"\n    icon = \"workflow\"\n    name = \"RtrcStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after RTRC Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Step: one step of the agent flow, run by the existing pipeline through the shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardStep(Component):\n    display_name = \"Step\"\n    description = \"One step of the agent flow, run by the code behind the results page through the shell service.\"\n    icon = \"workflow\"\n    name = \"CardStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -1709,10 +1709,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcStep",
-          "id": "RtrcStep-checks"
+          "type": "CardStep",
+          "id": "CardStep-checks"
         },
-        "id": "RtrcStep-checks",
+        "id": "CardStep-checks",
         "type": "genericNode",
         "position": {
           "x": 40,
@@ -1731,7 +1731,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Step: one step of the RTRC agent flow, run by the existing pipeline through the RTRC shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcStep(Component):\n    display_name = \"RTRC Step\"\n    description = \"One step of the RTRC agent flow, run by the code behind the results page through the RTRC shell service.\"\n    icon = \"workflow\"\n    name = \"RtrcStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after RTRC Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Step: one step of the agent flow, run by the existing pipeline through the shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardStep(Component):\n    display_name = \"Step\"\n    description = \"One step of the agent flow, run by the code behind the results page through the shell service.\"\n    icon = \"workflow\"\n    name = \"CardStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -1984,10 +1984,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcStep",
-          "id": "RtrcStep-align"
+          "type": "CardStep",
+          "id": "CardStep-align"
         },
-        "id": "RtrcStep-align",
+        "id": "CardStep-align",
         "type": "genericNode",
         "position": {
           "x": 3330,
@@ -2006,7 +2006,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Step: one step of the RTRC agent flow, run by the existing pipeline through the RTRC shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcStep(Component):\n    display_name = \"RTRC Step\"\n    description = \"One step of the RTRC agent flow, run by the code behind the results page through the RTRC shell service.\"\n    icon = \"workflow\"\n    name = \"RtrcStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after RTRC Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Step: one step of the agent flow, run by the existing pipeline through the shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardStep(Component):\n    display_name = \"Step\"\n    description = \"One step of the agent flow, run by the code behind the results page through the shell service.\"\n    icon = \"workflow\"\n    name = \"CardStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -2259,10 +2259,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcStep",
-          "id": "RtrcStep-validate"
+          "type": "CardStep",
+          "id": "CardStep-validate"
         },
-        "id": "RtrcStep-validate",
+        "id": "CardStep-validate",
         "type": "genericNode",
         "position": {
           "x": 2860,
@@ -2281,7 +2281,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Step: one step of the RTRC agent flow, run by the existing pipeline through the RTRC shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcStep(Component):\n    display_name = \"RTRC Step\"\n    description = \"One step of the RTRC agent flow, run by the code behind the results page through the RTRC shell service.\"\n    icon = \"workflow\"\n    name = \"RtrcStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after RTRC Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Step: one step of the agent flow, run by the existing pipeline through the shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardStep(Component):\n    display_name = \"Step\"\n    description = \"One step of the agent flow, run by the code behind the results page through the shell service.\"\n    icon = \"workflow\"\n    name = \"CardStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -2534,10 +2534,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcStep",
-          "id": "RtrcStep-new"
+          "type": "CardStep",
+          "id": "CardStep-new"
         },
-        "id": "RtrcStep-new",
+        "id": "CardStep-new",
         "type": "genericNode",
         "position": {
           "x": 2390,
@@ -2954,7 +2954,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Step: one step of the RTRC agent flow, run by the existing pipeline through the RTRC shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcStep(Component):\n    display_name = \"RTRC Step\"\n    description = \"One step of the RTRC agent flow, run by the code behind the results page through the RTRC shell service.\"\n    icon = \"workflow\"\n    name = \"RtrcStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after RTRC Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Step: one step of the agent flow, run by the existing pipeline through the shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardStep(Component):\n    display_name = \"Step\"\n    description = \"One step of the agent flow, run by the code behind the results page through the shell service.\"\n    icon = \"workflow\"\n    name = \"CardStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -3207,10 +3207,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcStep",
-          "id": "RtrcStep-req"
+          "type": "CardStep",
+          "id": "CardStep-req"
         },
-        "id": "RtrcStep-req",
+        "id": "CardStep-req",
         "type": "genericNode",
         "position": {
           "x": 1450,
@@ -3229,7 +3229,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Step: one step of the RTRC agent flow, run by the existing pipeline through the RTRC shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcStep(Component):\n    display_name = \"RTRC Step\"\n    description = \"One step of the RTRC agent flow, run by the code behind the results page through the RTRC shell service.\"\n    icon = \"workflow\"\n    name = \"RtrcStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after RTRC Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Step: one step of the agent flow, run by the existing pipeline through the shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardStep(Component):\n    display_name = \"Step\"\n    description = \"One step of the agent flow, run by the code behind the results page through the shell service.\"\n    icon = \"workflow\"\n    name = \"CardStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -3482,10 +3482,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcStep",
-          "id": "RtrcStep-retrieve"
+          "type": "CardStep",
+          "id": "CardStep-retrieve"
         },
-        "id": "RtrcStep-retrieve",
+        "id": "CardStep-retrieve",
         "type": "genericNode",
         "position": {
           "x": 980,
@@ -3563,7 +3563,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Start: begins one run of the RTRC agent flow (Part 2) through the RTRC shell service (bench/shell_service.py).\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import BoolInput, DropdownInput, MultilineInput, Output, StrInput\nfrom lfx.schema.message import Message\n\nAGENTS = {\"Qwen direct\": \"direct\", \"Claude Code on Qwen (sandbox)\": \"claude-code\", \"OpenCode on Qwen (sandbox)\": \"opencode\"}\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcStart(Component):\n    display_name = \"RTRC Start\"\n    description = \"Starts one run of the RTRC agent flow: the brief, the agent and the Qwen model, or a replay of a saved run without model calls.\"\n    icon = \"play\"\n    name = \"RtrcStart\"\n\n    inputs = [\n        MultilineInput(name=\"brief\", display_name=\"Requirement / brief\",\n                       info=\"Everything the agent receives. Empty: the default brief of the 2.2 design space on the results page.\"),\n        DropdownInput(name=\"agent\", display_name=\"Agent\", options=list(AGENTS), value=\"Qwen direct\",\n                      info=\"The model directly, or Claude Code / OpenCode running on it inside the bubblewrap sandbox.\"),\n        DropdownInput(name=\"model\", display_name=\"Model\", options=[\"qwen3.8-flash\", \"qwen3.8-max\", \"qwen3.8-27b (Ollama)\"], value=\"qwen3.8-flash\", combobox=True,\n                      info=\"Pick one of the names our runs used, or type any name: a cloud name goes to the endpoint of .env, '<tag> (Ollama)' to a model you pulled \"\n                           \"into Ollama (docs/langflow/02-keys-and-models.md).\"),\n        StrInput(name=\"replay\", display_name=\"Replay a saved run\", value=\"\",\n                 info=\"Empty for a live run. 'latest' or a run id such as 20261006T211951 replays that run without model calls.\"),\n        BoolInput(name=\"require_brief\", display_name=\"Refuse an empty brief\", value=False, advanced=True,\n                  info=\"On in the pipeline used as a tool: an empty brief is an error, never the default brief of page 2.2. \"\n                       \"A tool call with a wrong argument name then fails loudly instead of running the demo numbers.\"),\n    ]\n    outputs = [Output(display_name=\"Run\", name=\"run\", method=\"start\")]\n\n    def start(self) -> Message:\n        if self.require_brief and not str(self.brief or \"\").strip() and not str(self.replay or \"\").strip():\n            raise ValueError(\"No brief reached the pipeline. The tool's argument is flow_tweak_data {\\\"ChatInput-brief~input_value\\\": <the confirmed brief>}; \"\n                             \"nothing was run, and the default brief of page 2.2 was not used.\")\n        body = _call(\"/run/start\", {\"brief\": str(self.brief or \"\"), \"agent\": AGENTS.get(self.agent, \"direct\"),\n                                    \"model\": self.model, \"replay\": str(self.replay or \"\").strip()})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
+                "value": "\"\"\"Start: begins one run of the agent flow (Part 2) through the shell service (bench/shell_service.py).\"\"\"\nimport json\nimport os\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import BoolInput, DropdownInput, MultilineInput, Output, StrInput\nfrom lfx.schema.message import Message\n\nAGENTS = {\"Qwen direct\": \"direct\", \"Claude Code on Qwen (sandbox)\": \"claude-code\", \"OpenCode on Qwen (sandbox)\": \"opencode\"}\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardStart(Component):\n    display_name = \"Start\"\n    description = \"Starts one run of the agent flow: the brief, the agent and the Qwen model, or a replay of a saved run without model calls.\"\n    icon = \"play\"\n    name = \"CardStart\"\n\n    inputs = [\n        MultilineInput(name=\"brief\", display_name=\"Requirement / brief\",\n                       info=\"Everything the agent receives. Empty: the default brief of the 2.2 design space on the results page.\"),\n        DropdownInput(name=\"agent\", display_name=\"Agent\", options=list(AGENTS), value=\"Qwen direct\",\n                      info=\"The model directly, or Claude Code / OpenCode running on it inside the bubblewrap sandbox.\"),\n        DropdownInput(name=\"model\", display_name=\"Model\", options=[\"qwen3.8-flash\", \"qwen3.8-max\", \"qwen3.8-27b (Ollama)\"], value=\"qwen3.8-flash\", combobox=True,\n                      info=\"Pick one of the names our runs used, or type any name: a cloud name goes to the endpoint of .env, '<tag> (Ollama)' to a model you pulled \"\n                           \"into Ollama (docs/langflow/02-keys-and-models.md).\"),\n        StrInput(name=\"replay\", display_name=\"Replay a saved run\", value=\"\",\n                 info=\"Empty for a live run. 'latest' or a run id such as 20261006T211951 replays that run without model calls.\"),\n        BoolInput(name=\"require_brief\", display_name=\"Refuse an empty brief\", value=False, advanced=True,\n                  info=\"On in the pipeline used as a tool: an empty brief is an error, never the default brief of page 2.2. \"\n                       \"A tool call with a wrong argument name then fails loudly instead of running the demo numbers.\"),\n    ]\n    outputs = [Output(display_name=\"Run\", name=\"run\", method=\"start\")]\n\n    def start(self) -> Message:\n        if self.require_brief and not str(self.brief or \"\").strip() and not str(self.replay or \"\").strip():\n            raise ValueError(\"No brief reached the pipeline. The tool's argument is flow_tweak_data {\\\"ChatInput-brief~input_value\\\": <the confirmed brief>}; \"\n                             \"nothing was run, and the default brief of page 2.2 was not used.\")\n        body = _call(\"/run/start\", {\"brief\": str(self.brief or \"\"), \"agent\": AGENTS.get(self.agent, \"direct\"),\n                                    \"model\": self.model, \"replay\": str(self.replay or \"\").strip()})\n        self.status = body[\"summary\"]\n        return Message(text=body[\"summary\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -3684,10 +3684,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcStart",
-          "id": "RtrcStart-start"
+          "type": "CardStart",
+          "id": "CardStart-start"
         },
-        "id": "RtrcStart-start",
+        "id": "CardStart-start",
         "type": "genericNode",
         "position": {
           "x": 510,
@@ -3706,7 +3706,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Step: one step of the RTRC agent flow, run by the existing pipeline through the RTRC shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcStep(Component):\n    display_name = \"RTRC Step\"\n    description = \"One step of the RTRC agent flow, run by the code behind the results page through the RTRC shell service.\"\n    icon = \"workflow\"\n    name = \"RtrcStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after RTRC Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Step: one step of the agent flow, run by the existing pipeline through the shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardStep(Component):\n    display_name = \"Step\"\n    description = \"One step of the agent flow, run by the code behind the results page through the shell service.\"\n    icon = \"workflow\"\n    name = \"CardStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -3959,10 +3959,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcStep",
-          "id": "RtrcStep-adapt"
+          "type": "CardStep",
+          "id": "CardStep-adapt"
         },
-        "id": "RtrcStep-adapt",
+        "id": "CardStep-adapt",
         "type": "genericNode",
         "position": {
           "x": 2390,
@@ -3981,7 +3981,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Step: one step of the RTRC agent flow, run by the existing pipeline through the RTRC shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass RtrcStep(Component):\n    display_name = \"RTRC Step\"\n    description = \"One step of the RTRC agent flow, run by the code behind the results page through the RTRC shell service.\"\n    icon = \"workflow\"\n    name = \"RtrcStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after RTRC Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
+                "value": "\"\"\"Step: one step of the agent flow, run by the existing pipeline through the shell service.\nThe step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nSTEPS = {\n    \"① Search memory (paper 2)\": \"/run/retrieve\",\n    \"② Requirements\": \"/run/requirements\",\n    \"③ New design (paper 3 create)\": \"/run/design\",\n    \"③ Adapt the similar project (paper 3 modify)\": \"/run/adapt\",\n    \"④ Official SysML v2 Pilot ⇄ repair (paper 3 loop)\": \"/run/validate\",\n    \"⑤ Align with memory (paper 1)\": \"/run/align\",\n    \"⑥ Checks + read-back (paper 3 query)\": \"/run/checks\",\n    \"Trade-offs (catalog only, code recomputes)\": \"/run/tradeoffs\",\n    \"⑦ Model diagram, Cameo export, review\": \"/run/review\",\n}\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=3600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\ndef _text(value) -> str:\n    if isinstance(value, list):\n        return \"\\n\".join(_text(item) for item in value)\n    return str(getattr(value, \"text\", value) or \"\")\n\n\nclass CardStep(Component):\n    display_name = \"Step\"\n    description = \"One step of the agent flow, run by the code behind the results page through the shell service.\"\n    icon = \"workflow\"\n    name = \"CardStep\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the previous step\", required=False),\n        MessageInput(name=\"upstream_alt\", display_name=\"Or from the other branch\", required=False,\n                     info=\"Where two branches join (new or reuse; checks passed or trade-offs), connect the second branch here.\"),\n        DropdownInput(name=\"step\", display_name=\"Step\", options=list(STEPS), value=list(STEPS)[0]),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))\n            if not match:\n                raise ValueError(\"No run id in the incoming message; connect this step after Start\")\n            self._cached = _call(STEPS[self.step], {\"run\": match.group(1)})\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        data = self._result().get(\"data\")\n        return Data(data=data if isinstance(data, dict) else {\"items\": data})\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -4234,10 +4234,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcStep",
-          "id": "RtrcStep-trade"
+          "type": "CardStep",
+          "id": "CardStep-trade"
         },
-        "id": "RtrcStep-trade",
+        "id": "CardStep-trade",
         "type": "genericNode",
         "position": {
           "x": 980,
@@ -4528,7 +4528,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves\nthe person's decision with the grades and the times, the record page 2.3 shows.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nDECISIONS = {\"Approve design A\": \"A\", \"Approve design B\": \"B\", \"Reject\": None, \"Send back\": None}\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcRecord(Component):\n    display_name = \"RTRC Record the decision\"\n    description = (\"⑨ Put one after each Human Input branch. Approve writes the design into memory (paper 2; refused unless all four \"\n                   \"checks passed). Every branch saves the decision with each stage's verdict, attempts, seconds, model calls and cost.\")\n    icon = \"clipboard-list\"\n    name = \"RtrcRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"decision\", display_name=\"This branch\", options=list(DECISIONS), value=\"Reject\"),\n        StrInput(name=\"note\", display_name=\"Note\", value=\"\", required=False),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n            if not text.strip():\n                self.status = f\"{self.decision}: not chosen\"\n                self._cached = {\"summary\": \"\", \"data\": {}}\n                return self._cached\n            match = RUN.search(text)\n            if not match:\n                raise ValueError(\"No run id in the incoming message\")\n            key, note, lines = DECISIONS.get(self.decision), str(self.note or \"\"), []\n            if key:\n                approval = _call(\"/run/approve\", {\"run\": match.group(1), \"key\": key})\n                lines.append(approval[\"summary\"].splitlines()[-1])\n                note = (note + \" \" + lines[-1]).strip()\n            body = _call(\"/run/decision\", {\"run\": match.group(1), \"decision\": self.decision, \"note\": note})\n            self._cached = {\"summary\": \"\\n\".join(lines + [body[\"summary\"]]), \"data\": body.get(\"data\") or {}}\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n",
+                "value": "\"\"\"Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves\nthe person's decision with the grades and the times, the record page 2.3 shows.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nDECISIONS = {\"Approve design A\": \"A\", \"Approve design B\": \"B\", \"Reject\": None, \"Send back\": None}\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardRecord(Component):\n    display_name = \"Record the decision\"\n    description = (\"⑨ Put one after each Human Input branch. Approve writes the design into memory (paper 2; refused unless all four \"\n                   \"checks passed). Every branch saves the decision with each stage's verdict, attempts, seconds, model calls and cost.\")\n    icon = \"clipboard-list\"\n    name = \"CardRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"decision\", display_name=\"This branch\", options=list(DECISIONS), value=\"Reject\"),\n        StrInput(name=\"note\", display_name=\"Note\", value=\"\", required=False),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n            if not text.strip():\n                self.status = f\"{self.decision}: not chosen\"\n                self._cached = {\"summary\": \"\", \"data\": {}}\n                return self._cached\n            match = RUN.search(text)\n            if not match:\n                raise ValueError(\"No run id in the incoming message\")\n            key, note, lines = DECISIONS.get(self.decision), str(self.note or \"\"), []\n            if key:\n                approval = _call(\"/run/approve\", {\"run\": match.group(1), \"key\": key})\n                lines.append(approval[\"summary\"].splitlines()[-1])\n                note = (note + \" \" + lines[-1]).strip()\n            body = _call(\"/run/decision\", {\"run\": match.group(1), \"decision\": self.decision, \"note\": note})\n            self._cached = {\"summary\": \"\\n\".join(lines + [body[\"summary\"]]), \"data\": body.get(\"data\") or {}}\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -4721,10 +4721,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcRecord",
-          "id": "RtrcRecord-B"
+          "type": "CardRecord",
+          "id": "CardRecord-B"
         },
-        "id": "RtrcRecord-B",
+        "id": "CardRecord-B",
         "type": "genericNode",
         "position": {
           "x": 2390,
@@ -5015,7 +5015,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves\nthe person's decision with the grades and the times, the record page 2.3 shows.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nDECISIONS = {\"Approve design A\": \"A\", \"Approve design B\": \"B\", \"Reject\": None, \"Send back\": None}\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcRecord(Component):\n    display_name = \"RTRC Record the decision\"\n    description = (\"⑨ Put one after each Human Input branch. Approve writes the design into memory (paper 2; refused unless all four \"\n                   \"checks passed). Every branch saves the decision with each stage's verdict, attempts, seconds, model calls and cost.\")\n    icon = \"clipboard-list\"\n    name = \"RtrcRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"decision\", display_name=\"This branch\", options=list(DECISIONS), value=\"Reject\"),\n        StrInput(name=\"note\", display_name=\"Note\", value=\"\", required=False),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n            if not text.strip():\n                self.status = f\"{self.decision}: not chosen\"\n                self._cached = {\"summary\": \"\", \"data\": {}}\n                return self._cached\n            match = RUN.search(text)\n            if not match:\n                raise ValueError(\"No run id in the incoming message\")\n            key, note, lines = DECISIONS.get(self.decision), str(self.note or \"\"), []\n            if key:\n                approval = _call(\"/run/approve\", {\"run\": match.group(1), \"key\": key})\n                lines.append(approval[\"summary\"].splitlines()[-1])\n                note = (note + \" \" + lines[-1]).strip()\n            body = _call(\"/run/decision\", {\"run\": match.group(1), \"decision\": self.decision, \"note\": note})\n            self._cached = {\"summary\": \"\\n\".join(lines + [body[\"summary\"]]), \"data\": body.get(\"data\") or {}}\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n",
+                "value": "\"\"\"Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves\nthe person's decision with the grades and the times, the record page 2.3 shows.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nDECISIONS = {\"Approve design A\": \"A\", \"Approve design B\": \"B\", \"Reject\": None, \"Send back\": None}\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardRecord(Component):\n    display_name = \"Record the decision\"\n    description = (\"⑨ Put one after each Human Input branch. Approve writes the design into memory (paper 2; refused unless all four \"\n                   \"checks passed). Every branch saves the decision with each stage's verdict, attempts, seconds, model calls and cost.\")\n    icon = \"clipboard-list\"\n    name = \"CardRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"decision\", display_name=\"This branch\", options=list(DECISIONS), value=\"Reject\"),\n        StrInput(name=\"note\", display_name=\"Note\", value=\"\", required=False),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n            if not text.strip():\n                self.status = f\"{self.decision}: not chosen\"\n                self._cached = {\"summary\": \"\", \"data\": {}}\n                return self._cached\n            match = RUN.search(text)\n            if not match:\n                raise ValueError(\"No run id in the incoming message\")\n            key, note, lines = DECISIONS.get(self.decision), str(self.note or \"\"), []\n            if key:\n                approval = _call(\"/run/approve\", {\"run\": match.group(1), \"key\": key})\n                lines.append(approval[\"summary\"].splitlines()[-1])\n                note = (note + \" \" + lines[-1]).strip()\n            body = _call(\"/run/decision\", {\"run\": match.group(1), \"decision\": self.decision, \"note\": note})\n            self._cached = {\"summary\": \"\\n\".join(lines + [body[\"summary\"]]), \"data\": body.get(\"data\") or {}}\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -5208,10 +5208,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcRecord",
-          "id": "RtrcRecord-reject"
+          "type": "CardRecord",
+          "id": "CardRecord-reject"
         },
-        "id": "RtrcRecord-reject",
+        "id": "CardRecord-reject",
         "type": "genericNode",
         "position": {
           "x": 2390,
@@ -5502,7 +5502,7 @@
                 "list": false,
                 "show": true,
                 "multiline": true,
-                "value": "\"\"\"RTRC Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves\nthe person's decision with the grades and the times, the record page 2.3 shows.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nDECISIONS = {\"Approve design A\": \"A\", \"Approve design B\": \"B\", \"Reject\": None, \"Send back\": None}\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"RTRC_SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-RTRC-Token\": os.environ.get(\"RTRC_SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The RTRC shell service returned an error\")\n    return body\n\n\nclass RtrcRecord(Component):\n    display_name = \"RTRC Record the decision\"\n    description = (\"⑨ Put one after each Human Input branch. Approve writes the design into memory (paper 2; refused unless all four \"\n                   \"checks passed). Every branch saves the decision with each stage's verdict, attempts, seconds, model calls and cost.\")\n    icon = \"clipboard-list\"\n    name = \"RtrcRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"decision\", display_name=\"This branch\", options=list(DECISIONS), value=\"Reject\"),\n        StrInput(name=\"note\", display_name=\"Note\", value=\"\", required=False),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n            if not text.strip():\n                self.status = f\"{self.decision}: not chosen\"\n                self._cached = {\"summary\": \"\", \"data\": {}}\n                return self._cached\n            match = RUN.search(text)\n            if not match:\n                raise ValueError(\"No run id in the incoming message\")\n            key, note, lines = DECISIONS.get(self.decision), str(self.note or \"\"), []\n            if key:\n                approval = _call(\"/run/approve\", {\"run\": match.group(1), \"key\": key})\n                lines.append(approval[\"summary\"].splitlines()[-1])\n                note = (note + \" \" + lines[-1]).strip()\n            body = _call(\"/run/decision\", {\"run\": match.group(1), \"decision\": self.decision, \"note\": note})\n            self._cached = {\"summary\": \"\\n\".join(lines + [body[\"summary\"]]), \"data\": body.get(\"data\") or {}}\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n",
+                "value": "\"\"\"Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves\nthe person's decision with the grades and the times, the record page 2.3 shows.\"\"\"\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\nfrom lfx.custom.custom_component.component import Component\nfrom lfx.io import DropdownInput, MessageInput, Output, StrInput\nfrom lfx.schema.data import Data\nfrom lfx.schema.message import Message\n\nRUN = re.compile(r\"run (\\d{8}T\\d{6})\")\nDECISIONS = {\"Approve design A\": \"A\", \"Approve design B\": \"B\", \"Reject\": None, \"Send back\": None}\n\n\ndef _call(path: str, payload: dict) -> dict:\n    url = os.environ.get(\"SHELL_URL\", \"http://127.0.0.1:8781\") + path\n    request = urllib.request.Request(url, data=json.dumps(payload).encode(), method=\"POST\",\n                                     headers={\"Content-Type\": \"application/json\", \"X-Shell-Token\": os.environ.get(\"SHELL_TOKEN\", \"\")})\n    try:\n        with urllib.request.urlopen(request, timeout=600) as response:\n            body = json.loads(response.read() or b\"{}\")\n    except urllib.error.HTTPError as exc:\n        body = json.loads(exc.read() or b\"{}\")\n    except urllib.error.URLError as exc:\n        raise ValueError(f\"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh\") from exc\n    if not body.get(\"ok\"):\n        raise ValueError(body.get(\"error\") or \"The shell service returned an error\")\n    return body\n\n\nclass CardRecord(Component):\n    display_name = \"Record the decision\"\n    description = (\"⑨ Put one after each Human Input branch. Approve writes the design into memory (paper 2; refused unless all four \"\n                   \"checks passed). Every branch saves the decision with each stage's verdict, attempts, seconds, model calls and cost.\")\n    icon = \"clipboard-list\"\n    name = \"CardRecord\"\n\n    inputs = [\n        MessageInput(name=\"upstream\", display_name=\"From the person's choice\", required=False),\n        DropdownInput(name=\"decision\", display_name=\"This branch\", options=list(DECISIONS), value=\"Reject\"),\n        StrInput(name=\"note\", display_name=\"Note\", value=\"\", required=False),\n    ]\n    outputs = [\n        Output(display_name=\"Message\", name=\"message\", method=\"as_message\"),\n        Output(display_name=\"Data\", name=\"data\", method=\"as_data\"),\n    ]\n\n    def _result(self) -> dict:\n        if getattr(self, \"_cached\", None) is None:\n            text = str(getattr(self.upstream, \"text\", self.upstream) or \"\")\n            if not text.strip():\n                self.status = f\"{self.decision}: not chosen\"\n                self._cached = {\"summary\": \"\", \"data\": {}}\n                return self._cached\n            match = RUN.search(text)\n            if not match:\n                raise ValueError(\"No run id in the incoming message\")\n            key, note, lines = DECISIONS.get(self.decision), str(self.note or \"\"), []\n            if key:\n                approval = _call(\"/run/approve\", {\"run\": match.group(1), \"key\": key})\n                lines.append(approval[\"summary\"].splitlines()[-1])\n                note = (note + \" \" + lines[-1]).strip()\n            body = _call(\"/run/decision\", {\"run\": match.group(1), \"decision\": self.decision, \"note\": note})\n            self._cached = {\"summary\": \"\\n\".join(lines + [body[\"summary\"]]), \"data\": body.get(\"data\") or {}}\n            self.status = self._cached[\"summary\"]\n        return self._cached\n\n    def as_message(self) -> Message:\n        return Message(text=self._result()[\"summary\"])\n\n    def as_data(self) -> Data:\n        return Data(data=self._result()[\"data\"])\n",
                 "fileTypes": [],
                 "file_path": "",
                 "password": false,
@@ -5695,10 +5695,10 @@
             "metadata": {},
             "tool_mode": false
           },
-          "type": "RtrcRecord",
-          "id": "RtrcRecord-sendback"
+          "type": "CardRecord",
+          "id": "CardRecord-sendback"
         },
-        "id": "RtrcRecord-sendback",
+        "id": "CardRecord-sendback",
         "type": "genericNode",
         "position": {
           "x": 2390,
@@ -6014,7 +6014,7 @@
           "id": "note-cameo",
           "type": "note",
           "node": {
-            "description": "## Cameo (when RTRC provides the license)\n\n⑦ already writes each passing design to `analysis/cameo-exports/<run>/`. Open it in Cameo's SysML v2 edition and record the result with the flow **Cameo check**. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability). Cameo has no headless command, so this is a person's step.",
+            "description": "## Cameo (when provides the license)\n\n⑦ already writes each passing design to `analysis/cameo-exports/<run>/`. Open it in Cameo's SysML v2 edition and record the result with the flow **Cameo check**. The Pilot stays the judge; Cameo's result is recorded as agreement (interoperability). Cameo has no headless command, so this is a person's step.",
             "display_name": "",
             "documentation": "",
             "template": {
@@ -6027,7 +6027,7 @@
     "edges": [
       {
         "source": "ChatInput-brief",
-        "target": "RtrcStart-start",
+        "target": "CardStart-start",
         "data": {
           "sourceHandle": {
             "dataType": "ChatInput",
@@ -6039,7 +6039,7 @@
           },
           "targetHandle": {
             "fieldName": "brief",
-            "id": "RtrcStart-start",
+            "id": "CardStart-start",
             "inputTypes": [
               "Message"
             ],
@@ -6047,15 +6047,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œChatInputœ, œidœ: œChatInput-briefœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œbriefœ, œidœ: œRtrcStart-startœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-ChatInput-brief{œdataTypeœ:œChatInputœ,œidœ:œChatInput-briefœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcStart-start{œfieldNameœ:œbriefœ,œidœ:œRtrcStart-startœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œbriefœ, œidœ: œCardStart-startœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-ChatInput-brief{œdataTypeœ:œChatInputœ,œidœ:œChatInput-briefœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardStart-start{œfieldNameœ:œbriefœ,œidœ:œCardStart-startœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "HumanInput-person",
-        "target": "RtrcRecord-A",
+        "target": "CardRecord-A",
         "data": {
           "sourceHandle": {
             "dataType": "HumanInput",
@@ -6067,7 +6067,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcRecord-A",
+            "id": "CardRecord-A",
             "inputTypes": [
               "Message"
             ],
@@ -6075,15 +6075,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-personœ, œnameœ: œbranch_approve_design_aœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcRecord-Aœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-HumanInput-person{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-personœ,œnameœ:œbranch_approve_design_aœ,œoutput_typesœ:[œMessageœ]}-RtrcRecord-A{œfieldNameœ:œupstreamœ,œidœ:œRtrcRecord-Aœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardRecord-Aœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-person{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-personœ,œnameœ:œbranch_approve_design_aœ,œoutput_typesœ:[œMessageœ]}-CardRecord-A{œfieldNameœ:œupstreamœ,œidœ:œCardRecord-Aœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "HumanInput-person",
-        "target": "RtrcRecord-B",
+        "target": "CardRecord-B",
         "data": {
           "sourceHandle": {
             "dataType": "HumanInput",
@@ -6095,7 +6095,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcRecord-B",
+            "id": "CardRecord-B",
             "inputTypes": [
               "Message"
             ],
@@ -6103,15 +6103,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-personœ, œnameœ: œbranch_approve_design_bœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcRecord-Bœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-HumanInput-person{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-personœ,œnameœ:œbranch_approve_design_bœ,œoutput_typesœ:[œMessageœ]}-RtrcRecord-B{œfieldNameœ:œupstreamœ,œidœ:œRtrcRecord-Bœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardRecord-Bœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-person{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-personœ,œnameœ:œbranch_approve_design_bœ,œoutput_typesœ:[œMessageœ]}-CardRecord-B{œfieldNameœ:œupstreamœ,œidœ:œCardRecord-Bœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "HumanInput-person",
-        "target": "RtrcRecord-reject",
+        "target": "CardRecord-reject",
         "data": {
           "sourceHandle": {
             "dataType": "HumanInput",
@@ -6123,7 +6123,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcRecord-reject",
+            "id": "CardRecord-reject",
             "inputTypes": [
               "Message"
             ],
@@ -6131,15 +6131,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-personœ, œnameœ: œbranch_rejectœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcRecord-rejectœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-HumanInput-person{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-personœ,œnameœ:œbranch_rejectœ,œoutput_typesœ:[œMessageœ]}-RtrcRecord-reject{œfieldNameœ:œupstreamœ,œidœ:œRtrcRecord-rejectœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardRecord-rejectœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-person{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-personœ,œnameœ:œbranch_rejectœ,œoutput_typesœ:[œMessageœ]}-CardRecord-reject{œfieldNameœ:œupstreamœ,œidœ:œCardRecord-rejectœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "HumanInput-person",
-        "target": "RtrcRecord-sendback",
+        "target": "CardRecord-sendback",
         "data": {
           "sourceHandle": {
             "dataType": "HumanInput",
@@ -6151,7 +6151,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcRecord-sendback",
+            "id": "CardRecord-sendback",
             "inputTypes": [
               "Message"
             ],
@@ -6159,15 +6159,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œHumanInputœ, œidœ: œHumanInput-personœ, œnameœ: œbranch_send_backœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcRecord-sendbackœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-HumanInput-person{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-personœ,œnameœ:œbranch_send_backœ,œoutput_typesœ:[œMessageœ]}-RtrcRecord-sendback{œfieldNameœ:œupstreamœ,œidœ:œRtrcRecord-sendbackœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardRecord-sendbackœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-HumanInput-person{œdataTypeœ:œHumanInputœ,œidœ:œHumanInput-personœ,œnameœ:œbranch_send_backœ,œoutput_typesœ:[œMessageœ]}-CardRecord-sendback{œfieldNameœ:œupstreamœ,œidœ:œCardRecord-sendbackœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "IfElse-checks",
-        "target": "RtrcStep-trade",
+        "target": "CardStep-trade",
         "data": {
           "sourceHandle": {
             "dataType": "ConditionalRouter",
@@ -6179,7 +6179,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcStep-trade",
+            "id": "CardStep-trade",
             "inputTypes": [
               "Message"
             ],
@@ -6187,15 +6187,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œConditionalRouterœ, œidœ: œIfElse-checksœ, œnameœ: œfalse_resultœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcStep-tradeœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-IfElse-checks{œdataTypeœ:œConditionalRouterœ,œidœ:œIfElse-checksœ,œnameœ:œfalse_resultœ,œoutput_typesœ:[œMessageœ]}-RtrcStep-trade{œfieldNameœ:œupstreamœ,œidœ:œRtrcStep-tradeœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardStep-tradeœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-IfElse-checks{œdataTypeœ:œConditionalRouterœ,œidœ:œIfElse-checksœ,œnameœ:œfalse_resultœ,œoutput_typesœ:[œMessageœ]}-CardStep-trade{œfieldNameœ:œupstreamœ,œidœ:œCardStep-tradeœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "IfElse-checks",
-        "target": "RtrcStep-review",
+        "target": "CardStep-review",
         "data": {
           "sourceHandle": {
             "dataType": "ConditionalRouter",
@@ -6207,7 +6207,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcStep-review",
+            "id": "CardStep-review",
             "inputTypes": [
               "Message"
             ],
@@ -6215,15 +6215,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œConditionalRouterœ, œidœ: œIfElse-checksœ, œnameœ: œtrue_resultœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcStep-reviewœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-IfElse-checks{œdataTypeœ:œConditionalRouterœ,œidœ:œIfElse-checksœ,œnameœ:œtrue_resultœ,œoutput_typesœ:[œMessageœ]}-RtrcStep-review{œfieldNameœ:œupstreamœ,œidœ:œRtrcStep-reviewœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardStep-reviewœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-IfElse-checks{œdataTypeœ:œConditionalRouterœ,œidœ:œIfElse-checksœ,œnameœ:œtrue_resultœ,œoutput_typesœ:[œMessageœ]}-CardStep-review{œfieldNameœ:œupstreamœ,œidœ:œCardStep-reviewœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "IfElse-similar",
-        "target": "RtrcStep-new",
+        "target": "CardStep-new",
         "data": {
           "sourceHandle": {
             "dataType": "ConditionalRouter",
@@ -6235,7 +6235,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcStep-new",
+            "id": "CardStep-new",
             "inputTypes": [
               "Message"
             ],
@@ -6243,15 +6243,15 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œConditionalRouterœ, œidœ: œIfElse-similarœ, œnameœ: œfalse_resultœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcStep-newœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-IfElse-similar{œdataTypeœ:œConditionalRouterœ,œidœ:œIfElse-similarœ,œnameœ:œfalse_resultœ,œoutput_typesœ:[œMessageœ]}-RtrcStep-new{œfieldNameœ:œupstreamœ,œidœ:œRtrcStep-newœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardStep-newœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-IfElse-similar{œdataTypeœ:œConditionalRouterœ,œidœ:œIfElse-similarœ,œnameœ:œfalse_resultœ,œoutput_typesœ:[œMessageœ]}-CardStep-new{œfieldNameœ:œupstreamœ,œidœ:œCardStep-newœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
         "source": "IfElse-similar",
-        "target": "RtrcStep-adapt",
+        "target": "CardStep-adapt",
         "data": {
           "sourceHandle": {
             "dataType": "ConditionalRouter",
@@ -6263,7 +6263,7 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcStep-adapt",
+            "id": "CardStep-adapt",
             "inputTypes": [
               "Message"
             ],
@@ -6271,19 +6271,19 @@
           }
         },
         "sourceHandle": "{œdataTypeœ: œConditionalRouterœ, œidœ: œIfElse-similarœ, œnameœ: œtrue_resultœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcStep-adaptœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-IfElse-similar{œdataTypeœ:œConditionalRouterœ,œidœ:œIfElse-similarœ,œnameœ:œtrue_resultœ,œoutput_typesœ:[œMessageœ]}-RtrcStep-adapt{œfieldNameœ:œupstreamœ,œidœ:œRtrcStep-adaptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardStep-adaptœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-IfElse-similar{œdataTypeœ:œConditionalRouterœ,œidœ:œIfElse-similarœ,œnameœ:œtrue_resultœ,œoutput_typesœ:[œMessageœ]}-CardStep-adapt{œfieldNameœ:œupstreamœ,œidœ:œCardStep-adaptœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcRecord-A",
+        "source": "CardRecord-A",
         "target": "ChatOutput-A",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcRecord",
-            "id": "RtrcRecord-A",
+            "dataType": "CardRecord",
+            "id": "CardRecord-A",
             "name": "message",
             "output_types": [
               "Message"
@@ -6302,20 +6302,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcRecordœ, œidœ: œRtrcRecord-Aœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardRecordœ, œidœ: œCardRecord-Aœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-Aœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcRecord-A{œdataTypeœ:œRtrcRecordœ,œidœ:œRtrcRecord-Aœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-A{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Aœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardRecord-A{œdataTypeœ:œCardRecordœ,œidœ:œCardRecord-Aœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-A{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Aœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcRecord-B",
+        "source": "CardRecord-B",
         "target": "ChatOutput-B",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcRecord",
-            "id": "RtrcRecord-B",
+            "dataType": "CardRecord",
+            "id": "CardRecord-B",
             "name": "message",
             "output_types": [
               "Message"
@@ -6334,20 +6334,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcRecordœ, œidœ: œRtrcRecord-Bœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardRecordœ, œidœ: œCardRecord-Bœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-Bœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcRecord-B{œdataTypeœ:œRtrcRecordœ,œidœ:œRtrcRecord-Bœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-B{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Bœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardRecord-B{œdataTypeœ:œCardRecordœ,œidœ:œCardRecord-Bœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-B{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-Bœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcRecord-reject",
+        "source": "CardRecord-reject",
         "target": "ChatOutput-reject",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcRecord",
-            "id": "RtrcRecord-reject",
+            "dataType": "CardRecord",
+            "id": "CardRecord-reject",
             "name": "message",
             "output_types": [
               "Message"
@@ -6366,20 +6366,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcRecordœ, œidœ: œRtrcRecord-rejectœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardRecordœ, œidœ: œCardRecord-rejectœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-rejectœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcRecord-reject{œdataTypeœ:œRtrcRecordœ,œidœ:œRtrcRecord-rejectœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-reject{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-rejectœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardRecord-reject{œdataTypeœ:œCardRecordœ,œidœ:œCardRecord-rejectœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-reject{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-rejectœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcRecord-sendback",
+        "source": "CardRecord-sendback",
         "target": "ChatOutput-sendback",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcRecord",
-            "id": "RtrcRecord-sendback",
+            "dataType": "CardRecord",
+            "id": "CardRecord-sendback",
             "name": "message",
             "output_types": [
               "Message"
@@ -6398,20 +6398,20 @@
             "type": "other"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcRecordœ, œidœ: œRtrcRecord-sendbackœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardRecordœ, œidœ: œCardRecord-sendbackœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_valueœ, œidœ: œChatOutput-sendbackœ, œinputTypesœ: [œDataœ, œJSONœ, œDataFrameœ, œTableœ, œMessageœ], œtypeœ: œotherœ}",
-        "id": "reactflow__edge-RtrcRecord-sendback{œdataTypeœ:œRtrcRecordœ,œidœ:œRtrcRecord-sendbackœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-sendback{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-sendbackœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
+        "id": "reactflow__edge-CardRecord-sendback{œdataTypeœ:œCardRecordœ,œidœ:œCardRecord-sendbackœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-ChatOutput-sendback{œfieldNameœ:œinput_valueœ,œidœ:œChatOutput-sendbackœ,œinputTypesœ:[œDataœ,œJSONœ,œDataFrameœ,œTableœ,œMessageœ],œtypeœ:œotherœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcStart-start",
-        "target": "RtrcStep-retrieve",
+        "source": "CardStart-start",
+        "target": "CardStep-retrieve",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcStart",
-            "id": "RtrcStart-start",
+            "dataType": "CardStart",
+            "id": "CardStart-start",
             "name": "run",
             "output_types": [
               "Message"
@@ -6419,27 +6419,27 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcStep-retrieve",
+            "id": "CardStep-retrieve",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcStartœ, œidœ: œRtrcStart-startœ, œnameœ: œrunœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcStep-retrieveœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcStart-start{œdataTypeœ:œRtrcStartœ,œidœ:œRtrcStart-startœ,œnameœ:œrunœ,œoutput_typesœ:[œMessageœ]}-RtrcStep-retrieve{œfieldNameœ:œupstreamœ,œidœ:œRtrcStep-retrieveœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œCardStartœ, œidœ: œCardStart-startœ, œnameœ: œrunœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardStep-retrieveœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-CardStart-start{œdataTypeœ:œCardStartœ,œidœ:œCardStart-startœ,œnameœ:œrunœ,œoutput_typesœ:[œMessageœ]}-CardStep-retrieve{œfieldNameœ:œupstreamœ,œidœ:œCardStep-retrieveœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcStep-adapt",
-        "target": "RtrcStep-validate",
+        "source": "CardStep-adapt",
+        "target": "CardStep-validate",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcStep",
-            "id": "RtrcStep-adapt",
+            "dataType": "CardStep",
+            "id": "CardStep-adapt",
             "name": "message",
             "output_types": [
               "Message"
@@ -6447,27 +6447,27 @@
           },
           "targetHandle": {
             "fieldName": "upstream_alt",
-            "id": "RtrcStep-validate",
+            "id": "CardStep-validate",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcStepœ, œidœ: œRtrcStep-adaptœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstream_altœ, œidœ: œRtrcStep-validateœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcStep-adapt{œdataTypeœ:œRtrcStepœ,œidœ:œRtrcStep-adaptœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcStep-validate{œfieldNameœ:œupstream_altœ,œidœ:œRtrcStep-validateœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œCardStepœ, œidœ: œCardStep-adaptœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstream_altœ, œidœ: œCardStep-validateœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-CardStep-adapt{œdataTypeœ:œCardStepœ,œidœ:œCardStep-adaptœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardStep-validate{œfieldNameœ:œupstream_altœ,œidœ:œCardStep-validateœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcStep-align",
-        "target": "RtrcStep-checks",
+        "source": "CardStep-align",
+        "target": "CardStep-checks",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcStep",
-            "id": "RtrcStep-align",
+            "dataType": "CardStep",
+            "id": "CardStep-align",
             "name": "message",
             "output_types": [
               "Message"
@@ -6475,27 +6475,27 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcStep-checks",
+            "id": "CardStep-checks",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcStepœ, œidœ: œRtrcStep-alignœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcStep-checksœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcStep-align{œdataTypeœ:œRtrcStepœ,œidœ:œRtrcStep-alignœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcStep-checks{œfieldNameœ:œupstreamœ,œidœ:œRtrcStep-checksœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œCardStepœ, œidœ: œCardStep-alignœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardStep-checksœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-CardStep-align{œdataTypeœ:œCardStepœ,œidœ:œCardStep-alignœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardStep-checks{œfieldNameœ:œupstreamœ,œidœ:œCardStep-checksœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcStep-checks",
+        "source": "CardStep-checks",
         "target": "IfElse-checks",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcStep",
-            "id": "RtrcStep-checks",
+            "dataType": "CardStep",
+            "id": "CardStep-checks",
             "name": "message",
             "output_types": [
               "Message"
@@ -6510,20 +6510,20 @@
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcStepœ, œidœ: œRtrcStep-checksœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardStepœ, œidœ: œCardStep-checksœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_textœ, œidœ: œIfElse-checksœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcStep-checks{œdataTypeœ:œRtrcStepœ,œidœ:œRtrcStep-checksœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-IfElse-checks{œfieldNameœ:œinput_textœ,œidœ:œIfElse-checksœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "id": "reactflow__edge-CardStep-checks{œdataTypeœ:œCardStepœ,œidœ:œCardStep-checksœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-IfElse-checks{œfieldNameœ:œinput_textœ,œidœ:œIfElse-checksœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcStep-new",
-        "target": "RtrcStep-validate",
+        "source": "CardStep-new",
+        "target": "CardStep-validate",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcStep",
-            "id": "RtrcStep-new",
+            "dataType": "CardStep",
+            "id": "CardStep-new",
             "name": "message",
             "output_types": [
               "Message"
@@ -6531,27 +6531,27 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcStep-validate",
+            "id": "CardStep-validate",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcStepœ, œidœ: œRtrcStep-newœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcStep-validateœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcStep-new{œdataTypeœ:œRtrcStepœ,œidœ:œRtrcStep-newœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcStep-validate{œfieldNameœ:œupstreamœ,œidœ:œRtrcStep-validateœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œCardStepœ, œidœ: œCardStep-newœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardStep-validateœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-CardStep-new{œdataTypeœ:œCardStepœ,œidœ:œCardStep-newœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardStep-validate{œfieldNameœ:œupstreamœ,œidœ:œCardStep-validateœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcStep-req",
+        "source": "CardStep-req",
         "target": "IfElse-similar",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcStep",
-            "id": "RtrcStep-req",
+            "dataType": "CardStep",
+            "id": "CardStep-req",
             "name": "message",
             "output_types": [
               "Message"
@@ -6566,20 +6566,20 @@
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcStepœ, œidœ: œRtrcStep-reqœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardStepœ, œidœ: œCardStep-reqœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œinput_textœ, œidœ: œIfElse-similarœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcStep-req{œdataTypeœ:œRtrcStepœ,œidœ:œRtrcStep-reqœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-IfElse-similar{œfieldNameœ:œinput_textœ,œidœ:œIfElse-similarœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "id": "reactflow__edge-CardStep-req{œdataTypeœ:œCardStepœ,œidœ:œCardStep-reqœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-IfElse-similar{œfieldNameœ:œinput_textœ,œidœ:œIfElse-similarœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcStep-retrieve",
-        "target": "RtrcStep-req",
+        "source": "CardStep-retrieve",
+        "target": "CardStep-req",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcStep",
-            "id": "RtrcStep-retrieve",
+            "dataType": "CardStep",
+            "id": "CardStep-retrieve",
             "name": "message",
             "output_types": [
               "Message"
@@ -6587,27 +6587,27 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcStep-req",
+            "id": "CardStep-req",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcStepœ, œidœ: œRtrcStep-retrieveœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcStep-reqœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcStep-retrieve{œdataTypeœ:œRtrcStepœ,œidœ:œRtrcStep-retrieveœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcStep-req{œfieldNameœ:œupstreamœ,œidœ:œRtrcStep-reqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œCardStepœ, œidœ: œCardStep-retrieveœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardStep-reqœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-CardStep-retrieve{œdataTypeœ:œCardStepœ,œidœ:œCardStep-retrieveœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardStep-req{œfieldNameœ:œupstreamœ,œidœ:œCardStep-reqœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcStep-review",
+        "source": "CardStep-review",
         "target": "HumanInput-person",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcStep",
-            "id": "RtrcStep-review",
+            "dataType": "CardStep",
+            "id": "CardStep-review",
             "name": "message",
             "output_types": [
               "Message"
@@ -6622,20 +6622,20 @@
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcStepœ, œidœ: œRtrcStep-reviewœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "sourceHandle": "{œdataTypeœ: œCardStepœ, œidœ: œCardStep-reviewœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
         "targetHandle": "{œfieldNameœ: œpromptœ, œidœ: œHumanInput-personœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcStep-review{œdataTypeœ:œRtrcStepœ,œidœ:œRtrcStep-reviewœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-HumanInput-person{œfieldNameœ:œpromptœ,œidœ:œHumanInput-personœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "id": "reactflow__edge-CardStep-review{œdataTypeœ:œCardStepœ,œidœ:œCardStep-reviewœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-HumanInput-person{œfieldNameœ:œpromptœ,œidœ:œHumanInput-personœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcStep-trade",
-        "target": "RtrcStep-review",
+        "source": "CardStep-trade",
+        "target": "CardStep-review",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcStep",
-            "id": "RtrcStep-trade",
+            "dataType": "CardStep",
+            "id": "CardStep-trade",
             "name": "message",
             "output_types": [
               "Message"
@@ -6643,27 +6643,27 @@
           },
           "targetHandle": {
             "fieldName": "upstream_alt",
-            "id": "RtrcStep-review",
+            "id": "CardStep-review",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcStepœ, œidœ: œRtrcStep-tradeœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstream_altœ, œidœ: œRtrcStep-reviewœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcStep-trade{œdataTypeœ:œRtrcStepœ,œidœ:œRtrcStep-tradeœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcStep-review{œfieldNameœ:œupstream_altœ,œidœ:œRtrcStep-reviewœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œCardStepœ, œidœ: œCardStep-tradeœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstream_altœ, œidœ: œCardStep-reviewœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-CardStep-trade{œdataTypeœ:œCardStepœ,œidœ:œCardStep-tradeœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardStep-review{œfieldNameœ:œupstream_altœ,œidœ:œCardStep-reviewœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false
       },
       {
-        "source": "RtrcStep-validate",
-        "target": "RtrcStep-align",
+        "source": "CardStep-validate",
+        "target": "CardStep-align",
         "data": {
           "sourceHandle": {
-            "dataType": "RtrcStep",
-            "id": "RtrcStep-validate",
+            "dataType": "CardStep",
+            "id": "CardStep-validate",
             "name": "message",
             "output_types": [
               "Message"
@@ -6671,16 +6671,16 @@
           },
           "targetHandle": {
             "fieldName": "upstream",
-            "id": "RtrcStep-align",
+            "id": "CardStep-align",
             "inputTypes": [
               "Message"
             ],
             "type": "str"
           }
         },
-        "sourceHandle": "{œdataTypeœ: œRtrcStepœ, œidœ: œRtrcStep-validateœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
-        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œRtrcStep-alignœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
-        "id": "reactflow__edge-RtrcStep-validate{œdataTypeœ:œRtrcStepœ,œidœ:œRtrcStep-validateœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-RtrcStep-align{œfieldNameœ:œupstreamœ,œidœ:œRtrcStep-alignœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
+        "sourceHandle": "{œdataTypeœ: œCardStepœ, œidœ: œCardStep-validateœ, œnameœ: œmessageœ, œoutput_typesœ: [œMessageœ]}",
+        "targetHandle": "{œfieldNameœ: œupstreamœ, œidœ: œCardStep-alignœ, œinputTypesœ: [œMessageœ], œtypeœ: œstrœ}",
+        "id": "reactflow__edge-CardStep-validate{œdataTypeœ:œCardStepœ,œidœ:œCardStep-validateœ,œnameœ:œmessageœ,œoutput_typesœ:[œMessageœ]}-CardStep-align{œfieldNameœ:œupstreamœ,œidœ:œCardStep-alignœ,œinputTypesœ:[œMessageœ],œtypeœ:œstrœ}",
         "animated": false,
         "className": "",
         "selected": false

@@ -17,7 +17,7 @@ from mcp.server.mcpserver import MCPServer  # noqa: E402
 from mvp.engine import run_submitted_model  # noqa: E402
 from tools.toolbox import check, diff_runs, query_power  # noqa: E402
 
-server = MCPServer("rtrc-tools", instructions="Validate SysML with the official pilot. Do not edit files under gold/.")
+server = MCPServer("-tools", instructions="Validate SysML with the official pilot. Do not edit files under gold/.")
 
 
 def _refuse(path: str) -> None:

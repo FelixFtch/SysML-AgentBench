@@ -1,5 +1,5 @@
 """Set up the Langflow-Agent flows (the comparison flow and the two unfolded assistants): the Qwen provider
-credentials, the local Ollama address, the chat models and the RTRC assistant MCP server registration (all per user
+credentials, the local Ollama address, the chat models and the assistant MCP server registration (all per user
 in Langflow).
 
     .venv-langflow/bin/python langflow/scripts/setup_assistant.py
@@ -21,7 +21,7 @@ from agents.llm_local import OLLAMA_TAG  # noqa: E402
 from import_flows import _request, _secrets  # noqa: E402
 from setup_knowledge import _env, _set_variable  # noqa: E402
 
-SERVER = "rtrc-assistant"
+SERVER = "design-assistant"
 URL = "http://127.0.0.1:8782/mcp"
 OLLAMA_URL = "http://127.0.0.1:11434"
 PROVIDER = "OpenAI Compatible"

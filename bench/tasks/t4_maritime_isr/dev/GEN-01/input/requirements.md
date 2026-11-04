@@ -1,4 +1,4 @@
-# GEN-01 (development) — synthetic, not an RTX specification
+# GEN-01 (development) — synthetic
 
 Package name: HarborLink
 

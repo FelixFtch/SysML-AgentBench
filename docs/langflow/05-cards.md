@@ -1,18 +1,18 @@
-# 5 · The cards (RTRC custom components)
+# 5 · The cards (custom components)
 
-**You get:** every RTRC card in the Langflow sidebar: what it does, its inputs and outputs, what it calls.
+**You get:** every card in the Langflow sidebar: what it does, its inputs and outputs, what it calls.
 **You need:** nothing; find the card you dragged onto the canvas.
 
-Each card is one Python class in [`langflow/components/rtrc/`](../../langflow/components/rtrc/). Langflow loads the folder at
-start (`LANGFLOW_COMPONENTS_PATH`). The cards do little themselves: most call the RTRC shell service
+Each card is one Python class in [`langflow/components/cards/`](../../langflow/components/cards/). Langflow loads the folder at
+start (`LANGFLOW_COMPONENTS_PATH`). The cards do little themselves: most call the shell service
 (`bench/shell_service.py`, 127.0.0.1:8781) over HTTP, which runs the same functions the results page runs. Change a
 card, restart Langflow. How to write one: [06-make-your-own.md](06-make-your-own.md), section B.
 
 This page is generated from the card files by `langflow/scripts/card_docs.py`; do not edit it by hand.
 
-## RTRC Cameo export (when licensed)
+## Cameo export (when licensed)
 
-`RtrcCameoExport` · file [`rtrc/rtrc_cameo.py`](../../langflow/components/rtrc/rtrc_cameo.py)
+`CardCameoExport` · file [`cards/card_cameo.py`](../../langflow/components/cards/card_cameo.py)
 
 Exports a run's designs for Cameo's SysML v2 edition. The official Pilot stays the judge; Cameo's result is recorded as agreement.
 
@@ -26,12 +26,12 @@ Exports a run's designs for Cameo's SysML v2 edition. The official Pilot stays t
 
 Calls the shell service at: `/cameo/export`.
 
-**From the file:** RTRC Cameo export: writes a run's officially parsed designs as .sysml files for Cameo's SysML v2 edition and says
-how to check them. Cameo has no headless command, so a person opens the file; the result is recorded with RTRC Cameo record.
+**From the file:** Cameo export: writes a run's officially parsed designs as .sysml files for Cameo's SysML v2 edition and says
+how to check them. Cameo has no headless command, so a person opens the file; the result is recorded with Cameo record.
 
-## RTRC Cameo record
+## Cameo record
 
-`RtrcCameoRecord` · file [`rtrc/rtrc_cameo_record.py`](../../langflow/components/rtrc/rtrc_cameo_record.py)
+`CardCameoRecord` · file [`cards/card_cameo_record.py`](../../langflow/components/cards/card_cameo_record.py)
 
 Put one after each Human Input branch. Stores the person's Cameo check of a design next to the official Pilot's verdict.
 
@@ -48,12 +48,12 @@ Put one after each Human Input branch. Stores the person's Cameo check of a desi
 
 Calls the shell service at: `/cameo/result`.
 
-**From the file:** RTRC Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official
+**From the file:** Cameo record: one node per Human Input branch; stores the person's Cameo check of a design next to the official
 Pilot's verdict (interoperability evidence). The Pilot stays the judge.
 
-## RTRC Chat
+## Chat
 
-`RtrcChat` · file [`rtrc/rtrc_chat.py`](../../langflow/components/rtrc/rtrc_chat.py)
+`CardChat` · file [`cards/card_chat.py`](../../langflow/components/cards/card_chat.py)
 
 A person's message to an exam candidate, as written, in a conversation that continues: the direct model with one approach, or a coding agent in its sandbox. The official Pilot parses a reply only when it holds a model. Nothing is scored.
 
@@ -72,7 +72,7 @@ A person's message to an exam candidate, as written, in a conversation that cont
 
 Calls the shell service at: `/chat/turn`.
 
-**From the file:** RTRC Chat: the chat version of an exam candidate (decision 036). The person's message goes to the candidate as
+**From the file:** Chat: the chat version of an exam candidate (decision 036). The person's message goes to the candidate as
 written, in the conversation of this Langflow session, and the reply comes back. Nothing is scored.
 
 Candidates: the direct model with one approach (P0 one answer; P1 the official Pilot's complete error list back for
@@ -80,9 +80,9 @@ repair; P2 an outline first; P3 retrieval from the official examples with the pe
 coding agent in a persistent sandbox (OpenCode, Claude Code) with ./validate and its own session continued across
 messages. The shell service runs it (bench/shell_service.py /chat/turn, bench/chat_turns.py).
 
-## RTRC Exam cell
+## Exam cell
 
-`RtrcExamCell` · file [`rtrc/rtrc_exam_cell.py`](../../langflow/components/rtrc/rtrc_exam_cell.py)
+`CardExamCell` · file [`cards/card_exam_cell.py`](../../langflow/components/cards/card_exam_cell.py)
 
 One exam cell: replay any graded cell, or run a sealed task live on Qwen (direct or a sandboxed coding agent). Not added to any score.
 
@@ -102,12 +102,12 @@ One exam cell: replay any graded cell, or run a sealed task live on Qwen (direct
 
 Calls the shell service at: `/exam/agent-run`, `/exam/cell`, `/exam/run`.
 
-**From the file:** RTRC Exam cell: F1 / F2, one exam cell, replayed from the archive or run live on Qwen; the answer key is used
+**From the file:** Exam cell: F1 / F2, one exam cell, replayed from the archive or run live on Qwen; the answer key is used
 only by the scorer and never returned.
 
-## RTRC Exam step
+## Exam step
 
-`RtrcExamStep` · file [`rtrc/rtrc_exam_step.py`](../../langflow/components/rtrc/rtrc_exam_step.py)
+`CardExamStep` · file [`cards/card_exam_step.py`](../../langflow/components/cards/card_exam_step.py)
 
 One step of the exam cell, from the cell record: its state, the official errors, the verdict or the agent's tool calls.
 
@@ -121,12 +121,12 @@ One step of the exam cell, from the cell record: its state, the official errors,
 | **Cell record** | `pass_on` |
 | **This step** | `show` |
 
-**From the file:** RTRC Exam step: shows one step of an exam cell (page 1.1 / 1.4) from the cell record, and passes the record on.
-No service call: the cell record comes from RTRC Exam cell.
+**From the file:** Exam step: shows one step of an exam cell (page 1.1 / 1.4) from the cell record, and passes the record on.
+No service call: the cell record comes from Exam cell.
 
-## RTRC Gate record
+## Gate record
 
-`RtrcGateRecord` · file [`rtrc/rtrc_gate.py`](../../langflow/components/rtrc/rtrc_gate.py)
+`CardGateRecord` · file [`cards/card_gate.py`](../../langflow/components/cards/card_gate.py)
 
 Put one after each Human Input branch of a stop-and-ask gate; records the person's choice.
 
@@ -142,12 +142,12 @@ Put one after each Human Input branch of a stop-and-ask gate; records the person
 
 Calls the shell service at: `/gate/decision`.
 
-**From the file:** RTRC Gate record: one node per Human Input branch of a stop-and-ask gate (AGENTS.md: a stated limit may only change
+**From the file:** Gate record: one node per Human Input branch of a stop-and-ask gate (AGENTS.md: a stated limit may only change
 with a person's approval). Stores the choice in analysis/langflow-gates.jsonl.
 
-## RTRC Memory (paper 2)
+## Memory (paper 2)
 
-`RtrcMemory` · file [`rtrc/rtrc_memory.py`](../../langflow/components/rtrc/rtrc_memory.py)
+`CardMemory` · file [`cards/project_memory.py`](../../langflow/components/cards/project_memory.py)
 
 F0: MaritimeISR and every approved design as element cards from the official parse, with their links.
 
@@ -163,12 +163,12 @@ F0: MaritimeISR and every approved design as element cards from the official par
 
 Calls the shell service at: `/memory`.
 
-**From the file:** RTRC Memory: F0, the library the agent searches (paper 2): MaritimeISR plus every approved design, as cards
+**From the file:** Memory: F0, the library the agent searches (paper 2): MaritimeISR plus every approved design, as cards
 built from the official Pilot parse. The DataFrame output can be ingested into a Langflow knowledge base for browsing.
 
-## RTRC MOD change
+## MOD change
 
-`RtrcModChange` · file [`rtrc/rtrc_mod.py`](../../langflow/components/rtrc/rtrc_mod.py)
+`CardModChange` · file [`cards/card_mod.py`](../../langflow/components/cards/card_mod.py)
 
 F5: one change to an existing model (MOD-01 to MOD-05): the latest saved run, or a new run on Qwen (two model calls).
 
@@ -184,12 +184,12 @@ F5: one change to an existing model (MOD-01 to MOD-05): the latest saved run, or
 
 Calls the shell service at: `/mod/case`, `/mod/run`.
 
-**From the file:** RTRC MOD change: F5, the MOD change chain (page 2.4): the model edits an existing model, the official tool
+**From the file:** MOD change: F5, the MOD change chain (page 2.4): the model edits an existing model, the official tool
 judges it, a limit change stops for a person, and the model reads the edited model back. Replayed or run live.
 
-## RTRC MOD step
+## MOD step
 
-`RtrcModStep` · file [`rtrc/rtrc_mod_step.py`](../../langflow/components/rtrc/rtrc_mod_step.py)
+`CardModStep` · file [`cards/card_mod_step.py`](../../langflow/components/cards/card_mod_step.py)
 
 One step of the MOD change chain, from the case record.
 
@@ -203,14 +203,14 @@ One step of the MOD change chain, from the case record.
 | **Case record** | `pass_on` |
 | **This step** | `show` |
 
-**From the file:** RTRC MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.
+**From the file:** MOD step: shows one step of a MOD change run (page 2.4) from the case record and passes the record on.
 The "Limit check" message starts with "moved" or "unchanged", so an If-Else can stop for a person when a stated limit moved.
 
-## RTRC OpenCode assistant
+## OpenCode assistant
 
-`RtrcOpenCodeAssistant` · file [`rtrc/rtrc_opencode.py`](../../langflow/components/rtrc/rtrc_opencode.py)
+`CardOpenCodeAssistant` · file [`cards/card_opencode.py`](../../langflow/components/cards/card_opencode.py)
 
-One turn of the RTRC design assistant: OpenCode with the RTRC tools (memory, the verified design pipeline, the official Pilot, the memory gate, decisions, Cameo export); or, in exam mode, one exam answer.
+One turn of the design assistant: OpenCode with the tools (memory, the verified design pipeline, the official Pilot, the memory gate, decisions, Cameo export); or, in exam mode, one exam answer.
 
 | Input | Type | What it is |
 |---|---|---|
@@ -222,9 +222,9 @@ One turn of the RTRC design assistant: OpenCode with the RTRC tools (memory, the
 |---|---|
 | **Answer** | `turn` |
 
-**From the file:** RTRC OpenCode assistant: one turn of the conversational design assistant per chat message, or one exam answer.
+**From the file:** OpenCode assistant: one turn of the conversational design assistant per chat message, or one exam answer.
 
-The assistant is OpenCode (the exam's pinned binary) with the RTRC MCP tools (tools/assistant_mcp.py on
+The assistant is OpenCode (the exam's pinned binary) with the MCP tools (tools/assistant_mcp.py on
 127.0.0.1:8782) as its only tools; its file and shell tools are off. The workspace is prepared by
 tools/assistant/workspace.py outside the repository. Decision 032.
 
@@ -233,9 +233,9 @@ maps to one OpenCode session, so the conversation continues across messages.
 Exam mode (decision 035): the exam workspace, qwen3.8-flash, the exam prompt, memory search and the official Pilot as
 the only tools, and a fresh OpenCode session for every message, so one task cannot see another.
 
-## RTRC Record the decision
+## Record the decision
 
-`RtrcRecord` · file [`rtrc/rtrc_record.py`](../../langflow/components/rtrc/rtrc_record.py)
+`CardRecord` · file [`cards/card_record.py`](../../langflow/components/cards/card_record.py)
 
 ⑨ Put one after each Human Input branch. Approve writes the design into memory (paper 2; refused unless all four checks passed). Every branch saves the decision with each stage's verdict, attempts, seconds, model calls and cost.
 
@@ -252,12 +252,12 @@ the only tools, and a fresh OpenCode session for every message, so one task cann
 
 Calls the shell service at: `/run/approve`, `/run/decision`.
 
-**From the file:** RTRC Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves
+**From the file:** Record: ⑨ one node per Human Input branch. Approve writes the design into memory (paper 2); every branch saves
 the person's decision with the grades and the times, the record page 2.3 shows.
 
-## RTRC Results
+## Results
 
-`RtrcResults` · file [`rtrc/rtrc_results.py`](../../langflow/components/rtrc/rtrc_results.py)
+`CardResults` · file [`cards/card_results.py`](../../langflow/components/cards/card_results.py)
 
 F3: the frozen exam results (revision 2) as tables.
 
@@ -270,14 +270,14 @@ F3: the frozen exam results (revision 2) as tables.
 
 Calls the shell service at: `/facts`.
 
-**From the file:** RTRC Results: F3, the frozen results (page 1.2) as tables: by task type, by approach, the agents, the side
+**From the file:** Results: F3, the frozen results (page 1.2) as tables: by task type, by approach, the agents, the side
 benchmarks, the retry run and the cost. The matrix, cost chart and diagrams stay on the results page.
 
-## RTRC Start
+## Start
 
-`RtrcStart` · file [`rtrc/rtrc_start.py`](../../langflow/components/rtrc/rtrc_start.py)
+`CardStart` · file [`cards/card_start.py`](../../langflow/components/cards/card_start.py)
 
-Starts one run of the RTRC agent flow: the brief, the agent and the Qwen model, or a replay of a saved run without model calls.
+Starts one run of the agent flow: the brief, the agent and the Qwen model, or a replay of a saved run without model calls.
 
 | Input | Type | What it is |
 |---|---|---|
@@ -293,13 +293,13 @@ Starts one run of the RTRC agent flow: the brief, the agent and the Qwen model, 
 
 Calls the shell service at: `/run/start`.
 
-**From the file:** RTRC Start: begins one run of the RTRC agent flow (Part 2) through the RTRC shell service (bench/shell_service.py).
+**From the file:** Start: begins one run of the agent flow (Part 2) through the shell service (bench/shell_service.py).
 
-## RTRC Step
+## Step
 
-`RtrcStep` · file [`rtrc/rtrc_step.py`](../../langflow/components/rtrc/rtrc_step.py)
+`CardStep` · file [`cards/card_step.py`](../../langflow/components/cards/card_step.py)
 
-One step of the RTRC agent flow, run by the code behind the results page through the RTRC shell service.
+One step of the agent flow, run by the code behind the results page through the shell service.
 
 | Input | Type | What it is |
 |---|---|---|
@@ -314,14 +314,14 @@ One step of the RTRC agent flow, run by the code behind the results page through
 
 Calls the shell service at: `/run/adapt`, `/run/align`, `/run/checks`, `/run/design`, `/run/requirements`, `/run/retrieve`, `/run/review`, `/run/tradeoffs`, `/run/validate`.
 
-**From the file:** RTRC Step: one step of the RTRC agent flow, run by the existing pipeline through the RTRC shell service.
+**From the file:** Step: one step of the agent flow, run by the existing pipeline through the shell service.
 The step and the paper it applies are chosen in the Step field; the node passes the run id on in its message.
 
-## RTRC Tool step
+## Tool step
 
-`RtrcTool` · file [`rtrc/rtrc_tool.py`](../../langflow/components/rtrc/rtrc_tool.py)
+`CardTool` · file [`cards/card_tool.py`](../../langflow/components/cards/card_tool.py)
 
-One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the RTRC shell service.
+One card of an assistant tool unfolded on the canvas; runs the code behind the results page through the shell service.
 
 | Input | Type | What it is |
 |---|---|---|
@@ -337,8 +337,8 @@ One card of an assistant tool unfolded on the canvas; runs the code behind the r
 
 Calls the shell service at: `/tool/gate`, `/tool/memory/hop`, `/tool/memory/library`, `/tool/memory/seeds`, `/tool/prompt-part`, `/tool/record-approval`, `/tool/validate/pilot`, `/tool/validate/save`, `/tool/write`.
 
-**From the file:** RTRC Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,
+**From the file:** Tool step: one card of an assistant tool unfolded into a sub-flow (decision 034): memory search (library,
 MiniLM + FAISS seeds, one hop), write to memory (gate, write, record), validate pasted SysML (save, official Pilot),
-and the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the RTRC shell service,
+and the read-only prompt-part cards of the design pipeline. Every card is stateless and calls the shell service,
 which runs the same code as the results page; the chain order on the canvas is kept by the "From the previous card"
 input. The engineer's text (query, "<run id> A", or SysML) comes from the sub-flow's Chat Input.

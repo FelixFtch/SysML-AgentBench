@@ -1,4 +1,4 @@
-# GEN-02 — synthetic, not an RTX specification
+# GEN-02 — synthetic
 
 Package name: UavSearch
 

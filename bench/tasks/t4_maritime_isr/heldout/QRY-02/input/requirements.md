@@ -1,3 +1,3 @@
-# QRY-02 — synthetic, not an RTX specification
+# QRY-02 — synthetic
 
 What is the parsed value of UnmannedSurfaceVessel powerLimitW? Reply with JSON {"attribute": "qualified name", "value": number}.

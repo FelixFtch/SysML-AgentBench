@@ -1,4 +1,4 @@
-"""The RTRC shell service: the existing pipeline behind a small local JSON API for the Langflow nodes
+"""The shell service: the existing pipeline behind a small local JSON API for the Langflow nodes
 (plans/langflow-shell-plan.md). Each step calls the code the results page uses (bench/discover.py,
 bench/exam_board.py, bench/model_diagram.py, agents/external), so a Langflow run and a page run give the same
 retrieval, prompts, Pilot results and checks, and write the same records.
@@ -6,7 +6,7 @@ retrieval, prompts, Pilot results and checks, and write the same records.
     python3 bench/shell_service.py            # 127.0.0.1:8781, token from .langflow/secrets.env
 
 No answer key is served: exam details are the page's cell detail without the key text. Every request except
-GET /health and GET /diagram needs the header X-RTRC-Token; the token is read from the secrets file and never
+GET /health and GET /diagram needs the header X-Shell-Token; the token is read from the secrets file and never
 put into the environment, so sandboxed agents started from here cannot see it. Sandboxed agents run in their own
 network (agents/external/jail.py), where the results page (127.0.0.1:8770, which serves answer keys) cannot be reached;
 on a machine without slirp4netns the sandbox shares the network and they are refused while the page is running.
@@ -70,9 +70,9 @@ def _token() -> str:
     if not SECRETS.is_file():
         raise SystemExit("Missing .langflow/secrets.env; run python3 scripts/langflow_secrets.py")
     for line in SECRETS.read_text(encoding="utf-8").splitlines():
-        if line.startswith("RTRC_SHELL_TOKEN="):
+        if line.startswith("SHELL_TOKEN="):
             return line.split("=", 1)[1].strip()
-    raise SystemExit("RTRC_SHELL_TOKEN is missing from .langflow/secrets.env")
+    raise SystemExit("SHELL_TOKEN is missing from .langflow/secrets.env")
 
 
 class StepError(ValueError):
@@ -287,7 +287,7 @@ def _langflow_design(session: dict, key: str, task_text: str) -> dict:
     except (urllib.error.URLError, OSError, ValueError):
         healthy = False
     if not healthy:
-        raise StepError("The RTRC shell service (127.0.0.1:8781) is not answering; the flow's tools would fail. Start it with python scripts/up.py --bg")
+        raise StepError("The shell service (127.0.0.1:8781) is not answering; the flow's tools would fail. Start it with python scripts/up.py --bg")
     exam.NEEDS.setdefault(flow_name, ["tool-memory-search", "tool-validate-sysml", "tool-write-to-memory", "tool-design-pipeline"])
     token = exam._token()
     exam._ensure_provider(token)
@@ -630,7 +630,7 @@ def run_review(body: dict) -> dict:
         if link:
             lines.append(f"  ⑦ diagram: {link}")
         if design.get("cameo_export"):
-            lines.append(f"  Cameo: export ready at {design['cameo_export']} (open it in Cameo's SysML v2 when RTRC provides the license)")
+            lines.append(f"  Cameo: export ready at {design['cameo_export']} (open it in Cameo's SysML v2 when provides the license)")
     alignment = record.get("alignment") or {}
     lines.append(f"Alignment: {alignment.get('verified', 0)}/{alignment.get('proposed', 0)} pairs verified; package {(alignment.get('package') or {}).get('sysml_status', 'not generated')}")
     for index, item in enumerate((record.get("tradeoffs") or {}).get("proposals", []), 1):
@@ -750,7 +750,7 @@ def cameo_export(body: dict) -> dict:
         else:
             lines.append(f"  Design {design['key']}: not exported, the official parse did not pass")
     lines += ["Open each file in Cameo's SysML v2 edition and check that it loads without errors; then pick the result.",
-              "Until RTRC provides the license, pick \"Not checked yet\". The official Pilot stays the judge."]
+              "Until provides the license, pick \"Not checked yet\". The official Pilot stays the judge."]
     return {"run": record["id"], "summary": "\n".join(lines), "data": {"files": files}}
 
 
@@ -1283,12 +1283,12 @@ class Handler(BaseHTTPRequestHandler):
         self._send(code, json.dumps(payload, ensure_ascii=False, default=str).encode())
 
     def _authorized(self) -> bool:
-        return bool(self.token) and self.headers.get("X-RTRC-Token") == self.token
+        return bool(self.token) and self.headers.get("X-Shell-Token") == self.token
 
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         if parsed.path == "/health":
-            self._json(200, {"ok": True, "service": "rtrc-shell", "page_running": _page_running()})
+            self._json(200, {"ok": True, "service": "-shell", "page_running": _page_running()})
             return
         if parsed.path == "/diagram":
             from bench.model_diagram import DiagramError, render
@@ -1301,7 +1301,7 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, svg.read_bytes(), "image/svg+xml")
             return
         if not self._authorized():
-            self._json(401, {"error": "missing or wrong X-RTRC-Token"})
+            self._json(401, {"error": "missing or wrong X-Shell-Token"})
             return
         handler = ROUTES.get(parsed.path)
         if parsed.path not in {"/exam/cells", "/facts"} or not handler:
@@ -1312,7 +1312,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         if not self._authorized():
-            self._json(401, {"error": "missing or wrong X-RTRC-Token"})
+            self._json(401, {"error": "missing or wrong X-Shell-Token"})
             return
         handler = ROUTES.get(parsed.path)
         if not handler:
@@ -1342,7 +1342,7 @@ def main() -> None:
     check()
     Handler.token = _token()
     server = ThreadingHTTPServer((HOST, PORT), Handler)
-    print(f"RTRC shell service on http://{HOST}:{PORT} (token from {SECRETS.relative_to(ROOT)})", flush=True)
+    print(f"shell service on http://{HOST}:{PORT} (token from {SECRETS.relative_to(ROOT)})", flush=True)
     server.serve_forever()
 
 

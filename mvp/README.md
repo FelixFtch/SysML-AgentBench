@@ -53,7 +53,7 @@ Use the two input fields to override the legacy record. Empty fields use the sel
 | Run `degraded_link`, approve P2 | The 2.4 Mbit/s profile exceeds the new 1.5 Mbit/s link. The tool does not silently lower the requirement. |
 | Select a prior run and download its ZIP | Inspect the real model, both supplier files, source mapping, original SQLite snapshot and validation output. |
 
-**Overall acceptance remains UNKNOWN when only the modeled checks pass.** Preview quality, latency, hardware conditions and long-duration behavior have not been tested. The fixed values are labeled synthetic; they are not RTX product specifications or measured hardware performance.
+**Overall acceptance remains UNKNOWN when only the modeled checks pass.** Preview quality, latency, hardware conditions and long-duration behavior have not been tested. The fixed values are labeled synthetic; they are not  product specifications or measured hardware performance.
 
 The rendered model view uses actual parsed named elements, owners and connection references. The full official JSON and source-located AST are available in each run. Semantic differences cover named elements and supported fields; a full textual difference is also retained.
 
@@ -64,7 +64,7 @@ The workbench also runs two independently sourced reference imports:
 - **Official SysML vehicle example:** actual model files from the pinned Systems Modeling release, including their dependency, validated with the same implementation.
 - **NASA cFE requirements:** original public cFE requirements records with source commit, license and file hashes; eight selected software-bus requirements are deterministically imported as real SysML requirement definitions/usages. Their text and source IDs are preserved. Formal constraints and satisfaction are not invented.
 
-Use the public-project buttons to create fresh validation runs. These examples demonstrate real public model loading and legacy requirements ingestion. They do not turn NASA requirements into RTX requirements, and they do not substitute text import for semantic engineering review. Dataset selection, downloads, provenance and limitations are documented in [public-data/README.md](public-data/README.md).
+Use the public-project buttons to create fresh validation runs. These examples demonstrate real public model loading and legacy requirements ingestion. They do not turn NASA requirements into external requirements, and they do not substitute text import for semantic engineering review. Dataset selection, downloads, provenance and limitations are documented in [public-data/README.md](public-data/README.md).
 
 ## Agent connection
 
@@ -133,4 +133,4 @@ mvp/
 vendor/                     Full Git clones, excluded from the parent repository
 ```
 
-This is a local engineering MVP, not an enterprise release system. The local preview checkbox is not enterprise authentication, and the workflow does not write into an RTX production system. The next integration step is to replace the synthetic source adapter with one approved historical RTX change package and connect the approved model endpoint. Keep the same model, source, tool and evidence contracts.
+This is a local engineering MVP, not an enterprise release system. The local preview checkbox is not enterprise authentication, and the workflow does not write into a production system. The next integration step is to replace the synthetic source adapter with one approved historical  change package and connect the approved model endpoint. Keep the same model, source, tool and evidence contracts.

@@ -162,7 +162,7 @@ code {{ font-size: 14px; }}
 <main>
 <h1>Maritime SysML exam</h1>
 <p class="subtitle">27 sealed tasks, four candidates, scored only by the official SysML v2 Pilot and answer keys written in advance</p>
-<p class="byline">RTRC 2706 · UConn Senior Design · synthetic maritime ISR scenario; no number is an RTX specification. Built from saved files by <code>python3 analysis/report/build_exam_report.py</code>.</p>
+<p class="byline">2706 · UConn Senior Design · synthetic maritime ISR scenario; no number is a measured specification. Built from saved files by <code>python3 analysis/report/build_exam_report.py</code>.</p>
 
 <h2>What can be said</h2>
 <table>

@@ -1,4 +1,4 @@
-"""RTRC Step: one step of the RTRC agent flow, run by the existing pipeline through the RTRC shell service.
+"""Step: one step of the agent flow, run by the existing pipeline through the shell service.
 The step and the paper it applies are chosen in the Step field; the node passes the run id on in its message."""
 import json
 import os
@@ -26,18 +26,18 @@ RUN = re.compile(r"run (\d{8}T\d{6})")
 
 
 def _call(path: str, payload: dict) -> dict:
-    url = os.environ.get("RTRC_SHELL_URL", "http://127.0.0.1:8781") + path
+    url = os.environ.get("SHELL_URL", "http://127.0.0.1:8781") + path
     request = urllib.request.Request(url, data=json.dumps(payload).encode(), method="POST",
-                                     headers={"Content-Type": "application/json", "X-RTRC-Token": os.environ.get("RTRC_SHELL_TOKEN", "")})
+                                     headers={"Content-Type": "application/json", "X-Shell-Token": os.environ.get("SHELL_TOKEN", "")})
     try:
         with urllib.request.urlopen(request, timeout=3600) as response:
             body = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         body = json.loads(exc.read() or b"{}")
     except urllib.error.URLError as exc:
-        raise ValueError(f"The RTRC shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
+        raise ValueError(f"The shell service is not reachable at {url} ({exc.reason}); start it with scripts/langflow.sh") from exc
     if not body.get("ok"):
-        raise ValueError(body.get("error") or "The RTRC shell service returned an error")
+        raise ValueError(body.get("error") or "The shell service returned an error")
     return body
 
 
@@ -47,11 +47,11 @@ def _text(value) -> str:
     return str(getattr(value, "text", value) or "")
 
 
-class RtrcStep(Component):
-    display_name = "RTRC Step"
-    description = "One step of the RTRC agent flow, run by the code behind the results page through the RTRC shell service."
+class CardStep(Component):
+    display_name = "Step"
+    description = "One step of the agent flow, run by the code behind the results page through the shell service."
     icon = "workflow"
-    name = "RtrcStep"
+    name = "CardStep"
 
     inputs = [
         MessageInput(name="upstream", display_name="From the previous step", required=False),
@@ -68,7 +68,7 @@ class RtrcStep(Component):
         if getattr(self, "_cached", None) is None:
             match = RUN.search(_text(self.upstream)) or RUN.search(_text(self.upstream_alt))
             if not match:
-                raise ValueError("No run id in the incoming message; connect this step after RTRC Start")
+                raise ValueError("No run id in the incoming message; connect this step after Start")
             self._cached = _call(STEPS[self.step], {"run": match.group(1)})
             self.status = self._cached["summary"]
         return self._cached

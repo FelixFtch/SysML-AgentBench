@@ -1,4 +1,4 @@
-# ALN-01 — synthetic, not an RTX specification
+# ALN-01 — synthetic
 
 Align two independently written models of the camera payload: specification vs supplier kit. The specification package is `UsvPayloadSpec`; the supplier package is `OptronicsKit`. Both are given below as baseline files and must not be changed.
 

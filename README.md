@@ -1,8 +1,8 @@
-# SysML-AgentBench · RTRC Agentic AI for Systems Engineering
+# SysML-AgentBench · Agentic AI for Systems Engineering
 
 A reproducible benchmark of AI agents that translate requirements into SysML v2 models, scored only by the official SysML v2 toolchain and answer keys written in advance, on a synthetic maritime ISR scenario; and a set of Langflow flows that run those agents, let you talk to them, and let you build and examine your own.
 
-Sponsor: RTX Technology Research Center (RTRC). Faculty advisor: Prof. George Bollas (UConn). Team: Thomas Johanns, Tianchonghui Fang, Tedi Naqo. Every maritime number is synthetic and is not an RTX specification.
+Faculty advisor: Prof. George Bollas (UConn). Team: Thomas Johanns, Tianchonghui Fang, Tedi Naqo. Every maritime number is synthetic.
 
 ## Two doors
 
@@ -85,12 +85,12 @@ Scoring rule (decisions 019, 025): a task passes when the official parse passes 
 ## Repository layout
 
 ```
-langflow/     flows/ (the flow files, one folder per Langflow project) · components/rtrc/ (the cards) · scripts/ (build, import, export, set-up)
+langflow/     flows/ (the flow files, one folder per Langflow project) · components/cards/ (the cards) · scripts/ (build, import, export, set-up)
 bench/        tasks (t4 maritime ISR, t5 requirements), scorers, runners, batches.py, freeze and review tools, the results page, the shell service
 agents/       P0–P3 and the repair loop (solve.py), the model client (llm.py), the local-model dispatcher (llm_local.py),
               external/ (the sandbox jail.py, the OpenCode runner)
 mvp/          the pinned official SysML v2 toolchain, the engine, evidence packs; mvp/runs/ and mvp/agent-runs/ hold every run (git-ignored)
-tools/        the RTRC tools as an MCP server (assistant_mcp.py), the OpenCode assistant workspace, Ollama model files
+tools/        the tools as an MCP server (assistant_mcp.py), the OpenCode assistant workspace, Ollama model files
 scenario/     the synthetic maritime ISR reference model
 analysis/     every score file the page reads: the frozen batches, the local-27B rerun, the Langflow exam columns, side benchmarks, the memory
 docs/         langflow/ and benchmark/ (the two doors), decisions/ (why things are the way they are), knowledge-base/, report/
@@ -100,7 +100,7 @@ plans/        plan and project statement
 vendor/       upstream clones (not in git; `python3 -m mvp.bootstrap --all-references`)
 ```
 
-Further reading: the exam report [`analysis/report/exam-20261006/index.html`](analysis/report/exam-20261006/index.html), the report draft [`docs/report/D4-draft.md`](docs/report/D4-draft.md), the process knowledge base [`docs/knowledge-base/`](docs/knowledge-base/README.md), the failure taxonomy [`docs/failure_taxonomy.md`](docs/failure_taxonomy.md), the second review of the keys [`REVIEW.md`](bench/tasks/t4_maritime_isr/heldout/REVIEW.md), the decision records [`docs/decisions/`](docs/decisions/), the plan [`plans/execution-plan-v2.md`](plans/execution-plan-v2.md), the sponsor brief [`research/source-extracts/rtx-brief.txt`](research/source-extracts/rtx-brief.txt), the toolchain [`mvp/README.md`](mvp/README.md).
+Further reading: the exam report [`analysis/report/exam-20261006/index.html`](analysis/report/exam-20261006/index.html), the report draft [`docs/report/D4-draft.md`](docs/report/D4-draft.md), the process knowledge base [`docs/knowledge-base/`](docs/knowledge-base/README.md), the failure taxonomy [`docs/failure_taxonomy.md`](docs/failure_taxonomy.md), the second review of the keys [`REVIEW.md`](bench/tasks/t4_maritime_isr/heldout/REVIEW.md), the decision records [`docs/decisions/`](docs/decisions/), the plan [`plans/execution-plan-v2.md`](plans/execution-plan-v2.md), the sponsor brief [`research/source-extracts/project-brief.txt`](research/source-extracts/project-brief.txt), the toolchain [`mvp/README.md`](mvp/README.md).
 
 ## Quick checks
 
@@ -121,7 +121,7 @@ Retrieval (paper 2) is MiniLM + FAISS only, pinned in `requirements-retrieval.tx
 1. Checks read the **parsed** official model, never input forms or LLM claims.
 2. SysML PASS ≠ engineering acceptance; engineering status is UNKNOWN without evidence.
 3. Requirement decisions are human-owned; no agent self-approval.
-4. All maritime values are **synthetic**; never present them as RTX specifications.
+4. All maritime values are **synthetic**; never present them as a measured specification.
 5. Public/synthetic data only; no EAR/ITAR; register every external source in `datasets/SOURCES.md`.
 6. Do not modify `vendor/`; the toolchain is pinned and hashed.
 7. Gold answers are visible only to the scorer process, never to agents, retrieval indexes, or few-shot prompts; sandboxed agents run while the results page server is stopped.

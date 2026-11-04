@@ -1,6 +1,6 @@
-"""RTRC OpenCode assistant: one turn of the conversational design assistant per chat message, or one exam answer.
+"""OpenCode assistant: one turn of the conversational design assistant per chat message, or one exam answer.
 
-The assistant is OpenCode (the exam's pinned binary) with the RTRC MCP tools (tools/assistant_mcp.py on
+The assistant is OpenCode (the exam's pinned binary) with the MCP tools (tools/assistant_mcp.py on
 127.0.0.1:8782) as its only tools; its file and shell tools are off. The workspace is prepared by
 tools/assistant/workspace.py outside the repository. Decision 032.
 
@@ -22,11 +22,11 @@ from lfx.custom.custom_component.component import Component
 from lfx.io import DropdownInput, MessageInput, Output
 from lfx.schema.message import Message
 
-# Langflow runs component code from a copy, so the repository is found from the environment (RTRC_ROOT, set by
+# Langflow runs component code from a copy, so the repository is found from the environment (REPO_ROOT, set by
 # scripts/langflow.sh) or from the virtual environment, which lives at <repository>/.venv-langflow.
-ROOT = Path(os.environ.get("RTRC_ROOT") or Path(sys.prefix).resolve().parent)
+ROOT = Path(os.environ.get("REPO_ROOT") or Path(sys.prefix).resolve().parent)
 OPENCODE = ROOT / "tools" / "opencode" / "opencode"
-MCP_URL = os.environ.get("RTRC_ASSISTANT_MCP_URL", "http://127.0.0.1:8782/mcp")
+MCP_URL = os.environ.get("ASSISTANT_MCP_URL", "http://127.0.0.1:8782/mcp")
 MODES = ["Chat: one OpenCode session per Langflow session, all nine tools",
          "Exam: a fresh session per message, answer only, memory search and the official Pilot as the only tools"]
 MODELS = ["qwen3.8-27b (Ollama)", "qwen3.8-max", "qwen3.8-flash"]
@@ -44,12 +44,12 @@ def _env() -> dict:
     return env
 
 
-class RtrcOpenCodeAssistant(Component):
-    display_name = "RTRC OpenCode assistant"
-    description = ("One turn of the RTRC design assistant: OpenCode with the RTRC tools (memory, the verified design "
+class CardOpenCodeAssistant(Component):
+    display_name = "OpenCode assistant"
+    description = ("One turn of the design assistant: OpenCode with the tools (memory, the verified design "
                    "pipeline, the official Pilot, the memory gate, decisions, Cameo export); or, in exam mode, one exam answer.")
     icon = "bot"
-    name = "RtrcOpenCodeAssistant"
+    name = "CardOpenCodeAssistant"
 
     inputs = [
         MessageInput(name="message", display_name="Engineer's message",
@@ -66,12 +66,12 @@ class RtrcOpenCodeAssistant(Component):
         if not text:
             raise ValueError("Write a message for the assistant")
         if not OPENCODE.is_file():
-            raise ValueError(f"Missing the pinned OpenCode binary {OPENCODE}; set RTRC_ROOT to the repository")
+            raise ValueError(f"Missing the pinned OpenCode binary {OPENCODE}; set REPO_ROOT to the repository")
         try:
             urllib.request.urlopen(urllib.request.Request(MCP_URL, method="GET"), timeout=3).read(1)
         except Exception as exc:  # noqa: BLE001 - any failure means the tools are not there
             if "HTTP Error" not in str(exc):
-                raise ValueError(f"The RTRC assistant MCP server is not running at {MCP_URL}; start it with scripts/langflow.sh or scripts/assistant.sh") from exc
+                raise ValueError(f"The assistant MCP server is not running at {MCP_URL}; start it with scripts/langflow.sh or scripts/assistant.sh") from exc
         exam = str(self.mode or MODES[0]).startswith("Exam")
         model = str(self.model or MODELS[0])
         env = _env()

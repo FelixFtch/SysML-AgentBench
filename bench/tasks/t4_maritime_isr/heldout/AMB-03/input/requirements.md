@@ -1,4 +1,4 @@
-# AMB-03 — synthetic, not an RTX specification
+# AMB-03 — synthetic
 
 The shore keeps tracks for 30 days and has 128 GB of storage. No data rate is given, so the storage number cannot be checked.
 

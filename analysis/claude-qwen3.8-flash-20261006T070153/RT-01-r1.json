@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_a7ddc4f70aaf4754bb4ea90f",
       "tool_input": {
-        "command": "ls -la /data/robotics/RTRC/mvp/agent-runs/20261006T071434-P-CODE-2-RT-01/workspace/input && find /data/robotics/RTRC/mvp/agent-runs/20261006T071434-P-CODE-2-RT-01 -maxdepth 2 -type f | head -50",
+        "command": "ls -la /data/robotics//mvp/agent-runs/20261006T071434-P-CODE-2-RT-01/workspace/input && find /data/robotics//mvp/agent-runs/20261006T071434-P-CODE-2-RT-01 -maxdepth 2 -type f | head -50",
         "description": "List input directory and run files"
       }
     }

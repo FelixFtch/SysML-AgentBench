@@ -2,7 +2,7 @@
 
 Source: NASA cFE, commit `7d283938c9af5bd6e439f3fc307e61b0c7799640`, Apache-2.0.
 
-These are public source-system requirements, not RTX requirements or an approved gateway specification.
+These are public source-system requirements, not an external specification or an approved gateway specification.
 Mission/platform placeholders remain unresolved. Review applicability before reuse.
 
 ## cSB4301 — SB: Create Pipe

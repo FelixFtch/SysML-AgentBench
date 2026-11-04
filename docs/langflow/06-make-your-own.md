@@ -8,7 +8,7 @@ Nothing here is locked. Our flows are ordinary Langflow flows; our cards are ord
 ## A · Your own flow in 3 steps
 
 1. **Start from a copy.** Open the flow closest to what you want (for an agent with tools: `Langflow Agent with memory chat · qwen3.8-max` in project 4; for a plain model: `Direct model chat · P1 …`). Projects page → the flow's **⋯** menu → **Duplicate**, then rename it (`My P1 with a checklist`). Or build from empty: **New Flow** → drag **Chat Input**, an **Agent**, **Chat Output**, and connect them.
-2. **Change what you like.** The system prompt on the Agent card. The model and provider. Which tool cards are wired to the Agent's **Tools** port: ours (sidebar → **Rtrc**), Langflow's own (web search, calculator, …), or a **Run Flow** card pointing at one of the shared tool flows (`Validate SysML with the official Pilot`, `Memory search`). Test in the **Playground**.
+2. **Change what you like.** The system prompt on the Agent card. The model and provider. Which tool cards are wired to the Agent's **Tools** port: ours (sidebar → **cards**), Langflow's own (web search, calculator, …), or a **Run Flow** card pointing at one of the shared tool flows (`Validate SysML with the official Pilot`, `Memory search`). Test in the **Playground**.
 3. **Examine it** (any system, as long as the flow does not run a sandboxed coding agent):
 
    ```bash
@@ -21,9 +21,9 @@ To share the flow itself: `langflow/scripts/export_flows.py --new "My P1 with a 
 
 ## B · Your own card (a Langflow component)
 
-A card is one Python class in [`langflow/components/rtrc/`](../../langflow/components/rtrc/). Langflow loads every file in that folder at start (`LANGFLOW_COMPONENTS_PATH`), so: add a file, restart Langflow, the card is in the sidebar under **Rtrc**.
+A card is one Python class in [`langflow/components/cards/`](../../langflow/components/cards/). Langflow loads every file in that folder at start (`LANGFLOW_COMPONENTS_PATH`), so: add a file, restart Langflow, the card is in the sidebar under **cards**.
 
-The pattern, from the smallest card we have, [`rtrc_chat.py`](../../langflow/components/rtrc/rtrc_chat.py):
+The pattern, from the smallest card we have, [`card_chat.py`](../../langflow/components/cards/card_chat.py):
 
 ```python
 from lfx.custom.custom_component.component import Component
@@ -50,7 +50,7 @@ class MyCard(Component):
 
 Rules of thumb, learned the hard way (they are in [`langflow/README.md`](../../langflow/README.md) too):
 
-- Do the work in Python you can test outside Langflow, and keep the card thin. Our cards call the shell service (`bench/shell_service.py`, 127.0.0.1:8781) over HTTP with the token from `.langflow/secrets.env`; the same functions serve the results page, so a card and the page never disagree. Copy `_call()` from `rtrc_chat.py` for that.
+- Do the work in Python you can test outside Langflow, and keep the card thin. Our cards call the shell service (`bench/shell_service.py`, 127.0.0.1:8781) over HTTP with the token from `.langflow/secrets.env`; the same functions serve the results page, so a card and the page never disagree. Copy `_call()` from `card_chat.py` for that.
 - An input may not be named like a `Component` method (`run`) and may not contain `config` or `kwargs` in its name: Langflow parses such a parameter as JSON and silently drops it.
 - Give a dropdown `combobox=True` when a person might need a value you did not list (model names).
 - Restart Langflow after adding or changing a card. With `LANGFLOW_ALLOW_CUSTOM_COMPONENTS=False` (our setting) the server runs only the code in the components folder, never code pasted into a card on the canvas; that is what makes a shared instance safe.

@@ -1,4 +1,4 @@
-# GEN-01 — synthetic, not an RTX specification
+# GEN-01 — synthetic
 
 Package name: UsvLink
 

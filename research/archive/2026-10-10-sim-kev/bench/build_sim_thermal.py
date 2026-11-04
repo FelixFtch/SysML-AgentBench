@@ -276,7 +276,7 @@ Answer three questions:
 Reply with JSON {{"peak_temp_c": <number>, "exceeds_limit": <boolean>, "t95_min": <number>}}.
 """
     return (
-        f"# {task_id} — synthetic, not an RTX specification\n\n"
+        f"# {task_id} — synthetic\n\n"
         f"{meta['story']} P = {dstr(p['power'])} W into the bay. Heat leaves through the "
         "enclosure wall to ambient; the model in this folder (package "
         f"{PACKAGE}, part definition {meta['bay_def']}) treats the bay as a first-order "

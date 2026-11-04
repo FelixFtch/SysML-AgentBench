@@ -36,7 +36,7 @@ GATED_CHECKS = ("POWER", "LINK", "STORE", "TRACE", "SOURCE")
 STOPWORDS = {"and", "the", "for", "with", "over", "one", "from", "that", "this", "are", "per", "its", "into",
              "not", "all", "any", "add", "via", "has", "have", "each", "both", "only", "than", "then"}
 
-# Synthetic device catalogue for the design space and the trade-off step. Not a bill of materials, not RTX data.
+# Synthetic device catalogue for the design space and the trade-off step. Not a bill of materials, not vendor data.
 CATALOG = {
     "slots": {
         "visible_camera": {"label": "Visible camera", "options": {

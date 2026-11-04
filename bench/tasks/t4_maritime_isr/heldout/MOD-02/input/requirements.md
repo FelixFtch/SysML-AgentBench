@@ -1,4 +1,4 @@
-# MOD-02 — synthetic, not an RTX specification
+# MOD-02 — synthetic
 
 Package name stays VesselAlign. Edit the baseline.
 

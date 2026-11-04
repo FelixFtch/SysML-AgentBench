@@ -15,7 +15,7 @@ Everything that is not frozen is open to change. This page is the whole set of r
 
 ## Adding a card or a tool
 
-A card is a file in `langflow/components/rtrc/`; a tool is a function in `tools/assistant_mcp.py` or a flow used through Run Flow. The how-to with the pitfalls is `docs/langflow/06-make-your-own.md`. Add a section to `docs/langflow/05-cards.md` for a card.
+A card is a file in `langflow/components/cards/`; a tool is a function in `tools/assistant_mcp.py` or a flow used through Run Flow. The how-to with the pitfalls is `docs/langflow/06-make-your-own.md`. Add a section to `docs/langflow/05-cards.md` for a card.
 
 ## Adding a column to the results page
 

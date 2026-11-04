@@ -1,4 +1,4 @@
-"""Write docs/langflow/05-cards.md from the RTRC cards themselves (langflow/components/rtrc/*.py): for every card its name,
+"""Write docs/langflow/05-cards.md from the cards themselves (langflow/components/cards/*.py): for every card its name,
 what it does, every input with its tooltip, every output, which shell-service routes it calls, and the module's own notes.
 
     .venv-langflow/bin/python langflow/scripts/card_docs.py
@@ -18,13 +18,13 @@ COMPONENTS = ROOT / "langflow" / "components"
 sys.path.insert(0, str(COMPONENTS))
 DOC = ROOT / "docs" / "langflow" / "05-cards.md"
 
-HEAD = """# 5 · The cards (RTRC custom components)
+HEAD = """# 5 · The cards (custom components)
 
-**You get:** every RTRC card in the Langflow sidebar: what it does, its inputs and outputs, what it calls.
+**You get:** every card in the Langflow sidebar: what it does, its inputs and outputs, what it calls.
 **You need:** nothing; find the card you dragged onto the canvas.
 
-Each card is one Python class in [`langflow/components/rtrc/`](../../langflow/components/rtrc/). Langflow loads the folder at
-start (`LANGFLOW_COMPONENTS_PATH`). The cards do little themselves: most call the RTRC shell service
+Each card is one Python class in [`langflow/components/cards/`](../../langflow/components/cards/). Langflow loads the folder at
+start (`LANGFLOW_COMPONENTS_PATH`). The cards do little themselves: most call the shell service
 (`bench/shell_service.py`, 127.0.0.1:8781) over HTTP, which runs the same functions the results page runs. Change a
 card, restart Langflow. How to write one: [06-make-your-own.md](06-make-your-own.md), section B.
 
@@ -39,15 +39,15 @@ def _routes(source: str) -> list[str]:
 def main() -> None:
     from lfx.custom.custom_component.component import Component
     sections = []
-    for path in sorted((COMPONENTS / "rtrc").glob("rtrc_*.py")):
-        module = importlib.import_module(f"rtrc.{path.stem}")
+    for path in sorted((COMPONENTS / "cards").glob("card_*.py")):
+        module = importlib.import_module(f"cards.{path.stem}")
         source = path.read_text(encoding="utf-8")
         doc = (inspect.getdoc(module) or "").strip()
         classes = [obj for _, obj in inspect.getmembers(module, inspect.isclass)
                    if issubclass(obj, Component) and obj is not Component and obj.__module__ == module.__name__]
         for cls in classes:
             lines = [f"\n## {cls.display_name}\n",
-                     f"`{cls.__name__}` · file [`rtrc/{path.name}`](../../langflow/components/rtrc/{path.name})\n",
+                     f"`{cls.__name__}` · file [`cards/{path.name}`](../../langflow/components/cards/{path.name})\n",
                      f"{cls.description}\n"]
             inputs = getattr(cls, "inputs", []) or []
             if inputs:

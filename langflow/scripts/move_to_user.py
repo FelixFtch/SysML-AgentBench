@@ -1,5 +1,5 @@
-"""Give everything RTRC in Langflow to one user: the six projects and their flows, the Qwen provider credentials, the
-enabled-models list, the knowledge base rtrc_memory (row, ingestion runs and files) and the rtrc-assistant MCP
+"""Give everything in Langflow to one user: the six projects and their flows, the Qwen provider credentials, the
+enabled-models list, the knowledge base project_memory (row, ingestion runs and files) and the design-assistant MCP
 registration used by the Langflow-Agent flows.
 
     .venv-langflow/bin/python langflow/scripts/move_to_user.py FelixFang
@@ -24,8 +24,8 @@ DB = ROOT / ".venv-langflow" / "lib" / "python3.12" / "site-packages" / "langflo
 KB_ROOT = Path.home() / ".langflow" / "knowledge_bases"
 PROJECT_NAMES = [name for name, _, _ in PROJECTS]
 VARIABLES = ("OPENAI_COMPATIBLE_BASE_URL", "OPENAI_COMPATIBLE_API_KEY", "OLLAMA_BASE_URL", "__enabled_models__")
-KNOWLEDGE_BASE = "rtrc_memory"
-MCP_SERVER = "rtrc-assistant"
+KNOWLEDGE_BASE = "project_memory"
+MCP_SERVER = "design-assistant"
 
 
 def _move_project(cur, project: str, target: str) -> int:
@@ -97,7 +97,7 @@ def main() -> None:
 
     # The knowledge base: the row, its ingestion runs and its files (the directory is rooted by username). When the
     # user already owns one, copies that setup_knowledge.py created for another account (an import run as the
-    # superuser makes an empty one) are removed, so the Knowledge page shows one rtrc_memory.
+    # superuser makes an empty one) are removed, so the Knowledge page shows one project_memory.
     rows = list(cur.execute("SELECT user_id FROM knowledge_base WHERE name = ?", (KNOWLEDGE_BASE,)))
     owners = [uid for (uid,) in rows]
     new_dir = KB_ROOT / username / KNOWLEDGE_BASE

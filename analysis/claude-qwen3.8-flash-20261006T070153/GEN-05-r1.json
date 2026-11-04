@@ -45,7 +45,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_d729b03f68ad4b8f88a3b5c2",
       "tool_input": {
-        "command": "ls /data/robotics/RTRC/mvp/agent-runs/20261006T070430-P-CODE-2-GEN-05/workspace; ls /data/robotics/RTRC/mvp 2>/dev/null | head -30",
+        "command": "ls /data/robotics//mvp/agent-runs/20261006T070430-P-CODE-2-GEN-05/workspace; ls /data/robotics//mvp 2>/dev/null | head -30",
         "description": "List workspace and mvp directory contents"
       }
     },
@@ -53,7 +53,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_6d13815cf05340a785f461cf",
       "tool_input": {
-        "command": "grep -rIl --include=*.md -e 'connect .* to ' /data/robotics/RTRC 2>/dev/null | head -5",
+        "command": "grep -rIl --include=*.md -e 'connect .* to ' /data/robotics/2>/dev/null | head -5",
         "description": "Find docs with SysML connect examples"
       }
     },
@@ -61,7 +61,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_5c9c4cf30ffb409eb7564877",
       "tool_input": {
-        "command": "find /data/robotics/RTRC -name '*.sysml' -not -path '*/node_modules/*' 2>/dev/null | head -20",
+        "command": "find /data/robotics/-name '*.sysml' -not -path '*/node_modules/*' 2>/dev/null | head -20",
         "description": "Find existing SysML files in the repository"
       }
     },
@@ -69,7 +69,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_e87fcc8bd3154b7488ad0605",
       "tool_input": {
-        "command": "ls /data/robotics/RTRC/mvp/agent-runs/20261006T070430-P-CODE-2-GEN-05/workspace/input /data/robotics/RTRC/mvp 2>/dev/null; ls /data/robotics/RTRC/mvp/bench 2>/dev/null | head -40",
+        "command": "ls /data/robotics//mvp/agent-runs/20261006T070430-P-CODE-2-GEN-05/workspace/input /data/robotics//mvp 2>/dev/null; ls /data/robotics//mvp/bench 2>/dev/null | head -40",
         "description": "List mvp and bench directories to find validation tooling"
       }
     },
@@ -77,7 +77,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_a2e15eb62f15487ab21643b6",
       "tool_input": {
-        "command": "find /data/robotics/RTRC/mvp -name '*.sysml' | head",
+        "command": "find /data/robotics//mvp -name '*.sysml' | head",
         "description": "Find SysML files under mvp"
       }
     },
@@ -85,7 +85,7 @@
       "tool_name": "Bash",
       "tool_use_id": "call_0cce6cc50eee4ebfb53c1eed",
       "tool_input": {
-        "command": "find /data/robotics/RTRC/mvp -name '*.sysml'",
+        "command": "find /data/robotics//mvp -name '*.sysml'",
         "description": "Find SysML files under mvp"
       }
     }

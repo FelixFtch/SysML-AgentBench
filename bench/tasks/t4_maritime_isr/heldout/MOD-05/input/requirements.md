@@ -1,4 +1,4 @@
-# MOD-05 — synthetic, not an RTX specification
+# MOD-05 — synthetic
 
 Package name stays PowerBudget. Edit the baseline.
 

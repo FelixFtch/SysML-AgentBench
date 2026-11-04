@@ -8,7 +8,7 @@ There are four kinds of model line in the flows. Each reads its key from a diffe
 | Line | Flows | Key lives in | Model name set in | Works with |
 |---|---|---|---|---|
 | **Langflow Agent** | `Langflow Agent, Pilot only …`, `Langflow Agent with memory …` | Langflow → Settings → **Global Variables** | the Agent card on the canvas (provider + model dropdown) | OpenAI, Anthropic, Google, Ollama, any OpenAI-compatible endpoint: whatever Langflow's Agent lists |
-| **Direct model** | `Direct model chat/exam · P0 … P3`; the direct steps of the design flows | `.env` → `MVP_LLM_API_KEY` | `.env` → `MVP_LLM_MODEL`, or the model field on the RTRC card | an OpenAI-compatible chat endpoint (see the caveat below) |
+| **Direct model** | `Direct model chat/exam · P0 … P3`; the direct steps of the design flows | `.env` → `MVP_LLM_API_KEY` | `.env` → `MVP_LLM_MODEL`, or the model field on the card | an OpenAI-compatible chat endpoint (see the caveat below) |
 | **OpenCode** | `OpenCode in the sandbox …`, `OpenCode with memory …` | OpenCode's own login (`opencode auth login`), or `.env` for a custom endpoint | `.env` → `OPENCODE_MODEL` (`provider/model`) | everything OpenCode supports: Anthropic, OpenAI, Google, GitHub Copilot, Ollama, custom endpoints |
 | **Claude Code** | `Claude Code in the sandbox …` | Claude Code's own login (Anthropic), or the router's provider page for other keys | `.env` → `CLAUDE_CODE_MODEL` (`provider,model`) | Anthropic directly; anything else through claude-code-router |
 

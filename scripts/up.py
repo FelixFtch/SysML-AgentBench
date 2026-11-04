@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Start and stop the RTRC Langflow shell on Windows, macOS or Linux.
+"""Start and stop the Langflow shell on Windows, macOS or Linux.
 
 Ports, all on 127.0.0.1:
 
@@ -195,7 +195,7 @@ def _stop(pids: set[int]) -> None:
 
 
 def down() -> None:
-    """Stop the RTRC stack and unload Ollama so the GPU is free for other work."""
+    """Stop the stack and unload Ollama so the GPU is free for other work."""
     ollama = shutil.which("ollama") or str(Path.home() / ".local" / "ollama" / "bin" / "ollama")
     if Path(ollama).is_file() and up(SERVICES["Ollama"], timeout=1):
         try:
@@ -254,16 +254,16 @@ def main() -> None:
         "LANGFLOW_CONFIG_DIR": str(ROOT / ".langflow" / "config"), "LANGFLOW_COMPONENTS_PATH": str(ROOT / "langflow" / "components"),
         "LANGFLOW_CORS_ORIGINS": f"http://127.0.0.1:{PORT},http://localhost:{PORT}",
         "LANGFLOW_DO_NOT_TRACK": "true", "LANGFLOW_OPEN_BROWSER": "false",
-        "RTRC_SHELL_URL": "http://127.0.0.1:8781", "RTRC_ROOT": str(ROOT),
+        "SHELL_URL": "http://127.0.0.1:8781", "REPO_ROOT": str(ROOT),
     })
     (ROOT / ".langflow" / "config").mkdir(parents=True, exist_ok=True)
 
     if not up(SERVICES["shell service"]):
-        print("Starting the RTRC shell service on 127.0.0.1:8781 (log: .langflow/shell_service.log)")
+        print("Starting the shell service on 127.0.0.1:8781 (log: .langflow/shell_service.log)")
         spawn([str(BENCH_PY), "-u", "bench/shell_service.py"], LOGS / "shell_service.log", env)
         wait_for(SERVICES["shell service"], 30)
     if not up(SERVICES["MCP server"]):
-        print("Starting the RTRC MCP server on 127.0.0.1:8782 (log: .langflow/assistant_mcp.log)")
+        print("Starting the MCP server on 127.0.0.1:8782 (log: .langflow/assistant_mcp.log)")
         spawn([str(BENCH_PY), "-u", "tools/assistant_mcp.py"], LOGS / "assistant_mcp.log", env)
     if not up(SERVICES["Ollama"]):
         ollama = shutil.which("ollama") or str(Path.home() / ".local" / "ollama" / "bin" / "ollama")
@@ -298,11 +298,11 @@ def main() -> None:
                 raise SystemExit("Langflow did not answer within two minutes. See .langflow/langflow.log")
         if "--import" in args:
             later()
-        print(f"Ready. Langflow: http://127.0.0.1:{PORT}  (log in as {env.get('LANGFLOW_SUPERUSER', 'rtrc')}, password in .langflow/secrets.env)")
+        print(f"Ready. Langflow: http://127.0.0.1:{PORT}  (log in as {env.get('LANGFLOW_SUPERUSER', '')}, password in .langflow/secrets.env)")
         print("Stop everything, including Ollama and the GPU:  python scripts/up.py --down")
         return
 
-    print(f"Starting Langflow on http://127.0.0.1:{PORT} (log: .langflow/langflow.log). Log in as {env.get('LANGFLOW_SUPERUSER', 'rtrc')} "
+    print(f"Starting Langflow on http://127.0.0.1:{PORT} (log: .langflow/langflow.log). Log in as {env.get('LANGFLOW_SUPERUSER', '')} "
           "with the password in .langflow/secrets.env. Ctrl-C stops Langflow; the services keep running. "
           "python scripts/up.py --down stops the whole stack and frees the GPU.")
     say(command)

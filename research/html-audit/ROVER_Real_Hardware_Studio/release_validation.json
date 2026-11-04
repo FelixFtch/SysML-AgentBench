@@ -13,7 +13,7 @@
   "rotation_cases": {
     "count": 144,
     "included_in_browser_checks": true,
-    "runtime": "ANGLE SwiftShader/WebGL, not RTX4090"
+    "runtime": "ANGLE SwiftShader/WebGL, not 24 GB GPU"
   },
   "source_base": "ROVER_WebGL_Rotation_Fixed.html",
   "model_validation": "NOT_RUN",
